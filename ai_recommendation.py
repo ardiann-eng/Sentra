@@ -23,22 +23,29 @@ def generate_ai_insight(data: dict) -> str:
 
     prompt = _build_prompt(data)
 
-    try:
-        client = genai.Client(api_key=api_key)
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt,
-        )
-        return response.text.strip()
-
-    except Exception as e:
-        if _is_quota_error(e):
-            return (
-                "⚠ Kuota AI sedang penuh. Data tren di atas tetap akurat — "
-                "insight teks akan tersedia kembali dalam beberapa jam. "
-                "Upgrade ke Gemini API berbayar untuk akses tak terbatas."
+    import time
+    max_retries = 2
+    for attempt in range(max_retries + 1):
+        try:
+            client = genai.Client(api_key=api_key)
+            response = client.models.generate_content(
+                model="gemini-2.0-flash", # Fixed model name
+                contents=prompt,
             )
-        return f"⚠ AI Insight sementara tidak tersedia. Data analisis di atas tetap bisa digunakan."
+            return response.text.strip()
+
+        except Exception as e:
+            if _is_quota_error(e) and attempt < max_retries:
+                time.sleep(2 * (attempt + 1)) # Simple backoff
+                continue
+            
+            if _is_quota_error(e):
+                return (
+                    "⚠ Kuota AI sedang penuh. Data tren di atas tetap akurat — "
+                    "insight teks akan tersedia kembali dalam beberapa jam. "
+                    "Upgrade ke Gemini API berbayar untuk akses tak terbatas."
+                )
+            return f"⚠ AI Insight sementara tidak tersedia. Data analisis di atas tetap bisa digunakan."
 
 
 def _format_seasonality(data: dict) -> str:
@@ -137,21 +144,28 @@ def generate_compare_insight(compare_data: dict) -> str:
 
     prompt = _build_compare_prompt(compare_data)
 
-    try:
-        client = genai.Client(api_key=api_key)
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt,
-        )
-        return response.text.strip()
-
-    except Exception as e:
-        if _is_quota_error(e):
-            return (
-                "⚠ Kuota AI sedang penuh. Hasil perbandingan di atas tetap akurat — "
-                "insight teks akan tersedia kembali dalam beberapa jam."
+    import time
+    max_retries = 2
+    for attempt in range(max_retries + 1):
+        try:
+            client = genai.Client(api_key=api_key)
+            response = client.models.generate_content(
+                model="gemini-2.0-flash", # Fixed model name
+                contents=prompt,
             )
-        return "⚠ AI Insight sementara tidak tersedia. Hasil perbandingan di atas tetap bisa digunakan."
+            return response.text.strip()
+
+        except Exception as e:
+            if _is_quota_error(e) and attempt < max_retries:
+                time.sleep(2 * (attempt + 1)) # Simple backoff
+                continue
+
+            if _is_quota_error(e):
+                return (
+                    "⚠ Kuota AI sedang penuh. Hasil perbandingan di atas tetap akurat — "
+                    "insight teks akan tersedia kembali dalam beberapa jam."
+                )
+            return "⚠ AI Insight sementara tidak tersedia. Hasil perbandingan di atas tetap bisa digunakan."
 
 
 def _build_compare_prompt(compare_data: dict) -> str:

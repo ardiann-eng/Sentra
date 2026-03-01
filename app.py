@@ -167,7 +167,8 @@ def get_user_tier(user_id: str) -> str:
     if not sb or not user_id:
         return "free"
     try:
-        res = sb.table("profiles").select("tier").eq("user_id", user_id).single().execute()
+        # profiles.id adalah UUID dari auth.users (bukan kolom 'user_id')
+        res = sb.table("profiles").select("tier").eq("id", user_id).maybe_single().execute()
         return (res.data or {}).get("tier", "free")
     except Exception:
         return "free"
@@ -193,7 +194,7 @@ def count_today_searches(user_id: str) -> int:
         return 0
 
 
-def log_search(user_id: str, keyword: str):
+def log_search(user_id: str, keyword: str, geo: str = "ID", is_pro: bool = False):
     """Insert a row into search_logs. Fire-and-forget — errors are suppressed."""
     sb = get_supabase()
     if not sb or not user_id:
@@ -202,10 +203,13 @@ def log_search(user_id: str, keyword: str):
         sb.table("search_logs").insert({
             "user_id": user_id,
             "keyword": keyword,
-            "created_at": datetime.utcnow().isoformat(),
+            "geo": geo,
+            "is_pro_search": is_pro,
+            # created_at diisi otomatis oleh Supabase DEFAULT now()
         }).execute()
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"[LOG_SEARCH ERROR] {e}")
+
 
 
 def check_limit(user_id: str):
@@ -263,6 +267,15 @@ def sanitize(obj):
 @app.route("/")
 def index():
     return render_template("index.html")
+
+
+@app.route("/api/config", methods=["GET"])
+def get_config():
+    """Expose public Supabase credentials (anon key only, never service_role) to frontend."""
+    return jsonify({
+        "supabase_url":      os.environ.get("SUPABASE_URL", ""),
+        "supabase_anon_key": os.environ.get("SUPABASE_ANON_KEY", ""),
+    })
 
 
 @app.route("/api/user-status", methods=["POST"])
@@ -338,7 +351,7 @@ def analyze():
 
     # --- Log search ---
     if user_id:
-        log_search(user_id, keyword)
+        log_search(user_id, keyword, geo=geo, is_pro=(tier == "pro"))
         searches_today += 1
 
     # --- Cache the result (L1 + L2) --- simplified for async
@@ -359,13 +372,32 @@ def analyze():
 
 @app.route("/api/get-ai-insight", methods=["POST"])
 def get_ai_insight_route():
-    """Endpoint baru untuk ambil AI Insight secara terpisah (Async)."""
+    """Endpoint baru untuk ambil AI Insight secara terpisah (Async) dengan cache."""
     data = request.get_json(silent=True)
     if not data:
         return jsonify({"error": "Data analisis tidak valid."}), 400
     
+    # 1. Cek Cache
+    keyword = data.get("keyword", "").strip()
+    geo = (data.get("geo") or "ID").strip().upper()
+    cat = str(data.get("cat", 0))
+    
+    if keyword:
+        cached = cache_get(keyword, geo, cat)
+        if cached and cached.get("ai_insight"):
+            return jsonify({
+                "ai_insight": cached["ai_insight"],
+                "from_cache": True
+            })
+
+    # 2. Generate jika tidak ada di cache
     try:
         insight = generate_ai_insight(data)
+        
+        # 3. Simpan ke cache jika sukses (bukan pesan error/kuota)
+        if keyword and insight and "⚠" not in insight:
+            cache_set(keyword, geo, cat, data, insight)
+            
         return jsonify({"ai_insight": insight})
     except Exception as e:
         return jsonify({"ai_insight": f"Gagal menghasilkan insight: {str(e)}"}), 500
@@ -446,14 +478,35 @@ def compare():
 
 @app.route("/api/get-compare-insight", methods=["POST"])
 def get_compare_insight_route():
-    """Endpoint baru untuk ambil AI Compare Insight secara terpisah (Async)."""
+    """Endpoint baru untuk ambil AI Compare Insight secara terpisah (Async) dengan cache."""
     data = request.get_json(silent=True)
     if not data:
         return jsonify({"error": "Data perbandingan tidak valid."}), 400
     
+    # 1. Cek Cache
+    kw_a = data.get("keyword_a", {}).get("keyword", "")
+    kw_b = data.get("keyword_b", {}).get("keyword", "")
+    geo = (data.get("geo") or "ID").strip().upper()
+    
+    if kw_a and kw_b:
+        compare_kw = f"__cmp__{kw_a}__vs__{kw_b}"
+        cached = cache_get(compare_kw, geo)
+        if cached and cached.get("ai_insight"):
+            return jsonify({
+                "ai_insight": cached["ai_insight"],
+                "from_cache": True
+            })
+
+    # 2. Generate jika tidak ada di cache
     try:
         from ai_recommendation import generate_compare_insight
         insight = generate_compare_insight(data)
+        
+        # 3. Simpan ke cache jika sukses
+        if kw_a and kw_b and insight and "⚠" not in insight:
+            compare_kw = f"__cmp__{kw_a}__vs__{kw_b}"
+            cache_set(compare_kw, geo, "0", data, insight)
+
         return jsonify({"ai_insight": insight})
     except Exception as e:
         return jsonify({"ai_insight": f"Gagal menghasilkan insight: {str(e)}"}), 500
