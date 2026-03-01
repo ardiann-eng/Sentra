@@ -300,66 +300,31 @@ def compute_market_pulse(growth, momentum, volatility):
 # 6. MASTER FUNCTION
 # =========================
 
+# --- Di dalam sentra_engine.py ---
+
 def analyze_keyword(keyword, geo="ID", cat=0):
-    """Analisis lengkap satu keyword (PARALLEL & HIGH RESOLUTION)."""
     validation = validate_keyword(keyword)
-    if not validation["valid"]:
-        return {"error": validation["error"]}
+    if not validation["valid"]: return {"error": validation["error"]}
 
-    # --- PARALLEL FETCHING (3 bulan harian + 12 bulan mingguan) ---
     try:
-        with ThreadPoolExecutor(max_workers=2) as executor:
-            future_3m = executor.submit(fetch_trend_data, keyword, "today 3-m", geo, cat)
-            future_12m = executor.submit(fetch_trend_data, keyword, "today 12-m", geo, cat)
-            
-            df_3m = future_3m.result()
-            df_12m = future_12m.result()
-    except TooManyRequestsError:
-        return {"error": "Google Trends sedang ramai.", "error_code": "TOO_MANY_REQUESTS"}
+        # LANGKAH KRUSIAL: Hanya satu kali panggil proxy untuk efisiensi RAM/Waktu
+        print(f"--- DEBUG ZENROWS ---: Menghubungi Google (Full Data) untuk {keyword}")
+        df_full = fetch_trend_data_long(keyword, geo=geo) 
+        
+        if df_full is None or df_full.empty:
+            return {"error": "Data tidak ditemukan atau IP diblokir."}
 
-    if df_3m is None or df_3m.empty:
-        # Fallback: jika 3m gagal tapi 12m ada data
-        if df_12m is not None and not df_12m.empty:
-            df_3m = df_12m.tail(13).copy()
-        else:
-            return {"error": "Data tidak ditemukan."}
+        # Potong data di memori untuk keperluan metrik 3 bulan terakhir
+        df = df_full.iloc[-90:].copy() 
+        
+    except Exception as e:
+        print(f"Error proses data: {e}")
+        return {"error": "Gagal memproses data tren."}
 
-    # --- METRICS (Gunakan data 3 bulan untuk akurasi harian) ---
-    # df_3m biasanya harian, df_12m mingguan.
-    growth     = compute_growth(df_3m)
-    momentum   = compute_momentum(df_3m)
-    volatility = compute_volatility(df_3m)
-    spike      = detect_spike(df_3m)
-    fomo_index  = compute_fomo_index(df_3m)
-    is_peak     = detect_peak(df_3m, growth, momentum)
-    
-    # --- LONG TERM (Gunakan data 12 bulan untuk musiman) ---
-    seasonality = detect_seasonality(df_12m if df_12m is not None else df_3m)
-    forecast_30 = forecast_next_30_days(df_3m)
-    fc_confidence = compute_forecast_confidence(df_3m, volatility)
-    saturation  = compute_saturation(df_3m, growth, momentum)
-
-    stage      = classify_lifecycle(growth, momentum, is_peak)
-    risk       = compute_risk(volatility, spike, fomo_index)
-    pulse_score = compute_market_pulse(growth, momentum, volatility)
-
-    current_avg = df_3m["interest"].iloc[-7:].mean()
-    timing_score = compute_entry_timing_score(stage, growth, momentum, fomo_index, saturation, forecast_30, current_avg, risk)
-    timing_label = entry_timing_label(timing_score)
-
-    return {
-        "keyword": keyword, "geo": geo,
-        "raw_trend": {
-            "dates": [str(d.date())[:10] for d in df_3m["date"]], 
-            "values": df_3m["interest"].tolist()
-        },
-        "growth": round(float(growth), 3), "momentum": round(float(momentum), 3), "volatility": round(float(volatility), 3),
-        "lifecycle_stage": stage, "risk_level": risk, "market_pulse_score": pulse_score,
-        "saturation_index": saturation, "fomo_index": fomo_index,
-        "forecast_30d_avg": forecast_30, "forecast_confidence": fc_confidence,
-        "is_seasonal": seasonality["is_seasonal"], "seasonal_confidence": seasonality["confidence"], "seasonal_peak_months": seasonality["peak_months"],
-        "entry_timing_score": timing_score, "entry_timing_label": timing_label
-    }
+    # Gunakan 'df' untuk metrik dasar dan 'df_full' untuk seasonality
+    growth     = compute_growth(df)
+    momentum   = compute_momentum(df)
+    volatility = compute_volatility(df)
 
 
 # =========================
