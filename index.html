@@ -2936,253 +2936,242 @@
           <div class="sector-name">Home &amp; Living</div>
           <div class="sector-kw">dekorasi · furniture</div>
         </div>
-        <div class="sector-name">Home &amp; Living</div>
-        <div class="sector-kw">dekorasi rumah · furnitur</div>
-      </div>
 
-      <!-- Hobi & Lifestyle -->
-      <div class="sector-card" onclick="analyzeCategory('hobi')" id="sc-hobi">
-        <div class="sector-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-            stroke-linecap="round" stroke-linejoin="round">
-            <polygon
-              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-          </svg></div>
-        <div class="sector-name">Hobi &amp; Lifestyle</div>
-        <div class="sector-kw">olahraga · traveling</div>
-      </div>
-
-      <!-- Tren Musiman -->
-      <div class="sector-card" onclick="analyzeCategory('musiman')" id="sc-musiman">
-        <div class="sector-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3.51 23c0-4.974 0-14 8.49-14s8.49 9.026 8.49 14" />
-            <path d="M12 9V2M12 2l3 3M12 2l-3 3" />
-          </svg></div>
-        <div class="sector-name">Tren Musiman</div>
-        <div class="sector-kw">lebaran · akhir tahun</div>
-      </div>
-
-  </div>
-  </section>
-
-  <!-- ══════════ SINGLE RESULTS ══════════ -->
-  <div id="results">
-    <div class="res-header">
-      <div id="r-kw" class="res-kw"></div>
-      <div id="r-ts" class="res-ts"></div>
-    </div>
-
-    <div class="badge-row">
-      <span id="r-stage" class="stage-badge"></span>
-      <span id="r-risk" class="risk-badge"></span>
-    </div>
-
-    <div class="g3">
-      <div class="mc">
-        <div class="mc-lbl">Growth 7 Hari <span class="help-tip" tabindex="0">?<span class="tip-text">Mengukur
-              kenaikan atau penurunan minat orang terhadap produk ini dalam 7 hari terakhir.</span></span></div>
-        <div id="r-growth" class="mc-val neu">—</div>
-        <div class="mc-sub">perubahan minat</div>
-      </div>
-      <div class="mc">
-        <div class="mc-lbl">Momentum <span class="help-tip" tabindex="0">?<span class="tip-text">Arah pergerakan
-              tren:
-              apakah minat sedang naik atau turun secara konsisten.</span></span></div>
-        <div id="r-mom" class="mc-val neu">—</div>
-        <div class="mc-sub">arah tren</div>
-      </div>
-      <div class="mc">
-        <div class="mc-lbl">Volatilitas <span class="help-tip" tabindex="0">?<span class="tip-text">Seberapa stabil
-              minat terhadap produk ini. Angka tinggi = naik-turun tidak menentu, berisiko.</span></span></div>
-        <div id="r-vol" class="mc-val neu">—</div>
-        <div class="mc-sub">fluktuasi pasar</div>
-      </div>
-    </div>
-
-    <div class="g2">
-      <div class="mc">
-        <div class="mc-lbl">FOMO Index <span class="help-tip" tabindex="0">?<span class="tip-text">Mengukur seberapa
-              viral produk ini akibat ikut-ikutan (hype). Angka tinggi = bisa jadi tren sesaat, bukan minat
-              asli.</span></span></div>
-        <div id="r-fomo" class="mc-val neu">—</div>
-        <div id="r-fomo-l" class="mc-sub">—</div>
-      </div>
-      <div class="mc">
-        <div class="mc-lbl">Saturasi Pasar <span class="help-tip" tabindex="0">?<span class="tip-text">Seberapa
-              penuh
-              pasar dengan penjual produk ini. Angka tinggi = sudah banyak pesaing, sulit bersaing.</span></span>
+        <!-- Hobi & Lifestyle -->
+        <div class="sector-card" onclick="analyzeCategory('hobi')" id="sc-hobi">
+          <div class="sector-icon"><i class="fas fa-star"></i></div>
+          <div class="sector-name">Hobi &amp; Lifestyle</div>
+          <div class="sector-kw">olahraga · traveling</div>
         </div>
-        <div id="r-sat" class="mc-val neu">—</div>
-        <div id="r-sat-l" class="mc-sub">—</div>
-      </div>
-    </div>
 
-    <div class="pulse-card">
-      <div class="mc-lbl">Market Pulse Score <span class="help-tip" tabindex="0">?<span class="tip-text">Skor
-            kesehatan pasar secara keseluruhan. Makin tinggi = pasar makin aktif dan menjanjikan.</span></span>
-      </div>
-      <div class="pulse-track">
-        <div id="r-pulse-fill" class="pulse-fill"></div>
-      </div>
-      <div class="pulse-nums"><span>0</span><span id="r-pulse" style="color:var(--gold)">—</span><span>100</span>
-      </div>
-    </div>
+        <!-- Tren Musiman -->
+        <div class="sector-card" onclick="analyzeCategory('musiman')" id="sc-musiman">
+          <div class="sector-icon"><i class="fas fa-calendar-star"></i></div>
+          <div class="sector-name">Tren Musiman</div>
+          <div class="sector-kw">lebaran · akhir tahun</div>
+        </div>
 
-    <div class="timing-card">
-      <div class="ring-wrap">
-        <svg width="96" height="96" viewBox="0 0 96 96">
-          <circle class="ring-bg" cx="48" cy="48" r="40" />
-          <circle id="r-ring" class="ring-fg" cx="48" cy="48" r="40" stroke-dasharray="251.33"
-            stroke-dashoffset="251.33" />
-        </svg>
-        <div class="ring-center">
-          <div id="r-ring-num" class="ring-num">—</div>
-          <div class="ring-denom">/100</div>
+      </div>
+    </section>
+
+    <!-- ══════════ SINGLE RESULTS ══════════ -->
+    <div id="results">
+      <div class="res-header">
+        <div id="r-kw" class="res-kw"></div>
+        <div id="r-ts" class="res-ts"></div>
+      </div>
+
+      <div class="badge-row">
+        <span id="r-stage" class="stage-badge"></span>
+        <span id="r-risk" class="risk-badge"></span>
+      </div>
+
+      <div class="g3">
+        <div class="mc">
+          <div class="mc-lbl">Growth 7 Hari <span class="help-tip" tabindex="0">?<span class="tip-text">Mengukur
+                kenaikan atau penurunan minat orang terhadap produk ini dalam 7 hari terakhir.</span></span></div>
+          <div id="r-growth" class="mc-val neu">—</div>
+          <div class="mc-sub">perubahan minat</div>
+        </div>
+        <div class="mc">
+          <div class="mc-lbl">Momentum <span class="help-tip" tabindex="0">?<span class="tip-text">Arah pergerakan
+                tren:
+                apakah minat sedang naik atau turun secara konsisten.</span></span></div>
+          <div id="r-mom" class="mc-val neu">—</div>
+          <div class="mc-sub">arah tren</div>
+        </div>
+        <div class="mc">
+          <div class="mc-lbl">Volatilitas <span class="help-tip" tabindex="0">?<span class="tip-text">Seberapa stabil
+                minat terhadap produk ini. Angka tinggi = naik-turun tidak menentu, berisiko.</span></span></div>
+          <div id="r-vol" class="mc-val neu">—</div>
+          <div class="mc-sub">fluktuasi pasar</div>
         </div>
       </div>
-      <div class="timing-info">
-        <div class="timing-lbl-sm">Entry Timing Score <span class="help-tip" tabindex="0">?<span class="tip-text">Skor
-              yang menunjukkan apakah SEKARANG waktu yang tepat untuk mulai jualan produk ini. 80-100 = waktu
-              terbaik!</span></span></div>
-        <div id="r-timing-lbl" class="timing-lbl-big">—</div>
-        <div id="r-timing-desc" class="timing-desc">—</div>
+
+      <div class="g2">
+        <div class="mc">
+          <div class="mc-lbl">FOMO Index <span class="help-tip" tabindex="0">?<span class="tip-text">Mengukur seberapa
+                viral produk ini akibat ikut-ikutan (hype). Angka tinggi = bisa jadi tren sesaat, bukan minat
+                asli.</span></span></div>
+          <div id="r-fomo" class="mc-val neu">—</div>
+          <div id="r-fomo-l" class="mc-sub">—</div>
+        </div>
+        <div class="mc">
+          <div class="mc-lbl">Saturasi Pasar <span class="help-tip" tabindex="0">?<span class="tip-text">Seberapa
+                penuh
+                pasar dengan penjual produk ini. Angka tinggi = sudah banyak pesaing, sulit bersaing.</span></span>
+          </div>
+          <div id="r-sat" class="mc-val neu">—</div>
+          <div id="r-sat-l" class="mc-sub">—</div>
+        </div>
+      </div>
+
+      <div class="pulse-card">
+        <div class="mc-lbl">Market Pulse Score <span class="help-tip" tabindex="0">?<span class="tip-text">Skor
+              kesehatan pasar secara keseluruhan. Makin tinggi = pasar makin aktif dan menjanjikan.</span></span>
+        </div>
+        <div class="pulse-track">
+          <div id="r-pulse-fill" class="pulse-fill"></div>
+        </div>
+        <div class="pulse-nums"><span>0</span><span id="r-pulse" style="color:var(--gold)">—</span><span>100</span>
+        </div>
+      </div>
+
+      <div class="timing-card">
+        <div class="ring-wrap">
+          <svg width="96" height="96" viewBox="0 0 96 96">
+            <circle class="ring-bg" cx="48" cy="48" r="40" />
+            <circle id="r-ring" class="ring-fg" cx="48" cy="48" r="40" stroke-dasharray="251.33"
+              stroke-dashoffset="251.33" />
+          </svg>
+          <div class="ring-center">
+            <div id="r-ring-num" class="ring-num">—</div>
+            <div class="ring-denom">/100</div>
+          </div>
+        </div>
+        <div class="timing-info">
+          <div class="timing-lbl-sm">Entry Timing Score <span class="help-tip" tabindex="0">?<span class="tip-text">Skor
+                yang menunjukkan apakah SEKARANG waktu yang tepat untuk mulai jualan produk ini. 80-100 = waktu
+                terbaik!</span></span></div>
+          <div id="r-timing-lbl" class="timing-lbl-big">—</div>
+          <div id="r-timing-desc" class="timing-desc">—</div>
+        </div>
+      </div>
+
+      <div class="fc-card">
+        <div class="fc-head">
+          <div class="fc-lbl">Prediksi 30 Hari ke Depan</div>
+          <div id="r-fc-val" class="fc-val">—</div>
+        </div>
+        <div class="fc-bar-track">
+          <div id="r-fc-bar" class="fc-bar-fill"></div>
+        </div>
+        <div class="fc-conf"><span>Tingkat keyakinan forecast</span><span id="r-fc-conf">—</span></div>
+      </div>
+
+      <!-- Trend chart -->
+      <div class="trend-chart-card">
+        <div class="trend-chart-head">
+          <div class="mc-lbl">Tren Minat — 3 Bulan Terakhir</div>
+          <div id="r-trend-range" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-faint)">
+          </div>
+        </div>
+        <div class="trend-chart-wrap">
+          <canvas id="single-chart"></canvas>
+        </div>
+      </div>
+
+      <div class="season-card">
+        <div class="mc-lbl" style="margin-bottom:10px">Pola Musiman</div>
+        <div id="r-season-txt" class="season-txt"></div>
+        <div id="r-months" class="month-chips"></div>
+      </div>
+
+      <div class="ai-card">
+        <div class="ai-head">
+          <div class="ai-title">AI Business Insight — Powered by Gemini</div>
+        </div>
+        <div id="r-ai-cards" class="ai-cards-grid">
+          <div class="ai-section-card card-pasar">
+            <div class="ai-section-title">Analisis Pasar</div>
+            <div id="r-ai-pasar" class="ai-section-body">—</div>
+          </div>
+          <div class="ai-section-card card-aksi">
+            <div class="ai-section-title">Rekomendasi Aksi</div>
+            <div id="r-ai-aksi" class="ai-section-body">—</div>
+          </div>
+          <div class="ai-section-card card-waktu">
+            <div class="ai-section-title">Strategi Waktu</div>
+            <div id="r-ai-waktu" class="ai-section-body">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOCAL HERO SECTION -->
+      <div class="local-hero-card" id="local-hero">
+        <div class="local-hero-head">
+          <div class="ai-title">Local Hero: Potensi Wilayah — <span id="r-local-kw"
+              style="color:var(--text); opacity:0.6"></span></div>
+          <div class="local-subtitle">Ranking minat produk berdasarkan provinsi di Indonesia</div>
+        </div>
+
+        <div class="local-hero-layout">
+          <div class="local-rank-col">
+            <div id="local-rank-list" class="local-rank-list">
+              <!-- Dynamic items -->
+            </div>
+          </div>
+
+          <div class="local-ai-col">
+            <div class="local-ai-box">
+              <div class="local-ai-header">
+                <i class="fas fa-magic"></i> Tips Jagoan Lokal
+              </div>
+              <div id="local-ai-insight" class="local-ai-body">
+                Menganalisis strategi wilayah terbaik...
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PDF DOWNLOAD -->
+      <div class="pdf-btn-wrap">
+        <button class="pdf-btn" id="pdf-btn" onclick="downloadPdf()" disabled>
+          <span class="lock-icon">🔒</span>Download Laporan PDF
+        </button>
       </div>
     </div>
 
-    <div class="fc-card">
-      <div class="fc-head">
-        <div class="fc-lbl">Prediksi 30 Hari ke Depan</div>
-        <div id="r-fc-val" class="fc-val">—</div>
+    <!-- ══════════ COMPARE RESULTS ══════════ -->
+    <div id="compare-results">
+      <!-- Header -->
+      <div class="cmp-header">
+        <div class="cmp-vs-title">
+          <span class="kw-a" id="cmp-kw-a"></span>
+          <span class="kw-vs">vs</span>
+          <span class="kw-b" id="cmp-kw-b"></span>
+        </div>
+        <div class="cmp-ts" id="cmp-ts"></div>
       </div>
-      <div class="fc-bar-track">
-        <div id="r-fc-bar" class="fc-bar-fill"></div>
-      </div>
-      <div class="fc-conf"><span>Tingkat keyakinan forecast</span><span id="r-fc-conf">—</span></div>
-    </div>
 
-    <!-- Trend chart -->
-    <div class="trend-chart-card">
-      <div class="trend-chart-head">
+      <!-- Winner Banner -->
+      <div class="winner-banner">
+        <div class="winner-label">Pemenang Keseluruhan</div>
+        <div class="winner-name" id="cmp-winner"></div>
+        <div class="winner-score" id="cmp-winner-score"></div>
+      </div>
+
+      <!-- Comparison Table -->
+      <table class="cmp-table">
+        <thead>
+          <tr>
+            <th>Metrik</th>
+            <th id="cmp-th-a" class="col-a">Keyword A</th>
+            <th id="cmp-th-b" class="col-b">Keyword B</th>
+            <th>Unggul</th>
+          </tr>
+        </thead>
+        <tbody id="cmp-tbody"></tbody>
+      </table>
+
+      <!-- Chart -->
+      <div class="chart-card">
         <div class="mc-lbl">Tren Minat — 3 Bulan Terakhir</div>
-        <div id="r-trend-range" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-faint)">
+        <div class="chart-wrap">
+          <canvas id="cmp-chart"></canvas>
         </div>
       </div>
-      <div class="trend-chart-wrap">
-        <canvas id="single-chart"></canvas>
-      </div>
-    </div>
 
-    <div class="season-card">
-      <div class="mc-lbl" style="margin-bottom:10px">Pola Musiman</div>
-      <div id="r-season-txt" class="season-txt"></div>
-      <div id="r-months" class="month-chips"></div>
-    </div>
-
-    <div class="ai-card">
-      <div class="ai-head">
-        <div class="ai-title">AI Business Insight — Powered by Gemini</div>
-      </div>
-      <div id="r-ai-cards" class="ai-cards-grid">
-        <div class="ai-section-card card-pasar">
-          <div class="ai-section-title">Analisis Pasar</div>
-          <div id="r-ai-pasar" class="ai-section-body">—</div>
+      <!-- AI Insight -->
+      <div class="ai-card">
+        <div class="ai-head">
+          <div class="ai-icon">✦</div>
+          <div class="ai-title">AI Benchmarking Insight — Powered by Gemini</div>
         </div>
-        <div class="ai-section-card card-aksi">
-          <div class="ai-section-title">Rekomendasi Aksi</div>
-          <div id="r-ai-aksi" class="ai-section-body">—</div>
-        </div>
-        <div class="ai-section-card card-waktu">
-          <div class="ai-section-title">Strategi Waktu</div>
-          <div id="r-ai-waktu" class="ai-section-body">—</div>
-        </div>
+        <div id="cmp-ai" class="ai-body"></div>
       </div>
     </div>
-
-    <!-- LOCAL HERO SECTION -->
-    <div class="local-hero-card" id="local-hero">
-      <div class="local-hero-head">
-        <div class="ai-title">Local Hero: Potensi Wilayah — <span id="r-local-kw"
-            style="color:var(--text); opacity:0.6"></span></div>
-        <div class="local-subtitle">Ranking minat produk berdasarkan provinsi di Indonesia</div>
-      </div>
-
-      <div class="local-hero-layout">
-        <div class="local-rank-col">
-          <div id="local-rank-list" class="local-rank-list">
-            <!-- Dynamic items -->
-          </div>
-        </div>
-
-        <div class="local-ai-col">
-          <div class="local-ai-box">
-            <div class="local-ai-header">
-              <i class="fas fa-magic"></i> Tips Jagoan Lokal
-            </div>
-            <div id="local-ai-insight" class="local-ai-body">
-              Menganalisis strategi wilayah terbaik...
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PDF DOWNLOAD -->
-    <div class="pdf-btn-wrap">
-      <button class="pdf-btn" id="pdf-btn" onclick="downloadPdf()" disabled>
-        <span class="lock-icon">🔒</span>Download Laporan PDF
-      </button>
-    </div>
-  </div>
-
-  <!-- ══════════ COMPARE RESULTS ══════════ -->
-  <div id="compare-results">
-    <!-- Header -->
-    <div class="cmp-header">
-      <div class="cmp-vs-title">
-        <span class="kw-a" id="cmp-kw-a"></span>
-        <span class="kw-vs">vs</span>
-        <span class="kw-b" id="cmp-kw-b"></span>
-      </div>
-      <div class="cmp-ts" id="cmp-ts"></div>
-    </div>
-
-    <!-- Winner Banner -->
-    <div class="winner-banner">
-      <div class="winner-label">Pemenang Keseluruhan</div>
-      <div class="winner-name" id="cmp-winner"></div>
-      <div class="winner-score" id="cmp-winner-score"></div>
-    </div>
-
-    <!-- Comparison Table -->
-    <table class="cmp-table">
-      <thead>
-        <tr>
-          <th>Metrik</th>
-          <th id="cmp-th-a" class="col-a">Keyword A</th>
-          <th id="cmp-th-b" class="col-b">Keyword B</th>
-          <th>Unggul</th>
-        </tr>
-      </thead>
-      <tbody id="cmp-tbody"></tbody>
-    </table>
-
-    <!-- Chart -->
-    <div class="chart-card">
-      <div class="mc-lbl">Tren Minat — 3 Bulan Terakhir</div>
-      <div class="chart-wrap">
-        <canvas id="cmp-chart"></canvas>
-      </div>
-    </div>
-
-    <!-- AI Insight -->
-    <div class="ai-card">
-      <div class="ai-head">
-        <div class="ai-icon">✦</div>
-        <div class="ai-title">AI Benchmarking Insight — Powered by Gemini</div>
-      </div>
-      <div id="cmp-ai" class="ai-body"></div>
-    </div>
-  </div>
 
   </div><!-- /wrap -->
 
