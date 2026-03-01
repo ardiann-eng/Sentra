@@ -3310,7 +3310,7 @@
     }
 
     async function doSearch() {
-      const kw = document.getElementById('kw').value.trim(); // Nama variabel adalah 'kw'
+      const kw = document.getElementById('kw').value.trim(); // Nama variabel: kw
       const geo = document.getElementById('geo-select')?.value || 'ID';
       if (!kw) { showErr('Masukkan keyword terlebih dahulu.'); return; }
 
@@ -3319,14 +3319,14 @@
 
       try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 58000);
+        // Beri waktu 55 detik (sedikit di bawah limit 60 detik Railway)
+        const timeout = setTimeout(() => controller.abort(), 55000);
 
-        // Perbaikan: Gunakan nama variabel 'res' dan kirim 'kw'
         const res = await fetch('/api/analyze', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            keyword: kw,  // Gunakan variabel kw
+            keyword: kw,  // PERBAIKAN: Gunakan 'kw', bukan 'keyword'
             geo: geo,
             user_id: userState.userId || '',
             cat: 0
@@ -3335,7 +3335,7 @@
         });
 
         clearTimeout(timeout);
-        const data = await res.json(); // Sekarang sinkron dengan variabel 'res'
+        const data = await res.json();
 
         if (res.status === 403 && data.error_code === 'LIMIT_EXCEEDED') {
           showUpgradeModal('limit');
@@ -3350,9 +3350,11 @@
           renderResults(data);
         }
       } catch (e) {
-        if (e.name === 'AbortError') showErr('Request timeout. Server butuh waktu lebih lama.');
-        else showErr('Tidak dapat terhubung ke server.');
-        console.error(e);
+        if (e.name === 'AbortError') {
+          showErr('Server butuh waktu terlalu lama (Timeout). Coba kata kunci lain.');
+        } else {
+          showErr('Tidak dapat terhubung ke server.');
+        }
       } finally {
         setLoading(false, false);
       }

@@ -7,52 +7,30 @@ from sklearn.linear_model import LinearRegression
 from concurrent.futures import ThreadPoolExecutor
 from pytrends.request import TrendReq
 from pytrends.exceptions import TooManyRequestsError
-try:
-    from fake_useragent import UserAgent as _UA
-    _UA_ENABLED = True
-except Exception:
-    _UA_ENABLED = False
-
-
-# ── ScraperAPI proxy config ────────────────────────────────────────────────
-_PROXY_URL = (
-    "http://scraperapi:9d165dff5be59579040bc2333e85f07b"
-    "@proxy-server.scraperapi.com:8001"
-)
+_SCRAPER_KEY = "9d165dff5be59579040bc2333e85f07b"
+_PROXY_URL = f"http://scraperapi:{_SCRAPER_KEY}.render=false@proxy-server.scraperapi.com:8001"
 _PROXIES = {"http": _PROXY_URL, "https": _PROXY_URL}
 
-_FALLBACK_UA = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/123.0.0.0 Safari/537.36"
-)
-
-
 def _make_pytrends():
-    api_key = "9d165dff5be59579040bc2333e85f07b"
-    # Gunakan format standar ScraperAPI tanpa tambahan parameter di password
-    proxy_url = f"http://scraperapi:{api_key}@proxy-server.scraperapi.com:8001"
-    
+    """Inisialisasi TrendReq dengan ScraperAPI Proxy yang dioptimasi."""
     return TrendReq(
         hl='id-ID',
         tz=420,
-        retries=2,
-        backoff_factor=3,
+        retries=1, # Hanya 1x retry agar tidak memicu timeout Gunicorn
+        backoff_factor=1,
         requests_args={
-            'proxies': {'http': proxy_url, 'https': proxy_url},
-            'timeout': 45, # Timeout internal lebih pendek dari Gunicorn
+            'proxies': _PROXIES,
+            'timeout': 30, # Maksimal menunggu 30 detik per request
             'verify': False
         }
     )
 
-
 def _jitter():
-    """Random human-like delay between Trends requests (1-3 s)."""
-    time.sleep(random.uniform(1.0, 3.0))
-
+    """Jeda minimal agar tidak terdeteksi bot (1-2 detik)."""
+    time.sleep(random.uniform(1.0, 2.0))
 
 # =========================
-# 1. FETCH DATA
+# 1. FETCH DATA (DENGAN DEBUG LOGS)
 # =========================
 
 def fetch_trend_data(keyword, timeframe="today 3-m", geo="ID", cat=0):
@@ -61,60 +39,41 @@ def fetch_trend_data(keyword, timeframe="today 3-m", geo="ID", cat=0):
         _jitter()
         pytrends.build_payload([keyword], timeframe=timeframe, geo=geo, cat=cat)
         data = pytrends.interest_over_time()
+        
+        if data is None or data.empty:
+            print(f"--- DEBUG SENTRA ---: Google memberikan data KOSONG untuk '{keyword}'")
+            return None
+        
+        # Validasi jika data ada tapi volumenya 0 semua
+        if data[keyword].sum() == 0:
+            print(f"--- DEBUG SENTRA ---: Volume pencarian '{keyword}' terlalu rendah (0)")
+            return None
+
+        df = data[[keyword]].reset_index()
+        df.columns = ["date", "interest"]
+        return df
     except TooManyRequestsError:
+        print("--- DEBUG SENTRA ---: ERROR 429 - Terdeteksi blokir oleh Google (Butuh Proxy)")
         raise
     except Exception as e:
-        print(f"--- DEBUG fetch_trend_data ERROR ---: {e}")
+        print(f"--- DEBUG SENTRA ERROR ---: {str(e)}")
         return None
-
-    if data.empty:
-        return None
-
-    df = data[[keyword]].reset_index()
-    df.columns = ["date", "interest"]
-    return df
-
 
 def fetch_trend_data_long(keyword, timeframe="today 12-m", geo="ID"):
-    """Ambil data 12 bulan untuk keperluan seasonality & baseline."""
     try:
         pytrends = _make_pytrends()
         _jitter()
         pytrends.build_payload([keyword], timeframe=timeframe, geo=geo)
         data = pytrends.interest_over_time()
-    except TooManyRequestsError:
-        raise
+        
+        if data is None or data.empty:
+            return None
+
+        df = data[[keyword]].reset_index()
+        df.columns = ["date", "interest"]
+        return df
     except Exception:
         return None
-
-    if data.empty:
-        return None
-
-    df = data[[keyword]].reset_index()
-    df.columns = ["date", "interest"]
-    return df
-
-
-def fetch_related_keywords(keyword):
-    """Ambil keyword yang berkaitan untuk competitor density."""
-    try:
-        pytrends = _make_pytrends()
-        _jitter()
-        pytrends.build_payload([keyword], timeframe="today 3-m")
-        related = pytrends.related_queries()
-    except Exception:
-        return []
-
-    result = []
-    try:
-        top = related[keyword]["top"]
-        if top is not None:
-            result = top["query"].head(5).tolist()
-    except Exception:
-        pass
-
-    return result
-
 
 # =========================
 # 1b. VALIDASI KEYWORD
