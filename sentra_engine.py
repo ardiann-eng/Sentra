@@ -30,17 +30,17 @@ _FALLBACK_UA = (
 
 def _make_pytrends():
     api_key = "9d165dff5be59579040bc2333e85f07b"
-    # Tambahkan &render=false untuk mempercepat response proxy
-    proxy_url = f"http://scraperapi:{api_key}.render=false@proxy-server.scraperapi.com:8001"
+    # Gunakan format standar ScraperAPI tanpa tambahan parameter di password
+    proxy_url = f"http://scraperapi:{api_key}@proxy-server.scraperapi.com:8001"
     
     return TrendReq(
         hl='id-ID',
         tz=420,
-        retries=1, # Kurangi retry ke 1 agar total waktu tidak melebihi 60 detik
-        backoff_factor=1,
+        retries=2,
+        backoff_factor=3,
         requests_args={
-            'proxies': {'https': proxy_url, 'http': proxy_url},
-            'timeout': 30, # Batasi tiap request maksimal 30 detik
+            'proxies': {'http': proxy_url, 'https': proxy_url},
+            'timeout': 45, # Timeout internal lebih pendek dari Gunicorn
             'verify': False
         }
     )

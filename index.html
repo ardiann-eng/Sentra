@@ -2274,6 +2274,7 @@
       <!-- STATUS BAR: quota + geo in one row -->
       <div class="status-bar hidden" id="status-bar">
         <div class="status-bar-left">
+
           <span class="status-quota-text" id="quota-text">Sisa Kuota: &mdash;</span>
           <div class="status-dots" id="quota-dots"></div>
           <button class="status-upgrade-btn" id="quota-upgrade-btn" onclick="showUpgradeModal()"
@@ -3308,9 +3309,8 @@
       });
     }
 
-    /* ── FETCH: SINGLE ── */
     async function doSearch() {
-      const kw = document.getElementById('kw').value.trim();
+      const kw = document.getElementById('kw').value.trim(); // Nama variabel adalah 'kw'
       const geo = document.getElementById('geo-select')?.value || 'ID';
       if (!kw) { showErr('Masukkan keyword terlebih dahulu.'); return; }
 
@@ -3321,36 +3321,42 @@
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 58000);
 
-        const response = await fetch('/api/analyze', {
+        // Perbaikan: Gunakan nama variabel 'res' dan kirim 'kw'
+        const res = await fetch('/api/analyze', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ keyword: keyword, geo: 'ID', cat: catId }),
-          // Pastikan tidak ada timeout yang terlalu pendek di sini
+          body: JSON.stringify({
+            keyword: kw,  // Gunakan variabel kw
+            geo: geo,
+            user_id: userState.userId || '',
+            cat: 0
+          }),
+          signal: controller.signal
         });
 
         clearTimeout(timeout);
-        const data = await res.json();
+        const data = await res.json(); // Sekarang sinkron dengan variabel 'res'
 
         if (res.status === 403 && data.error_code === 'LIMIT_EXCEEDED') {
           showUpgradeModal('limit');
           return;
         }
 
-        if (!res.ok || data.error) { showErr(data.error || 'Terjadi kesalahan pada server.'); }
-        else {
+        if (!res.ok || data.error) {
+          showErr(data.error || 'Terjadi kesalahan pada server.');
+        } else {
           lastAnalysisResult = data;
           if (data._meta) updateQuotaUI(data._meta);
           renderResults(data);
         }
-
       } catch (e) {
-        if (e.name === 'AbortError') showErr('Request timeout. Server membutuhkan waktu lebih lama, silakan coba lagi.');
+        if (e.name === 'AbortError') showErr('Request timeout. Server butuh waktu lebih lama.');
         else showErr('Tidak dapat terhubung ke server.');
+        console.error(e);
       } finally {
         setLoading(false, false);
       }
     }
-
     /* ── FETCH: COMPARE ── */
     async function doCompare() {
       const kwA = document.getElementById('kw-a').value.trim();
