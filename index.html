@@ -2639,7 +2639,7 @@
     <header>
       <div class="logo">
         <span class="logo-word">Sentra</span>
-        <span class="logo-sub">Business Intelligence</span>
+        <span class="logo-sub">Business Analysis</span>
       </div>
       <div class="header-right">
         <span class="ver">v2.0</span>
@@ -3305,6 +3305,15 @@
           }
           fetchUserStatus();
         });
+
+        // Force initial session check for faster restoration
+        const { data: { session } } = await sb.auth.getSession();
+        if (session) {
+          userState.userId = session.user.id;
+          userState.token = session.access_token;
+          updateUserHeader(session.user);
+          fetchUserStatus();
+        }
       } catch (e) { console.error("Supabase init error:", e); }
     }
 
@@ -3906,15 +3915,13 @@
 
       try {
         const controller = new AbortController();
-        // Beri waktu 90 detik agar tidak mudah timeout di proxy
         const timeout = setTimeout(() => controller.abort(), 90000);
 
-        // --- TAHAP 1: Ambil Data Tren (Cepat) ---
         const res = await fetch('/api/analyze', {
           method: 'POST',
           headers: getAuthHeaders(),
           body: JSON.stringify({
-            keyword: kw,  // FIX: Use 'kw' to match input variable
+            keyword: kw,
             geo: geo,
             user_id: userState.userId || '',
             cat: 0
@@ -3927,6 +3934,7 @@
 
         if (res.status === 403 && data.error_code === 'LIMIT_EXCEEDED') {
           showUpgradeModal('limit');
+          setLoading(false, false);
           return;
         }
 
@@ -3936,23 +3944,15 @@
           return;
         }
 
-        // Segera render data dan matikan loading utama
         lastAnalysisResult = data;
         if (data._meta) updateQuotaUI(data._meta);
         renderResults(data);
         setLoading(false, false);
 
-        // --- TAHAP 2: Ambil AI Insight (Lambat - Async) ---
-        const skeletonHTML = `
-          <div class="skeleton-line" style="width:100%"></div>
-          <div class="skeleton-line" style="width:95%"></div>
-          <div class="skeleton-line" style="width:90%"></div>
-          <div class="skeleton-line" style="width:65%"></div>
-        `;
         ['r-ai-pasar', 'r-ai-aksi', 'r-ai-waktu'].forEach(id => {
           const el = document.getElementById(id);
           if (el) {
-            el.innerHTML = skeletonHTML;
+            el.innerHTML = '<div class="skeleton-line" style="width:100%"></div><div class="skeleton-line" style="width:95%"></div><div class="skeleton-line" style="width:90%"></div>';
             el.classList.add('visible');
           }
         });
@@ -3966,14 +3966,9 @@
           .then(aiData => {
             if (aiData.ai_insight) {
               renderAiCards(aiData.ai_insight);
-              // Apply fade-in
-              ['r-ai-pasar', 'r-ai-aksi', 'r-ai-waktu'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.classList.add('visible');
-              });
             }
           })
-          .catch(err => {
+          .catch(() => {
             ['r-ai-pasar', 'r-ai-aksi', 'r-ai-waktu'].forEach(id => {
               const el = document.getElementById(id);
               if (el) el.innerHTML = 'Gagal memuat insight.';
@@ -3981,15 +3976,11 @@
           });
 
       } catch (e) {
-        if (e.name === 'AbortError') {
-          showErr('Server butuh waktu terlalu lama (Timeout). Coba kata kunci lain.');
-        } else {
-          showErr('Tidak dapat terhubung ke server.');
-        }
+        showErr(e.name === 'AbortError' ? 'Timeout. Coba lagi.' : 'Koneksi gagal.');
         setLoading(false, false);
       }
     }
-    /* ── FETCH: COMPARE ── */
+
     async function doCompare() {
       const kwA = document.getElementById('kw-a').value.trim();
       const kwB = document.getElementById('kw-b').value.trim();
@@ -4021,6 +4012,7 @@
 
         if (res.status === 403 && data.error_code === 'LIMIT_EXCEEDED') {
           showUpgradeModal('limit');
+          setLoading(false, true);
           return;
         }
 
@@ -4030,18 +4022,14 @@
           return;
         }
 
-        // Segera render data dan matikan loading utama
         lastCompareResult = data;
         if (data._meta) updateQuotaUI(data._meta);
         renderCompareResults(data);
         setLoading(false, true);
 
-        // --- TAHAP 2: Ambil AI Compare Insight (Async) ---
         const aiBox = document.getElementById('cmp-ai');
         if (aiBox) {
-          aiBox.classList.remove('visible');
-          aiBox.innerHTML = '<div class="ai-loading">✨ Menganalisis perbandingan dengan AI...</div>';
-
+          aiBox.innerHTML = '<div class="ai-loading">✨ Menganalisis perbandingan...</div>';
           fetch('/api/get-compare-insight', {
             method: 'POST',
             headers: getAuthHeaders(),
@@ -4054,17 +4042,11 @@
                 aiBox.classList.add('visible');
               }
             })
-            .catch(err => {
-              aiBox.innerHTML = 'AI insight tidak tersedia saat ini.';
-            });
+            .catch(() => { aiBox.innerHTML = 'AI insight tidak tersedia.'; });
         }
 
       } catch (e) {
-        if (e.name === 'AbortError') {
-          showErr('Server butuh waktu terlalu lama (Timeout).');
-        } else {
-          showErr('Tidak dapat terhubung ke server.');
-        }
+        showErr('Koneksi gagal.');
         setLoading(false, true);
       }
     }
