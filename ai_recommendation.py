@@ -7,22 +7,19 @@ import os
 from google import genai
 
 
+def _is_quota_error(e: Exception) -> bool:
+    """Deteksi apakah error adalah quota/rate limit Gemini."""
+    msg = str(e).lower()
+    return any(k in msg for k in [
+        "429", "quota", "resource_exhausted", "rate_limit",
+        "too many requests", "retry_after"
+    ])
+
+
 def generate_ai_insight(data: dict) -> str:
-    """
-    Menghasilkan insight bisnis berbasis AI dari data analisis tren Sentra v2.0.
-
-    Args:
-        data (dict): Output dari sentra_engine.analyze_keyword()
-
-    Returns:
-        str: Insight dalam Bahasa Indonesia, ramah UMKM, panjang proporsional.
-    """
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
-        raise ValueError(
-            "GEMINI_API_KEY tidak ditemukan. "
-            "Pastikan environment variable sudah diset."
-        )
+        return "⚠ AI Insight tidak tersedia — GEMINI_API_KEY belum dikonfigurasi."
 
     prompt = _build_prompt(data)
 
@@ -35,11 +32,16 @@ def generate_ai_insight(data: dict) -> str:
         return response.text.strip()
 
     except Exception as e:
-        raise RuntimeError(f"Gagal menghasilkan insight dari Gemini API: {e}") from e
+        if _is_quota_error(e):
+            return (
+                "⚠ Kuota AI sedang penuh. Data tren di atas tetap akurat — "
+                "insight teks akan tersedia kembali dalam beberapa jam. "
+                "Upgrade ke Gemini API berbayar untuk akses tak terbatas."
+            )
+        return f"⚠ AI Insight sementara tidak tersedia. Data analisis di atas tetap bisa digunakan."
 
 
 def _format_seasonality(data: dict) -> str:
-    """Terjemahkan data seasonality ke kalimat yang mudah dipahami."""
     if not data.get("is_seasonal"):
         return "Tidak terdeteksi pola musiman — tren berjalan sepanjang tahun."
 
@@ -54,14 +56,10 @@ def _format_seasonality(data: dict) -> str:
 
     month_str = ", ".join([month_names.get(m, str(m)) for m in months])
     conf_pct  = f"{confidence * 100:.0f}%"
-
     return f"Tren ini musiman (keyakinan {conf_pct}). Puncak minat biasanya di bulan: {month_str}."
 
 
 def _build_prompt(data: dict) -> str:
-    """Bangun prompt lengkap dengan semua metrik Sentra v2.0."""
-
-    # --- Format angka ---
     growth_pct     = f"{(data.get('growth') or 0) * 100:.1f}%"
     volatility_pct = f"{(data.get('volatility') or 0) * 100:.1f}%"
     momentum       = data.get('momentum', 0) or 0
@@ -90,7 +88,6 @@ def _build_prompt(data: dict) -> str:
 
     seasonality_str = _format_seasonality(data)
 
-    # --- Prompt ---
     prompt = f"""Kamu adalah konsultan bisnis yang membantu pemilik UMKM dan orang yang baru mau mulai usaha. Gaya bicaramu santai tapi tetap profesional — seperti teman yang paham bisnis dan mau kasih saran jujur berdasarkan data.
 
 Berikut data lengkap analisis tren dari sistem Sentra BI v2.0:
@@ -133,63 +130,10 @@ Panjang total jawaban antara 220-300 kata. Cukup untuk pengambilan keputusan, ti
     return prompt
 
 
-if __name__ == "__main__":
-    sample_data = {
-        "keyword":              "dubai chewy",
-        "growth":               0.343,
-        "momentum":             0.81,
-        "volatility":           0.867,
-        "lifecycle_stage":      "Rising",
-        "risk_level":           "High Risk",
-        "market_pulse_score":   66.3,
-        "saturation_index":     0.3,
-        "fomo_index":           0.72,
-        "forecast_30d_avg":     72.5,
-        "forecast_confidence":  0.55,
-        "is_seasonal":          False,
-        "seasonal_confidence":  0.0,
-        "seasonal_peak_months": [],
-        "entry_timing_score":   71.0,
-        "entry_timing_label":   "Bagus, Mulai Persiapan",
-    }
-
-    print("=" * 60)
-    print("  SENTRA BI v2.0 — AI Insight Generator")
-    print("=" * 60)
-    for k, v in sample_data.items():
-        print(f"  {k:<26}: {v}")
-    print("=" * 60)
-    print()
-
-    try:
-        insight = generate_ai_insight(sample_data)
-        print(insight)
-    except ValueError as e:
-        print(f"[CONFIG ERROR] {e}")
-    except RuntimeError as e:
-        print(f"[API ERROR] {e}")
-
-
-# =========================
-# BENCHMARKING AI INSIGHT
-# =========================
-
 def generate_compare_insight(compare_data: dict) -> str:
-    """
-    Menghasilkan insight perbandingan dua keyword berbasis AI.
-
-    Args:
-        compare_data (dict): Output dari sentra_engine.compare_keywords()
-
-    Returns:
-        str: Insight perbandingan dalam Bahasa Indonesia.
-    """
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
-        raise ValueError(
-            "GEMINI_API_KEY tidak ditemukan. "
-            "Pastikan environment variable sudah diset."
-        )
+        return "⚠ AI Insight tidak tersedia — GEMINI_API_KEY belum dikonfigurasi."
 
     prompt = _build_compare_prompt(compare_data)
 
@@ -202,11 +146,15 @@ def generate_compare_insight(compare_data: dict) -> str:
         return response.text.strip()
 
     except Exception as e:
-        raise RuntimeError(f"Gagal menghasilkan insight dari Gemini API: {e}") from e
+        if _is_quota_error(e):
+            return (
+                "⚠ Kuota AI sedang penuh. Hasil perbandingan di atas tetap akurat — "
+                "insight teks akan tersedia kembali dalam beberapa jam."
+            )
+        return "⚠ AI Insight sementara tidak tersedia. Hasil perbandingan di atas tetap bisa digunakan."
 
 
 def _build_compare_prompt(compare_data: dict) -> str:
-    """Bangun prompt khusus benchmarking dua keyword."""
     a = compare_data["keyword_a"]
     b = compare_data["keyword_b"]
     c = compare_data["comparison"]
