@@ -10,6 +10,7 @@
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap"
     rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <style>
     *,
     *::before,
@@ -2541,8 +2542,7 @@
       <div class="header-right">
         <span class="ver">v2.0</span>
         <div class="dot"></div>
-        <!-- AUTH BUTTON -->
-        <div id="auth-header"></div>
+        <div id="auth-header-action"></div>
       </div>
     </header>
 
@@ -2980,6 +2980,27 @@
     </div>
   </div>
 
+  <!-- AUTH MODAL -->
+  <div class="auth-modal" id="auth-modal">
+    <div class="auth-box">
+      <button class="modal-close" onclick="closeAuthModal()">×</button>
+      <h2>Selamat Datang</h2>
+      <p class="auth-sub">Masuk untuk menyimpan riwayat dan akses fitur Pro.</p>
+
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="tab-login" onclick="setAuthTab('login')">Login</div>
+        <div class="auth-tab" id="tab-signup" onclick="setAuthTab('signup')">Daftar</div>
+      </div>
+
+      <div id="auth-form">
+        <input type="email" id="auth-email" class="auth-input" placeholder="Email">
+        <input type="password" id="auth-pass" class="auth-input" placeholder="Password">
+        <button class="auth-submit" id="auth-submit-btn" onclick="handleAuth()">Masuk</button>
+      </div>
+      <div id="auth-err" class="auth-error-msg"></div>
+    </div>
+  </div>
+
   <script>
     const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sep", "Okt", "Nov", "Des"];
     const STEPS = [
@@ -3013,19 +3034,31 @@
 
     // ─ Monetization state ─
     const userState = {
-      userId: localStorage.getItem('sentra_uid'), // Pasti terisi
+      userId: localStorage.getItem('sentra_uid'),
+      token: null,
       tier: 'free',
       searchesToday: 0,
       remaining: 5,
     };
+    let supabase = null;
+    let authMode = 'login';
     let lastAnalysisResult = null; // for PDF download
+
+    /* ── AUTH HELPERS ── */
+    function getAuthHeaders() {
+      const headers = { 'Content-Type': 'application/json' };
+      if (userState.token) {
+        headers['Authorization'] = `Bearer ${userState.token}`;
+      }
+      return headers;
+    }
 
     /* ── USER STATUS / QUOTA ── */
     async function fetchUserStatus() {
       try {
         const res = await fetch('/api/user-status', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getAuthHeaders(),
           body: JSON.stringify({ user_id: userState.userId || '' }),
         });
         if (!res.ok) return;
@@ -3088,8 +3121,96 @@
       }
     }
 
-    // Fetch status on load
-    fetchUserStatus();
+    /* ── SUPABASE AUTH CORE ── */
+    async function initSupabase() {
+      try {
+        const res = await fetch('/api/config');
+        const config = await res.json();
+        if (!config.supabase_url) return;
+
+        supabase = supabase.createClient(config.supabase_url, config.supabase_anon_key);
+
+        supabase.auth.onAuthStateChange((event, session) => {
+          if (session) {
+            userState.userId = session.user.id;
+            userState.token = session.access_token;
+            updateUserHeader(session.user);
+          } else {
+            userState.userId = localStorage.getItem('sentra_uid');
+            userState.token = null;
+            updateUserHeader(null);
+          }
+          fetchUserStatus();
+        });
+      } catch (e) { console.error("Supabase init error:", e); }
+    }
+
+    function updateUserHeader(user) {
+      const container = document.getElementById('auth-header-action');
+      if (!user) {
+        container.innerHTML = `<button class="auth-btn" onclick="openAuthModal()">Login / Sign Up</button>`;
+        return;
+      }
+      const initial = (user.user_metadata?.full_name || user.email || '?')[0].toUpperCase();
+      container.innerHTML = `
+        <div class="auth-avatar" onclick="openAuthModal()">
+          <div class="av-circle">${initial}</div>
+          <span>${user.tier === 'pro' ? 'Pro' : 'Free'} Tier</span>
+        </div>
+      `;
+    }
+
+    async function openAuthModal() {
+      if (supabase && (await supabase.auth.getSession()).data.session) {
+        // Simple logout if already logged in (for demo purposes, could be a profile card)
+        if (confirm("Logout dari akun Anda?")) supabase.auth.signOut();
+        return;
+      }
+      document.getElementById('auth-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeAuthModal() {
+      document.getElementById('auth-modal').classList.remove('open');
+      document.body.style.overflow = '';
+      document.getElementById('auth-err').textContent = '';
+    }
+
+    function setAuthTab(tab) {
+      authMode = tab;
+      document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+      document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+      document.getElementById('auth-submit-btn').textContent = tab === 'login' ? 'Masuk' : 'Daftar';
+    }
+
+    async function handleAuth() {
+      const email = document.getElementById('auth-email').value;
+      const password = document.getElementById('auth-pass').value;
+      const errEl = document.getElementById('auth-err');
+      errEl.textContent = '';
+
+      if (!supabase) return;
+
+      try {
+        let result;
+        if (authMode === 'login') {
+          result = await supabase.auth.signInWithPassword({ email, password });
+        } else {
+          result = await supabase.auth.signUp({ email, password });
+        }
+
+        if (result.error) {
+          errEl.textContent = result.error.message;
+        } else {
+          closeAuthModal();
+        }
+      } catch (e) {
+        errEl.textContent = "Terjadi kesalahan koneksi.";
+      }
+    }
+
+    // Initialize on load
+    initSupabase();
 
 
     document.getElementById('kw').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
@@ -3628,7 +3749,7 @@
         // --- TAHAP 1: Ambil Data Tren (Cepat) ---
         const res = await fetch('/api/analyze', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getAuthHeaders(),
           body: JSON.stringify({
             keyword: kw,  // FIX: Use 'kw' to match input variable
             geo: geo,
@@ -3675,7 +3796,7 @@
 
         fetch('/api/get-ai-insight', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getAuthHeaders(),
           body: JSON.stringify(data)
         })
           .then(r => r.json())
@@ -3722,7 +3843,7 @@
 
         const res = await fetch('/api/compare', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getAuthHeaders(),
           body: JSON.stringify({
             keyword_a: kwA,
             keyword_b: kwB,
@@ -3760,7 +3881,7 @@
 
           fetch('/api/get-compare-insight', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: getAuthHeaders(),
             body: JSON.stringify(data)
           })
             .then(r => r.json())
@@ -3796,7 +3917,7 @@
       try {
         const res = await fetch('/api/generate-pdf', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getAuthHeaders(),
           body: JSON.stringify({ user_id: userState.userId || '', analysis: lastAnalysisResult }),
         });
 

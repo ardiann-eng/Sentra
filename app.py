@@ -212,16 +212,63 @@ def log_search(user_id: str, keyword: str, geo: str = "ID", is_pro: bool = False
 
 
 
-def check_limit(user_id: str):
+def get_auth_session():
+    """Extract and verify Supabase JWT. Returns (user_id, tier, is_pro)."""
+    auth_header = request.headers.get("Authorization", "")
+    token = None
+    if auth_header.startswith("Bearer "):
+        token = auth_header.split(" ")[1]
+
+    sb = get_supabase()
+    # Fallback identity defaults
+    user_id = None
+    tier = "free"
+    is_pro = False
+
+    if token and sb:
+        try:
+            # Verify token with Supabase - this is secure as it talks to Supabase API
+            user_res = sb.auth.get_user(token)
+            if user_res.user:
+                user_id = user_res.user.id
+                tier = get_user_tier(user_id)
+                is_pro = (tier == "pro")
+        except Exception as e:
+            print(f"[AUTH ERROR] Invalid token: {e}")
+
+    # If not authenticated, check for guest_id in body for backward compatibility or pure guests
+    if not user_id:
+        try:
+            data = request.get_json(silent=True) or {}
+            tmp_id = (data.get("user_id") or "").strip()
+            if tmp_id.startswith("guest_") or len(tmp_id) > 20: # simple guest validation
+                user_id = tmp_id
+        except:
+            pass
+
+    return user_id, tier, is_pro
+
+
+def require_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        # We don't block guests, we just identify them. 
+        # But we could block here if we wanted strictly private APIs.
+        return f(*args, **kwargs)
+    return decorated
+
+
+def check_limit(user_id: str, tier: str):
     """
-    Returns (tier, searches_today, error_response_or_None).
-    If limit exceeded, returns a 403 JSON response tuple.
+    Returns (searches_today, error_response_or_None).
     """
-    tier = get_user_tier(user_id)
+    if tier == "pro":
+        return 0, None
+
     searches_today = count_today_searches(user_id) if user_id else 0
 
-    if user_id and tier == "free" and searches_today >= FREE_DAILY_LIMIT:
-        return tier, searches_today, (
+    if user_id and searches_today >= FREE_DAILY_LIMIT:
+        return searches_today, (
             jsonify({
                 "error": "Batas harian tercapai. Upgrade ke Pro untuk akses tanpa batas.",
                 "error_code": "LIMIT_EXCEEDED",
@@ -231,7 +278,7 @@ def check_limit(user_id: str):
             }),
             403,
         )
-    return tier, searches_today, None
+    return searches_today, None
 
 
 # =========================
@@ -278,13 +325,17 @@ def get_config():
     })
 
 
-@app.route("/api/user-status", methods=["POST"])
+@app.route("/api/user-status", methods=["POST", "GET"])
 def user_status():
-    """Return tier + quota info for the requesting user."""
-    data = request.get_json(silent=True) or {}
-    user_id = (data.get("user_id") or "").strip()
+    """Return tier + quota info using JWT or body user_id."""
+    user_id, tier, _ = get_auth_session()
+    
+    # If JWT failed, check body (for compatibility during transition)
+    if not user_id:
+        data = request.get_json(silent=True) or {}
+        user_id = (data.get("user_id") or "").strip()
+        tier = get_user_tier(user_id)
 
-    tier = get_user_tier(user_id)
     searches_today = count_today_searches(user_id) if user_id else 0
     remaining = max(0, FREE_DAILY_LIMIT - searches_today) if tier == "free" else None
 
@@ -298,7 +349,9 @@ def user_status():
 
 
 @app.route("/api/analyze", methods=["POST"])
+@require_auth
 def analyze():
+    user_id, tier, is_pro = get_auth_session()
     data = request.get_json(silent=True)
     if not data:
         return jsonify({"error": "Request body tidak valid."}), 400
@@ -309,16 +362,14 @@ def analyze():
     if len(keyword) > 100:
         return jsonify({"error": "Keyword terlalu panjang (maks 100 karakter)."}), 400
 
-    user_id = (data.get("user_id") or "").strip()
-
-    # --- Tier check & limit ---
-    tier, searches_today, limit_err = check_limit(user_id)
+    # --- Tier & Limit Check ---
+    searches_today, limit_err = check_limit(user_id, tier)
     if limit_err:
         return limit_err
 
     # --- Geo: Pro = pakai geo dari request, Free = paksa 'ID' ---
     geo = "ID"
-    if tier == "pro":
+    if is_pro:
         requested_geo = (data.get("geo") or "ID").strip().upper()
         if re.fullmatch(r'ID(-[A-Z]{2})?', requested_geo):
             geo = requested_geo
@@ -351,7 +402,7 @@ def analyze():
 
     # --- Log search ---
     if user_id:
-        log_search(user_id, keyword, geo=geo, is_pro=(tier == "pro"))
+        log_search(user_id, keyword, geo=geo, is_pro=is_pro)
         searches_today += 1
 
     # --- Cache the result (L1 + L2) --- simplified for async
@@ -404,7 +455,9 @@ def get_ai_insight_route():
 
 
 @app.route("/api/compare", methods=["POST"])
+@require_auth
 def compare():
+    user_id, tier, is_pro = get_auth_session()
     data = request.get_json(silent=True)
     if not data:
         return jsonify({"error": "Request body tidak valid."}), 400
@@ -419,15 +472,13 @@ def compare():
     if len(keyword_a) > 100 or len(keyword_b) > 100:
         return jsonify({"error": "Keyword terlalu panjang (maks 100 karakter)."}), 400
 
-    user_id = (data.get("user_id") or "").strip()
-
     # --- Tier check (compare counts as 1 search) ---
-    tier, searches_today, limit_err = check_limit(user_id)
+    searches_today, limit_err = check_limit(user_id, tier)
     if limit_err:
         return limit_err
 
     geo = "ID"
-    if tier == "pro":
+    if is_pro:
         requested_geo = (data.get("geo") or "ID").strip().upper()
         if re.fullmatch(r'ID(-[A-Z]{2})?', requested_geo):
             geo = requested_geo
@@ -455,11 +506,7 @@ def compare():
         return jsonify({"error": result["error"]}), 404
 
     if user_id:
-        log_search(user_id, f"{keyword_a} vs {keyword_b}")
-        searches_today += 1
-
-    if user_id:
-        log_search(user_id, f"{keyword_a} vs {keyword_b}")
+        log_search(user_id, f"{keyword_a} vs {keyword_b}", geo=geo, is_pro=is_pro)
         searches_today += 1
 
     # --- Cache the result (L1 + L2) --- simplified for async
