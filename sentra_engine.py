@@ -44,14 +44,17 @@ def fetch_trend_data(keyword, timeframe="today 3-m", geo="ID", cat=0):
         pytrends.build_payload([keyword], timeframe=timeframe, geo=geo, cat=cat)
         data = pytrends.interest_over_time()
         
-        print(f"--- DEBUG SENTRA ---")
-        print(f"Keyword: {keyword}, Geo: {geo}, Cat: {cat}")
-        print(f"Dataframe Empty: {data.empty}")
-        if not data.empty:
-            print(f"Columns: {data.columns.tolist()}")
-        
         if data.empty:
             return "EMPTY"
+            
+        # BARIS 56 HARUS BERADA DI DALAM TRY
+        df = data[[keyword]].reset_index()
+        df.columns = ["date", "interest"]
+        return df
+        
+    except Exception as e:
+        print(f"--- DEBUG ERROR ---: {e}")
+        return None  # ATAU kembalikan pesan error yang sesuai
 
     df = data[[keyword]].reset_index()
     df.columns = ["date", "interest"]
