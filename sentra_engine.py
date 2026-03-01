@@ -1,8 +1,15 @@
 import re
 import time
 import random
-from fake_useragent import UserAgent  # Tambahkan baris ini
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from concurrent.futures import ThreadPoolExecutor
+
+# PASTIKAN BARIS INI ADA LENGKAP:
 from pytrends.request import TrendReq
+from pytrends.exceptions import TooManyRequestsError 
+from fake_useragent import UserAgent
 
 def _make_pytrends():
     """Membuat instance TrendReq dengan User-Agent acak untuk menghindari blokir."""
@@ -43,18 +50,17 @@ def fetch_trend_data(keyword, timeframe="today 3-m", geo="ID", cat=0):
         _jitter()
         pytrends.build_payload([keyword], timeframe=timeframe, geo=geo, cat=cat)
         data = pytrends.interest_over_time()
-        
+
         if data.empty:
             return "EMPTY"
             
-        # BARIS 56 HARUS BERADA DI DALAM TRY
         df = data[[keyword]].reset_index()
         df.columns = ["date", "interest"]
         return df
         
     except Exception as e:
         print(f"--- DEBUG ERROR ---: {e}")
-        return None  # ATAU kembalikan pesan error yang sesuai
+        return None
 
     df = data[[keyword]].reset_index()
     df.columns = ["date", "interest"]

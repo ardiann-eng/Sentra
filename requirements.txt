@@ -1,6 +1,7 @@
 flask==3.0.3
 flask-cors==4.0.1
 pytrends==4.9.2
+urllib3==1.26.18
 scikit-learn==1.5.1
 pandas==2.2.2
 numpy==1.26.4
