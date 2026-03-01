@@ -7,8 +7,9 @@
   <title>Sentra AI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap"
     rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -28,17 +29,20 @@
       --gold-glow: rgba(212, 168, 67, .15);
       --gold-line: rgba(212, 168, 67, .22);
       --bg: #0A0A08;
-      --surface: #181510;
-      --surface2: #201D14;
+      --surface: rgba(24, 21, 16, 0.6);
+      --surface2: rgba(32, 29, 20, 0.8);
+      --glass: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(212, 168, 67, 0.15);
       --text: #F5F0E0;
       --text-dim: #D0C9A8;
       --text-faint: #7A7360;
-      --red: #E74C3C;
-      --green: #2ECC71;
-      --amber: #F39C12;
-      --blue: #5DADE2;
+      --red: #FF5252;
+      --green: #00E676;
+      --amber: #FFD740;
+      --blue: #448AFF;
       --ai-accent: #D4A843;
       --ai-scan: rgba(212, 168, 67, 0.4);
+      --blur: blur(12px);
     }
 
     html {
@@ -385,23 +389,58 @@
       background: var(--gold);
       border: none;
       color: var(--bg);
-      font-family: 'Syne', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 13px;
-      font-weight: 800;
-      letter-spacing: 2px;
+      font-weight: 700;
+      letter-spacing: 1px;
       text-transform: uppercase;
       cursor: pointer;
-      transition: background .2s, transform .1s, box-shadow .2s;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       white-space: nowrap;
-      box-shadow: 0 0 20px rgba(212, 168, 67, .15);
+      box-shadow: 0 0 20px rgba(212, 168, 67, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.6s;
     }
 
     #btn:hover {
-      background: var(--gold-bright)
+      background: var(--gold-bright);
+      box-shadow: 0 0 30px rgba(212, 168, 67, 0.4);
+    }
+
+    #btn:hover::after {
+      transform: translateX(100%);
     }
 
     #btn:active {
       transform: scale(.97)
+    }
+
+    /* Analyze Button Pulse */
+    @keyframes btnPulse {
+      0% {
+        box-shadow: 0 0 10px var(--gold-glow);
+      }
+
+      50% {
+        box-shadow: 0 0 25px var(--gold-glow), 0 0 10px var(--gold);
+      }
+
+      100% {
+        box-shadow: 0 0 10px var(--gold-glow);
+      }
+    }
+
+    #btn:not(:disabled) {
+      animation: btnPulse 3s infinite;
     }
 
     #btn:disabled {
@@ -782,26 +821,21 @@
     }
 
     .mc {
-      background: var(--surface);
+      background: var(--glass);
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      border: 1px solid var(--glass-border);
       padding: 22px 26px;
       position: relative;
       overflow: visible;
-      /* Fixed: changed from hidden to allow tooltips */
-      transition: background .2s;
-    }
-
-    .mc::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 3px;
-      height: 100%;
-      background: var(--gold-dim)
+      transition: all 0.3s ease;
     }
 
     .mc:hover {
-      background: var(--surface2)
+      background: rgba(212, 168, 67, 0.08);
+      border-color: var(--gold-line);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
 
     .mc-lbl {
@@ -818,11 +852,12 @@
     }
 
     .mc-val {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 42px;
-      font-weight: 700;
+      font-family: 'DM Mono', monospace;
+      font-size: 38px;
+      font-weight: 500;
       line-height: 1;
       margin-bottom: 6px;
+      letter-spacing: -1px;
     }
 
     .pos {
@@ -957,7 +992,10 @@
 
     /* ── TIMING RING ── */
     .timing-card {
-      background: var(--surface);
+      background: var(--glass);
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      border: 1px solid var(--glass-border);
       padding: 28px 32px;
       display: flex;
       align-items: center;
@@ -965,7 +1003,11 @@
       margin-bottom: 2px;
       position: relative;
       overflow: visible;
-      /* Fixed: changed from hidden to allow tooltips */
+      transition: all 0.3s ease;
+    }
+
+    .timing-card:hover {
+      border-color: var(--gold-line);
     }
 
     .timing-card::after {
@@ -1138,12 +1180,16 @@
 
     /* ── AI INSIGHT ── */
     .ai-card {
-      background: var(--surface);
+      background: var(--glass);
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      border: 1px solid var(--gold-glow);
       padding: 32px 36px;
       border-top: 2px solid var(--gold);
       margin-top: 2px;
       position: relative;
       overflow: hidden;
+      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4);
     }
 
     .ai-card::before {
@@ -1177,12 +1223,11 @@
     }
 
     .ai-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 12px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
       font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--gold)
+      letter-spacing: 1px;
+      color: var(--gold);
     }
 
     .ai-body {
@@ -1192,6 +1237,14 @@
       color: var(--text);
       white-space: pre-wrap;
       word-break: break-word;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.8s ease;
+    }
+
+    .ai-body.visible {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .ai-body.typing::after {
@@ -2739,284 +2792,257 @@
 
         <!-- Fashion -->
         <div class="sector-card" onclick="analyzeCategory('fashion')" id="sc-fashion">
-          <div class="sector-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path
-                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-            </svg></div>
+          <div class="sector-icon"><i class="fas fa-shirt"></i></div>
           <div class="sector-name">Fashion</div>
           <div class="sector-kw">baju wanita · outfit</div>
         </div>
 
         <!-- Beauty -->
         <div class="sector-card" onclick="analyzeCategory('beauty')" id="sc-beauty">
-          <div class="sector-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-              stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="5" />
-              <line x1="12" y1="1" x2="12" y2="3" />
-              <line x1="12" y1="21" x2="12" y2="23" />
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-              <line x1="1" y1="12" x2="3" y2="12" />
-              <line x1="21" y1="12" x2="23" y2="12" />
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-            </svg></div>
+          <div class="sector-icon"><i class="fas fa-sparkles"></i></div>
           <div class="sector-name">Beauty &amp; Personal Care</div>
           <div class="sector-kw">skincare · kosmetik</div>
         </div>
 
         <!-- Makanan & Minuman -->
         <div class="sector-card" onclick="analyzeCategory('fnb')" id="sc-fnb">
-          <div class="sector-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
-              <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
-              <line x1="6" y1="1" x2="6" y2="4" />
-              <line x1="10" y1="1" x2="10" y2="4" />
-              <line x1="14" y1="1" x2="14" y2="4" />
-            </svg></div>
+          <div class="sector-icon"><i class="fas fa-utensils"></i></div>
           <div class="sector-name">Makanan &amp; Minuman</div>
           <div class="sector-kw">kuliner · produk UMKM</div>
         </div>
 
         <!-- Gadget -->
         <div class="sector-card" onclick="analyzeCategory('gadget')" id="sc-gadget">
-          <div class="sector-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-              stroke-linecap="round" stroke-linejoin="round">
-              <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
-              <line x1="12" y1="18" x2="12.01" y2="18" />
-            </svg></div>
+          <div class="sector-icon"><i class="fas fa-mobile-screen-button"></i></div>
           <div class="sector-name">Gadget &amp; Aksesoris</div>
           <div class="sector-kw">smartphone · earbuds</div>
         </div>
 
         <!-- Home & Living -->
         <div class="sector-card" onclick="analyzeCategory('home')" id="sc-home">
-          <div class="sector-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-              <polyline points="9 22 9 12 15 12 15 22" />
-            </svg></div>
+          <div class="sector-icon"><i class="fas fa-house-chimney"></i></div>
           <div class="sector-name">Home &amp; Living</div>
-          <div class="sector-kw">dekorasi rumah · furnitur</div>
+          <div class="sector-kw">dekorasi · furniture</div>
         </div>
-
-        <!-- Hobi & Lifestyle -->
-        <div class="sector-card" onclick="analyzeCategory('hobi')" id="sc-hobi">
-          <div class="sector-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-              stroke-linecap="round" stroke-linejoin="round">
-              <polygon
-                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-            </svg></div>
-          <div class="sector-name">Hobi &amp; Lifestyle</div>
-          <div class="sector-kw">olahraga · traveling</div>
-        </div>
-
-        <!-- Tren Musiman -->
-        <div class="sector-card" onclick="analyzeCategory('musiman')" id="sc-musiman">
-          <div class="sector-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3.51 23c0-4.974 0-14 8.49-14s8.49 9.026 8.49 14" />
-              <path d="M12 9V2M12 2l3 3M12 2l-3 3" />
-            </svg></div>
-          <div class="sector-name">Tren Musiman</div>
-          <div class="sector-kw">lebaran · akhir tahun</div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ══════════ SINGLE RESULTS ══════════ -->
-    <div id="results">
-      <div class="res-header">
-        <div id="r-kw" class="res-kw"></div>
-        <div id="r-ts" class="res-ts"></div>
+        <div class="sector-name">Home &amp; Living</div>
+        <div class="sector-kw">dekorasi rumah · furnitur</div>
       </div>
 
-      <div class="badge-row">
-        <span id="r-stage" class="stage-badge"></span>
-        <span id="r-risk" class="risk-badge"></span>
+      <!-- Hobi & Lifestyle -->
+      <div class="sector-card" onclick="analyzeCategory('hobi')" id="sc-hobi">
+        <div class="sector-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polygon
+              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+          </svg></div>
+        <div class="sector-name">Hobi &amp; Lifestyle</div>
+        <div class="sector-kw">olahraga · traveling</div>
       </div>
 
-      <div class="g3">
-        <div class="mc">
-          <div class="mc-lbl">Growth 7 Hari <span class="help-tip" tabindex="0">?<span class="tip-text">Mengukur
-                kenaikan atau penurunan minat orang terhadap produk ini dalam 7 hari terakhir.</span></span></div>
-          <div id="r-growth" class="mc-val neu">—</div>
-          <div class="mc-sub">perubahan minat</div>
-        </div>
-        <div class="mc">
-          <div class="mc-lbl">Momentum <span class="help-tip" tabindex="0">?<span class="tip-text">Arah pergerakan
-                tren:
-                apakah minat sedang naik atau turun secara konsisten.</span></span></div>
-          <div id="r-mom" class="mc-val neu">—</div>
-          <div class="mc-sub">arah tren</div>
-        </div>
-        <div class="mc">
-          <div class="mc-lbl">Volatilitas <span class="help-tip" tabindex="0">?<span class="tip-text">Seberapa stabil
-                minat terhadap produk ini. Angka tinggi = naik-turun tidak menentu, berisiko.</span></span></div>
-          <div id="r-vol" class="mc-val neu">—</div>
-          <div class="mc-sub">fluktuasi pasar</div>
-        </div>
+      <!-- Tren Musiman -->
+      <div class="sector-card" onclick="analyzeCategory('musiman')" id="sc-musiman">
+        <div class="sector-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3.51 23c0-4.974 0-14 8.49-14s8.49 9.026 8.49 14" />
+            <path d="M12 9V2M12 2l3 3M12 2l-3 3" />
+          </svg></div>
+        <div class="sector-name">Tren Musiman</div>
+        <div class="sector-kw">lebaran · akhir tahun</div>
       </div>
 
-      <div class="g2">
-        <div class="mc">
-          <div class="mc-lbl">FOMO Index <span class="help-tip" tabindex="0">?<span class="tip-text">Mengukur seberapa
-                viral produk ini akibat ikut-ikutan (hype). Angka tinggi = bisa jadi tren sesaat, bukan minat
-                asli.</span></span></div>
-          <div id="r-fomo" class="mc-val neu">—</div>
-          <div id="r-fomo-l" class="mc-sub">—</div>
-        </div>
-        <div class="mc">
-          <div class="mc-lbl">Saturasi Pasar <span class="help-tip" tabindex="0">?<span class="tip-text">Seberapa
-                penuh
-                pasar dengan penjual produk ini. Angka tinggi = sudah banyak pesaing, sulit bersaing.</span></span>
-          </div>
-          <div id="r-sat" class="mc-val neu">—</div>
-          <div id="r-sat-l" class="mc-sub">—</div>
-        </div>
-      </div>
+  </div>
+  </section>
 
-      <div class="pulse-card">
-        <div class="mc-lbl">Market Pulse Score <span class="help-tip" tabindex="0">?<span class="tip-text">Skor
-              kesehatan pasar secara keseluruhan. Makin tinggi = pasar makin aktif dan menjanjikan.</span></span>
-        </div>
-        <div class="pulse-track">
-          <div id="r-pulse-fill" class="pulse-fill"></div>
-        </div>
-        <div class="pulse-nums"><span>0</span><span id="r-pulse" style="color:var(--gold)">—</span><span>100</span>
-        </div>
-      </div>
+  <!-- ══════════ SINGLE RESULTS ══════════ -->
+  <div id="results">
+    <div class="res-header">
+      <div id="r-kw" class="res-kw"></div>
+      <div id="r-ts" class="res-ts"></div>
+    </div>
 
-      <div class="timing-card">
-        <div class="ring-wrap">
-          <svg width="96" height="96" viewBox="0 0 96 96">
-            <circle class="ring-bg" cx="48" cy="48" r="40" />
-            <circle id="r-ring" class="ring-fg" cx="48" cy="48" r="40" stroke-dasharray="251.33"
-              stroke-dashoffset="251.33" />
-          </svg>
-          <div class="ring-center">
-            <div id="r-ring-num" class="ring-num">—</div>
-            <div class="ring-denom">/100</div>
-          </div>
-        </div>
-        <div class="timing-info">
-          <div class="timing-lbl-sm">Entry Timing Score <span class="help-tip" tabindex="0">?<span class="tip-text">Skor
-                yang menunjukkan apakah SEKARANG waktu yang tepat untuk mulai jualan produk ini. 80-100 = waktu
-                terbaik!</span></span></div>
-          <div id="r-timing-lbl" class="timing-lbl-big">—</div>
-          <div id="r-timing-desc" class="timing-desc">—</div>
-        </div>
-      </div>
+    <div class="badge-row">
+      <span id="r-stage" class="stage-badge"></span>
+      <span id="r-risk" class="risk-badge"></span>
+    </div>
 
-      <div class="fc-card">
-        <div class="fc-head">
-          <div class="fc-lbl">Prediksi 30 Hari ke Depan</div>
-          <div id="r-fc-val" class="fc-val">—</div>
-        </div>
-        <div class="fc-bar-track">
-          <div id="r-fc-bar" class="fc-bar-fill"></div>
-        </div>
-        <div class="fc-conf"><span>Tingkat keyakinan forecast</span><span id="r-fc-conf">—</span></div>
+    <div class="g3">
+      <div class="mc">
+        <div class="mc-lbl">Growth 7 Hari <span class="help-tip" tabindex="0">?<span class="tip-text">Mengukur
+              kenaikan atau penurunan minat orang terhadap produk ini dalam 7 hari terakhir.</span></span></div>
+        <div id="r-growth" class="mc-val neu">—</div>
+        <div class="mc-sub">perubahan minat</div>
       </div>
-
-      <!-- Trend chart -->
-      <div class="trend-chart-card">
-        <div class="trend-chart-head">
-          <div class="mc-lbl">Tren Minat — 3 Bulan Terakhir</div>
-          <div id="r-trend-range" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-faint)">
-          </div>
-        </div>
-        <div class="trend-chart-wrap">
-          <canvas id="single-chart"></canvas>
-        </div>
+      <div class="mc">
+        <div class="mc-lbl">Momentum <span class="help-tip" tabindex="0">?<span class="tip-text">Arah pergerakan
+              tren:
+              apakah minat sedang naik atau turun secara konsisten.</span></span></div>
+        <div id="r-mom" class="mc-val neu">—</div>
+        <div class="mc-sub">arah tren</div>
       </div>
-
-      <div class="season-card">
-        <div class="mc-lbl" style="margin-bottom:10px">Pola Musiman</div>
-        <div id="r-season-txt" class="season-txt"></div>
-        <div id="r-months" class="month-chips"></div>
-      </div>
-
-      <div class="ai-card">
-        <div class="ai-head">
-          <div class="ai-title">AI Business Insight — Powered by Gemini</div>
-        </div>
-        <div id="r-ai-cards" class="ai-cards-grid">
-          <div class="ai-section-card card-pasar">
-            <div class="ai-section-title">Analisis Pasar</div>
-            <div id="r-ai-pasar" class="ai-section-body">—</div>
-          </div>
-          <div class="ai-section-card card-aksi">
-            <div class="ai-section-title">Rekomendasi Aksi</div>
-            <div id="r-ai-aksi" class="ai-section-body">—</div>
-          </div>
-          <div class="ai-section-card card-waktu">
-            <div class="ai-section-title">Strategi Waktu</div>
-            <div id="r-ai-waktu" class="ai-section-body">—</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PDF DOWNLOAD -->
-      <div class="pdf-btn-wrap">
-        <button class="pdf-btn" id="pdf-btn" onclick="downloadPdf()" disabled>
-          <span class="lock-icon">🔒</span>Download Laporan PDF
-        </button>
+      <div class="mc">
+        <div class="mc-lbl">Volatilitas <span class="help-tip" tabindex="0">?<span class="tip-text">Seberapa stabil
+              minat terhadap produk ini. Angka tinggi = naik-turun tidak menentu, berisiko.</span></span></div>
+        <div id="r-vol" class="mc-val neu">—</div>
+        <div class="mc-sub">fluktuasi pasar</div>
       </div>
     </div>
 
-    <!-- ══════════ COMPARE RESULTS ══════════ -->
-    <div id="compare-results">
-      <!-- Header -->
-      <div class="cmp-header">
-        <div class="cmp-vs-title">
-          <span class="kw-a" id="cmp-kw-a"></span>
-          <span class="kw-vs">vs</span>
-          <span class="kw-b" id="cmp-kw-b"></span>
+    <div class="g2">
+      <div class="mc">
+        <div class="mc-lbl">FOMO Index <span class="help-tip" tabindex="0">?<span class="tip-text">Mengukur seberapa
+              viral produk ini akibat ikut-ikutan (hype). Angka tinggi = bisa jadi tren sesaat, bukan minat
+              asli.</span></span></div>
+        <div id="r-fomo" class="mc-val neu">—</div>
+        <div id="r-fomo-l" class="mc-sub">—</div>
+      </div>
+      <div class="mc">
+        <div class="mc-lbl">Saturasi Pasar <span class="help-tip" tabindex="0">?<span class="tip-text">Seberapa
+              penuh
+              pasar dengan penjual produk ini. Angka tinggi = sudah banyak pesaing, sulit bersaing.</span></span>
         </div>
-        <div class="cmp-ts" id="cmp-ts"></div>
+        <div id="r-sat" class="mc-val neu">—</div>
+        <div id="r-sat-l" class="mc-sub">—</div>
       </div>
+    </div>
 
-      <!-- Winner Banner -->
-      <div class="winner-banner">
-        <div class="winner-label">Pemenang Keseluruhan</div>
-        <div class="winner-name" id="cmp-winner"></div>
-        <div class="winner-score" id="cmp-winner-score"></div>
+    <div class="pulse-card">
+      <div class="mc-lbl">Market Pulse Score <span class="help-tip" tabindex="0">?<span class="tip-text">Skor
+            kesehatan pasar secara keseluruhan. Makin tinggi = pasar makin aktif dan menjanjikan.</span></span>
       </div>
+      <div class="pulse-track">
+        <div id="r-pulse-fill" class="pulse-fill"></div>
+      </div>
+      <div class="pulse-nums"><span>0</span><span id="r-pulse" style="color:var(--gold)">—</span><span>100</span>
+      </div>
+    </div>
 
-      <!-- Comparison Table -->
-      <table class="cmp-table">
-        <thead>
-          <tr>
-            <th>Metrik</th>
-            <th id="cmp-th-a" class="col-a">Keyword A</th>
-            <th id="cmp-th-b" class="col-b">Keyword B</th>
-            <th>Unggul</th>
-          </tr>
-        </thead>
-        <tbody id="cmp-tbody"></tbody>
-      </table>
+    <div class="timing-card">
+      <div class="ring-wrap">
+        <svg width="96" height="96" viewBox="0 0 96 96">
+          <circle class="ring-bg" cx="48" cy="48" r="40" />
+          <circle id="r-ring" class="ring-fg" cx="48" cy="48" r="40" stroke-dasharray="251.33"
+            stroke-dashoffset="251.33" />
+        </svg>
+        <div class="ring-center">
+          <div id="r-ring-num" class="ring-num">—</div>
+          <div class="ring-denom">/100</div>
+        </div>
+      </div>
+      <div class="timing-info">
+        <div class="timing-lbl-sm">Entry Timing Score <span class="help-tip" tabindex="0">?<span class="tip-text">Skor
+              yang menunjukkan apakah SEKARANG waktu yang tepat untuk mulai jualan produk ini. 80-100 = waktu
+              terbaik!</span></span></div>
+        <div id="r-timing-lbl" class="timing-lbl-big">—</div>
+        <div id="r-timing-desc" class="timing-desc">—</div>
+      </div>
+    </div>
 
-      <!-- Chart -->
-      <div class="chart-card">
+    <div class="fc-card">
+      <div class="fc-head">
+        <div class="fc-lbl">Prediksi 30 Hari ke Depan</div>
+        <div id="r-fc-val" class="fc-val">—</div>
+      </div>
+      <div class="fc-bar-track">
+        <div id="r-fc-bar" class="fc-bar-fill"></div>
+      </div>
+      <div class="fc-conf"><span>Tingkat keyakinan forecast</span><span id="r-fc-conf">—</span></div>
+    </div>
+
+    <!-- Trend chart -->
+    <div class="trend-chart-card">
+      <div class="trend-chart-head">
         <div class="mc-lbl">Tren Minat — 3 Bulan Terakhir</div>
-        <div class="chart-wrap">
-          <canvas id="cmp-chart"></canvas>
+        <div id="r-trend-range" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-faint)">
         </div>
       </div>
-
-      <!-- AI Insight -->
-      <div class="ai-card">
-        <div class="ai-head">
-          <div class="ai-icon">✦</div>
-          <div class="ai-title">AI Benchmarking Insight — Powered by Gemini</div>
-        </div>
-        <div id="cmp-ai" class="ai-body"></div>
+      <div class="trend-chart-wrap">
+        <canvas id="single-chart"></canvas>
       </div>
     </div>
+
+    <div class="season-card">
+      <div class="mc-lbl" style="margin-bottom:10px">Pola Musiman</div>
+      <div id="r-season-txt" class="season-txt"></div>
+      <div id="r-months" class="month-chips"></div>
+    </div>
+
+    <div class="ai-card">
+      <div class="ai-head">
+        <div class="ai-title">AI Business Insight — Powered by Gemini</div>
+      </div>
+      <div id="r-ai-cards" class="ai-cards-grid">
+        <div class="ai-section-card card-pasar">
+          <div class="ai-section-title">Analisis Pasar</div>
+          <div id="r-ai-pasar" class="ai-section-body">—</div>
+        </div>
+        <div class="ai-section-card card-aksi">
+          <div class="ai-section-title">Rekomendasi Aksi</div>
+          <div id="r-ai-aksi" class="ai-section-body">—</div>
+        </div>
+        <div class="ai-section-card card-waktu">
+          <div class="ai-section-title">Strategi Waktu</div>
+          <div id="r-ai-waktu" class="ai-section-body">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PDF DOWNLOAD -->
+    <div class="pdf-btn-wrap">
+      <button class="pdf-btn" id="pdf-btn" onclick="downloadPdf()" disabled>
+        <span class="lock-icon">🔒</span>Download Laporan PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════ COMPARE RESULTS ══════════ -->
+  <div id="compare-results">
+    <!-- Header -->
+    <div class="cmp-header">
+      <div class="cmp-vs-title">
+        <span class="kw-a" id="cmp-kw-a"></span>
+        <span class="kw-vs">vs</span>
+        <span class="kw-b" id="cmp-kw-b"></span>
+      </div>
+      <div class="cmp-ts" id="cmp-ts"></div>
+    </div>
+
+    <!-- Winner Banner -->
+    <div class="winner-banner">
+      <div class="winner-label">Pemenang Keseluruhan</div>
+      <div class="winner-name" id="cmp-winner"></div>
+      <div class="winner-score" id="cmp-winner-score"></div>
+    </div>
+
+    <!-- Comparison Table -->
+    <table class="cmp-table">
+      <thead>
+        <tr>
+          <th>Metrik</th>
+          <th id="cmp-th-a" class="col-a">Keyword A</th>
+          <th id="cmp-th-b" class="col-b">Keyword B</th>
+          <th>Unggul</th>
+        </tr>
+      </thead>
+      <tbody id="cmp-tbody"></tbody>
+    </table>
+
+    <!-- Chart -->
+    <div class="chart-card">
+      <div class="mc-lbl">Tren Minat — 3 Bulan Terakhir</div>
+      <div class="chart-wrap">
+        <canvas id="cmp-chart"></canvas>
+      </div>
+    </div>
+
+    <!-- AI Insight -->
+    <div class="ai-card">
+      <div class="ai-head">
+        <div class="ai-icon">✦</div>
+        <div class="ai-title">AI Benchmarking Insight — Powered by Gemini</div>
+      </div>
+      <div id="cmp-ai" class="ai-body"></div>
+    </div>
+  </div>
 
   </div><!-- /wrap -->
 
@@ -3692,9 +3718,22 @@
 
     function renderAiCards(text) {
       const sections = parseAiSections(text);
-      document.getElementById('r-ai-pasar').innerHTML = boldifyText(sections.pasar);
-      document.getElementById('r-ai-aksi').innerHTML = boldifyText(sections.aksi);
-      document.getElementById('r-ai-waktu').innerHTML = boldifyText(sections.waktu);
+      const targets = [
+        { id: 'r-ai-pasar', content: sections.pasar },
+        { id: 'r-ai-aksi', content: sections.aksi },
+        { id: 'r-ai-waktu', content: sections.waktu }
+      ];
+
+      targets.forEach((t, i) => {
+        const el = document.getElementById(t.id);
+        if (el) {
+          el.classList.remove('visible');
+          setTimeout(() => {
+            el.innerHTML = boldifyText(t.content);
+            el.classList.add('visible');
+          }, i * 400); // Stagger by 400ms each
+        }
+      });
     }
 
     /* ── SECTOR CATEGORY ── */
