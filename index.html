@@ -2462,6 +2462,118 @@
       }
     }
 
+    /* ── LOCAL HERO ── */
+    .local-hero-card {
+      background: var(--glass);
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      border: 1px solid var(--gold-glow);
+      padding: 32px 36px;
+      margin-top: 2px;
+      margin-bottom: 2px;
+      position: relative;
+      overflow: hidden;
+      display: none;
+      /* Hidden by default until search */
+      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4);
+    }
+
+    .local-hero-head {
+      margin-bottom: 28px;
+    }
+
+    .local-subtitle {
+      font-size: 13px;
+      color: var(--text-faint);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin-top: 4px;
+    }
+
+    .local-hero-layout {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 32px;
+    }
+
+    .local-rank-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .local-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .local-item-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .local-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-dim);
+    }
+
+    .local-val {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .local-bar-track {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .local-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+      border-radius: 2px;
+      width: 0;
+      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .local-ai-box {
+      background: rgba(212, 168, 67, 0.04);
+      border: 1px dashed var(--gold-glow);
+      padding: 24px;
+      position: relative;
+    }
+
+    .local-ai-header {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .local-ai-body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--text);
+      opacity: 0.8;
+    }
+
+    @media (max-width: 768px) {
+      .local-hero-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
     /* ── AUTH MODAL ── */
     .auth-btn {
       background: none;
@@ -2982,6 +3094,34 @@
         <div class="ai-section-card card-waktu">
           <div class="ai-section-title">Strategi Waktu</div>
           <div id="r-ai-waktu" class="ai-section-body">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOCAL HERO SECTION -->
+    <div class="local-hero-card" id="local-hero">
+      <div class="local-hero-head">
+        <div class="ai-title">Local Hero: Potensi Wilayah — <span id="r-local-kw"
+            style="color:var(--text); opacity:0.6"></span></div>
+        <div class="local-subtitle">Ranking minat produk berdasarkan provinsi di Indonesia</div>
+      </div>
+
+      <div class="local-hero-layout">
+        <div class="local-rank-col">
+          <div id="local-rank-list" class="local-rank-list">
+            <!-- Dynamic items -->
+          </div>
+        </div>
+
+        <div class="local-ai-col">
+          <div class="local-ai-box">
+            <div class="local-ai-header">
+              <i class="fas fa-magic"></i> Tips Jagoan Lokal
+            </div>
+            <div id="local-ai-insight" class="local-ai-body">
+              Menganalisis strategi wilayah terbaik...
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -3736,6 +3876,60 @@
       });
     }
 
+    async function fetchLocalHero(kw, geo) {
+      const localCard = document.getElementById('local-hero');
+      const rankList = document.getElementById('local-rank-list');
+      const insightBody = document.getElementById('local-ai-insight');
+      const kwSpan = document.getElementById('r-local-kw');
+
+      kwSpan.textContent = kw;
+      localCard.style.display = 'block';
+      rankList.innerHTML = '<div class="skeleton-line" style="width:100%"></div><div class="skeleton-line" style="width:80%"></div>';
+      insightBody.innerHTML = 'Menganalisis strategi wilayah...';
+
+      try {
+        const res = await fetch('/api/analyze-local', {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ keyword: kw, geo: geo })
+        });
+        const data = await res.json();
+        if (!res.ok || data.error) throw new Error(data.error);
+
+        rankList.innerHTML = '';
+        const sorted = data.regional_data.sort((a, b) => b.value - a.value).slice(0, 8);
+        sorted.forEach((item, idx) => {
+          const div = document.createElement('div');
+          div.className = 'local-item';
+          div.innerHTML = `
+            <div class="local-item-head">
+              <span class="local-name">${item.name}</span>
+              <span class="local-val">${item.value}%</span>
+            </div>
+            <div class="local-bar-track">
+              <div class="local-bar-fill" id="bar-${idx}" style="width: 0"></div>
+            </div>
+          `;
+          rankList.appendChild(div);
+          setTimeout(() => {
+            const bar = document.getElementById('bar-' + idx);
+            if (bar) bar.style.width = item.value + '%';
+          }, 100 + (idx * 50));
+        });
+
+        insightBody.style.opacity = '0';
+        setTimeout(() => {
+          insightBody.innerHTML = boldifyText(data.local_insight);
+          insightBody.style.transition = 'opacity 1s ease';
+          insightBody.style.opacity = '1';
+        }, 300);
+
+      } catch (err) {
+        rankList.innerHTML = '<div style="color:var(--text-faint); font-size:12px">Data regional tidak tersedia.</div>';
+        insightBody.textContent = 'Insight wilayah tidak dapat dimuat.';
+      }
+    }
+
     /* ── SECTOR CATEGORY ── */
     const CATEGORY_KEYWORDS = {
       fashion: 'baju wanita',
@@ -3986,6 +4180,7 @@
         lastAnalysisResult = data;
         if (data._meta) updateQuotaUI(data._meta);
         renderResults(data);
+        fetchLocalHero(kw, geo); // Analisis regional otomatis
         setLoading(false, false);
 
         ['r-ai-pasar', 'r-ai-aksi', 'r-ai-waktu'].forEach(id => {

@@ -234,3 +234,46 @@ Dalam 2-3 kalimat, berikan tips jika user ingin menjual atau memanfaatkan kedua 
 Panjang total jawaban antara 220-300 kata. Langsung to the point, tidak berlebihan."""
 
     return prompt
+
+
+def generate_local_insight(keyword: str, regional_data: list) -> str:
+    """Hasilkan insight strategi lokal berdasarkan data regional."""
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        return "⚠ AI Local Insight tidak tersedia — GEMINI_API_KEY belum dikonfigurasi."
+
+    if not regional_data:
+        return "Tidak ada data regional yang cukup untuk dianalisis oleh AI."
+
+    prompt = _build_local_prompt(keyword, regional_data)
+
+    import time
+    max_retries = 1
+    for attempt in range(max_retries + 1):
+        try:
+            client = genai.Client(api_key=api_key)
+            response = client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=prompt,
+            )
+            return response.text.strip()
+        except Exception:
+            if attempt < max_retries:
+                time.sleep(2)
+                continue
+            return "⚠ Strategi lokal tidak dapat dimuat saat ini."
+
+
+def _build_local_prompt(keyword: str, regional_data: list) -> str:
+    # Ambil 5 wilayah teratas
+    sorted_data = sorted(regional_data, key=lambda x: x['value'], reverse=True)
+    top_regions = sorted_data[:5]
+    region_str = "\n".join([f"- {r['name']}: {r['value']}/100" for r in top_regions])
+
+    prompt = f"""Kamu adalah ahli strategi "Local Hero" yang membantu UMKM Indonesia. 
+Analisis data regional untuk kata kunci "{keyword}" berikut:
+
+{region_str}
+
+Tugasmu: Dalam 1 paragraf singkat (maks 80 kata), berikan motivasi dan 1 strategi pemasaran spesifik untuk wilayah dengan minat tertinggi tersebut. Gunakan gaya bahasa yang santai, akrab (seperti mentor), dan sebutkan nama daerahnya. Berikan tips unik (misal: soal bahasa daerah atau selera lokal)."""
+    return prompt

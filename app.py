@@ -19,8 +19,8 @@ from functools import wraps
 from flask import Flask, request, jsonify, render_template, send_file
 from flask_cors import CORS
 
-from sentra_engine import analyze_keyword, compare_keywords
-from ai_recommendation import generate_ai_insight, generate_compare_insight
+from sentra_engine import analyze_keyword, compare_keywords, fetch_regional_data
+from ai_recommendation import generate_ai_insight, generate_compare_insight, generate_local_insight
 
 app = Flask(__name__, template_folder='.')
 CORS(app)
@@ -787,6 +787,30 @@ def _build_pdf(data: dict) -> io.BytesIO:
     doc.build(story)
     buf.seek(0)
     return buf
+
+
+@app.route("/api/analyze-local", methods=["POST"])
+def analyze_local_route():
+    data = request.json or {}
+    keyword = data.get("keyword", "").strip()
+    geo = data.get("geo", "ID")
+
+    if not keyword:
+        return jsonify({"error": "Keyword required"}), 400
+
+    # Regional data
+    regional_data = fetch_regional_data(keyword, geo)
+    if not regional_data:
+        return jsonify({"error": "No regional data available", "error_code": "NO_DATA"}), 404
+
+    # AI Strategi Lokal
+    local_insight = generate_local_insight(keyword, regional_data)
+
+    return jsonify({
+        "keyword": keyword,
+        "regional_data": regional_data,
+        "local_insight": local_insight
+    })
 
 
 @app.route("/api/health")

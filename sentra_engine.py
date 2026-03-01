@@ -132,6 +132,40 @@ def fetch_trend_data(keyword, timeframe="today 3-m", geo="ID", cat=0):
     return fetch_trend_data_long(keyword, timeframe=timeframe, geo=geo, cat=cat)
 
 
+def fetch_regional_data(keyword, geo="ID"):
+    """
+    Fetch regional interest (GEO_MAP) via SerpApi.
+    Mengembalikan list berisi {name, value}.
+    """
+    def _fetch():
+        print(f"[FETCH REGIONAL] '{keyword}' | geo={geo}")
+        _jitter()
+        params = {
+            "engine":     "google_trends",
+            "q":          keyword,
+            "geo":        geo,
+            "data_type":  "GEO_MAP",
+            "hl":         "id",
+            "api_key":    _SERPAPI_KEY,
+        }
+        try:
+            results = GoogleSearch(params).get_dict()
+            if "error" in results: return []
+            regions = results.get("interest_by_region", [])
+            return [
+                {"name": r["name"], "value": int(r.get("extracted_value", 0))} 
+                for r in regions if "name" in r
+            ]
+        except Exception as e:
+            print(f"[FETCH REGIONAL ERROR] {e}")
+            return []
+
+    try:
+        return _run_with_timeout(_fetch, timeout=_FETCH_HARD_TIMEOUT)
+    except Exception:
+        return []
+
+
 # ─────────────────────────────────────────
 # 1b. VALIDASI KEYWORD
 # ─────────────────────────────────────────
