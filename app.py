@@ -512,14 +512,14 @@ def analyze_sector():
         log_search(user_id, f"[sektor] {sector}: {keyword}")
         searches_today += 1
 
-    # AI insight
+    # ---- MATIKAN SEMENTARA AI UNTUK TESTING ---
     try:
-        result["ai_insight"] = generate_ai_insight(result)
+         result["ai_insight"] = generate_ai_insight(result)
     except ValueError as e:
-        result["ai_insight"] = f"⚠ {str(e)}"
+         result["ai_insight"] = f"⚠ {str(e)}"
     except Exception:
         result["ai_insight"] = "AI insight tidak tersedia saat ini."
-
+        
     # Save to L1 + L2 cache
     cache_set(keyword, geo, cat, result, result.get("ai_insight", ""))
 
