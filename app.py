@@ -643,7 +643,35 @@ def _build_pdf(data: dict) -> io.BytesIO:
     ]))
     story.append(mt)
     story.append(Spacer(1, 0.4*cm))
+# Di dalam route /api/analyze pada app.py
 
+@app.route("/api/analyze", methods=["POST"])
+def analyze():
+    # ... (kode awal tetap sama) ...
+    
+    # Ambil parameter cat jika ada (untuk sektor)
+    cat_id = data.get("cat", 0) 
+
+    # 1. Cek Cache
+    cached = cache_get(keyword, geo, str(cat_id))
+    if cached:
+        return jsonify(sanitize(cached))
+
+    # 2. Panggil engine dengan parameter cat
+    result = analyze_keyword(keyword, geo=geo, cat=cat_id)
+
+    if "error" in result:
+        return jsonify(result), 400 if "error_code" not in result else 429
+
+    # 3. AI Insight
+    result["ai_insight"] = generate_ai_insight(result)
+
+    # 4. HANYA SIMPAN JIKA BERHASIL (Anti-Empty Cache)
+    if result.get("growth") is not None:
+        cache_set(keyword, geo, str(cat_id), result, result["ai_insight"])
+
+    return jsonify(sanitize(result))
+    
     if ai_text:
         story.append(Paragraph("AI Business Insight", h2_style))
         for para in ai_text.split("\n"):

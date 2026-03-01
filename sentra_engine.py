@@ -1,13 +1,73 @@
 import re
 import time
 import random
-
 from pytrends.request import TrendReq
 from pytrends.exceptions import TooManyRequestsError
 import pandas as pd
 import numpy as np
 from sklearn.linear_model import LinearRegression
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
+
+def _make_pytrends():
+    return TrendReq(hl='id-ID', tz=420, retries=3, backoff_factor=2)
+
+def _jitter():
+    time.sleep(random.uniform(1.5, 3.5))
+
+def fetch_trend_data(keyword, timeframe="today 3-m", geo="ID", cat=0):
+    try:
+        pytrends = _make_pytrends()
+        _jitter()
+        # Perbaikan: Masukkan parameter cat ke payload
+        pytrends.build_payload([keyword], timeframe=timeframe, geo=geo, cat=cat)
+        data = pytrends.interest_over_time()
+        
+        if data.empty:
+            return "EMPTY"
+            
+        df = data[[keyword]].reset_index()
+        df.columns = ["date", "interest"]
+        return df
+    except TooManyRequestsError:
+        return "RATE_LIMIT"
+    except Exception as e:
+        print(f"Debug Fetch Error: {e}")
+        return None
+
+# Update fungsi analyze_keyword agar menerima parameter cat
+def analyze_keyword(keyword, geo="ID", cat=0):
+    validation = validate_keyword(keyword)
+    if not validation["valid"]:
+        return {"error": validation["error"]}
+
+    # Cek apakah ini pencarian kategori (Sektor)
+    # Jika cat > 0, Google Trends tetap butuh kw_list, tapi cat akan mendominasi hasil
+    try:
+        df = fetch_trend_data(keyword, geo=geo, cat=cat)
+        if df == "RATE_LIMIT":
+            return {"error": "Google memblokir akses sementara (Rate Limit). Coba lagi dalam 15 menit.", "error_code": "TOO_MANY_REQUESTS"}
+        if df == "EMPTY" or df is None:
+            return {"error": "Data tidak ditemukan. Coba gunakan kata kunci yang lebih umum."}
+        
+        # Logika analisis tetap sama...
+        # (Gunakan sisa kode analisis Anda sebelumnya di sini)
+        # Pastikan mengembalikan dict hasil analisis yang lengkap
+        
+        # Contoh return sederhana (pastikan lengkapi dengan metrik asli Anda):
+        return {
+            "keyword": keyword,
+            "geo": geo,
+            "growth": compute_growth(df),
+            "momentum": compute_momentum(df),
+            "volatility": compute_volatility(df),
+            "raw_trend": {
+                "dates": [str(d.date())[:10] for d in df["date"]],
+                "values": df["interest"].tolist(),
+            },
+            # ... metrik lainnya ...
+        }
+    except Exception as e:
+        return {"error": f"Kegagalan sistem: {str(e)}"}
 
 
 # ── Pytrends factory with retry / backoff ──────────────────────────────────
