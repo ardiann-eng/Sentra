@@ -11,6 +11,7 @@
     rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <style>
     *,
     *::before,
@@ -36,6 +37,8 @@
       --green: #2ECC71;
       --amber: #F39C12;
       --blue: #5DADE2;
+      --ai-accent: #D4A843;
+      --ai-scan: rgba(212, 168, 67, 0.4);
     }
 
     html {
@@ -49,6 +52,8 @@
       font-size: 15px;
       min-height: 100vh;
       overflow-x: hidden;
+      overflow-y: hidden;
+      /* Lock scroll initially */
     }
 
     body::before {
@@ -141,14 +146,102 @@
 
     @keyframes blink {
 
-      0%,
-      100% {
-        opacity: 1
-      }
-
       50% {
         opacity: .3
       }
+    }
+
+    /* ── SPLASH SCREEN ── */
+    #splash-screen {
+      position: fixed;
+      inset: 0;
+      background: #0A0A08;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .splash-logo-wrap {
+      position: relative;
+      padding: 20px;
+    }
+
+    .splash-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 64px;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 12px;
+      text-transform: uppercase;
+      animation: logoPulse 2.5s ease-in-out infinite;
+      position: relative;
+      z-index: 2;
+    }
+
+    @keyframes logoPulse {
+      0% {
+        text-shadow: 0 0 10px rgba(212, 168, 67, 0);
+        transform: scale(1);
+      }
+
+      50% {
+        text-shadow: 0 0 30px rgba(212, 168, 67, 0.4);
+        transform: scale(1.02);
+      }
+
+      100% {
+        text-shadow: 0 0 10px rgba(212, 168, 67, 0);
+        transform: scale(1);
+      }
+    }
+
+    .scan-line {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--ai-accent);
+      box-shadow: 0 0 15px var(--ai-accent);
+      z-index: 3;
+      pointer-events: none;
+      opacity: 0.8;
+      animation: scanMove 3s infinite linear;
+    }
+
+    @keyframes scanMove {
+      0% {
+        top: 0;
+      }
+
+      50% {
+        top: 100%;
+      }
+
+      100% {
+        top: 0;
+      }
+    }
+
+    .splash-loader-text {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--gold-dim);
+      letter-spacing: 2px;
+      height: 20px;
+      opacity: 0.8;
+      text-transform: uppercase;
+    }
+
+    /* Stagger reveal initial state */
+    header,
+    .hero,
+    .wrap>section,
+    .wrap>div {
+      opacity: 0;
+      transform: translateY(20px);
     }
 
     /* ── HERO ── */
@@ -2532,8 +2625,17 @@
 </head>
 
 <body>
-  <div class="wrap">
 
+  <!-- ══════════ AI SPLASH SCREEN ══════════ -->
+  <div id="splash-screen">
+    <div class="splash-logo-wrap">
+      <div class="scan-line"></div>
+      <div class="splash-logo">Sentra</div>
+    </div>
+    <div class="splash-loader-text" id="splash-text">System Initializing...</div>
+  </div>
+
+  <div class="wrap" style="position:relative; z-index:1;">
     <header>
       <div class="logo">
         <span class="logo-word">Sentra</span>
@@ -2745,7 +2847,8 @@
           <div class="mc-sub">perubahan minat</div>
         </div>
         <div class="mc">
-          <div class="mc-lbl">Momentum <span class="help-tip" tabindex="0">?<span class="tip-text">Arah pergerakan tren:
+          <div class="mc-lbl">Momentum <span class="help-tip" tabindex="0">?<span class="tip-text">Arah pergerakan
+                tren:
                 apakah minat sedang naik atau turun secara konsisten.</span></span></div>
           <div id="r-mom" class="mc-val neu">—</div>
           <div class="mc-sub">arah tren</div>
@@ -2767,7 +2870,8 @@
           <div id="r-fomo-l" class="mc-sub">—</div>
         </div>
         <div class="mc">
-          <div class="mc-lbl">Saturasi Pasar <span class="help-tip" tabindex="0">?<span class="tip-text">Seberapa penuh
+          <div class="mc-lbl">Saturasi Pasar <span class="help-tip" tabindex="0">?<span class="tip-text">Seberapa
+                penuh
                 pasar dengan penjual produk ini. Angka tinggi = sudah banyak pesaing, sulit bersaing.</span></span>
           </div>
           <div id="r-sat" class="mc-val neu">—</div>
@@ -2777,7 +2881,8 @@
 
       <div class="pulse-card">
         <div class="mc-lbl">Market Pulse Score <span class="help-tip" tabindex="0">?<span class="tip-text">Skor
-              kesehatan pasar secara keseluruhan. Makin tinggi = pasar makin aktif dan menjanjikan.</span></span></div>
+              kesehatan pasar secara keseluruhan. Makin tinggi = pasar makin aktif dan menjanjikan.</span></span>
+        </div>
         <div class="pulse-track">
           <div id="r-pulse-fill" class="pulse-fill"></div>
         </div>
@@ -2821,7 +2926,8 @@
       <div class="trend-chart-card">
         <div class="trend-chart-head">
           <div class="mc-lbl">Tren Minat — 3 Bulan Terakhir</div>
-          <div id="r-trend-range" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-faint)"></div>
+          <div id="r-trend-range" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-faint)">
+          </div>
         </div>
         <div class="trend-chart-wrap">
           <canvas id="single-chart"></canvas>
@@ -3052,6 +3158,59 @@
       }
       return headers;
     }
+
+    /* ── SPLASH SCREEN LOGIC ── */
+    const loadingTexts = [
+      "Initializing Neural Network...",
+      "Fetching Market Intelligence...",
+      "Optimizing Data Models...",
+      "Syncing with Google Trends...",
+      "Analyzing Lifecycle Stages...",
+      "Calibrating Forecast Engine..."
+    ];
+
+    function startSplashScreen() {
+      const textEl = document.getElementById('splash-text');
+      let textIdx = 0;
+
+      const textInterval = setInterval(() => {
+        textEl.textContent = loadingTexts[textIdx];
+        textIdx = (textIdx + 1) % loadingTexts.length;
+      }, 600);
+
+      // End splash after 2.5s
+      setTimeout(() => {
+        clearInterval(textInterval);
+
+        const tl = gsap.timeline({
+          onComplete: () => {
+            document.getElementById('splash-screen').remove();
+            document.body.style.overflowY = 'auto'; // Re-enable scroll
+          }
+        });
+
+        tl.to('#splash-screen', {
+          duration: 1,
+          opacity: 0,
+          scale: 1.1,
+          filter: 'blur(20px)',
+          ease: 'power3.inOut'
+        });
+
+        // Stagger reveal main content
+        tl.to(['header', '.hero', '.sector-section', '#results', '#compare-results', '.pricing-section'], {
+          duration: 0.8,
+          opacity: 1,
+          y: 0,
+          stagger: 0.15,
+          ease: 'power2.out'
+        }, "-=0.5");
+
+      }, 2500);
+    }
+
+    // Call splash screen
+    startSplashScreen();
 
     /* ── USER STATUS / QUOTA ── */
     async function fetchUserStatus() {
