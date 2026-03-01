@@ -5,35 +5,52 @@ import pandas as pd
 import numpy as np
 from sklearn.linear_model import LinearRegression
 from concurrent.futures import ThreadPoolExecutor
-
-# PASTIKAN BARIS INI ADA LENGKAP:
 from pytrends.request import TrendReq
-from pytrends.exceptions import TooManyRequestsError 
-from fake_useragent import UserAgent
+from pytrends.exceptions import TooManyRequestsError
+try:
+    from fake_useragent import UserAgent as _UA
+    _UA_ENABLED = True
+except Exception:
+    _UA_ENABLED = False
+
+
+# ── ScraperAPI proxy config ────────────────────────────────────────────────
+_PROXY_URL = (
+    "http://scraperapi:9d165dff5be59579040bc2333e85f07b"
+    "@proxy-server.scraperapi.com:8001"
+)
+_PROXIES = {"http": _PROXY_URL, "https": _PROXY_URL}
+
+_FALLBACK_UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/123.0.0.0 Safari/537.36"
+)
+
 
 def _make_pytrends():
-    """Membuat instance TrendReq dengan User-Agent acak untuk menghindari blokir."""
+    """TrendReq via ScraperAPI dengan identitas browser acak."""
     try:
-        ua = UserAgent()
-        user_agent = ua.random
-    except:
-        # Fallback jika library gagal mengambil UA
-        user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
+        user_agent = _UA().random if _UA_ENABLED else _FALLBACK_UA
+    except Exception:
+        user_agent = _FALLBACK_UA
 
     return TrendReq(
         hl='id-ID',
         tz=420,
-        retries=3,
-        backoff_factor=2,
+        retries=5,
+        backoff_factor=5,
         requests_args={
+            'proxies': _PROXIES,
             'headers': {
                 'User-Agent': user_agent,
                 'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
             },
-            'verify': True,
-            'timeout': 30
-        }
+            'verify': False,
+            'timeout': 60,
+        },
     )
+
 
 def _jitter():
     """Random human-like delay between Trends requests (1-3 s)."""
@@ -50,16 +67,13 @@ def fetch_trend_data(keyword, timeframe="today 3-m", geo="ID", cat=0):
         _jitter()
         pytrends.build_payload([keyword], timeframe=timeframe, geo=geo, cat=cat)
         data = pytrends.interest_over_time()
-
-        if data.empty:
-            return "EMPTY"
-            
-        df = data[[keyword]].reset_index()
-        df.columns = ["date", "interest"]
-        return df
-        
+    except TooManyRequestsError:
+        raise
     except Exception as e:
-        print(f"--- DEBUG ERROR ---: {e}")
+        print(f"--- DEBUG fetch_trend_data ERROR ---: {e}")
+        return None
+
+    if data.empty:
         return None
 
     df = data[[keyword]].reset_index()
@@ -708,18 +722,6 @@ def compute_comparison_metrics(result_a, result_b):
     return comparison
 
 
-def _make_pytrends():
-    ua = UserAgent()
-    return TrendReq(
-        hl='id-ID', 
-        tz=420, 
-        retries=3, 
-        backoff_factor=2,
-        requests_args={
-            'headers': {'User-Agent': ua.random}, # Mengganti identitas setiap request
-            'verify': True
-        }
-    )
 
 def compare_keywords(keyword_a, keyword_b, geo="ID"):
     """
@@ -756,4 +758,3 @@ def compare_keywords(keyword_a, keyword_b, geo="ID"):
         "comparison": comparison,
         "trend_data": trend_data,
     }
-    from fake_useragent import UserAgent
