@@ -6,6 +6,7 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
 from serpapi import GoogleSearch
+from dateutil import parser as dateutil_parser
 
 import os
 import urllib3
@@ -96,7 +97,7 @@ def _fetch_inner(keyword, timeframe, geo, cat):
             # Setiap item: { "date": "Jan 5 – 11, 2025", "values": [{"query":"...","value":72,"extracted_value":72}] }
             date_str = item.get("date", "")
             val = item["values"][0]["extracted_value"]
-            rows.append({"date": pd.to_datetime(date_str, fuzzy=True), "interest": int(val)})
+            rows.append({"date": dateutil_parser.parse(date_str, fuzzy=True), "interest": int(val)})
         except (KeyError, IndexError, ValueError):
             continue
 
