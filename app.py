@@ -336,18 +336,9 @@ def analyze():
         log_search(user_id, keyword)
         searches_today += 1
 
-    # --- AI Insight ---
-    try:
-        result["ai_insight"] = generate_ai_insight(result)
-    except ValueError as e:
-        result["ai_insight"] = f"⚠ {str(e)}"
-    except Exception:
-        result["ai_insight"] = "AI insight tidak tersedia saat ini."
-
-    # --- Cache the result (L1 + L2) --- only if valid data
-    ai_text = result.get("ai_insight", "")
-    if result.get("growth") is not None:  # anti-empty cache
-        cache_set(keyword, geo, cat_str, result, ai_text)
+    # --- Cache the result (L1 + L2) --- simplified for async
+    if result.get("growth") is not None:
+        cache_set(keyword, geo, cat_str, result, "")
 
     # --- Attach quota info ---
     remaining = max(0, FREE_DAILY_LIMIT - searches_today) if tier == "free" else None
@@ -359,6 +350,20 @@ def analyze():
     }
 
     return jsonify(sanitize(result))
+
+
+@app.route("/api/get-ai-insight", methods=["POST"])
+def get_ai_insight_route():
+    """Endpoint baru untuk ambil AI Insight secara terpisah (Async)."""
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "Data analisis tidak valid."}), 400
+    
+    try:
+        insight = generate_ai_insight(data)
+        return jsonify({"ai_insight": insight})
+    except Exception as e:
+        return jsonify({"ai_insight": f"Gagal menghasilkan insight: {str(e)}"}), 500
 
 
 @app.route("/api/compare", methods=["POST"])
@@ -416,15 +421,12 @@ def compare():
         log_search(user_id, f"{keyword_a} vs {keyword_b}")
         searches_today += 1
 
-    try:
-        result["ai_insight"] = generate_compare_insight(result)
-    except ValueError as e:
-        result["ai_insight"] = f"⚠ {str(e)}"
-    except Exception:
-        result["ai_insight"] = "AI insight perbandingan tidak tersedia saat ini."
+    if user_id:
+        log_search(user_id, f"{keyword_a} vs {keyword_b}")
+        searches_today += 1
 
-    ai_cmp = result.get("ai_insight", "")
-    cache_set(compare_kw, geo, "0", result, ai_cmp)
+    # --- Cache the result (L1 + L2) --- simplified for async
+    cache_set(compare_kw, geo, "0", result, "")
 
     remaining = max(0, FREE_DAILY_LIMIT - searches_today) if tier == "free" else None
     result["_meta"] = {
@@ -435,6 +437,21 @@ def compare():
     }
 
     return jsonify(sanitize(result))
+
+
+@app.route("/api/get-compare-insight", methods=["POST"])
+def get_compare_insight_route():
+    """Endpoint baru untuk ambil AI Compare Insight secara terpisah (Async)."""
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "Data perbandingan tidak valid."}), 400
+    
+    try:
+        from ai_recommendation import generate_compare_insight
+        insight = generate_compare_insight(data)
+        return jsonify({"ai_insight": insight})
+    except Exception as e:
+        return jsonify({"ai_insight": f"Gagal menghasilkan insight: {str(e)}"}), 500
 
 
 # =========================

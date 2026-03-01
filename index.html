@@ -599,6 +599,37 @@
       box-shadow: 0 0 16px rgba(230, 126, 34, .2);
     }
 
+    /* ── AI LOADING & TRANSITION ── */
+    .ai-loading {
+      font-size: 13px;
+      color: var(--text-dim);
+      font-style: italic;
+      animation: pulse-op 1.5s infinite;
+    }
+
+    @keyframes pulse-op {
+      0% {
+        opacity: .5
+      }
+
+      50% {
+        opacity: 1
+      }
+
+      100% {
+        opacity: .5
+      }
+    }
+
+    .ai-section-body {
+      transition: opacity .6s ease;
+      opacity: 0;
+    }
+
+    .ai-section-body.visible {
+      opacity: 1;
+    }
+
     .s-Stable {
       color: #2ECC71;
       border-color: #2ECC71;
@@ -3319,9 +3350,10 @@
 
       try {
         const controller = new AbortController();
-        // Beri waktu 55 detik (sedikit di bawah limit 60 detik Railway)
-        const timeout = setTimeout(() => controller.abort(), 55000);
+        // Beri waktu 90 detik agar tidak mudah timeout di proxy
+        const timeout = setTimeout(() => controller.abort(), 90000);
 
+        // --- TAHAP 1: Ambil Data Tren (Cepat) ---
         const res = await fetch('/api/analyze', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -3344,25 +3376,62 @@
 
         if (!res.ok || data.error) {
           showErr(data.error || 'Terjadi kesalahan pada server.');
-        } else {
-          lastAnalysisResult = data;
-          if (data._meta) updateQuotaUI(data._meta);
-          renderResults(data);
+          setLoading(false, false);
+          return;
         }
+
+        // Segera render data dan matikan loading utama
+        lastAnalysisResult = data;
+        if (data._meta) updateQuotaUI(data._meta);
+        renderResults(data);
+        setLoading(false, false);
+
+        // --- TAHAP 2: Ambil AI Insight (Lambat - Async) ---
+        // Reset and show loading state for AI cards
+        ['r-ai-pasar', 'r-ai-aksi', 'r-ai-waktu'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.classList.remove('visible');
+            el.innerHTML = '<span class="ai-loading">Menganalisis...</span>';
+          }
+        });
+
+        fetch('/api/get-ai-insight', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        })
+          .then(r => r.json())
+          .then(aiData => {
+            if (aiData.ai_insight) {
+              renderAiCards(aiData.ai_insight);
+              // Apply fade-in
+              ['r-ai-pasar', 'r-ai-aksi', 'r-ai-waktu'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('visible');
+              });
+            }
+          })
+          .catch(err => {
+            ['r-ai-pasar', 'r-ai-aksi', 'r-ai-waktu'].forEach(id => {
+              const el = document.getElementById(id);
+              if (el) el.innerHTML = 'Gagal memuat insight.';
+            });
+          });
+
       } catch (e) {
         if (e.name === 'AbortError') {
           showErr('Server butuh waktu terlalu lama (Timeout). Coba kata kunci lain.');
         } else {
           showErr('Tidak dapat terhubung ke server.');
         }
-      } finally {
         setLoading(false, false);
       }
     }
     /* ── FETCH: COMPARE ── */
     async function doCompare() {
-      const kwA = document.getElementById('kw-a').value.trim(); //
-      const kwB = document.getElementById('kw-b').value.trim(); //
+      const kwA = document.getElementById('kw-a').value.trim();
+      const kwB = document.getElementById('kw-b').value.trim();
       const geo = document.getElementById('geo-select')?.value || 'ID';
 
       if (!kwA || !kwB) { showErr('Masukkan kedua keyword.'); return; }
@@ -3372,14 +3441,14 @@
 
       try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 55000);
+        const timeout = setTimeout(() => controller.abort(), 90000);
 
         const res = await fetch('/api/compare', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            keyword_a: kwA, //
-            keyword_b: kwB, //
+            keyword_a: kwA,
+            keyword_b: kwB,
             user_id: userState.userId || '',
             geo: geo
           }),
@@ -3388,10 +3457,53 @@
 
         clearTimeout(timeout);
         const data = await res.json();
-        // ... sisa logika renderCompareResults ...
+
+        if (res.status === 403 && data.error_code === 'LIMIT_EXCEEDED') {
+          showUpgradeModal('limit');
+          return;
+        }
+
+        if (!res.ok || data.error) {
+          showErr(data.error || 'Terjadi kesalahan pada server.');
+          setLoading(false, true);
+          return;
+        }
+
+        // Segera render data dan matikan loading utama
+        lastCompareResult = data;
+        if (data._meta) updateQuotaUI(data._meta);
+        renderCompareResults(data);
+        setLoading(false, true);
+
+        // --- TAHAP 2: Ambil AI Compare Insight (Async) ---
+        const aiBox = document.getElementById('cmp-ai');
+        if (aiBox) {
+          aiBox.classList.remove('visible');
+          aiBox.innerHTML = '<div class="ai-loading">✨ Menganalisis perbandingan dengan AI...</div>';
+
+          fetch('/api/get-compare-insight', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          })
+            .then(r => r.json())
+            .then(aiData => {
+              if (aiData.ai_insight) {
+                aiBox.innerHTML = aiData.ai_insight.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                aiBox.classList.add('visible');
+              }
+            })
+            .catch(err => {
+              aiBox.innerHTML = 'AI insight tidak tersedia saat ini.';
+            });
+        }
+
       } catch (e) {
-        showErr(e.name === 'AbortError' ? 'Proses banding timeout.' : 'Gagal terhubung.');
-      } finally {
+        if (e.name === 'AbortError') {
+          showErr('Server butuh waktu terlalu lama (Timeout).');
+        } else {
+          showErr('Tidak dapat terhubung ke server.');
+        }
         setLoading(false, true);
       }
     }
