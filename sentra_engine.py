@@ -9,6 +9,8 @@ from pytrends.request import TrendReq
 from pytrends.exceptions import TooManyRequestsError
 
 import os
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # ─────────────────────────────────────────
 # CONFIGURATION
@@ -33,23 +35,21 @@ def _make_proxy():
 def _make_pytrends():
     """
     Buat TrendReq dengan ScraperAPI proxy.
-    ScraperAPI adalah HTTP proxy sejati (bukan scraping API) yang kompatibel
-    dengan pytrends multi-step session. IP di-rotate otomatis → tidak pernah 429.
-
-    PENTING: Jangan pass 'timeout' di requests_args — conflict dengan pytrends internal.
-    Hard timeout ditangani oleh _run_with_timeout di level thread.
+    timeout=(connect, read): 15s untuk koneksi ke proxy, 30s untuk membaca response.
+    Tanpa timeout eksplisit, koneksi bisa hang sampai OS-level timeout (˜120s).
     """
     proxies = _make_proxy()
     kwargs = dict(
         hl='id-ID',
         tz=420,
-        retries=1,
-        backoff_factor=0.5,
+        retries=2,          # auto-retry jika proxy timeout sekali
+        backoff_factor=1.5, # jeda antar retry: 1.5s, 3s
     )
     if proxies:
         kwargs['requests_args'] = {
             'proxies': proxies,
-            'verify': False,   # ScraperAPI pakai SSL interception
+            'timeout': (15, 30),  # (connect_timeout, read_timeout) detik
+            'verify': False,      # ScraperAPI pakai SSL interception
         }
     return TrendReq(**kwargs)
 

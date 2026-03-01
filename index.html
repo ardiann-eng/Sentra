@@ -2043,6 +2043,38 @@
       color: var(--text-dim);
     }
 
+    /* ── AI SKELETON LOADING ── */
+    .skeleton-line {
+      height: 14px;
+      background: var(--surface2);
+      margin-bottom: 12px;
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .skeleton-line:last-child {
+      margin-bottom: 0;
+    }
+
+    .skeleton-line::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(212, 168, 67, 0.1), transparent);
+      transform: translateX(-100%);
+      animation: shimmer 1.5s infinite;
+    }
+
+    @keyframes shimmer {
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
     /* ════════════════════════════════════════════════
        COMPREHENSIVE MOBILE RESPONSIVE  ≤ 680 px
     ════════════════════════════════════════════════ */
@@ -2739,9 +2771,15 @@
     let compareMode = false;
     let trendChart = null;
 
+    // ─ AUTO-GENERATE GUEST ID ─
+    if (!localStorage.getItem('sentra_uid')) {
+      const guestId = 'guest_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+      localStorage.setItem('sentra_uid', guestId);
+    }
+
     // ─ Monetization state ─
     const userState = {
-      userId: localStorage.getItem('sentra_uid') || null,
+      userId: localStorage.getItem('sentra_uid'), // Pasti terisi
       tier: 'free',
       searchesToday: 0,
       remaining: 5,
@@ -3387,12 +3425,17 @@
         setLoading(false, false);
 
         // --- TAHAP 2: Ambil AI Insight (Lambat - Async) ---
-        // Reset and show loading state for AI cards
+        const skeletonHTML = `
+          <div class="skeleton-line" style="width:100%"></div>
+          <div class="skeleton-line" style="width:95%"></div>
+          <div class="skeleton-line" style="width:90%"></div>
+          <div class="skeleton-line" style="width:65%"></div>
+        `;
         ['r-ai-pasar', 'r-ai-aksi', 'r-ai-waktu'].forEach(id => {
           const el = document.getElementById(id);
           if (el) {
-            el.classList.remove('visible');
-            el.innerHTML = '<span class="ai-loading">Menganalisis...</span>';
+            el.innerHTML = skeletonHTML;
+            el.classList.add('visible');
           }
         });
 

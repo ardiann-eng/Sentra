@@ -2,6 +2,11 @@
 Sentra BI v2.0 — Flask Web Server untuk Railway
 """
 
+# Gevent monkey-patch HARUS di paling atas sebelum import lain
+# agar semua operasi blocking (socket, threading, dll) jadi non-blocking
+from gevent import monkey
+monkey.patch_all()
+
 import os
 import re
 import math
