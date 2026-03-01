@@ -3321,11 +3321,11 @@
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 58000);
 
-        const res = await fetch('/api/analyze', {
+        const response = await fetch('/api/analyze', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ keyword: kw, user_id: userState.userId || '', geo }),
-          signal: controller.signal
+          body: JSON.stringify({ keyword: keyword, geo: 'ID', cat: catId }),
+          // Pastikan tidak ada timeout yang terlalu pendek di sini
         });
 
         clearTimeout(timeout);
