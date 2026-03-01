@@ -27,21 +27,21 @@ _FETCH_HARD_TIMEOUT = 40  # detik
 def _make_pytrends():
     """
     Buat TrendReq TANPA proxy.
-    Railway server punya IP bersih, cukup pakai User-Agent acak + delay.
-    ZenRows dibuang karena tidak kompatibel dengan pytrends multi-step session.
+    PENTING: Jangan pass 'timeout' di requests_args karena pytrends sudah pass
+    timeout secara internal → menyebabkan "multiple values for keyword argument 'timeout'".
+    Hard timeout ditangani oleh _run_with_timeout di level thread.
     """
     return TrendReq(
         hl='id-ID',
         tz=420,
-        retries=2,
-        backoff_factor=1.0,
+        retries=1,
+        backoff_factor=0.5,
         requests_args={
             'headers': {
                 'User-Agent': _random_ua(),
                 'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
                 'Accept': 'application/json, text/plain, */*',
             },
-            'timeout': (8, 25),  # (connect, read) — ketat supaya tidak hang
             'verify': True,
         }
     )
