@@ -3098,11 +3098,15 @@
         <div class="auth-tab" id="tab-signup" onclick="setAuthTab('signup')">Daftar</div>
       </div>
 
-      <div id="auth-form">
-        <input type="email" id="auth-email" class="auth-input" placeholder="Email">
-        <input type="password" id="auth-pass" class="auth-input" placeholder="Password">
-        <button class="auth-submit" id="auth-submit-btn" onclick="handleAuth()">Masuk</button>
-      </div>
+      <form id="auth-form" onsubmit="event.preventDefault(); handleAuth();">
+        <div class="auth-field">
+          <input type="email" id="auth-email" class="auth-input" placeholder="Email" required>
+        </div>
+        <div class="auth-field">
+          <input type="password" id="auth-pass" class="auth-input" placeholder="Password" required>
+        </div>
+        <button type="submit" class="auth-submit" id="auth-submit-btn">Masuk</button>
+      </form>
       <div id="auth-err" class="auth-error-msg"></div>
     </div>
   </div>
