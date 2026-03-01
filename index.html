@@ -1,0 +1,3470 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sentra AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --gold: #D4A843;
+      --gold-bright: #F0C855;
+      --gold-dim: #A8892E;
+      --gold-glow: rgba(212, 168, 67, .15);
+      --gold-line: rgba(212, 168, 67, .22);
+      --bg: #0A0A08;
+      --surface: #181510;
+      --surface2: #201D14;
+      --text: #F5F0E0;
+      --text-dim: #D0C9A8;
+      --text-faint: #7A7360;
+      --red: #E74C3C;
+      --green: #2ECC71;
+      --amber: #F39C12;
+      --blue: #5DADE2;
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 15px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        linear-gradient(rgba(212, 168, 67, .055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212, 168, 67, .055) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(212, 168, 67, .05) 0%, transparent 65%);
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 24px 100px
+    }
+
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 0 36px;
+      border-bottom: 1px solid var(--gold-line);
+    }
+
+    .logo {
+      display: flex;
+      align-items: baseline;
+      gap: 14px
+    }
+
+    .logo-word {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 34px;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 6px;
+      text-transform: uppercase;
+    }
+
+    .logo-sub {
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-dim);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-left: 1px solid var(--gold-line);
+      padding-left: 14px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px
+    }
+
+    .ver {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--gold-dim);
+      border: 1px solid var(--gold-dim);
+      padding: 4px 12px;
+      letter-spacing: 2px
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      animation: blink 2.2s infinite
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .3
+      }
+    }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 64px 0 48px;
+      text-align: center
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(38px, 6vw, 68px);
+      font-weight: 300;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold)
+    }
+
+    .hero-sub {
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 64px;
+    }
+
+    .hero-sub span {
+      color: var(--gold-dim);
+      margin: 0 10px
+    }
+
+    /* ── MODE TOGGLE ── */
+    .mode-toggle-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .mode-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      transition: color .3s;
+    }
+
+    .mode-label.active {
+      color: var(--gold)
+    }
+
+    .toggle-track {
+      width: 52px;
+      height: 26px;
+      border-radius: 13px;
+      background: var(--surface2);
+      border: 1px solid var(--gold-line);
+      cursor: pointer;
+      position: relative;
+      transition: background .3s, border-color .3s;
+    }
+
+    .toggle-track.on {
+      background: rgba(212, 168, 67, .2);
+      border-color: var(--gold)
+    }
+
+    .toggle-knob {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--text-dim);
+      position: absolute;
+      top: 2px;
+      left: 3px;
+      transition: transform .3s, background .3s;
+    }
+
+    .toggle-track.on .toggle-knob {
+      transform: translateX(25px);
+      background: var(--gold)
+    }
+
+    /* ── SEARCH ── */
+    .search-wrap {
+      max-width: 700px;
+      margin: 0 auto
+    }
+
+    .search-box {
+      display: flex;
+      align-items: stretch;
+      border: 1px solid var(--gold-line);
+      background: var(--surface);
+      transition: border-color .25s, box-shadow .25s;
+    }
+
+    .search-box:focus-within {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 1px var(--gold), 0 0 40px rgba(212, 168, 67, .1);
+    }
+
+    .search-prefix {
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      color: var(--gold);
+      font-family: 'DM Mono', monospace;
+      font-size: 18px;
+      border-right: 1px solid var(--gold-line);
+      user-select: none;
+    }
+
+    #kw {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 18px;
+      padding: 0 24px;
+      height: 72px;
+    }
+
+    #kw::placeholder {
+      color: var(--text-faint);
+      font-size: 16px;
+    }
+
+    #btn {
+      padding: 0 40px;
+      background: var(--gold);
+      border: none;
+      color: var(--bg);
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background .2s, transform .1s, box-shadow .2s;
+      white-space: nowrap;
+      box-shadow: 0 0 20px rgba(212, 168, 67, .15);
+    }
+
+    #btn:hover {
+      background: var(--gold-bright)
+    }
+
+    #btn:active {
+      transform: scale(.97)
+    }
+
+    #btn:disabled {
+      opacity: .45;
+      cursor: not-allowed
+    }
+
+    /* ── COMPARE INPUTS ── */
+    .compare-inputs {
+      display: none;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .compare-inputs.active {
+      display: block
+    }
+
+    .compare-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0;
+      align-items: stretch;
+      margin-bottom: 0;
+    }
+
+    .compare-input-box {
+      display: flex;
+      align-items: stretch;
+      border: 1px solid var(--gold-line);
+      background: var(--surface);
+      transition: border-color .25s, box-shadow .25s;
+    }
+
+    .compare-input-box:focus-within {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 1px var(--gold), 0 0 40px rgba(212, 168, 67, .1);
+    }
+
+    .compare-input-box .search-prefix {
+      font-size: 14px;
+      padding: 0 14px
+    }
+
+    .compare-input-box input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 15px;
+      padding: 0 16px;
+      height: 56px;
+    }
+
+    .compare-input-box input::placeholder {
+      color: var(--text-faint)
+    }
+
+    .vs-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 16px;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      user-select: none;
+    }
+
+    .compare-btn-row {
+      display: flex;
+      justify-content: center;
+      margin-top: 16px;
+    }
+
+    #btn-compare {
+      padding: 16px 48px;
+      background: var(--gold);
+      border: none;
+      color: var(--bg);
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+    }
+
+    #btn-compare:hover {
+      background: var(--gold-bright)
+    }
+
+    #btn-compare:active {
+      transform: scale(.97)
+    }
+
+    #btn-compare:disabled {
+      opacity: .45;
+      cursor: not-allowed
+    }
+
+    /* ── SINGLE SEARCH (hide when compare mode) ── */
+    .single-search {
+      display: block
+    }
+
+    .single-search.hidden {
+      display: none
+    }
+
+    /* ── ERROR ── */
+    #err {
+      display: none;
+      max-width: 700px;
+      margin: 24px auto 0;
+      padding: 14px 20px;
+      border: 1px solid var(--red);
+      background: rgba(192, 57, 43, .07);
+      color: var(--red);
+      font-size: 13px;
+    }
+
+    /* ── LOADING BAR ── */
+    #loading {
+      display: none;
+      max-width: 700px;
+      margin: 20px auto 0;
+      opacity: 0;
+      transition: opacity .3s ease;
+    }
+
+    #loading.visible {
+      opacity: 1;
+    }
+
+    .load-bar-track {
+      height: 3px;
+      background: rgba(212, 168, 67, .12);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .load-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--gold);
+      border-radius: 2px;
+      box-shadow: 0 0 10px rgba(212, 168, 67, .6);
+      animation: load-progress 2.4s ease-in-out infinite;
+    }
+
+    @keyframes load-progress {
+      0% {
+        width: 0%;
+        margin-left: 0%
+      }
+
+      50% {
+        width: 60%;
+        margin-left: 20%
+      }
+
+      100% {
+        width: 0%;
+        margin-left: 100%
+      }
+    }
+
+    .load-text {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      text-align: center;
+      margin-top: 10px;
+      animation: blink 1.6s infinite;
+    }
+
+    .load-step {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--gold-dim);
+      text-align: center;
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+
+
+    .load-step {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-top: 12px;
+      min-height: 20px;
+      transition: opacity .4s;
+    }
+
+    /* ── RESULTS ── */
+    #results {
+      display: none;
+      margin-top: 60px;
+      animation: up .5s ease
+    }
+
+    @keyframes up {
+      from {
+        opacity: 0;
+        transform: translateY(22px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .res-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding-bottom: 22px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--gold-line);
+    }
+
+    .res-kw {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 46px;
+      font-weight: 600;
+      color: var(--gold);
+      text-transform: capitalize;
+      line-height: 1;
+    }
+
+    .res-ts {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* ── BADGES ── */
+    .badge-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+      flex-wrap: wrap
+    }
+
+    .stage-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 20px;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: 1.5px solid;
+    }
+
+    .s-Emerging {
+      color: #5DADE2;
+      border-color: #5DADE2;
+      background: rgba(93, 173, 226, .12);
+      box-shadow: 0 0 16px rgba(93, 173, 226, .15);
+    }
+
+    .s-Rising {
+      color: #F0C855;
+      border-color: #F0C855;
+      background: rgba(240, 200, 85, .12);
+      box-shadow: 0 0 16px rgba(240, 200, 85, .2);
+    }
+
+    .s-Peak {
+      color: #E67E22;
+      border-color: #E67E22;
+      background: rgba(230, 126, 34, .12);
+      box-shadow: 0 0 16px rgba(230, 126, 34, .2);
+    }
+
+    .s-Stable {
+      color: #2ECC71;
+      border-color: #2ECC71;
+      background: rgba(46, 204, 113, .12);
+      box-shadow: 0 0 16px rgba(46, 204, 113, .15);
+    }
+
+    .s-Declining {
+      color: #E74C3C;
+      border-color: #E74C3C;
+      background: rgba(231, 76, 60, .12);
+      box-shadow: 0 0 16px rgba(231, 76, 60, .2);
+    }
+
+    .risk-badge {
+      padding: 6px 16px;
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border: 1px solid;
+    }
+
+    .r-High {
+      color: var(--red);
+      border-color: var(--red);
+      background: rgba(192, 57, 43, .08)
+    }
+
+    .r-Medium {
+      color: var(--amber);
+      border-color: var(--amber);
+      background: rgba(230, 126, 34, .08)
+    }
+
+    .r-Low {
+      color: var(--green);
+      border-color: var(--green);
+      background: rgba(39, 174, 96, .08)
+    }
+
+    /* ── METRIC CARDS ── */
+    .g3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      margin-bottom: 2px
+    }
+
+    .g2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2px;
+      margin-bottom: 2px
+    }
+
+    .mc {
+      background: var(--surface);
+      padding: 22px 26px;
+      position: relative;
+      overflow: hidden;
+      transition: background .2s;
+    }
+
+    .mc::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+      background: var(--gold-dim)
+    }
+
+    .mc:hover {
+      background: var(--surface2)
+    }
+
+    .mc-lbl {
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mc-val {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 42px;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .pos {
+      color: var(--green);
+      text-shadow: 0 0 18px rgba(46, 204, 113, .25);
+    }
+
+    .neg {
+      color: var(--red);
+      text-shadow: 0 0 18px rgba(231, 76, 60, .25);
+    }
+
+    .neu {
+      color: var(--text)
+    }
+
+    .gld {
+      color: var(--gold)
+    }
+
+    .mc-sub {
+      font-size: 13px;
+      color: var(--text-dim)
+    }
+
+    /* ── TOOLTIP ── */
+    .help-tip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1px solid var(--text-faint);
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-faint);
+      cursor: help;
+      position: relative;
+      transition: border-color .2s, color .2s;
+      flex-shrink: 0;
+    }
+
+    .help-tip:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    .help-tip .tip-text {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2A2618;
+      border: 1px solid var(--gold-line);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0;
+      text-transform: none;
+      line-height: 1.6;
+      padding: 12px 16px;
+      width: 260px;
+      z-index: 100;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .5);
+    }
+
+    .help-tip .tip-text::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: #2A2618;
+    }
+
+    .help-tip:hover .tip-text,
+    .help-tip:focus .tip-text {
+      display: block;
+    }
+
+    /* ── PULSE ── */
+    .pulse-card {
+      background: var(--surface);
+      padding: 22px 26px;
+      margin-bottom: 2px
+    }
+
+    .pulse-track {
+      height: 5px;
+      background: var(--text-faint);
+      border-radius: 3px;
+      margin: 12px 0 8px;
+      overflow: hidden
+    }
+
+    .pulse-fill {
+      height: 100%;
+      border-radius: 3px;
+      width: 0%;
+      transition: width 1.3s cubic-bezier(.4, 0, .2, 1)
+    }
+
+    .pulse-nums {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text-dim)
+    }
+
+    /* ── TIMING RING ── */
+    .timing-card {
+      background: var(--surface);
+      padding: 28px 32px;
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      margin-bottom: 2px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .timing-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(135deg, var(--gold-glow) 0%, transparent 55%);
+    }
+
+    .ring-wrap {
+      position: relative;
+      flex-shrink: 0
+    }
+
+    .ring-wrap svg {
+      transform: rotate(-90deg)
+    }
+
+    .ring-bg {
+      fill: none;
+      stroke: var(--text-faint);
+      stroke-width: 5
+    }
+
+    .ring-fg {
+      fill: none;
+      stroke: var(--gold);
+      stroke-width: 5;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1.3s cubic-bezier(.4, 0, .2, 1);
+      filter: drop-shadow(0 0 8px rgba(212, 168, 67, .55));
+    }
+
+    .ring-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center
+    }
+
+    .ring-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1
+    }
+
+    .ring-denom {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text-dim)
+    }
+
+    .timing-info {
+      flex: 1
+    }
+
+    .timing-lbl-sm {
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 10px
+    }
+
+    .timing-lbl-big {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 12px
+    }
+
+    .timing-desc {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.75
+    }
+
+    /* ── FORECAST ── */
+    .fc-card {
+      background: var(--surface);
+      padding: 22px 26px;
+      margin-bottom: 2px
+    }
+
+    .fc-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px
+    }
+
+    .fc-lbl {
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim)
+    }
+
+    .fc-val {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      color: var(--gold)
+    }
+
+    .fc-bar-track {
+      height: 3px;
+      background: var(--text-faint);
+      overflow: hidden
+    }
+
+    .fc-bar-fill {
+      height: 100%;
+      width: 0%;
+      transition: width 1.3s cubic-bezier(.4, 0, .2, 1);
+      background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+      box-shadow: 0 0 8px var(--gold)
+    }
+
+    .fc-conf {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 10px
+    }
+
+    /* ── SEASONALITY ── */
+    .season-card {
+      background: var(--surface);
+      padding: 22px 26px;
+      margin-bottom: 2px
+    }
+
+    .season-txt {
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 12px;
+      line-height: 1.6
+    }
+
+    .month-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px
+    }
+
+    .chip {
+      padding: 5px 12px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 12px;
+      border: 1px solid var(--gold-dim);
+      color: var(--gold);
+      background: var(--gold-glow);
+    }
+
+    .chip.off {
+      border-color: var(--text-faint);
+      color: var(--text-dim);
+      background: transparent
+    }
+
+    /* ── AI INSIGHT ── */
+    .ai-card {
+      background: var(--surface);
+      padding: 32px 36px;
+      border-top: 2px solid var(--gold);
+      margin-top: 2px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ai-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 260px;
+      height: 260px;
+      pointer-events: none;
+      background: radial-gradient(circle, rgba(212, 168, 67, .07) 0%, transparent 70%);
+    }
+
+    .ai-head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 26px
+    }
+
+    .ai-icon {
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold);
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .ai-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold)
+    }
+
+    .ai-body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 15px;
+      line-height: 2.0;
+      color: var(--text);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .ai-body.typing::after {
+      content: '▋';
+      color: var(--gold);
+      animation: blink .7s infinite
+    }
+
+    /* AI 3-card layout */
+    .ai-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+
+    .ai-section-card {
+      background: var(--surface2);
+      padding: 24px 22px;
+      position: relative;
+    }
+
+    .ai-section-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+    }
+
+    .ai-section-card.card-pasar::before {
+      background: var(--blue);
+    }
+
+    .ai-section-card.card-aksi::before {
+      background: var(--gold);
+    }
+
+    .ai-section-card.card-waktu::before {
+      background: var(--green);
+    }
+
+    .ai-section-icon {
+      font-size: 22px;
+      margin-bottom: 12px;
+    }
+
+    .ai-section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .card-pasar .ai-section-title {
+      color: var(--blue);
+    }
+
+    .card-aksi .ai-section-title {
+      color: var(--gold);
+    }
+
+    .card-waktu .ai-section-title {
+      color: var(--green);
+    }
+
+    .ai-section-body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      line-height: 1.85;
+      color: var(--text);
+    }
+
+    .ai-section-body strong {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    /* ── COMPARE RESULTS ── */
+    #compare-results {
+      display: none;
+      margin-top: 60px;
+      animation: up .5s ease
+    }
+
+    .cmp-header {
+      text-align: center;
+      padding-bottom: 28px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--gold-line);
+    }
+
+    .cmp-vs-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 42px;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .cmp-vs-title .kw-a {
+      color: var(--gold)
+    }
+
+    .cmp-vs-title .kw-vs {
+      color: var(--text-dim);
+      font-size: 28px;
+      margin: 0 16px;
+      font-weight: 400
+    }
+
+    .cmp-vs-title .kw-b {
+      color: var(--blue)
+    }
+
+    .cmp-ts {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-top: 10px;
+    }
+
+    /* Winner banner */
+    .winner-banner {
+      background: var(--surface);
+      border: 1px solid var(--gold-line);
+      padding: 22px 28px;
+      margin-bottom: 2px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .winner-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(135deg, var(--gold-glow) 0%, transparent 55%);
+    }
+
+    .winner-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .winner-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .winner-score {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 6px;
+    }
+
+    /* Comparison table */
+    .cmp-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2px;
+    }
+
+    .cmp-table th,
+    .cmp-table td {
+      padding: 14px 18px;
+      text-align: center;
+      border-bottom: 1px solid rgba(74, 69, 53, .3);
+    }
+
+    .cmp-table th {
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      background: var(--surface);
+    }
+
+    .cmp-table th:first-child {
+      text-align: left
+    }
+
+    .cmp-table td:first-child {
+      text-align: left;
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .cmp-table td {
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      background: var(--surface);
+    }
+
+    .cmp-table .val-winner {
+      color: var(--gold);
+      font-weight: 600
+    }
+
+    .cmp-table .val-loser {
+      color: var(--text-dim)
+    }
+
+    .cmp-table .col-a {
+      border-left: 2px solid var(--gold)
+    }
+
+    .cmp-table .col-b {
+      border-left: 2px solid var(--blue)
+    }
+
+    .cmp-table .winner-cell {
+      color: var(--gold);
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    /* Chart container */
+    .chart-card {
+      background: var(--surface);
+      padding: 28px 28px 20px;
+      margin-bottom: 2px;
+      position: relative;
+    }
+
+    .chart-card .mc-lbl {
+      margin-bottom: 18px
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 320px
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--gold-line);
+      padding: 24px 0;
+      text-align: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-top: 80px;
+    }
+
+    /* ── MOBILE-FIRST RESPONSIVENESS ── */
+    @media(max-width:680px) {
+      .g3 {
+        grid-template-columns: 1fr
+      }
+
+      .g2 {
+        grid-template-columns: 1fr
+      }
+
+      .mc-val {
+        font-size: 38px
+      }
+
+      .timing-card {
+        flex-direction: column;
+        gap: 20px
+      }
+
+      .res-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px
+      }
+
+      .res-kw {
+        font-size: 32px
+      }
+
+      .compare-row {
+        grid-template-columns: 1fr;
+        gap: 0
+      }
+
+      .vs-badge {
+        padding: 10px 0
+      }
+
+      .cmp-vs-title {
+        font-size: 26px
+      }
+
+      .cmp-vs-title .kw-vs {
+        font-size: 18px;
+        margin: 0 8px
+      }
+
+      .chart-wrap {
+        height: 220px
+      }
+
+      .ai-cards-grid {
+        grid-template-columns: 1fr
+      }
+
+      .ai-card {
+        padding: 22px 18px
+      }
+
+      .ai-section-card {
+        padding: 20px 16px
+      }
+
+      .hero-title {
+        font-size: 32px
+      }
+
+      #kw {
+        font-size: 16px;
+        height: 60px
+      }
+
+      #btn {
+        padding: 0 24px;
+        font-size: 11px
+      }
+
+      .mc {
+        padding: 18px 20px
+      }
+
+      .cmp-table th,
+      .cmp-table td {
+        padding: 10px 8px;
+        font-size: 11px
+      }
+
+      .help-tip .tip-text {
+        width: 200px;
+        font-size: 11px
+      }
+
+      .winner-name {
+        font-size: 28px
+      }
+    }
+
+    /* ── SECTOR DASHBOARD ── */
+    .sector-section {
+      padding: 52px 0 36px;
+      border-bottom: 1px solid var(--gold-line);
+      margin-bottom: 40px;
+    }
+
+    .sector-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+
+    .sector-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .sector-subtitle {
+      font-family: 'Syne', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-faint);
+    }
+
+    .sector-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .sector-card {
+      background: var(--surface2);
+      padding: 22px 20px;
+      cursor: pointer;
+      position: relative;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      transition: border-color .25s;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .sector-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: var(--gold);
+      transition: width .3s ease;
+    }
+
+    .sector-card:hover {
+      border-color: var(--gold-line);
+    }
+
+    .sector-card:hover::before {
+      width: 100%;
+    }
+
+    .sector-card.loading-sector {
+      opacity: .6;
+      pointer-events: none;
+    }
+
+    .sector-icon {
+      width: 36px;
+      height: 36px;
+      margin-bottom: 14px;
+      color: var(--gold-dim);
+    }
+
+    .sector-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .sector-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.35;
+    }
+
+    .sector-kw {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text-faint);
+      letter-spacing: .5px;
+    }
+
+    /* ── SINGLE TREND CHART ── */
+    .trend-chart-card {
+      background: var(--surface);
+      padding: 24px 28px 20px;
+      margin-bottom: 2px;
+    }
+
+    .trend-chart-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .trend-chart-wrap {
+      position: relative;
+      height: 200px;
+    }
+
+    @media(max-width:680px) {
+      .sector-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .sector-card {
+        width: 100%;
+        margin-bottom: 0;
+      }
+
+      .sector-head {
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .trend-chart-wrap {
+        height: 160px;
+      }
+    }
+
+    /* ── STATUS BAR (quota + geo, single row) ── */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      max-width: 700px;
+      margin: 8px auto 0;
+      padding: 6px 12px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text-faint);
+      background: var(--surface);
+      border: 1px solid var(--gold-line);
+    }
+
+    .status-bar.hidden {
+      display: none;
+    }
+
+    .status-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-sep {
+      color: var(--gold-dim);
+      opacity: .4;
+    }
+
+    .status-quota-text {
+      color: var(--text-faint);
+    }
+
+    .status-dots {
+      display: flex;
+      gap: 4px;
+    }
+
+    .status-upgrade-btn {
+      font-family: 'Syne', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--gold);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    .status-upgrade-btn:hover {
+      color: var(--gold-bright);
+    }
+
+    .status-geo-label {
+      color: var(--text-faint);
+      white-space: nowrap;
+    }
+
+    .status-geo-lock {
+      font-size: 10px;
+      opacity: .4;
+    }
+
+    select#geo-select.status-geo-sel {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      cursor: pointer;
+      outline: none;
+      padding: 0;
+    }
+
+    select#geo-select.status-geo-sel:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .quota-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+      padding: 8px 14px;
+      background: var(--surface);
+      border: 1px solid var(--gold-line);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .quota-bar.hidden {
+      display: none;
+    }
+
+    .quota-dots {
+      display: flex;
+      gap: 5px;
+    }
+
+    .quota-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+
+    .quota-dot.used {
+      background: var(--surface2);
+      border: 1px solid var(--gold-line);
+    }
+
+    .quota-upgrade-btn {
+      font-family: 'Syne', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--gold);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    .quota-upgrade-btn:hover {
+      color: var(--gold-bright);
+    }
+
+    /* ── GEO SELECT (Pro) ── */
+    .geo-wrap {
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      background: var(--surface);
+      border: 1px solid var(--gold-line);
+    }
+
+    .geo-wrap.hidden {
+      display: none;
+    }
+
+    .geo-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text-faint);
+      white-space: nowrap;
+    }
+
+    .geo-lock {
+      font-size: 12px;
+      opacity: .5;
+    }
+
+    select#geo-select {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+    }
+
+    select#geo-select:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+    }
+
+    select#geo-select option {
+      background: #181510;
+    }
+
+    /* ── PDF BUTTON ── */
+    .pdf-btn-wrap {
+      text-align: right;
+      padding: 12px 0 4px;
+    }
+
+    .pdf-btn {
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: transparent;
+      border: 1px solid var(--gold-dim);
+      padding: 8px 18px;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+
+    .pdf-btn:hover:not(:disabled) {
+      background: var(--gold-glow);
+    }
+
+    .pdf-btn:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .pdf-btn .lock-icon {
+      margin-right: 6px;
+    }
+
+    /* ── PRICING SECTION ── */
+    .pricing-section {
+      padding: 72px 0 56px;
+      border-top: 1px solid var(--gold-line);
+      margin-top: 60px;
+    }
+
+    .pricing-head {
+      text-align: center;
+      margin-bottom: 44px;
+    }
+
+    .pricing-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 34px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .pricing-sub {
+      font-size: 13px;
+      color: var(--text-faint);
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .pricing-card {
+      background: var(--surface);
+      padding: 36px 32px;
+      position: relative;
+      border: 1px solid transparent;
+      transition: border-color .2s;
+    }
+
+    .pricing-card.pro-card {
+      border-color: var(--gold-line);
+    }
+
+    .pricing-card.pro-card::before {
+      content: 'POPULER';
+      position: absolute;
+      top: -1px;
+      right: 20px;
+      background: var(--gold);
+      color: #0A0A08;
+      font-family: 'Syne', sans-serif;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      padding: 4px 10px;
+    }
+
+    .pricing-plan {
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 12px;
+    }
+
+    .pricing-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 42px;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .pricing-price-sub {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text-faint);
+      margin-bottom: 28px;
+    }
+
+    .pricing-features {
+      list-style: none;
+      margin-bottom: 28px;
+    }
+
+    .pricing-features li {
+      font-size: 13px;
+      color: var(--text-dim);
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(212, 168, 67, .06);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pricing-features li::before {
+      content: '—';
+      color: var(--gold);
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+
+    .pricing-features li.locked {
+      color: var(--text-faint);
+    }
+
+    .pricing-features li.locked::before {
+      content: '🔒';
+    }
+
+    .pricing-cta {
+      width: 100%;
+      padding: 13px;
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: 1px solid var(--gold-line);
+      background: transparent;
+      color: var(--text-dim);
+      transition: background .2s, color .2s, border-color .2s;
+    }
+
+    .pricing-cta.gold-cta {
+      background: var(--gold);
+      color: #0A0A08;
+      border-color: var(--gold);
+    }
+
+    .pricing-cta.gold-cta:hover {
+      background: var(--gold-bright);
+      border-color: var(--gold-bright);
+    }
+
+    /* ── UPGRADE MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .75);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--surface);
+      border: 1px solid var(--gold-line);
+      max-width: 420px;
+      width: 90%;
+      padding: 40px 36px 32px;
+      position: relative;
+      text-align: center;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      background: none;
+      border: none;
+      color: var(--text-faint);
+      font-size: 20px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      color: var(--text);
+    }
+
+    .modal-icon {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 48px;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .modal-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .modal-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    .modal-cta {
+      width: 100%;
+      padding: 13px;
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: var(--gold);
+      border: none;
+      color: #0A0A08;
+      cursor: pointer;
+    }
+
+    .modal-cta:hover {
+      background: var(--gold-bright);
+    }
+
+    .modal-later {
+      display: block;
+      margin-top: 14px;
+      font-size: 11px;
+      color: var(--text-faint);
+      cursor: pointer;
+    }
+
+    .modal-later:hover {
+      color: var(--text-dim);
+    }
+
+    /* ════════════════════════════════════════════════
+       COMPREHENSIVE MOBILE RESPONSIVE  ≤ 680 px
+    ════════════════════════════════════════════════ */
+    @media(max-width:680px) {
+
+      /* 1 ─ Global layout */
+      .wrap {
+        padding: 0 16px 80px;
+      }
+
+      /* 2 ─ Header: stack vertically, center everything */
+      header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 14px;
+        padding: 24px 0 28px;
+      }
+
+      .logo {
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .logo-word {
+        font-size: 28px;
+        letter-spacing: 4px;
+      }
+
+      .logo-sub {
+        border-left: none;
+        border-top: 1px solid var(--gold-line);
+        padding-left: 0;
+        padding-top: 8px;
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-align: center;
+      }
+
+      .header-right {
+        justify-content: center;
+        gap: 12px;
+      }
+
+      /* 3 ─ Hero: larger breathing room, centered text */
+      .hero {
+        padding: 44px 0 36px;
+        text-align: center;
+      }
+
+      .hero-title {
+        font-size: clamp(32px, 10vw, 48px);
+        margin-bottom: 14px;
+      }
+
+      .hero-sub {
+        font-size: 10px;
+        letter-spacing: 2px;
+        margin-bottom: 40px;
+      }
+
+      /* 4 ─ Search bar: vertical stack, full-width button */
+      .search-wrap {
+        width: 100%;
+      }
+
+      .search-box {
+        flex-direction: column;
+        border-radius: 0;
+      }
+
+      .search-prefix {
+        padding: 12px 16px;
+        border-right: none;
+        border-bottom: 1px solid var(--gold-line);
+        justify-content: flex-start;
+        font-size: 14px;
+      }
+
+      #kw {
+        height: 56px;
+        font-size: 16px;
+        padding: 0 16px;
+      }
+
+      #kw::placeholder {
+        font-size: 14px;
+      }
+
+      #btn {
+        width: 100%;
+        padding: 0;
+        height: 52px;
+        font-size: 12px;
+        letter-spacing: 3px;
+        border-top: 1px solid rgba(0, 0, 0, .2);
+      }
+
+      /* Status bar wraps to column on very small screens */
+      .status-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 8px 12px;
+      }
+
+      .status-bar-right {
+        padding-top: 4px;
+        border-top: 1px solid var(--gold-line);
+        width: 100%;
+      }
+
+      /* 5 ─ Sector grid: 1 column, full-width cards */
+      .sector-section {
+        padding: 32px 0;
+      }
+
+      .sector-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      /* 6 ─ Sector card content: centered, vertical stack */
+      .sector-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 24px 20px;
+        width: 100%;
+      }
+
+      .sector-icon {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 12px;
+      }
+
+      .sector-name {
+        font-size: 14px;
+        margin-bottom: 6px;
+      }
+
+      .sector-kw {
+        font-size: 11px;
+        line-height: 1.6;
+      }
+
+      .sector-head {
+        flex-direction: column;
+        gap: 6px;
+        text-align: center;
+      }
+
+      /* 7 ─ Metrics grid: 1 column */
+      .metrics-grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      .mc {
+        padding: 18px 16px;
+      }
+
+      .mc-val {
+        font-size: 34px;
+      }
+
+      /* 8 ─ AI insight cards: single column */
+      .ai-cards-grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      .ai-card {
+        padding: 24px 20px;
+      }
+
+      /* 9 ─ Timing card: stack vertically */
+      .timing-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+        padding: 22px 20px;
+      }
+
+      /* 10 ─ Trend chart height */
+      .trend-chart-wrap {
+        height: 160px;
+      }
+
+      /* 11 ─ Pricing section */
+      .pricing-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pricing-card {
+        padding: 28px 20px;
+      }
+
+      /* 12 ─ Results header */
+      .res-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+
+      .res-kw {
+        font-size: 34px;
+      }
+
+      /* 13 ─ Compare input row */
+      .compare-row {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .vs-badge {
+        padding: 8px 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <header>
+      <div class="logo">
+        <span class="logo-word">Sentra</span>
+        <span class="logo-sub">Business Intelligence</span>
+      </div>
+      <div class="header-right">
+        <span class="ver">v2.0</span>
+        <div class="dot"></div>
+      </div>
+    </header>
+
+    <div class="hero">
+      <h1 class="hero-title">Analisis Tren Pasar<br><em>Berbasis Data Nyata</em></h1>
+      <p class="hero-sub">Google Trends<span>·</span>AI Insight<span>·</span>Market Intelligence</p>
+
+      <!-- MODE TOGGLE -->
+      <div class="mode-toggle-wrap">
+        <span class="mode-label active" id="lbl-single">Analisis</span>
+        <div class="toggle-track" id="mode-toggle" onclick="toggleCompareMode()">
+          <div class="toggle-knob"></div>
+        </div>
+        <span class="mode-label" id="lbl-compare">Mode Banding</span>
+      </div>
+
+      <!-- SINGLE KEYWORD SEARCH -->
+      <div class="search-wrap single-search" id="single-search">
+        <div class="search-box">
+          <div class="search-prefix">›_</div>
+          <input type="text" id="kw" placeholder="ketik keyword produk..." autocomplete="off" spellcheck="false" />
+          <button id="btn" onclick="doSearch()">Analisis</button>
+        </div>
+      </div>
+
+      <!-- STATUS BAR: quota + geo in one row -->
+      <div class="status-bar hidden" id="status-bar">
+        <div class="status-bar-left">
+          <span style="opacity:.45;font-size:11px">⚡</span>
+          <span class="status-quota-text" id="quota-text">Sisa Kuota: &mdash;</span>
+          <div class="status-dots" id="quota-dots"></div>
+          <button class="status-upgrade-btn" id="quota-upgrade-btn" onclick="showUpgradeModal()"
+            style="display:none">Upgrade Pro →</button>
+        </div>
+        <div class="status-bar-right">
+          <span class="status-sep">│</span>
+          <span style="opacity:.45;font-size:11px">📍</span>
+          <span class="status-geo-label">Lokasi</span>
+          <select id="geo-select" class="status-geo-sel" disabled title="Lokasi spesifik hanya untuk pengguna Pro">
+            <option value="ID">Indonesia (Nasional)</option>
+            <option value="ID-JK">DKI Jakarta</option>
+            <option value="ID-JB">Jawa Barat</option>
+            <option value="ID-JT">Jawa Tengah</option>
+            <option value="ID-JI">Jawa Timur</option>
+            <option value="ID-BT">Banten</option>
+            <option value="ID-BA">Bali</option>
+            <option value="ID-SN">Sulawesi Selatan</option>
+            <option value="ID-SU">Sumatera Utara</option>
+            <option value="ID-SS">Sumatera Selatan</option>
+            <option value="ID-KS">Kalimantan Selatan</option>
+          </select>
+          <span class="status-geo-lock" id="geo-lock" title="Upgrade ke Pro untuk analisis per-Provinsi">🔒</span>
+        </div>
+      </div>
+
+      <!-- COMPARE INPUTS -->
+      <div class="compare-inputs" id="compare-inputs">
+        <div class="compare-row">
+          <div class="compare-input-box">
+            <div class="search-prefix">A</div>
+            <input type="text" id="kw-a" placeholder="keyword pertama..." autocomplete="off" spellcheck="false" />
+          </div>
+          <div class="vs-badge">VS</div>
+          <div class="compare-input-box">
+            <div class="search-prefix">B</div>
+            <input type="text" id="kw-b" placeholder="keyword kedua..." autocomplete="off" spellcheck="false" />
+          </div>
+        </div>
+        <div class="compare-btn-row">
+          <button id="btn-compare" onclick="doCompare()">Bandingkan</button>
+        </div>
+      </div>
+
+      <!-- LOADING BAR (inside hero, below search block) -->
+      <div id="loading">
+        <div class="load-bar-track">
+          <div class="load-bar-fill"></div>
+        </div>
+        <div id="load-text" class="load-text">Menganalisis pasar...</div>
+        <div id="load-step" class="load-step"></div>
+      </div>
+
+      <div id="err"></div>
+    </div>
+
+    <!-- ══════════ SEKTOR DASHBOARD ══════════ -->
+    <section class="sector-section" id="sector-dashboard">
+      <div class="sector-head">
+        <div class="sector-title">Pusat Tren Sektoral</div>
+        <div class="sector-subtitle">Klik untuk analisis instan</div>
+      </div>
+      <div class="sector-grid">
+
+        <!-- Fashion -->
+        <div class="sector-card" onclick="analyzeCategory('fashion')" id="sc-fashion">
+          <div class="sector-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg></div>
+          <div class="sector-name">Fashion</div>
+          <div class="sector-kw">baju wanita · outfit</div>
+        </div>
+
+        <!-- Beauty -->
+        <div class="sector-card" onclick="analyzeCategory('beauty')" id="sc-beauty">
+          <div class="sector-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg></div>
+          <div class="sector-name">Beauty &amp; Personal Care</div>
+          <div class="sector-kw">skincare · kosmetik</div>
+        </div>
+
+        <!-- Makanan & Minuman -->
+        <div class="sector-card" onclick="analyzeCategory('fnb')" id="sc-fnb">
+          <div class="sector-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
+              <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
+              <line x1="6" y1="1" x2="6" y2="4" />
+              <line x1="10" y1="1" x2="10" y2="4" />
+              <line x1="14" y1="1" x2="14" y2="4" />
+            </svg></div>
+          <div class="sector-name">Makanan &amp; Minuman</div>
+          <div class="sector-kw">kuliner · produk UMKM</div>
+        </div>
+
+        <!-- Gadget -->
+        <div class="sector-card" onclick="analyzeCategory('gadget')" id="sc-gadget">
+          <div class="sector-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+              <line x1="12" y1="18" x2="12.01" y2="18" />
+            </svg></div>
+          <div class="sector-name">Gadget &amp; Aksesoris</div>
+          <div class="sector-kw">smartphone · earbuds</div>
+        </div>
+
+        <!-- Home & Living -->
+        <div class="sector-card" onclick="analyzeCategory('home')" id="sc-home">
+          <div class="sector-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <polyline points="9 22 9 12 15 12 15 22" />
+            </svg></div>
+          <div class="sector-name">Home &amp; Living</div>
+          <div class="sector-kw">dekorasi rumah · furnitur</div>
+        </div>
+
+        <!-- Hobi & Lifestyle -->
+        <div class="sector-card" onclick="analyzeCategory('hobi')" id="sc-hobi">
+          <div class="sector-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg></div>
+          <div class="sector-name">Hobi &amp; Lifestyle</div>
+          <div class="sector-kw">olahraga · traveling</div>
+        </div>
+
+        <!-- Tren Musiman -->
+        <div class="sector-card" onclick="analyzeCategory('musiman')" id="sc-musiman">
+          <div class="sector-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3.51 23c0-4.974 0-14 8.49-14s8.49 9.026 8.49 14" />
+              <path d="M12 9V2M12 2l3 3M12 2l-3 3" />
+            </svg></div>
+          <div class="sector-name">Tren Musiman</div>
+          <div class="sector-kw">lebaran · akhir tahun</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ══════════ SINGLE RESULTS ══════════ -->
+    <div id="results">
+      <div class="res-header">
+        <div id="r-kw" class="res-kw"></div>
+        <div id="r-ts" class="res-ts"></div>
+      </div>
+
+      <div class="badge-row">
+        <span id="r-stage" class="stage-badge"></span>
+        <span id="r-risk" class="risk-badge"></span>
+      </div>
+
+      <div class="g3">
+        <div class="mc">
+          <div class="mc-lbl">Growth 7 Hari <span class="help-tip" tabindex="0">?<span class="tip-text">Mengukur
+                kenaikan atau penurunan minat orang terhadap produk ini dalam 7 hari terakhir.</span></span></div>
+          <div id="r-growth" class="mc-val neu">—</div>
+          <div class="mc-sub">perubahan minat</div>
+        </div>
+        <div class="mc">
+          <div class="mc-lbl">Momentum <span class="help-tip" tabindex="0">?<span class="tip-text">Arah pergerakan tren:
+                apakah minat sedang naik atau turun secara konsisten.</span></span></div>
+          <div id="r-mom" class="mc-val neu">—</div>
+          <div class="mc-sub">arah tren</div>
+        </div>
+        <div class="mc">
+          <div class="mc-lbl">Volatilitas <span class="help-tip" tabindex="0">?<span class="tip-text">Seberapa stabil
+                minat terhadap produk ini. Angka tinggi = naik-turun tidak menentu, berisiko.</span></span></div>
+          <div id="r-vol" class="mc-val neu">—</div>
+          <div class="mc-sub">fluktuasi pasar</div>
+        </div>
+      </div>
+
+      <div class="g2">
+        <div class="mc">
+          <div class="mc-lbl">FOMO Index <span class="help-tip" tabindex="0">?<span class="tip-text">Mengukur seberapa
+                viral produk ini akibat ikut-ikutan (hype). Angka tinggi = bisa jadi tren sesaat, bukan minat
+                asli.</span></span></div>
+          <div id="r-fomo" class="mc-val neu">—</div>
+          <div id="r-fomo-l" class="mc-sub">—</div>
+        </div>
+        <div class="mc">
+          <div class="mc-lbl">Saturasi Pasar <span class="help-tip" tabindex="0">?<span class="tip-text">Seberapa penuh
+                pasar dengan penjual produk ini. Angka tinggi = sudah banyak pesaing, sulit bersaing.</span></span>
+          </div>
+          <div id="r-sat" class="mc-val neu">—</div>
+          <div id="r-sat-l" class="mc-sub">—</div>
+        </div>
+      </div>
+
+      <div class="pulse-card">
+        <div class="mc-lbl">Market Pulse Score <span class="help-tip" tabindex="0">?<span class="tip-text">Skor
+              kesehatan pasar secara keseluruhan. Makin tinggi = pasar makin aktif dan menjanjikan.</span></span></div>
+        <div class="pulse-track">
+          <div id="r-pulse-fill" class="pulse-fill"></div>
+        </div>
+        <div class="pulse-nums"><span>0</span><span id="r-pulse" style="color:var(--gold)">—</span><span>100</span>
+        </div>
+      </div>
+
+      <div class="timing-card">
+        <div class="ring-wrap">
+          <svg width="96" height="96" viewBox="0 0 96 96">
+            <circle class="ring-bg" cx="48" cy="48" r="40" />
+            <circle id="r-ring" class="ring-fg" cx="48" cy="48" r="40" stroke-dasharray="251.33"
+              stroke-dashoffset="251.33" />
+          </svg>
+          <div class="ring-center">
+            <div id="r-ring-num" class="ring-num">—</div>
+            <div class="ring-denom">/100</div>
+          </div>
+        </div>
+        <div class="timing-info">
+          <div class="timing-lbl-sm">Entry Timing Score <span class="help-tip" tabindex="0">?<span class="tip-text">Skor
+                yang menunjukkan apakah SEKARANG waktu yang tepat untuk mulai jualan produk ini. 80-100 = waktu
+                terbaik!</span></span></div>
+          <div id="r-timing-lbl" class="timing-lbl-big">—</div>
+          <div id="r-timing-desc" class="timing-desc">—</div>
+        </div>
+      </div>
+
+      <div class="fc-card">
+        <div class="fc-head">
+          <div class="fc-lbl">Prediksi 30 Hari ke Depan</div>
+          <div id="r-fc-val" class="fc-val">—</div>
+        </div>
+        <div class="fc-bar-track">
+          <div id="r-fc-bar" class="fc-bar-fill"></div>
+        </div>
+        <div class="fc-conf"><span>Tingkat keyakinan forecast</span><span id="r-fc-conf">—</span></div>
+      </div>
+
+      <!-- Trend chart -->
+      <div class="trend-chart-card">
+        <div class="trend-chart-head">
+          <div class="mc-lbl">Tren Minat — 3 Bulan Terakhir</div>
+          <div id="r-trend-range" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-faint)"></div>
+        </div>
+        <div class="trend-chart-wrap">
+          <canvas id="single-chart"></canvas>
+        </div>
+      </div>
+
+      <div class="season-card">
+        <div class="mc-lbl" style="margin-bottom:10px">Pola Musiman</div>
+        <div id="r-season-txt" class="season-txt"></div>
+        <div id="r-months" class="month-chips"></div>
+      </div>
+
+      <div class="ai-card">
+        <div class="ai-head">
+          <div class="ai-title">AI Business Insight — Powered by Gemini</div>
+        </div>
+        <div id="r-ai-cards" class="ai-cards-grid">
+          <div class="ai-section-card card-pasar">
+            <div class="ai-section-title">Analisis Pasar</div>
+            <div id="r-ai-pasar" class="ai-section-body">—</div>
+          </div>
+          <div class="ai-section-card card-aksi">
+            <div class="ai-section-title">Rekomendasi Aksi</div>
+            <div id="r-ai-aksi" class="ai-section-body">—</div>
+          </div>
+          <div class="ai-section-card card-waktu">
+            <div class="ai-section-title">Strategi Waktu</div>
+            <div id="r-ai-waktu" class="ai-section-body">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PDF DOWNLOAD -->
+      <div class="pdf-btn-wrap">
+        <button class="pdf-btn" id="pdf-btn" onclick="downloadPdf()" disabled>
+          <span class="lock-icon">🔒</span>Download Laporan PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- ══════════ COMPARE RESULTS ══════════ -->
+    <div id="compare-results">
+      <!-- Header -->
+      <div class="cmp-header">
+        <div class="cmp-vs-title">
+          <span class="kw-a" id="cmp-kw-a"></span>
+          <span class="kw-vs">vs</span>
+          <span class="kw-b" id="cmp-kw-b"></span>
+        </div>
+        <div class="cmp-ts" id="cmp-ts"></div>
+      </div>
+
+      <!-- Winner Banner -->
+      <div class="winner-banner">
+        <div class="winner-label">Pemenang Keseluruhan</div>
+        <div class="winner-name" id="cmp-winner"></div>
+        <div class="winner-score" id="cmp-winner-score"></div>
+      </div>
+
+      <!-- Comparison Table -->
+      <table class="cmp-table">
+        <thead>
+          <tr>
+            <th>Metrik</th>
+            <th id="cmp-th-a" class="col-a">Keyword A</th>
+            <th id="cmp-th-b" class="col-b">Keyword B</th>
+            <th>Unggul</th>
+          </tr>
+        </thead>
+        <tbody id="cmp-tbody"></tbody>
+      </table>
+
+      <!-- Chart -->
+      <div class="chart-card">
+        <div class="mc-lbl">Tren Minat — 3 Bulan Terakhir</div>
+        <div class="chart-wrap">
+          <canvas id="cmp-chart"></canvas>
+        </div>
+      </div>
+
+      <!-- AI Insight -->
+      <div class="ai-card">
+        <div class="ai-head">
+          <div class="ai-icon">✦</div>
+          <div class="ai-title">AI Benchmarking Insight — Powered by Gemini</div>
+        </div>
+        <div id="cmp-ai" class="ai-body"></div>
+      </div>
+    </div>
+
+  </div><!-- /wrap -->
+
+  <!-- ══════════ PRICING SECTION ══════════ -->
+  <div class="wrap">
+    <section class="pricing-section" id="pricing">
+      <div class="pricing-head">
+        <div class="pricing-title">Pilih Paket Sentra</div>
+        <div class="pricing-sub">Mulai gratis. Upgrade kapan saja.</div>
+      </div>
+      <div class="pricing-grid">
+
+        <!-- FREE -->
+        <div class="pricing-card">
+          <div class="pricing-plan">Free</div>
+          <div class="pricing-price">Rp 0</div>
+          <div class="pricing-price-sub">Selamanya gratis</div>
+          <ul class="pricing-features">
+            <li>5 analisis per hari</li>
+            <li>Lokasi: Indonesia Nasional</li>
+            <li>Growth, Momentum, Volatilitas</li>
+            <li>AI Insight (3 Card)</li>
+            <li>Sektor Dashboard</li>
+            <li class="locked">Lokasi per-Provinsi</li>
+            <li class="locked">Download PDF</li>
+            <li class="locked">AI Marketing Kit</li>
+          </ul>
+          <button class="pricing-cta" disabled>Paket Aktif</button>
+        </div>
+
+        <!-- PRO -->
+        <div class="pricing-card pro-card">
+          <div class="pricing-plan">Pro</div>
+          <div class="pricing-price">Rp 49rb</div>
+          <div class="pricing-price-sub">per bulan</div>
+          <ul class="pricing-features">
+            <li>Analisis tak terbatas</li>
+            <li>Lokasi per-Provinsi (10 provinsi)</li>
+            <li>Semua metrik + Forecast 30 Hari</li>
+            <li>AI Insight Premium (3 Card)</li>
+            <li>Sektor Dashboard</li>
+            <li>Analisis Lokasi Provinsi</li>
+            <li>Download Laporan PDF</li>
+            <li>AI Marketing Kit <em style="font-size:10px;color:var(--gold-dim)">(segera)</em></li>
+          </ul>
+          <button class="pricing-cta gold-cta" onclick="showUpgradeModal()">Upgrade Sekarang</button>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+  <footer>Sentra BI v2.0 &mdash; Powered by Google Trends &amp; Gemini AI</footer>
+
+  <!-- ══════════ UPGRADE MODAL ══════════ -->
+  <div class="modal-overlay" id="upgrade-modal" onclick="handleModalOverlayClick(event)">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeUpgradeModal()">×</button>
+      <div class="modal-icon">&#9670;</div>
+      <div class="modal-title" id="modal-title">Upgrade ke Sentra Pro</div>
+      <div class="modal-desc" id="modal-desc">
+        Kamu telah mencapai batas 5 analisis hari ini.<br>
+        Upgrade ke <strong>Pro</strong> untuk analisis tak terbatas, lokasi per-Provinsi, dan laporan PDF.
+      </div>
+      <button class="modal-cta">Upgrade Sekarang &mdash; Rp 49rb/bln</button>
+      <span class="modal-later" onclick="closeUpgradeModal()">Nanti saja</span>
+    </div>
+  </div>
+
+  <script>
+    const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sep", "Okt", "Nov", "Des"];
+    const STEPS = [
+      "Menghubungi Google Trends...",
+      "Menghitung growth & momentum...",
+      "Mendeteksi lifecycle stage...",
+      "Menganalisis FOMO & saturasi...",
+      "Membangun forecast 30 hari...",
+      "Menghasilkan AI insight...",
+      "Hampir selesai..."
+    ];
+    const COMPARE_STEPS = [
+      "Menghubungi Google Trends (2 keyword)...",
+      "Menganalisis keyword pertama...",
+      "Menganalisis keyword kedua...",
+      "Membandingkan metrik kedua keyword...",
+      "Membangun grafik perbandingan...",
+      "Menghasilkan AI benchmarking insight...",
+      "Hampir selesai..."
+    ];
+
+    let stepTimer = null;
+    let compareMode = false;
+    let trendChart = null;
+
+    // ─ Monetization state ─
+    const userState = {
+      userId: localStorage.getItem('sentra_uid') || null,
+      tier: 'free',
+      searchesToday: 0,
+      remaining: 5,
+    };
+    let lastAnalysisResult = null; // for PDF download
+
+    /* ── USER STATUS / QUOTA ── */
+    async function fetchUserStatus() {
+      try {
+        const res = await fetch('/api/user-status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: userState.userId || '' }),
+        });
+        if (!res.ok) return;
+        const d = await res.json();
+        userState.tier = d.tier || 'free';
+        userState.searchesToday = d.searches_today || 0;
+        userState.remaining = d.searches_remaining;
+        updateQuotaUI();
+      } catch (_) { /* silent fail */ }
+    }
+
+    function updateQuotaUI(meta) {
+      if (meta) {
+        userState.tier = meta.tier || userState.tier;
+        userState.searchesToday = meta.searches_today ?? userState.searchesToday;
+        userState.remaining = meta.searches_remaining ?? userState.remaining;
+      }
+
+      const isPro = userState.tier === 'pro';
+
+      // Status bar — show for both tiers but hide quota details for Pro
+      const statusBar = document.getElementById('status-bar');
+      const text = document.getElementById('quota-text');
+      const dots = document.getElementById('quota-dots');
+      const upgradeBtn = document.getElementById('quota-upgrade-btn');
+
+      if (statusBar) statusBar.classList.remove('hidden');
+
+      if (!isPro && text) {
+        const used = userState.searchesToday || 0;
+        const rem = Math.max(0, 5 - used);
+        text.textContent = `Sisa Kuota: ${rem}/5`;
+
+        dots.innerHTML = '';
+        for (let i = 0; i < 5; i++) {
+          const d = document.createElement('div');
+          d.className = 'quota-dot' + (i >= rem ? ' used' : '');
+          dots.appendChild(d);
+        }
+        if (upgradeBtn) upgradeBtn.style.display = '';
+      } else if (isPro && text) {
+        text.textContent = 'Pro — Tak Terbatas';
+        dots.innerHTML = '';
+        if (upgradeBtn) upgradeBtn.style.display = 'none';
+      }
+
+      // Geo dropdown — unlock for Pro
+      const geoSelect = document.getElementById('geo-select');
+      const geoLock = document.getElementById('geo-lock');
+      if (geoSelect) geoSelect.disabled = !isPro;
+      if (geoLock) geoLock.style.display = isPro ? 'none' : '';
+
+      // PDF button — unlock for Pro
+      const pdfBtn = document.getElementById('pdf-btn');
+      if (pdfBtn) {
+        pdfBtn.disabled = !isPro;
+        pdfBtn.innerHTML = isPro
+          ? 'Download Laporan PDF'
+          : '<span class="lock-icon">🔒</span>Download Laporan PDF';
+      }
+    }
+
+    // Fetch status on load
+    fetchUserStatus();
+
+
+    document.getElementById('kw').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+    document.getElementById('kw-a').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('kw-b').focus(); });
+    document.getElementById('kw-b').addEventListener('keydown', e => { if (e.key === 'Enter') doCompare(); });
+
+    /* ── MODE TOGGLE ── */
+    function toggleCompareMode() {
+      compareMode = !compareMode;
+      const toggle = document.getElementById('mode-toggle');
+      const single = document.getElementById('single-search');
+      const compare = document.getElementById('compare-inputs');
+      const lblS = document.getElementById('lbl-single');
+      const lblC = document.getElementById('lbl-compare');
+
+      toggle.classList.toggle('on', compareMode);
+      single.classList.toggle('hidden', compareMode);
+      compare.classList.toggle('active', compareMode);
+      lblS.classList.toggle('active', !compareMode);
+      lblC.classList.toggle('active', compareMode);
+
+      // Hide results when switching modes
+      document.getElementById('results').style.display = 'none';
+      document.getElementById('compare-results').style.display = 'none';
+    }
+
+    /* ── LOADING ── */
+    function startSteps(steps) {
+      let i = 0;
+      document.getElementById('load-step').textContent = steps[0];
+      stepTimer = setInterval(() => {
+        i = Math.min(i + 1, steps.length - 1);
+        document.getElementById('load-step').textContent = steps[i];
+      }, 4500);
+    }
+    function stopSteps() { clearInterval(stepTimer); document.getElementById('load-step').textContent = ''; }
+
+    function showErr(msg) {
+      const el = document.getElementById('err');
+      el.textContent = '⚠ ' + msg; el.style.display = 'block';
+      setTimeout(() => el.style.display = 'none', 7000);
+    }
+
+    function setLoading(on, isCompare = false) {
+      const loadEl = document.getElementById('loading');
+      if (on) {
+        // Show: set display first, then trigger opacity transition
+        loadEl.style.display = 'block';
+        requestAnimationFrame(() => loadEl.classList.add('visible'));
+      } else {
+        // Hide: fade out, then set display:none after transition completes
+        loadEl.classList.remove('visible');
+        setTimeout(() => { loadEl.style.display = 'none'; }, 320);
+      }
+      if (!isCompare) document.getElementById('btn').disabled = on;
+      else document.getElementById('btn-compare').disabled = on;
+      if (on) {
+        document.getElementById('results').style.display = 'none';
+        document.getElementById('compare-results').style.display = 'none';
+        startSteps(isCompare ? COMPARE_STEPS : STEPS);
+        document.getElementById('load-text').textContent = isCompare
+          ? 'Membandingkan kedua keyword...'
+          : 'Menganalisis pasar...';
+      } else stopSteps();
+    }
+
+    /* ── SINGLE KEYWORD HELPERS ── */
+    function timingDesc(s) {
+      if (s >= 80) return 'Kondisi pasar sangat mendukung. Ini momen ideal untuk memulai atau memperluas bisnis di segmen ini.';
+      if (s >= 60) return 'Timing cukup bagus. Mulai persiapan sekarang agar siap saat tren mencapai puncaknya.';
+      if (s >= 40) return 'Boleh masuk tapi perlu strategi yang matang. Pantau pergerakan beberapa minggu ke depan.';
+      if (s >= 20) return 'Tren belum stabil atau sedang menurun. Sebaiknya tunggu sinyal pemulihan lebih jelas.';
+      return 'Kondisi pasar tidak mendukung saat ini. Sebaiknya alokasikan resources ke peluang lain.';
+    }
+
+    function renderPulse(score) {
+      const v = Math.max(0, Math.min(100, score));
+      const c = v >= 65 ? 'var(--green)' : v >= 40 ? 'var(--gold)' : 'var(--red)';
+      const f = document.getElementById('r-pulse-fill');
+      f.style.background = `linear-gradient(90deg,${c}66,${c})`;
+      f.style.boxShadow = `0 0 10px ${c}`;
+      setTimeout(() => f.style.width = v + '%', 60);
+      const el = document.getElementById('r-pulse');
+      el.textContent = v.toFixed(1) + ' / 100'; el.style.color = c;
+    }
+
+    function renderRing(score) {
+      const v = Math.max(0, Math.min(100, score));
+      const circ = 251.33;
+      setTimeout(() => { document.getElementById('r-ring').style.strokeDashoffset = circ - (v / 100) * circ; }, 120);
+      document.getElementById('r-ring-num').textContent = Math.round(v);
+    }
+
+    function renderForecast(val, conf) {
+      const v = Math.max(0, Math.min(100, val));
+      setTimeout(() => document.getElementById('r-fc-bar').style.width = v + '%', 120);
+      document.getElementById('r-fc-val').textContent = v.toFixed(1) + ' / 100';
+      const cl = conf >= 0.7 ? 'Tinggi' : conf >= 0.4 ? 'Sedang' : 'Rendah';
+      document.getElementById('r-fc-conf').textContent = `${cl} (${(conf * 100).toFixed(0)}%)`;
+    }
+
+    function renderMonths(peaks) {
+      const wrap = document.getElementById('r-months');
+      wrap.innerHTML = '';
+      for (let i = 1; i <= 12; i++) {
+        const ch = document.createElement('span');
+        ch.className = 'chip' + (peaks.includes(i) ? '' : ' off');
+        ch.textContent = MONTHS[i - 1];
+        wrap.appendChild(ch);
+      }
+    }
+
+    function typeWriter(el, text, speed = 7) {
+      el.textContent = ''; el.classList.add('typing');
+      let i = 0;
+      const t = setInterval(() => {
+        el.textContent += text[i++];
+        if (i >= text.length) { clearInterval(t); el.classList.remove('typing'); }
+      }, speed);
+    }
+
+    function renderResults(d) {
+      document.getElementById('r-kw').textContent = d.keyword;
+      document.getElementById('r-ts').textContent =
+        new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+
+      const stageLabel = { Rising: 'Rising', Emerging: 'Emerging', Peak: 'Peak', Stable: 'Stable', Declining: 'Declining' };
+      const sb = document.getElementById('r-stage');
+      sb.textContent = d.lifecycle_stage;
+      sb.className = 'stage-badge s-' + d.lifecycle_stage;
+
+      const rb = document.getElementById('r-risk');
+      rb.textContent = d.risk_level;
+      rb.className = 'risk-badge ' + (d.risk_level.startsWith('High') ? 'r-High' : d.risk_level.startsWith('Medium') ? 'r-Medium' : 'r-Low');
+
+      const gv = d.growth, ge = document.getElementById('r-growth');
+      ge.textContent = (gv >= 0 ? '+' : '') + (gv * 100).toFixed(1) + '%';
+      ge.className = 'mc-val ' + (gv > 0 ? 'pos' : gv < 0 ? 'neg' : 'neu');
+
+      const mv = d.momentum, me = document.getElementById('r-mom');
+      me.textContent = (mv >= 0 ? '▲ ' : '▼ ') + Math.abs(mv).toFixed(3);
+      me.className = 'mc-val ' + (mv > 0 ? 'pos' : 'neg');
+
+      const vv = d.volatility, ve = document.getElementById('r-vol');
+      ve.textContent = (vv * 100).toFixed(1) + '%';
+      ve.className = 'mc-val ' + (vv > 0.5 ? 'neg' : vv > 0.3 ? 'neu' : 'pos');
+
+      const fv = d.fomo_index, fe = document.getElementById('r-fomo');
+      fe.textContent = fv.toFixed(2);
+      fe.className = 'mc-val ' + (fv > 0.6 ? 'neg' : fv > 0.3 ? 'neu' : 'pos');
+      document.getElementById('r-fomo-l').textContent = fv > 0.6 ? '⚠ Waspadai hype' : fv > 0.3 ? 'Tren campuran' : '✓ Tren organik';
+
+      const sv = d.saturation_index, se = document.getElementById('r-sat');
+      se.textContent = sv.toFixed(1);
+      se.className = 'mc-val ' + (sv >= 0.7 ? 'neg' : sv >= 0.4 ? 'neu' : 'pos');
+      document.getElementById('r-sat-l').textContent = sv >= 0.7 ? 'Pasar jenuh' : sv >= 0.4 ? 'Persaingan ketat' : '✓ Pasar terbuka';
+
+      renderPulse(d.market_pulse_score);
+      renderRing(d.entry_timing_score);
+      document.getElementById('r-timing-lbl').textContent = d.entry_timing_label;
+      document.getElementById('r-timing-desc').textContent = timingDesc(d.entry_timing_score);
+      renderForecast(d.forecast_30d_avg, d.forecast_confidence);
+
+      if (d.is_seasonal) {
+        document.getElementById('r-season-txt').textContent =
+          `Tren ini bersifat musiman (keyakinan ${(d.seasonal_confidence * 100).toFixed(0)}%). Puncak minat biasanya di bulan-bulan berikut:`;
+        renderMonths(d.seasonal_peak_months || []);
+      } else {
+        document.getElementById('r-season-txt').textContent = 'Tidak terdeteksi pola musiman — tren berjalan sepanjang tahun.';
+        document.getElementById('r-months').innerHTML = '';
+      }
+
+      // AI Insight — parse into 3 sections
+      const rawInsight = (d.ai_insight || 'Insight tidak tersedia.').replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
+      renderAiCards(rawInsight);
+
+      // Trend chart
+      renderSingleTrendChart(d);
+
+      document.getElementById('results').style.display = 'block';
+      setTimeout(() => document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+
+    /* ── SINGLE TREND CHART ── */
+    let singleChart = null;
+    function renderSingleTrendChart(d) {
+      const canvas = document.getElementById('single-chart');
+      if (!canvas) return;
+      if (singleChart) { singleChart.destroy(); singleChart = null; }
+
+      const raw = d.raw_trend || null;
+      if (!raw || !Array.isArray(raw.dates) || raw.dates.length === 0) {
+        document.getElementById('r-trend-range').textContent = '';
+        canvas.parentElement.style.display = 'none';
+        return;
+      }
+      canvas.parentElement.style.display = 'block';
+
+      const labels = raw.dates.map(dt => {
+        const d = new Date(dt);
+        return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+      });
+
+      // Date range label
+      if (raw.dates.length > 0) {
+        const first = new Date(raw.dates[0]).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        const last = new Date(raw.dates[raw.dates.length - 1]).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        document.getElementById('r-trend-range').textContent = `${first} – ${last}`;
+      }
+
+      const ctx = canvas.getContext('2d');
+      const grad = ctx.createLinearGradient(0, 0, 0, 200);
+      grad.addColorStop(0, 'rgba(212,168,67,.18)');
+      grad.addColorStop(1, 'rgba(212,168,67,0)');
+
+      singleChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: d.keyword,
+            data: raw.values,
+            borderColor: '#D4A843',
+            backgroundColor: grad,
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 4,
+            pointHoverBackgroundColor: '#D4A843',
+            tension: 0.4,
+            fill: true,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#181510',
+              titleColor: '#F5F0E0',
+              bodyColor: '#D0C9A8',
+              borderColor: 'rgba(212,168,67,.3)',
+              borderWidth: 1,
+              padding: 10,
+              callbacks: { label: c => `Minat: ${c.parsed.y}` }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(74,69,53,.15)', drawBorder: false },
+              ticks: { color: '#7A7360', font: { family: "'DM Mono',monospace", size: 9 }, maxTicksLimit: 10, maxRotation: 0 }
+            },
+            y: {
+              grid: { color: 'rgba(74,69,53,.1)', drawBorder: false },
+              ticks: { color: '#7A7360', font: { family: "'DM Mono',monospace", size: 9 } },
+              beginAtZero: true, max: 100,
+            }
+          }
+        }
+      });
+    }
+
+    /* ── AI INSIGHT PARSER — 3 CARD ── */
+    function parseAiSections(text) {
+      // Try to split by numbered sections: "1.", "2.", "3."
+      const sectionRegex = /(?:^|\n)\s*\d+\.\s*[^\n]*/g;
+      const matches = [...text.matchAll(/(?:^|\n)\s*(\d+)\.\s*([^\n]*)/g)];
+
+      if (matches.length >= 3) {
+        const indices = matches.map(m => text.indexOf(m[0]));
+        const pasar = text.substring(indices[0], indices[1]).replace(/^\s*\d+\.\s*[^\n]*\n?/, '').trim();
+        const aksi = text.substring(indices[1], indices[2]).replace(/^\s*\d+\.\s*[^\n]*\n?/, '').trim();
+        const waktu = text.substring(indices[2]).replace(/^\s*\d+\.\s*[^\n]*\n?/, '').trim();
+        return { pasar, aksi, waktu };
+      }
+
+      // Fallback: split into 3 roughly equal paragraphs
+      const paragraphs = text.split(/\n\n+/).filter(p => p.trim());
+      if (paragraphs.length >= 3) {
+        return {
+          pasar: paragraphs.slice(0, Math.ceil(paragraphs.length / 3)).join('\n\n'),
+          aksi: paragraphs.slice(Math.ceil(paragraphs.length / 3), Math.ceil(2 * paragraphs.length / 3)).join('\n\n'),
+          waktu: paragraphs.slice(Math.ceil(2 * paragraphs.length / 3)).join('\n\n'),
+        };
+      }
+
+      // Last resort: split by sentences
+      const sentences = text.split(/(?<=\.)\s+/);
+      const third = Math.ceil(sentences.length / 3);
+      return {
+        pasar: sentences.slice(0, third).join(' '),
+        aksi: sentences.slice(third, third * 2).join(' '),
+        waktu: sentences.slice(third * 2).join(' '),
+      };
+    }
+
+    function boldifyText(text) {
+      // Bold key phrases: numbers with %, scores, and important action words
+      let html = text
+        .replace(/(\d+[\.,]?\d*\s*%)/g, '<strong>$1</strong>')
+        .replace(/(\d+[\.,]?\d*\s*\/\s*100)/g, '<strong>$1</strong>')
+        .replace(/(Entry Timing Score[^.]*)/gi, '<strong>$1</strong>')
+        .replace(/(waktu terbaik|tancap gas|segera|hati-hati|tunggu|hindari|persiapan|pantau)/gi, '<strong>$1</strong>');
+      return html;
+    }
+
+    function renderAiCards(text) {
+      const sections = parseAiSections(text);
+      document.getElementById('r-ai-pasar').innerHTML = boldifyText(sections.pasar);
+      document.getElementById('r-ai-aksi').innerHTML = boldifyText(sections.aksi);
+      document.getElementById('r-ai-waktu').innerHTML = boldifyText(sections.waktu);
+    }
+
+    /* ── SECTOR CATEGORY ── */
+    const CATEGORY_KEYWORDS = {
+      fashion: 'baju wanita',
+      beauty: 'skincare',
+      fnb: 'kuliner Indonesia',
+      gadget: 'earbuds wireless',
+      home: 'dekorasi rumah',
+      hobi: 'peralatan olahraga',
+      musiman: 'hampers lebaran',
+    };
+
+    function analyzeCategory(type) {
+      const kw = CATEGORY_KEYWORDS[type];
+      if (!kw) return;
+
+      // Exit compare mode if active
+      if (compareMode) toggleCompareMode();
+
+      // Fill in search input
+      document.getElementById('kw').value = kw;
+
+      // Visual feedback — mark card as active
+      document.querySelectorAll('.sector-card').forEach(c => c.classList.remove('loading-sector'));
+      const card = document.getElementById('sc-' + type);
+      if (card) card.classList.add('loading-sector');
+
+      // Scroll to search area then trigger search
+      document.getElementById('single-search').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => {
+        doSearch();
+        if (card) card.classList.remove('loading-sector');
+      }, 400);
+    }
+
+    /* ── COMPARE RENDERING ── */
+    function renderCompareResults(d) {
+      const a = d.keyword_a;
+      const b = d.keyword_b;
+      const c = d.comparison;
+      const t = d.trend_data;
+
+      // Header
+      document.getElementById('cmp-kw-a').textContent = a.keyword;
+      document.getElementById('cmp-kw-b').textContent = b.keyword;
+      document.getElementById('cmp-ts').textContent =
+        new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+
+      // Table headers
+      document.getElementById('cmp-th-a').textContent = a.keyword;
+      document.getElementById('cmp-th-b').textContent = b.keyword;
+
+      // Winner banner
+      document.getElementById('cmp-winner').textContent = c.winner_overall;
+      document.getElementById('cmp-winner-score').textContent =
+        `Skor Gabungan — ${a.keyword}: ${c.score_a} · ${b.keyword}: ${c.score_b}`;
+
+      // Build table rows
+      const metrics = [
+        { label: 'Growth 7 Hari', va: (a.growth * 100).toFixed(1) + '%', vb: (b.growth * 100).toFixed(1) + '%', winner: c.winner_growth },
+        { label: 'Momentum', va: a.momentum.toFixed(3), vb: b.momentum.toFixed(3), winner: c.winner_momentum },
+        { label: 'Volatilitas', va: (a.volatility * 100).toFixed(1) + '%', vb: (b.volatility * 100).toFixed(1) + '%', winner: c.winner_stability },
+        { label: 'Market Pulse', va: a.market_pulse_score.toFixed(1), vb: b.market_pulse_score.toFixed(1), winner: c.winner_pulse },
+        { label: 'Entry Timing', va: a.entry_timing_score.toFixed(1), vb: b.entry_timing_score.toFixed(1), winner: c.winner_timing },
+        { label: 'FOMO Index', va: a.fomo_index.toFixed(2), vb: b.fomo_index.toFixed(2), winner: c.winner_fomo },
+        { label: 'Saturasi', va: a.saturation_index.toFixed(1), vb: b.saturation_index.toFixed(1), winner: c.winner_saturation },
+        { label: 'Fase Lifecycle', va: a.lifecycle_stage, vb: b.lifecycle_stage, winner: '—' },
+        { label: 'Risk Level', va: a.risk_level, vb: b.risk_level, winner: '—' },
+      ];
+
+      const tbody = document.getElementById('cmp-tbody');
+      tbody.innerHTML = '';
+      metrics.forEach(m => {
+        const tr = document.createElement('tr');
+        const isWinA = m.winner === a.keyword;
+        const isWinB = m.winner === b.keyword;
+        tr.innerHTML = `
+      <td>${m.label}</td>
+      <td class="col-a ${isWinA ? 'val-winner' : 'val-loser'}">${m.va}</td>
+      <td class="col-b ${isWinB ? 'val-winner' : 'val-loser'}">${m.vb}</td>
+      <td class="winner-cell">${m.winner}</td>
+    `;
+        tbody.appendChild(tr);
+      });
+
+      // Chart.js
+      renderTrendChart(t, a.keyword, b.keyword);
+
+      // AI Insight
+      const aiEl = document.getElementById('cmp-ai');
+      const cleaned = (d.ai_insight || 'Insight tidak tersedia.').replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
+      typeWriter(aiEl, cleaned, 6);
+
+      // Show
+      document.getElementById('compare-results').style.display = 'block';
+      setTimeout(() => document.getElementById('compare-results').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+
+    function renderTrendChart(trendData, labelA, labelB) {
+      const canvas = document.getElementById('cmp-chart');
+      if (trendChart) { trendChart.destroy(); trendChart = null; }
+
+      if (!trendData || !trendData.dates) {
+        canvas.parentElement.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-dim)">Data tren tidak tersedia</div>';
+        return;
+      }
+
+      const labels = trendData.dates.map(d => {
+        const dt = new Date(d);
+        return dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+      });
+
+      const ctx = canvas.getContext('2d');
+      trendChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: labelA,
+              data: trendData.values_a,
+              borderColor: '#D4A843',
+              backgroundColor: 'rgba(212,168,67,.1)',
+              borderWidth: 2.5,
+              pointRadius: 0,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: '#D4A843',
+              tension: 0.35,
+              fill: true,
+            },
+            {
+              label: labelB,
+              data: trendData.values_b,
+              borderColor: '#3498DB',
+              backgroundColor: 'rgba(52,152,219,.1)',
+              borderWidth: 2.5,
+              pointRadius: 0,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: '#3498DB',
+              tension: 0.35,
+              fill: true,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false,
+          },
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top',
+              align: 'end',
+              labels: {
+                color: '#B0A888',
+                font: { family: "'Syne',sans-serif", size: 11, weight: '600' },
+                boxWidth: 14,
+                boxHeight: 3,
+                padding: 16,
+                usePointStyle: false,
+              }
+            },
+            tooltip: {
+              backgroundColor: '#181510',
+              titleColor: '#F2ECD8',
+              bodyColor: '#B0A888',
+              borderColor: 'rgba(212,168,67,.3)',
+              borderWidth: 1,
+              padding: 12,
+              titleFont: { family: "'Syne',sans-serif", size: 11, weight: '700' },
+              bodyFont: { family: "'DM Mono',monospace", size: 12 },
+              callbacks: {
+                label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y}`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(74,69,53,.2)', drawBorder: false },
+              ticks: {
+                color: '#4A4535',
+                font: { family: "'DM Mono',monospace", size: 10 },
+                maxTicksLimit: 12,
+                maxRotation: 0,
+              }
+            },
+            y: {
+              grid: { color: 'rgba(74,69,53,.15)', drawBorder: false },
+              ticks: {
+                color: '#4A4535',
+                font: { family: "'DM Mono',monospace", size: 10 },
+              },
+              beginAtZero: true,
+              max: 100,
+              title: {
+                display: true,
+                text: 'Interest',
+                color: '#4A4535',
+                font: { family: "'Syne',sans-serif", size: 10, weight: '600' }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    /* ── FETCH: SINGLE ── */
+    async function doSearch() {
+      const kw = document.getElementById('kw').value.trim();
+      const geo = document.getElementById('geo-select')?.value || 'ID';
+      if (!kw) { showErr('Masukkan keyword terlebih dahulu.'); return; }
+
+      document.getElementById('err').style.display = 'none';
+      setLoading(true, false);
+
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 58000);
+
+        const res = await fetch('/api/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ keyword: kw, user_id: userState.userId || '', geo }),
+          signal: controller.signal
+        });
+
+        clearTimeout(timeout);
+        const data = await res.json();
+
+        if (res.status === 403 && data.error_code === 'LIMIT_EXCEEDED') {
+          showUpgradeModal('limit');
+          return;
+        }
+
+        if (!res.ok || data.error) { showErr(data.error || 'Terjadi kesalahan pada server.'); }
+        else {
+          lastAnalysisResult = data;
+          if (data._meta) updateQuotaUI(data._meta);
+          renderResults(data);
+        }
+
+      } catch (e) {
+        if (e.name === 'AbortError') showErr('Request timeout. Server membutuhkan waktu lebih lama, silakan coba lagi.');
+        else showErr('Tidak dapat terhubung ke server.');
+      } finally {
+        setLoading(false, false);
+      }
+    }
+
+    /* ── FETCH: COMPARE ── */
+    async function doCompare() {
+      const kwA = document.getElementById('kw-a').value.trim();
+      const kwB = document.getElementById('kw-b').value.trim();
+      const geo = document.getElementById('geo-select')?.value || 'ID';
+
+      if (!kwA || !kwB) { showErr('Masukkan kedua keyword untuk dibandingkan.'); return; }
+      if (kwA.toLowerCase() === kwB.toLowerCase()) { showErr('Kedua keyword tidak boleh sama.'); return; }
+
+      document.getElementById('err').style.display = 'none';
+      setLoading(true, true);
+
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 120000);
+
+        const res = await fetch('/api/compare', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ keyword_a: kwA, keyword_b: kwB, user_id: userState.userId || '', geo }),
+          signal: controller.signal
+        });
+
+        clearTimeout(timeout);
+        const data = await res.json();
+
+        if (res.status === 403 && data.error_code === 'LIMIT_EXCEEDED') {
+          showUpgradeModal('limit');
+          return;
+        }
+
+        if (!res.ok || data.error) { showErr(data.error || 'Terjadi kesalahan pada server.'); }
+        else {
+          if (data._meta) updateQuotaUI(data._meta);
+          renderCompareResults(data);
+        }
+
+      } catch (e) {
+        if (e.name === 'AbortError') showErr('Request timeout. Proses perbandingan membutuhkan waktu lebih lama, silakan coba lagi.');
+        else showErr('Tidak dapat terhubung ke server.');
+      } finally {
+        setLoading(false, true);
+      }
+    }
+
+    /* ── PDF DOWNLOAD ── */
+    async function downloadPdf() {
+      if (!lastAnalysisResult) { showErr('Lakukan analisis terlebih dahulu sebelum download PDF.'); return; }
+      const pdfBtn = document.getElementById('pdf-btn');
+      const origText = pdfBtn.textContent;
+      pdfBtn.textContent = 'Membuat PDF...';
+      pdfBtn.disabled = true;
+
+      try {
+        const res = await fetch('/api/generate-pdf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: userState.userId || '', analysis: lastAnalysisResult }),
+        });
+
+        if (res.status === 403) {
+          showUpgradeModal('pdf');
+          return;
+        }
+        if (!res.ok) { const d = await res.json(); showErr(d.error || 'Gagal membuat PDF.'); return; }
+
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `sentra-bi-${(lastAnalysisResult.keyword || 'report').replace(/\s+/g, '-')}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+      } catch (e) {
+        showErr('Tidak dapat membuat PDF. Coba lagi.');
+      } finally {
+        pdfBtn.textContent = origText;
+        pdfBtn.disabled = userState.tier !== 'pro';
+      }
+    }
+
+    /* ── UPGRADE MODAL ── */
+    function showUpgradeModal(reason) {
+      const title = document.getElementById('modal-title');
+      const desc = document.getElementById('modal-desc');
+
+      if (reason === 'pdf') {
+        if (title) title.textContent = 'Fitur Khusus Pro';
+        if (desc) desc.innerHTML = 'Download PDF hanya tersedia untuk pengguna <strong>Pro</strong>.<br>Upgrade sekarang untuk akses penuh ke semua fitur premium.';
+      } else {
+        if (title) title.textContent = 'Upgrade ke Sentra Pro';
+        if (desc) desc.innerHTML = 'Kamu telah mencapai batas <strong>5 analisis</strong> hari ini.<br>Upgrade ke <strong>Pro</strong> untuk analisis tak terbatas, lokasi per-Provinsi, dan laporan PDF.';
+      }
+      document.getElementById('upgrade-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeUpgradeModal() {
+      document.getElementById('upgrade-modal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function handleModalOverlayClick(e) {
+      if (e.target === document.getElementById('upgrade-modal')) closeUpgradeModal();
+    }
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeUpgradeModal(); });
+  </script>
+</body>
+
+</html>
