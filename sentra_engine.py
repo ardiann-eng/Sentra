@@ -29,26 +29,19 @@ _FALLBACK_UA = (
 
 
 def _make_pytrends():
-    """TrendReq via ScraperAPI dengan identitas browser acak."""
-    try:
-        user_agent = _UA().random if _UA_ENABLED else _FALLBACK_UA
-    except Exception:
-        user_agent = _FALLBACK_UA
-
+    api_key = "9d165dff5be59579040bc2333e85f07b"
+    proxy_url = f"http://scraperapi:{api_key}@proxy-server.scraperapi.com:8001"
+    
     return TrendReq(
         hl='id-ID',
         tz=420,
-        retries=5,
-        backoff_factor=5,
+        retries=2, # Kurangi retry agar tidak kena timeout gunicorn
+        backoff_factor=3,
         requests_args={
-            'proxies': _PROXIES,
-            'headers': {
-                'User-Agent': user_agent,
-                'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-            },
-            'verify': False,
-            'timeout': 60,
-        },
+            'proxies': {'https': proxy_url, 'http': proxy_url},
+            'timeout': 45, # Timeout per request ke proxy
+            'verify': False
+        }
     )
 
 
