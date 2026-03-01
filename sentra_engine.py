@@ -8,43 +8,50 @@ from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeou
 from pytrends.request import TrendReq
 from pytrends.exceptions import TooManyRequestsError
 
-try:
-    from fake_useragent import UserAgent
-    _UA = UserAgent()
-    def _random_ua():
-        return _UA.chrome
-except Exception:
-    def _random_ua():
-        return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+import os
 
 # ─────────────────────────────────────────
 # CONFIGURATION
 # ─────────────────────────────────────────
-# Hard timeout per fetch call — jauh di bawah gunicorn timeout (75s)
-_FETCH_HARD_TIMEOUT = 40  # detik
+_FETCH_HARD_TIMEOUT = 40  # detik — hard timeout per fetch, jauh di bawah gunicorn (75s)
+
+# ScraperAPI: proxy HTTP sejati yang kompatibel dengan pytrends.
+# Railway IP di-blacklist Google (429). ScraperAPI pakai residential/datacenter IP
+# yang di-rotate otomatis sehingga tidak pernah kena 429.
+# Daftar gratis di: https://www.scraperapi.com (1000 req/bulan gratis)
+# Set di Railway Dashboard → Variables → SCRAPERAPI_KEY
+_SCRAPERAPI_KEY = os.environ.get("SCRAPERAPI_KEY", "")
+
+def _make_proxy():
+    """Build proxy dict. Pakai ScraperAPI jika key tersedia, fallback ke direct."""
+    if _SCRAPERAPI_KEY:
+        proxy_url = f"http://scraperapi:{_SCRAPERAPI_KEY}@proxy-server.scraperapi.com:8001"
+        return {"http": proxy_url, "https": proxy_url}
+    return None  # direct — akan 429 jika Railway IP di-block
 
 
 def _make_pytrends():
     """
-    Buat TrendReq TANPA proxy.
-    PENTING: Jangan pass 'timeout' di requests_args karena pytrends sudah pass
-    timeout secara internal → menyebabkan "multiple values for keyword argument 'timeout'".
+    Buat TrendReq dengan ScraperAPI proxy.
+    ScraperAPI adalah HTTP proxy sejati (bukan scraping API) yang kompatibel
+    dengan pytrends multi-step session. IP di-rotate otomatis → tidak pernah 429.
+
+    PENTING: Jangan pass 'timeout' di requests_args — conflict dengan pytrends internal.
     Hard timeout ditangani oleh _run_with_timeout di level thread.
     """
-    return TrendReq(
+    proxies = _make_proxy()
+    kwargs = dict(
         hl='id-ID',
         tz=420,
         retries=1,
         backoff_factor=0.5,
-        requests_args={
-            'headers': {
-                'User-Agent': _random_ua(),
-                'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-                'Accept': 'application/json, text/plain, */*',
-            },
-            'verify': True,
-        }
     )
+    if proxies:
+        kwargs['requests_args'] = {
+            'proxies': proxies,
+            'verify': False,   # ScraperAPI pakai SSL interception
+        }
+    return TrendReq(**kwargs)
 
 
 def _jitter():
