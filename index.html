@@ -691,7 +691,8 @@
       background: var(--surface);
       padding: 22px 26px;
       position: relative;
-      overflow: hidden;
+      overflow: visible;
+      /* Fixed: changed from hidden to allow tooltips */
       transition: background .2s;
     }
 
@@ -794,7 +795,8 @@
       line-height: 1.6;
       padding: 12px 16px;
       width: 260px;
-      z-index: 100;
+      z-index: 1000;
+      /* Increased z-index */
       box-shadow: 0 8px 32px rgba(0, 0, 0, .5);
     }
 
@@ -811,6 +813,22 @@
     .help-tip:hover .tip-text,
     .help-tip:focus .tip-text {
       display: block;
+    }
+
+    /* Edge handle for tooltips near right screen border */
+    @media(max-width: 480px) {
+      .help-tip .tip-text {
+        left: auto;
+        right: -20px;
+        transform: none;
+        width: 200px;
+      }
+
+      .help-tip .tip-text::after {
+        left: auto;
+        right: 23px;
+        transform: none;
+      }
     }
 
     /* ── PULSE ── */
@@ -852,7 +870,8 @@
       gap: 36px;
       margin-bottom: 2px;
       position: relative;
-      overflow: hidden;
+      overflow: visible;
+      /* Fixed: changed from hidden to allow tooltips */
     }
 
     .timing-card::after {
