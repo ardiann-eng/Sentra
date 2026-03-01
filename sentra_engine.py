@@ -1,24 +1,32 @@
 import re
 import time
 import random
+from fake_useragent import UserAgent  # Tambahkan baris ini
 from pytrends.request import TrendReq
-from pytrends.exceptions import TooManyRequestsError
-import pandas as pd
-import numpy as np
-from sklearn.linear_model import LinearRegression
-from concurrent.futures import ThreadPoolExecutor
 
-# ── Pytrends factory with retry / backoff ──────────────────────────────────
 def _make_pytrends():
-    """Return a TrendReq instance with sensible retry/backoff settings."""
+    """Membuat instance TrendReq dengan User-Agent acak untuk menghindari blokir."""
+    try:
+        ua = UserAgent()
+        user_agent = ua.random
+    except:
+        # Fallback jika library gagal mengambil UA
+        user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
+
     return TrendReq(
         hl='id-ID',
-        tz=420,                   # WIB (UTC+7)
-        retries=3,                # auto-retry on non-fatal HTTP errors
-        backoff_factor=2,         # 2 s → 4 s → 8 s between retries
-        requests_args={'verify': True},
+        tz=420,
+        retries=3,
+        backoff_factor=2,
+        requests_args={
+            'headers': {
+                'User-Agent': user_agent,
+                'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+            },
+            'verify': True,
+            'timeout': 30
+        }
     )
-
 
 def _jitter():
     """Random human-like delay between Trends requests (1-3 s)."""
@@ -35,13 +43,15 @@ def fetch_trend_data(keyword, timeframe="today 3-m", geo="ID", cat=0):
         _jitter()
         pytrends.build_payload([keyword], timeframe=timeframe, geo=geo, cat=cat)
         data = pytrends.interest_over_time()
-    except TooManyRequestsError:
-        raise
-    except Exception as e:
-        return None
-
-    if data.empty:
-        return None
+        
+        print(f"--- DEBUG SENTRA ---")
+        print(f"Keyword: {keyword}, Geo: {geo}, Cat: {cat}")
+        print(f"Dataframe Empty: {data.empty}")
+        if not data.empty:
+            print(f"Columns: {data.columns.tolist()}")
+        
+        if data.empty:
+            return "EMPTY"
 
     df = data[[keyword]].reset_index()
     df.columns = ["date", "interest"]
@@ -689,6 +699,19 @@ def compute_comparison_metrics(result_a, result_b):
     return comparison
 
 
+def _make_pytrends():
+    ua = UserAgent()
+    return TrendReq(
+        hl='id-ID', 
+        tz=420, 
+        retries=3, 
+        backoff_factor=2,
+        requests_args={
+            'headers': {'User-Agent': ua.random}, # Mengganti identitas setiap request
+            'verify': True
+        }
+    )
+
 def compare_keywords(keyword_a, keyword_b, geo="ID"):
     """
     Master function untuk benchmarking dua keyword.
@@ -724,3 +747,4 @@ def compare_keywords(keyword_a, keyword_b, geo="ID"):
         "comparison": comparison,
         "trend_data": trend_data,
     }
+    from fake_useragent import UserAgent
