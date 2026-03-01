@@ -5,59 +5,28 @@ import pandas as pd
 import numpy as np
 from sklearn.linear_model import LinearRegression
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
-from pytrends.request import TrendReq
-from pytrends.exceptions import TooManyRequestsError
+from serpapi import GoogleSearch
 
 import os
 import urllib3
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+urllib3.disable_warnings()
 
-# ─────────────────────────────────────────
+
+# -----------------------------------------
 # CONFIGURATION
-# ─────────────────────────────────────────
-_FETCH_HARD_TIMEOUT = 40  # detik — hard timeout per fetch, jauh di bawah gunicorn (75s)
+# -----------------------------------------
+_FETCH_HARD_TIMEOUT = 60   # detik
 
-# ScraperAPI: proxy HTTP sejati yang kompatibel dengan pytrends.
-# Railway IP di-blacklist Google (429). ScraperAPI pakai residential/datacenter IP
-# yang di-rotate otomatis sehingga tidak pernah kena 429.
-# Daftar gratis di: https://www.scraperapi.com (1000 req/bulan gratis)
-# Set di Railway Dashboard → Variables → SCRAPERAPI_KEY
-_SCRAPERAPI_KEY = os.environ.get("SCRAPERAPI_KEY", "")
-
-def _make_proxy():
-    """Build proxy dict. Pakai ScraperAPI jika key tersedia, fallback ke direct."""
-    if _SCRAPERAPI_KEY:
-        proxy_url = f"http://scraperapi:{_SCRAPERAPI_KEY}@proxy-server.scraperapi.com:8001"
-        return {"http": proxy_url, "https": proxy_url}
-    return None  # direct — akan 429 jika Railway IP di-block
-
-
-def _make_pytrends():
-    """
-    Buat TrendReq dengan ScraperAPI proxy.
-    timeout=(connect, read): 15s untuk koneksi ke proxy, 30s untuk membaca response.
-    Tanpa timeout eksplisit, koneksi bisa hang sampai OS-level timeout (˜120s).
-    """
-    proxies = _make_proxy()
-    kwargs = dict(
-        hl='id-ID',
-        tz=420,
-        retries=2,          # auto-retry jika proxy timeout sekali
-        backoff_factor=1.5, # jeda antar retry: 1.5s, 3s
-    )
-    if proxies:
-        kwargs['requests_args'] = {
-            'proxies': proxies,
-            'timeout': (15, 30),  # (connect_timeout, read_timeout) detik
-            'verify': False,      # ScraperAPI pakai SSL interception
-        }
-    return TrendReq(**kwargs)
+# SerpApi key - set env var SERPAPI_KEY di Railway Dashboard untuk override
+_SERPAPI_KEY = os.environ.get(
+    "SERPAPI_KEY",
+    "b23db169b613630723c51a6d01a08225dbf19320b42c031167813baf77531aff"
+)
 
 
 def _jitter():
-    """Jeda acak agar tidak diblokir Google."""
-    time.sleep(random.uniform(1.5, 3.0))
-
+    """Jeda kecil antar request."""
+    time.sleep(random.uniform(0.5, 1.5))
 
 # ─────────────────────────────────────────
 # HARD TIMEOUT WRAPPER
@@ -84,25 +53,62 @@ def _run_with_timeout(fn, *args, timeout=_FETCH_HARD_TIMEOUT, **kwargs):
 # ─────────────────────────────────────────
 
 def _fetch_inner(keyword, timeframe, geo, cat):
-    """Inner fetch — dijalankan di thread dengan hard timeout."""
+    """
+    Fetch data Google Trends via SerpApi.
+    Mengembalikan DataFrame dengan kolom: date (datetime), interest (int).
+    """
     print(f"[FETCH] '{keyword}' | {timeframe} | geo={geo}")
-    pt = _make_pytrends()
     _jitter()
-    pt.build_payload([keyword], timeframe=timeframe, geo=geo, cat=cat)
-    data = pt.interest_over_time()
 
-    if data is None or data.empty:
+    params = {
+        "engine":     "google_trends",
+        "q":          keyword,
+        "date":       timeframe,
+        "geo":        geo,
+        "cat":        str(cat),
+        "data_type":  "TIMESERIES",
+        "hl":         "id",
+        "tz":         "-420",
+        "api_key":    _SERPAPI_KEY,
+    }
+
+    try:
+        results = GoogleSearch(params).get_dict()
+    except Exception as e:
+        print(f"[FETCH ERROR] SerpApi exception: {e}")
+        return None
+
+    if "error" in results:
+        print(f"[FETCH ERROR] SerpApi error: {results['error']}")
+        return None
+
+    timeline = (
+        results.get("interest_over_time", {})
+               .get("timeline_data", [])
+    )
+    if not timeline:
         print(f"[FETCH] Data kosong untuk '{keyword}'")
         return None
-    if keyword not in data.columns:
-        print(f"[FETCH] Kolom '{keyword}' tidak ada dalam response")
+
+    rows = []
+    for item in timeline:
+        try:
+            # Setiap item: { "date": "Jan 5 – 11, 2025", "values": [{"query":"...","value":72,"extracted_value":72}] }
+            date_str = item.get("date", "")
+            val = item["values"][0]["extracted_value"]
+            rows.append({"date": pd.to_datetime(date_str, fuzzy=True), "interest": int(val)})
+        except (KeyError, IndexError, ValueError):
+            continue
+
+    if not rows:
+        print(f"[FETCH] Gagal parse timeline untuk '{keyword}'")
         return None
-    if data[keyword].sum() == 0:
+
+    df = pd.DataFrame(rows)
+    if df["interest"].sum() == 0:
         print(f"[FETCH] Volume nol untuk '{keyword}'")
         return None
 
-    df = data[[keyword]].reset_index()
-    df.columns = ["date", "interest"]
     return df
 
 
@@ -114,8 +120,6 @@ def fetch_trend_data_long(keyword, timeframe="today 12-m", geo="ID", cat=0):
             timeout=_FETCH_HARD_TIMEOUT
         )
     except TimeoutError:
-        raise
-    except TooManyRequestsError:
         raise
     except Exception as e:
         print(f"[FETCH ERROR] {type(e).__name__}: {e}")
@@ -323,13 +327,8 @@ def analyze_keyword(keyword, geo="ID", cat=0):
         df_full = fetch_trend_data_long(keyword, geo=geo, cat=cat)
     except TimeoutError:
         return {
-            "error": "Google Trends tidak merespons. Coba lagi dalam 1-2 menit.",
+            "error": "SerpApi tidak merespons. Coba lagi dalam 1-2 menit.",
             "error_code": "TIMEOUT",
-        }
-    except TooManyRequestsError:
-        return {
-            "error": "Google Trends membatasi permintaan. Coba lagi dalam beberapa menit.",
-            "error_code": "TOO_MANY_REQUESTS",
         }
     except Exception as e:
         print(f"[ANALYZE ERROR] {type(e).__name__}: {e}")
@@ -398,20 +397,53 @@ def analyze_keyword(keyword, geo="ID", cat=0):
 # ─────────────────────────────────────────
 
 def _fetch_comparison_inner(keyword_a, keyword_b, timeframe, geo):
-    pt = _make_pytrends()
+    """
+    Fetch data perbandingan 2 keyword via SerpApi (satu call, lebih efisien).
+    Mengembalikan dict: {dates, values_a, values_b}.
+    """
     _jitter()
-    pt.build_payload([keyword_a, keyword_b], timeframe=timeframe, geo=geo)
-    data = pt.interest_over_time()
-    if data is None or data.empty:
-        return None
-    if keyword_a not in data.columns or keyword_b not in data.columns:
-        return None
-    df = data[[keyword_a, keyword_b]].reset_index()
-    return {
-        "dates":    [str(d)[:10] for d in df["date"].tolist()],
-        "values_a": [int(v) for v in df[keyword_a].tolist()],
-        "values_b": [int(v) for v in df[keyword_b].tolist()],
+    params = {
+        "engine":    "google_trends",
+        "q":         f"{keyword_a},{keyword_b}",
+        "date":      timeframe,
+        "geo":       geo,
+        "data_type": "TIMESERIES",
+        "hl":        "id",
+        "tz":        "-420",
+        "api_key":   _SERPAPI_KEY,
     }
+
+    try:
+        results = GoogleSearch(params).get_dict()
+    except Exception as e:
+        print(f"[COMPARE FETCH ERROR] SerpApi exception: {e}")
+        return None
+
+    if "error" in results:
+        print(f"[COMPARE FETCH ERROR] SerpApi error: {results['error']}")
+        return None
+
+    timeline = (
+        results.get("interest_over_time", {})
+               .get("timeline_data", [])
+    )
+    if not timeline:
+        return None
+
+    dates, vals_a, vals_b = [], [], []
+    for item in timeline:
+        try:
+            dates.append(item["date"][:10])  # ambil tanggal awal periode
+            # SerpApi mengembalikan values[] berurutan sesuai q= (koma-separated)
+            vals_a.append(int(item["values"][0]["extracted_value"]))
+            vals_b.append(int(item["values"][1]["extracted_value"]))
+        except (KeyError, IndexError, ValueError):
+            continue
+
+    if not dates:
+        return None
+
+    return {"dates": dates, "values_a": vals_a, "values_b": vals_b}
 
 
 def fetch_comparison_trend(keyword_a, keyword_b, timeframe="today 3-m", geo="ID"):
