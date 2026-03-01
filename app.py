@@ -305,8 +305,12 @@ def analyze():
         if re.fullmatch(r'ID(-[A-Z]{2})?', requested_geo):
             geo = requested_geo
 
+    # --- Category (for sector analysis) ---
+    cat_id = int(data.get("cat", 0) or 0)
+    cat_str = str(cat_id)
+
     # --- Cache check (L1 memory → L2 Supabase) ---
-    cached = cache_get(keyword, geo)
+    cached = cache_get(keyword, geo, cat_str)
     if cached:
         remaining = max(0, FREE_DAILY_LIMIT - searches_today) if tier == "free" else None
         cached["_meta"] = {
@@ -319,7 +323,7 @@ def analyze():
         return jsonify(sanitize(cached))
 
     # --- Analisis ---
-    result = analyze_keyword(keyword, geo=geo)
+    result = analyze_keyword(keyword, geo=geo, cat=cat_id)
 
     # Map engine errors to proper HTTP codes
     if "error" in result:
@@ -340,9 +344,10 @@ def analyze():
     except Exception:
         result["ai_insight"] = "AI insight tidak tersedia saat ini."
 
-    # --- Cache the result (L1 + L2) ---
+    # --- Cache the result (L1 + L2) --- only if valid data
     ai_text = result.get("ai_insight", "")
-    cache_set(keyword, geo, "0", result, ai_text)
+    if result.get("growth") is not None:  # anti-empty cache
+        cache_set(keyword, geo, cat_str, result, ai_text)
 
     # --- Attach quota info ---
     remaining = max(0, FREE_DAILY_LIMIT - searches_today) if tier == "free" else None
@@ -643,35 +648,7 @@ def _build_pdf(data: dict) -> io.BytesIO:
     ]))
     story.append(mt)
     story.append(Spacer(1, 0.4*cm))
-# Di dalam route /api/analyze pada app.py
 
-@app.route("/api/analyze", methods=["POST"])
-def analyze():
-    # ... (kode awal tetap sama) ...
-    
-    # Ambil parameter cat jika ada (untuk sektor)
-    cat_id = data.get("cat", 0) 
-
-    # 1. Cek Cache
-    cached = cache_get(keyword, geo, str(cat_id))
-    if cached:
-        return jsonify(sanitize(cached))
-
-    # 2. Panggil engine dengan parameter cat
-    result = analyze_keyword(keyword, geo=geo, cat=cat_id)
-
-    if "error" in result:
-        return jsonify(result), 400 if "error_code" not in result else 429
-
-    # 3. AI Insight
-    result["ai_insight"] = generate_ai_insight(result)
-
-    # 4. HANYA SIMPAN JIKA BERHASIL (Anti-Empty Cache)
-    if result.get("growth") is not None:
-        cache_set(keyword, geo, str(cat_id), result, result["ai_insight"])
-
-    return jsonify(sanitize(result))
-    
     if ai_text:
         story.append(Paragraph("AI Business Insight", h2_style))
         for para in ai_text.split("\n"):
