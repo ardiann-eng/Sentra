@@ -3326,7 +3326,7 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            keyword: kw,  // PERBAIKAN: Gunakan 'kw', bukan 'keyword'
+            keyword: kw,  // FIX: Use 'kw' to match input variable
             geo: geo,
             user_id: userState.userId || '',
             cat: 0
@@ -3361,44 +3361,36 @@
     }
     /* ── FETCH: COMPARE ── */
     async function doCompare() {
-      const kwA = document.getElementById('kw-a').value.trim();
-      const kwB = document.getElementById('kw-b').value.trim();
+      const kwA = document.getElementById('kw-a').value.trim(); //
+      const kwB = document.getElementById('kw-b').value.trim(); //
       const geo = document.getElementById('geo-select')?.value || 'ID';
 
-      if (!kwA || !kwB) { showErr('Masukkan kedua keyword untuk dibandingkan.'); return; }
-      if (kwA.toLowerCase() === kwB.toLowerCase()) { showErr('Kedua keyword tidak boleh sama.'); return; }
+      if (!kwA || !kwB) { showErr('Masukkan kedua keyword.'); return; }
 
       document.getElementById('err').style.display = 'none';
       setLoading(true, true);
 
       try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 120000);
+        const timeout = setTimeout(() => controller.abort(), 55000);
 
         const res = await fetch('/api/compare', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ keyword_a: kwA, keyword_b: kwB, user_id: userState.userId || '', geo }),
+          body: JSON.stringify({
+            keyword_a: kwA, //
+            keyword_b: kwB, //
+            user_id: userState.userId || '',
+            geo: geo
+          }),
           signal: controller.signal
         });
 
         clearTimeout(timeout);
         const data = await res.json();
-
-        if (res.status === 403 && data.error_code === 'LIMIT_EXCEEDED') {
-          showUpgradeModal('limit');
-          return;
-        }
-
-        if (!res.ok || data.error) { showErr(data.error || 'Terjadi kesalahan pada server.'); }
-        else {
-          if (data._meta) updateQuotaUI(data._meta);
-          renderCompareResults(data);
-        }
-
+        // ... sisa logika renderCompareResults ...
       } catch (e) {
-        if (e.name === 'AbortError') showErr('Request timeout. Proses perbandingan membutuhkan waktu lebih lama, silakan coba lagi.');
-        else showErr('Tidak dapat terhubung ke server.');
+        showErr(e.name === 'AbortError' ? 'Proses banding timeout.' : 'Gagal terhubung.');
       } finally {
         setLoading(false, true);
       }

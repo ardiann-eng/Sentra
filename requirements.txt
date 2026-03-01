@@ -10,3 +10,4 @@ gunicorn==22.0.0
 supabase==2.7.4
 reportlab==4.2.2
 fake-useragent==1.5.1
+gevent==24.2.1

@@ -7,20 +7,20 @@ from sklearn.linear_model import LinearRegression
 from concurrent.futures import ThreadPoolExecutor
 from pytrends.request import TrendReq
 from pytrends.exceptions import TooManyRequestsError
-_SCRAPER_KEY = "9d165dff5be59579040bc2333e85f07b"
-_PROXY_URL = f"http://scraperapi:{_SCRAPER_KEY}.render=false@proxy-server.scraperapi.com:8001"
+_ZENROWS_KEY = "a8f8f662b9b0d931d3801b0465097e626d3c5ae8"
+_PROXY_URL = f"http://{_ZENROWS_KEY}:@proxy.zenrows.com:8001"
 _PROXIES = {"http": _PROXY_URL, "https": _PROXY_URL}
 
 def _make_pytrends():
-    """Inisialisasi TrendReq dengan ScraperAPI Proxy yang dioptimasi."""
+    """Inisialisasi TrendReq dengan ZenRows Proxy yang dioptimasi."""
     return TrendReq(
         hl='id-ID',
         tz=420,
-        retries=1, # Hanya 1x retry agar tidak memicu timeout Gunicorn
+        retries=1, # Hanya 1x retry agar tidak terjadi penumpukan waktu tunggu
         backoff_factor=1,
         requests_args={
             'proxies': _PROXIES,
-            'timeout': 30, # Maksimal menunggu 30 detik per request
+            'timeout': 25, # Maksimal menunggu 25 detik per request
             'verify': False
         }
     )
@@ -35,6 +35,7 @@ def _jitter():
 
 def fetch_trend_data(keyword, timeframe="today 3-m", geo="ID", cat=0):
     try:
+        print(f"--- DEBUG ZENROWS ---: Menghubungi Google untuk {keyword}")
         pytrends = _make_pytrends()
         _jitter()
         pytrends.build_payload([keyword], timeframe=timeframe, geo=geo, cat=cat)
