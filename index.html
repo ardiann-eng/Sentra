@@ -3146,7 +3146,7 @@
       searchesToday: 0,
       remaining: 5,
     };
-    let supabase = null;
+    let sb = null;
     let authMode = 'login';
     let lastAnalysisResult = null; // for PDF download
 
@@ -3287,9 +3287,9 @@
         const config = await res.json();
         if (!config.supabase_url) return;
 
-        supabase = supabase.createClient(config.supabase_url, config.supabase_anon_key);
+        sb = supabase.createClient(config.supabase_url, config.supabase_anon_key);
 
-        supabase.auth.onAuthStateChange((event, session) => {
+        sb.auth.onAuthStateChange((event, session) => {
           if (session) {
             userState.userId = session.user.id;
             userState.token = session.access_token;
@@ -3320,9 +3320,9 @@
     }
 
     async function openAuthModal() {
-      if (supabase && (await supabase.auth.getSession()).data.session) {
+      if (sb && (await sb.auth.getSession()).data.session) {
         // Simple logout if already logged in (for demo purposes, could be a profile card)
-        if (confirm("Logout dari akun Anda?")) supabase.auth.signOut();
+        if (confirm("Logout dari akun Anda?")) sb.auth.signOut();
         return;
       }
       document.getElementById('auth-modal').classList.add('open');
@@ -3348,14 +3348,14 @@
       const errEl = document.getElementById('auth-err');
       errEl.textContent = '';
 
-      if (!supabase) return;
+      if (!sb) return;
 
       try {
         let result;
         if (authMode === 'login') {
-          result = await supabase.auth.signInWithPassword({ email, password });
+          result = await sb.auth.signInWithPassword({ email, password });
         } else {
-          result = await supabase.auth.signUp({ email, password });
+          result = await sb.auth.signUp({ email, password });
         }
 
         if (result.error) {
