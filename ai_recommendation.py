@@ -29,7 +29,7 @@ def generate_ai_insight(data: dict) -> str:
         try:
             client = genai.Client(api_key=api_key)
             response = client.models.generate_content(
-                model="gemini-2.0-flash", # Fixed model name
+                model="gemini-2.5-flash", # Fixed model name
                 contents=prompt,
             )
             return response.text.strip()
@@ -150,7 +150,7 @@ def generate_compare_insight(compare_data: dict) -> str:
         try:
             client = genai.Client(api_key=api_key)
             response = client.models.generate_content(
-                model="gemini-2.0-flash", # Fixed model name
+                model="gemini-2.5-flash", # Fixed model name
                 contents=prompt,
             )
             return response.text.strip()
@@ -253,7 +253,7 @@ def generate_local_insight(keyword: str, regional_data: list) -> str:
         try:
             client = genai.Client(api_key=api_key)
             response = client.models.generate_content(
-                model="gemini-2.0-flash",
+                model="gemini-2.5-flash",
                 contents=prompt,
             )
             return response.text.strip()

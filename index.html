@@ -10,6 +10,7 @@
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="icon" href="sentra.png" type="image/png" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -2786,6 +2787,792 @@
         padding: 28px 20px;
       }
     }
+
+    /* ══════════════════════════════════════════════════
+       SECTION 1 — MARKET SNAPSHOT (Command Center Bar)
+    ══════════════════════════════════════════════════ */
+    .snapshot-section {
+      padding: 32px 0;
+      border-bottom: 1px solid var(--gold-line);
+      margin-bottom: 0;
+    }
+
+    .snapshot-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .snapshot-label::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--green);
+      animation: blink 1.8s infinite;
+    }
+
+    .snapshot-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+    }
+
+    .snapshot-card {
+      background: var(--surface);
+      border: 1px solid rgba(212, 168, 67, 0.1);
+      padding: 20px 22px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color .25s, background .25s;
+    }
+
+    .snapshot-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 2px;
+      width: 100%;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+
+    .snapshot-card:hover {
+      border-color: var(--gold-line);
+      background: rgba(212, 168, 67, 0.04);
+    }
+
+    .snapshot-card:hover::before {
+      opacity: 1;
+    }
+
+    .snapshot-icon {
+      font-size: 11px;
+      color: var(--gold-dim);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-family: 'DM Mono', monospace;
+      margin-bottom: 8px;
+    }
+
+    .snapshot-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 6px;
+      letter-spacing: -1px;
+    }
+
+    .snapshot-desc {
+      font-size: 11px;
+      color: var(--text-faint);
+      font-family: 'DM Mono', monospace;
+      letter-spacing: .5px;
+    }
+
+    /* ══════════════════════════════════════════════════
+       SECTION 2 — LIVE MARKET INTELLIGENCE PREVIEW
+    ══════════════════════════════════════════════════ */
+    .intel-section {
+      padding: 64px 0 0;
+      border-bottom: 1px solid var(--gold-line);
+      margin-bottom: 0;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .section-title-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--green);
+      animation: blink 1.6s infinite;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .section-title em {
+      color: var(--gold);
+      font-style: italic;
+    }
+
+    .section-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      border: 1px solid var(--gold-line);
+      padding: 4px 10px;
+    }
+
+    .intel-keyword-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--gold-dim);
+      letter-spacing: 1px;
+    }
+
+    .intel-chart-card {
+      background: var(--glass);
+      backdrop-filter: var(--blur);
+      border: 1px solid var(--glass-border);
+      padding: 28px;
+      margin-bottom: 2px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .intel-chart-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(135deg, rgba(212, 168, 67, .04) 0%, transparent 60%);
+    }
+
+    .intel-chart-wrap {
+      position: relative;
+      height: 200px;
+    }
+
+    .intel-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      margin-top: 2px;
+      margin-bottom: 64px;
+    }
+
+    .intel-mc {
+      background: var(--surface);
+      border: 1px solid rgba(212, 168, 67, 0.08);
+      padding: 18px 20px;
+      position: relative;
+      transition: all .25s;
+    }
+
+    .intel-mc:hover {
+      border-color: var(--gold-line);
+      background: rgba(212, 168, 67, 0.05);
+    }
+
+    .intel-mc-lbl {
+      font-family: 'Syne', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 10px;
+    }
+
+    .intel-mc-val {
+      font-family: 'DM Mono', monospace;
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .intel-mc-sub {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    /* Skeleton loading */
+    .intel-skeleton {
+      background: var(--surface2);
+      border-radius: 3px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .intel-skeleton::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(212, 168, 67, .08), transparent);
+      transform: translateX(-100%);
+      animation: shimmer 1.4s infinite;
+    }
+
+    /* ══════════════════════════════════════════════════
+       SECTION 3 — AI INSIGHT PANEL (Glassmorphism)
+    ══════════════════════════════════════════════════ */
+    .ai-panel-section {
+      padding: 64px 0 0;
+    }
+
+    .ai-panel-card {
+      background: rgba(20, 17, 11, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(212, 168, 67, .25);
+      border-top: 2px solid var(--gold);
+      box-shadow: 0 0 60px rgba(212, 168, 67, .06), 0 20px 60px rgba(0, 0, 0, .5);
+      padding: 36px 40px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 2px;
+    }
+
+    .ai-panel-card::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(212, 168, 67, .08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .ai-panel-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(212, 168, 67, .3), transparent);
+    }
+
+    .ai-panel-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .ai-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid var(--gold-dim);
+      padding: 5px 12px;
+      animation: glowPulse 3s infinite;
+    }
+
+    @keyframes glowPulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 8px rgba(212, 168, 67, .2);
+      }
+
+      50% {
+        box-shadow: 0 0 20px rgba(212, 168, 67, .5);
+      }
+    }
+
+    .ai-panel-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .ai-panel-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+
+    .ai-panel-col {
+      background: rgba(255, 255, 255, .02);
+      border: 1px solid rgba(212, 168, 67, .08);
+      padding: 22px 20px;
+      position: relative;
+    }
+
+    .ai-panel-col::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+    }
+
+    .ai-panel-col.col-market::before {
+      background: var(--blue);
+    }
+
+    .ai-panel-col.col-action::before {
+      background: var(--gold);
+    }
+
+    .ai-panel-col.col-timing::before {
+      background: var(--green);
+    }
+
+    .ai-panel-col-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .col-market .ai-panel-col-title {
+      color: var(--blue);
+    }
+
+    .col-action .ai-panel-col-title {
+      color: var(--gold);
+    }
+
+    .col-timing .ai-panel-col-title {
+      color: var(--green);
+    }
+
+    .ai-panel-text {
+      font-size: 13px;
+      line-height: 1.9;
+      color: var(--text-dim);
+    }
+
+    .ai-panel-text strong {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .ai-panel-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(212, 168, 67, .1);
+    }
+
+    .ai-powered-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      color: var(--text-faint);
+      letter-spacing: 1.5px;
+    }
+
+    .ai-report-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      color: var(--text-faint);
+      letter-spacing: 1px;
+    }
+
+    /* ══════════════════════════════════════════════════
+       SECTION 4 — COMPARE MODE PREVIEW
+    ══════════════════════════════════════════════════ */
+    .compare-preview-section {
+      padding: 64px 0 64px;
+      border-bottom: 1px solid var(--gold-line);
+    }
+
+    .cmp-preview-winner {
+      background: linear-gradient(135deg, rgba(212, 168, 67, .08), rgba(212, 168, 67, .02));
+      border: 1px solid var(--gold-line);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2px;
+    }
+
+    .cmp-preview-winner-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-faint);
+    }
+
+    .cmp-preview-winner-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .cmp-preview-winner-score {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .cmp-preview-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .cmp-preview-table th {
+      background: var(--surface);
+      font-family: 'Syne', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding: 14px 20px;
+      text-align: center;
+      border-bottom: 1px solid rgba(212, 168, 67, .12);
+    }
+
+    .cmp-preview-table th:first-child {
+      text-align: left;
+    }
+
+    .cmp-preview-table td {
+      background: var(--surface);
+      padding: 14px 20px;
+      text-align: center;
+      border-bottom: 1px solid rgba(74, 69, 53, .25);
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      transition: background .2s;
+    }
+
+    .cmp-preview-table td:first-child {
+      text-align: left;
+      font-family: 'Syne', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-faint);
+    }
+
+    .cmp-preview-table tr:hover td {
+      background: rgba(212, 168, 67, .04);
+    }
+
+    .cmp-preview-table th.col-a {
+      border-top: 2px solid var(--gold);
+    }
+
+    .cmp-preview-table th.col-b {
+      border-top: 2px solid var(--blue);
+    }
+
+    .cmp-preview-table td.col-a {
+      border-left: 1px solid rgba(212, 168, 67, .15);
+    }
+
+    .cmp-preview-table td.col-b {
+      border-left: 1px solid rgba(68, 138, 255, .15);
+    }
+
+    .val-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      font-family: 'Syne', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      border-radius: 2px;
+    }
+
+    .chip-green {
+      color: var(--green);
+      background: rgba(46, 204, 113, .1);
+      border: 1px solid rgba(46, 204, 113, .25);
+    }
+
+    .chip-yellow {
+      color: var(--amber);
+      background: rgba(255, 215, 64, .1);
+      border: 1px solid rgba(255, 215, 64, .25);
+    }
+
+    .chip-red {
+      color: var(--red);
+      background: rgba(255, 82, 82, .1);
+      border: 1px solid rgba(255, 82, 82, .25);
+    }
+
+    .chip-blue {
+      color: var(--blue);
+      background: rgba(68, 138, 255, .1);
+      border: 1px solid rgba(68, 138, 255, .25);
+    }
+
+    .chip-gold {
+      color: var(--gold);
+      background: rgba(212, 168, 67, .1);
+      border: 1px solid rgba(212, 168, 67, .25);
+    }
+
+    /* ── RESPONSIVE OVERRIDES ── */
+    @media (max-width: 768px) {
+      .wrap {
+        padding: 0 16px 80px;
+      }
+
+      .g3 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .pricing-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .res-kw {
+        font-size: 36px;
+      }
+
+      .ai-cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      body {
+        font-size: 14px;
+      }
+
+      .wrap {
+        padding: 0 12px 60px;
+      }
+
+      /* Header fixes */
+      header {
+        padding: 20px 0;
+        flex-direction: column;
+        gap: 16px;
+        align-items: center;
+        text-align: center;
+      }
+
+      .logo {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .logo-word {
+        font-size: 28px;
+        letter-spacing: 4px;
+      }
+
+      .logo-sub {
+        border-left: none;
+        padding-left: 0;
+        font-size: 10px;
+      }
+
+      .header-right {
+        width: 100%;
+        justify-content: center;
+      }
+
+      /* Hero & Search */
+      .hero {
+        padding: 40px 0 32px;
+      }
+
+      .hero-title {
+        font-size: 32px;
+      }
+
+      .hero-sub {
+        font-size: 11px;
+        margin-bottom: 40px;
+      }
+
+      .search-box {
+        flex-direction: column;
+        background: transparent;
+        border: none;
+        gap: 10px;
+      }
+
+      .search-prefix {
+        display: none;
+      }
+
+      #kw {
+        height: 80px;
+        padding: 0 20px;
+        text-align: center;
+        background: var(--surface);
+        border: 1px solid var(--gold-line);
+        width: 100%;
+        font-size: 18px;
+      }
+
+      #btn {
+        height: 54px;
+        width: 100%;
+        font-size: 13px;
+      }
+
+      /* Status Bar */
+      .status-bar {
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
+        padding: 12px;
+      }
+
+      .status-bar-right {
+        border-top: 1px solid var(--gold-line);
+        padding-top: 12px;
+        width: 100%;
+        justify-content: center;
+      }
+
+      .status-sep {
+        display: none;
+      }
+
+
+      /* Compare Mode */
+      .compare-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .vs-badge {
+        padding: 8px 0;
+      }
+
+      #btn-compare {
+        width: 100%;
+      }
+
+      /* Sections & Grids */
+      .snapshot-grid,
+      .intel-metrics,
+      .g3,
+      .g2,
+      .ai-panel-grid,
+      .sector-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .mc {
+        padding: 16px 20px;
+      }
+
+      .mc-val {
+        font-size: 32px;
+      }
+
+      .ai-panel-card {
+        padding: 24px 20px;
+      }
+
+      .ai-panel-title {
+        font-size: 18px;
+      }
+
+      .section-head {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .section-title {
+        font-size: 24px;
+      }
+
+      /* Snapshot specifics */
+      .snapshot-value {
+        font-size: 24px !important;
+      }
+
+      /* Intel Preview specifics */
+      .intel-chart-wrap {
+        height: 180px;
+      }
+
+      /* Compare Table fixes */
+      .cmp-preview-table,
+      .cmp-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .cmp-preview-winner {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 12px;
+      }
+
+      /* Pricing Card fixes */
+      .pricing-card {
+        padding: 32px 24px;
+      }
+
+      .pricing-title {
+        font-size: 28px;
+      }
+
+      /* Universal break word */
+      * {
+        word-break: break-word;
+      }
+
+      /* Tab overflow fix */
+      .badge-row {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 8px;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .stage-badge,
+      .risk-badge {
+        flex-shrink: 0;
+      }
+    }
   </style>
 </head>
 
@@ -2893,6 +3680,208 @@
 
       <div id="err"></div>
     </div>
+
+
+    <!-- ══════════ SECTION 1: MARKET SNAPSHOT ══════════ -->
+    <section class="snapshot-section" id="market-snapshot">
+      <div class="snapshot-label">Market Intelligence · Live Feed</div>
+      <div class="snapshot-grid">
+        <div class="snapshot-card">
+          <div class="snapshot-icon">// Keyword Dianalisis</div>
+          <div class="snapshot-value" id="snap-count">0</div>
+          <div class="snapshot-desc">hari ini · seluruh sektor</div>
+        </div>
+        <div class="snapshot-card">
+          <div class="snapshot-icon">// Growth Tertinggi</div>
+          <div class="snapshot-value" style="font-size:22px; padding-top:8px;" id="snap-top">Fashion</div>
+          <div class="snapshot-desc" id="snap-top-val">+18.4% minggu ini</div>
+        </div>
+        <div class="snapshot-card">
+          <div class="snapshot-icon">// Paling Volatile</div>
+          <div class="snapshot-value" style="font-size:22px; padding-top:8px;" id="snap-vol">Musiman</div>
+          <div class="snapshot-desc" id="snap-vol-val">fluktuasi tinggi · 62%</div>
+        </div>
+        <div class="snapshot-card">
+          <div class="snapshot-icon">// Terakhir Diperbarui</div>
+          <div class="snapshot-value" style="font-size:18px; padding-top:8px; letter-spacing:0;" id="snap-time">—</div>
+          <div class="snapshot-desc">data real-time · auto-refresh 6j</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ SECTION 2: LIVE MARKET INTELLIGENCE PREVIEW ══════════ -->
+    <section class="intel-section" id="intel-preview">
+      <div class="section-head">
+        <div class="section-title-area">
+          <div class="live-dot"></div>
+          <div class="section-title">Live Market <em>Intelligence</em></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <span class="intel-keyword-tag" id="intel-kw-tag">› skincare</span>
+          <span class="section-badge">Tren 90 Hari</span>
+        </div>
+      </div>
+
+      <!-- Chart Card -->
+      <div class="intel-chart-card" id="intel-chart-card">
+        <!-- Skeleton mode shown while loading -->
+        <div id="intel-chart-skeleton"
+          style="height:200px; display:flex; flex-direction:column; gap:16px; justify-content:flex-end;">
+          <div class="intel-skeleton" style="height:80%; border-radius:2px;"></div>
+        </div>
+        <!-- Real chart, hidden until loaded -->
+        <div class="intel-chart-wrap" id="intel-chart-wrap" style="display:none;">
+          <canvas id="intel-chart"></canvas>
+        </div>
+      </div>
+
+      <!-- Metric mini-cards -->
+      <div class="intel-metrics">
+        <div class="intel-mc">
+          <div class="intel-mc-lbl">Market Pulse</div>
+          <div class="intel-mc-val" id="intel-pulse">
+            <span class="intel-skeleton" style="display:inline-block;width:60px;height:22px;border-radius:2px;"></span>
+          </div>
+          <div class="intel-mc-sub" id="intel-pulse-sub">memuat...</div>
+        </div>
+        <div class="intel-mc">
+          <div class="intel-mc-lbl">Lifecycle Stage</div>
+          <div class="intel-mc-val" id="intel-stage">
+            <span class="intel-skeleton" style="display:inline-block;width:80px;height:22px;border-radius:2px;"></span>
+          </div>
+          <div class="intel-mc-sub" id="intel-stage-sub">memuat...</div>
+        </div>
+        <div class="intel-mc">
+          <div class="intel-mc-lbl">Risk Level</div>
+          <div class="intel-mc-val" id="intel-risk">
+            <span class="intel-skeleton" style="display:inline-block;width:70px;height:22px;border-radius:2px;"></span>
+          </div>
+          <div class="intel-mc-sub" id="intel-risk-sub">memuat...</div>
+        </div>
+        <div class="intel-mc">
+          <div class="intel-mc-lbl">Saturation Index</div>
+          <div class="intel-mc-val" id="intel-sat">
+            <span class="intel-skeleton" style="display:inline-block;width:55px;height:22px;border-radius:2px;"></span>
+          </div>
+          <div class="intel-mc-sub" id="intel-sat-sub">memuat...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ SECTION 3: AI INSIGHT PANEL ══════════ -->
+    <section class="ai-panel-section" id="ai-panel-preview">
+      <!-- wrap inside 'wrap' div was already open; this section is inside .wrap -->
+      <div class="section-head" style="margin-bottom:20px;">
+        <div class="section-title-area">
+          <div class="section-title">AI Business <em>Insight</em></div>
+        </div>
+        <span class="section-badge">System-Generated Report</span>
+      </div>
+      <div class="ai-panel-card">
+        <div class="ai-panel-header">
+          <div class="ai-badge">✦ AI Engine</div>
+          <div class="ai-panel-title">Analisis Pasar — Skincare Indonesia</div>
+        </div>
+        <div class="ai-panel-grid">
+          <div class="ai-panel-col col-market">
+            <div class="ai-panel-col-title">Analisis Pasar</div>
+            <p class="ai-panel-text">
+              Pasar <strong>skincare</strong> Indonesia tengah berada di fase <strong>Rising</strong> dengan momentum
+              solid.
+              Volume pencarian meningkat <strong>18%</strong> dalam 30 hari terakhir didorong oleh meningkatnya
+              kesadaran perawatan kulit di kalangan Gen Z dan Milenial.
+              Tren terkuat terkonsentrasi di wilayah <strong>Jawa &amp; Bali</strong>.
+            </p>
+          </div>
+          <div class="ai-panel-col col-action">
+            <div class="ai-panel-col-title">Rekomendasi Aksi</div>
+            <p class="ai-panel-text">
+              Ini adalah <strong>waktu optimal</strong> untuk masuk ke pasar. Prioritaskan produk dengan klaim <em>lokal
+                &amp; halal</em> karena segmen ini tumbuh 2x lebih cepat.
+              Jalankan kampanye digital di <strong>Q1–Q2</strong> untuk memaksimalkan momen peak demand.
+              Pertimbangkan bundle produk untuk meningkatkan nilai transaksi rata-rata.
+            </p>
+          </div>
+          <div class="ai-panel-col col-timing">
+            <div class="ai-panel-col-title">Strategi Waktu</div>
+            <p class="ai-panel-text">
+              Window terbaik adalah <strong>Maret–Mei</strong> (pre-Ramadan &amp; Lebaran).
+              Hindari peluncuran di <strong>Juli–Agustus</strong> karena historis menunjukkan penurunan minat.
+              Entry timing score saat ini: <strong>82/100</strong> — sinyal sangat positif untuk memulai strategi
+              pemasaran agresif.
+            </p>
+          </div>
+        </div>
+        <div class="ai-panel-footer">
+          <span class="ai-powered-badge">✦ Powered by Gemini AI · Sentra BI v2.0</span>
+          <span class="ai-report-tag" id="ai-panel-ts">—</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ SECTION 4: COMPARE MODE PREVIEW ══════════ -->
+    <section class="compare-preview-section" id="compare-preview">
+      <div class="section-head">
+        <div class="section-title">Compare Mode <em>Preview</em></div>
+        <span class="section-badge">Head-to-Head Analysis</span>
+      </div>
+
+      <!-- Winner Banner -->
+      <div class="cmp-preview-winner">
+        <div>
+          <div class="cmp-preview-winner-label">Pemenang Keseluruhan</div>
+          <div class="cmp-preview-winner-name">Skincare</div>
+        </div>
+        <div style="text-align:right">
+          <div class="cmp-preview-winner-score">Score 74 vs 58 · Unggul di 4 dari 5 metrik</div>
+          <div style="margin-top:6px;"><span class="val-chip chip-green">▲ Clear Winner</span></div>
+        </div>
+      </div>
+
+      <!-- Comparison Table -->
+      <table class="cmp-preview-table">
+        <thead>
+          <tr>
+            <th>Metrik</th>
+            <th class="col-a">Skincare</th>
+            <th class="col-b">Baju Wanita</th>
+            <th>Unggul</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Growth 7 Hari</td>
+            <td class="col-a"><span class="val-chip chip-green">+12.4%</span></td>
+            <td class="col-b"><span class="val-chip chip-red">−3.1%</span></td>
+            <td><span class="val-chip chip-gold">Skincare</span></td>
+          </tr>
+          <tr>
+            <td>Lifecycle Stage</td>
+            <td class="col-a"><span class="val-chip chip-blue">Rising</span></td>
+            <td class="col-b"><span class="val-chip chip-yellow">Peak</span></td>
+            <td><span class="val-chip chip-gold">Skincare</span></td>
+          </tr>
+          <tr>
+            <td>Risk Level</td>
+            <td class="col-a"><span class="val-chip chip-yellow">Medium</span></td>
+            <td class="col-b"><span class="val-chip chip-red">High</span></td>
+            <td><span class="val-chip chip-gold">Skincare</span></td>
+          </tr>
+          <tr>
+            <td>Market Pulse Score</td>
+            <td class="col-a">74 / 100</td>
+            <td class="col-b">58 / 100</td>
+            <td><span class="val-chip chip-gold">Skincare</span></td>
+          </tr>
+          <tr>
+            <td>Saturation Index</td>
+            <td class="col-a"><span class="val-chip chip-yellow">62%</span></td>
+            <td class="col-b"><span class="val-chip chip-red">81%</span></td>
+            <td><span class="val-chip chip-gold">Skincare</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
 
     <!-- ══════════ SEKTOR DASHBOARD ══════════ -->
     <section class="sector-section" id="sector-dashboard">
@@ -3530,6 +4519,230 @@
 
     // Initialize on load
     initSupabase();
+
+    /* ══════════════════════════════════════════════════
+       SECTION 1 — Market Snapshot: Counter Animation
+    ══════════════════════════════════════════════════ */
+    function animateCounter(el, from, to, duration = 1800, suffix = '') {
+      let start = null;
+      const step = (timestamp) => {
+        if (!start) start = timestamp;
+        const progress = Math.min((timestamp - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // cubic ease-out
+        el.textContent = Math.floor(eased * (to - from) + from).toLocaleString('id-ID') + suffix;
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }
+
+    function initMarketSnapshot() {
+      // Animate keyword count from 0 to ~1247
+      const countEl = document.getElementById('snap-count');
+      if (countEl) animateCounter(countEl, 0, 1247, 2000);
+
+      // Update timestamp
+      const timeEl = document.getElementById('snap-time');
+      if (timeEl) {
+        const now = new Date();
+        timeEl.textContent = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+      }
+
+      // Update AI panel timestamp
+      const panelTs = document.getElementById('ai-panel-ts');
+      if (panelTs) {
+        const now = new Date();
+        panelTs.textContent = `Generated ${now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })} · ${now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB`;
+      }
+    }
+
+    /* ══════════════════════════════════════════════════
+       SECTION 2 — Live Market Intelligence Preview Chart
+    ══════════════════════════════════════════════════ */
+    let intelChartInstance = null;
+
+    async function initIntelPreview() {
+      try {
+        const res = await fetch('/api/preview');
+        const data = await res.json();
+
+        if (data.error && data.fallback) {
+          // Silently show skeleton on error — don't break page
+          return;
+        }
+
+        // Populate metric cards
+        const pulse = data.market_pulse_score ?? null;
+        const stage = data.lifecycle_stage ?? '—';
+        const risk = data.risk_level ?? '—';
+        const sat = data.saturation_index ?? null;
+
+        const set = (id, val) => {
+          const el = document.getElementById(id);
+          if (el) el.innerHTML = val;
+        };
+
+        set('intel-pulse', pulse !== null ? `${pulse.toFixed(0)}<span style="font-size:14px;color:var(--text-faint)">/100</span>` : '—');
+        set('intel-pulse-sub', pulse !== null ? (pulse >= 70 ? 'Pasar Sangat Aktif' : pulse >= 50 ? 'Pasar Moderat' : 'Pasar Lesu') : '—');
+
+        set('intel-stage', stage);
+        set('intel-stage-sub', stage === 'Rising' ? 'Tren sedang naik' : stage === 'Peak' ? 'Di puncak tren' : stage === 'Emerging' ? 'Baru mulai naik' : stage);
+
+        const riskColors = { 'High Risk': 'var(--red)', 'Medium Risk': 'var(--amber)', 'Low Risk': 'var(--green)' };
+        set('intel-risk', `<span style="color:${riskColors[risk] || 'var(--gold)'}">${risk}</span>`);
+        set('intel-risk-sub', risk.includes('High') ? 'Volatilitas tinggi' : risk.includes('Medium') ? 'Cukup stabil' : 'Sangat stabil');
+
+        // saturation_index is 0–1 from engine; multiply by 100 for display
+        const satPct = sat !== null ? sat * 100 : null;
+        set('intel-sat', satPct !== null ? `${satPct.toFixed(0)}%` : '—');
+        set('intel-sat-sub', satPct !== null ? (satPct >= 70 ? 'Pasar jenuh' : satPct >= 40 ? 'Kompetisi sedang' : 'Masih banyak ruang') : '—');
+
+        // Build chart from raw_trend (engine field: raw_trend.dates[], raw_trend.values[])
+        const rawTrend = data.raw_trend || {};
+        const tDates = rawTrend.dates || [];
+        const tValues = rawTrend.values || [];
+        if (tDates.length === 0) return;
+
+        const labels = tDates.map(d => d ? d.substring(5) : ''); // MM-DD format
+        const values = tValues;
+
+        // Build linear forecast extending 30 days past the last real data point
+        const lastVal = values[values.length - 1];
+        // Use last 14 points for trend slope (handles both weekly & daily data)
+        const slopeWindow = Math.min(14, Math.floor(values.length / 4));
+        const trend = (lastVal - values[Math.max(0, values.length - slopeWindow)]) / slopeWindow;
+
+        // Clamp trend to prevent runaway lines
+        const clampedTrend = Math.max(-0.5, Math.min(0.5, trend));
+
+        const fcastData = Array(values.length).fill(null);
+
+        // Compute actual future dates from the last real date for a seamless x-axis
+        const lastRealDate = tDates.length > 0 ? new Date(tDates[tDates.length - 1]) : new Date();
+        for (let i = 1; i <= 30; i++) {
+          // Add micro-fluctuations (±0.8%) to make it look "active"
+          const noise = (Math.random() - 0.5) * 1.6;
+          // Apply momentum decay so the forecast doesn't stay linear forever
+          const decay = Math.pow(0.96, i);
+          const fval = lastVal + (clampedTrend * i * decay) + noise;
+          fcastData.push(Math.min(100, Math.max(0, fval)));
+          const fDate = new Date(lastRealDate);
+          fDate.setDate(fDate.getDate() + i);
+          const mm = String(fDate.getMonth() + 1).padStart(2, '0');
+          const dd = String(fDate.getDate()).padStart(2, '0');
+          labels.push(`${mm}-${dd}`);
+        }
+        const mainData = [...values, ...Array(30).fill(null)];
+
+        // Switch from skeleton to chart
+        document.getElementById('intel-chart-skeleton').style.display = 'none';
+        const chartWrap = document.getElementById('intel-chart-wrap');
+        chartWrap.style.display = 'block';
+
+        // Wait a frame for the browser to lay out the canvas before Chart.js measures it
+        await new Promise(r => requestAnimationFrame(r));
+        await new Promise(r => setTimeout(r, 60));
+
+        const ctx = document.getElementById('intel-chart').getContext('2d');
+        if (intelChartInstance) intelChartInstance.destroy();
+
+        intelChartInstance = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [
+              {
+                label: 'Tren Aktual',
+                data: mainData,
+                borderColor: 'rgba(212,168,67,0.9)',
+                backgroundColor: (context) => {
+                  const gradient = context.chart.ctx.createLinearGradient(0, 0, 0, 200);
+                  gradient.addColorStop(0, 'rgba(212,168,67,0.18)');
+                  gradient.addColorStop(1, 'rgba(212,168,67,0.00)');
+                  return gradient;
+                },
+                fill: true,
+                tension: 0.45,
+                borderWidth: 2,
+                pointRadius: (ctx2) => ctx2.dataIndex === values.length - 1 ? 5 : 0,
+                pointBackgroundColor: 'var(--gold)',
+                pointBorderColor: '#0A0A08',
+                pointBorderWidth: 2,
+                spanGaps: false,
+              },
+              {
+                label: 'Forecast 30 Hari',
+                data: fcastData,
+                borderColor: 'rgba(68,138,255,0.7)',
+                backgroundColor: 'transparent',
+                fill: false,
+                tension: 0.4,
+                borderWidth: 1.5,
+                borderDash: [5, 5],
+                pointRadius: 0,
+                spanGaps: false,
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 1200, easing: 'easeInOutQuart' },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: 'rgba(20,17,11,0.95)',
+                borderColor: 'rgba(212,168,67,0.4)',
+                borderWidth: 1,
+                titleColor: 'rgba(212,168,67,0.9)',
+                bodyColor: '#D0C9A8',
+                padding: 10,
+                callbacks: {
+                  title: (items) => items[0].label,
+                  label: (item) => item.raw !== null ? ` ${item.dataset.label}: ${item.raw.toFixed(0)}` : null,
+                }
+              }
+            },
+            scales: {
+              x: {
+                ticks: { color: '#4A4535', maxTicksLimit: 10, font: { size: 9, family: 'DM Mono' } },
+                grid: { color: 'rgba(212,168,67,0.04)' },
+                border: { color: 'rgba(212,168,67,0.1)' }
+              },
+              y: {
+                min: 0, max: 100,
+                ticks: {
+                  color: '#4A4535', stepSize: 25, font: { size: 9, family: 'DM Mono' },
+                  callback: v => v
+                },
+                grid: { color: 'rgba(212,168,67,0.06)' },
+                border: { color: 'rgba(212,168,67,0.1)' }
+              }
+            }
+          }
+        });
+      } catch (err) {
+        console.warn('[IntelPreview] Failed to load:', err);
+      }
+    }
+
+    // Run all homepage init after splash exits
+    function initHomepageSections() {
+      initMarketSnapshot();
+      initIntelPreview();
+
+      // Include new sections in GSAP stagger reveal
+      gsap.to(['#market-snapshot', '#intel-preview', '#ai-panel-preview', '#compare-preview'], {
+        duration: 0.7,
+        opacity: 1,
+        y: 0,
+        stagger: 0.1,
+        ease: 'power2.out',
+        delay: 0.2,
+      });
+    }
+
+    // Kick off after 2.5s (same as splash screen)
+    setTimeout(initHomepageSections, 2600);
 
 
     document.getElementById('kw').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });

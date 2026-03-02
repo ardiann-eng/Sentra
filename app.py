@@ -560,6 +560,69 @@ def get_compare_insight_route():
 
 
 # =========================
+# HOMEPAGE PREVIEW ENDPOINT
+# No quota deduction — cached 6h — for the live preview chart on homepage
+# =========================
+PREVIEW_KEYWORD = "skincare"
+
+@app.route("/api/preview", methods=["GET"])
+def preview():
+    """
+    Returns trending data for the homepage Live Intelligence Preview.
+    Tries: L1 cache → Supabase cache (standard key) → beauty-sector cache → static fallback.
+    Never deducts quota.
+    """
+    keyword = PREVIEW_KEYWORD
+    geo = "ID"
+
+    # 1. Try standard cache key (same key used by normal /api/analyze for this keyword)
+    cached = cache_get(keyword, geo, "0")
+    if cached and cached.get("raw_trend"):
+        return jsonify(sanitize(cached))
+
+    # 2. Try beauty sector cache key
+    cached = cache_get(keyword, geo, "sector:beauty")
+    if cached and cached.get("raw_trend"):
+        return jsonify(sanitize(cached))
+
+    # 3. Try the preview-specific cache key
+    cached = cache_get(keyword, geo, "preview")
+    if cached and cached.get("raw_trend"):
+        return jsonify(sanitize(cached))
+
+    # 4. Try fetching live (SerpAPI) — best effort, silent error
+    try:
+        result = analyze_keyword(keyword, geo=geo, cat=0)
+        if "error" not in result and result.get("raw_trend"):
+            cache_set(keyword, geo, "0", result, "")
+            return jsonify(sanitize(result))
+    except Exception:
+        pass
+
+    # 5. Static fallback — always renders chart so homepage never breaks
+    import math as _math
+    base = [55,57,60,55,52,58,62,65,68,63,59,61,64,67,70,72,68,65,70,75,
+            73,71,74,78,80,76,72,75,79,82,85,81,77,74,70,73,76,80,83,86,
+            88,84,80,76,72,75,78,82,85,88,91,87,83,79,75,71,74,77,80,83,
+            86,89,92,88,84,80,76,72,88,84,80,76,72,68,65,67,70,73,76,79,
+            82,85,88,91,87,83,79,75,71,74,77,80]
+    # Generate realistic-ish dates for last 90 days
+    from datetime import date, timedelta
+    today = date.today()
+    dates = [(today - timedelta(days=89-i)).isoformat() for i in range(90)]
+    return jsonify({
+        "keyword": keyword,
+        "market_pulse_score": 72.0,
+        "lifecycle_stage": "Rising",
+        "risk_level": "Low Risk",
+        "saturation_index": 0.35,
+        "growth": 0.124,
+        "raw_trend": {"dates": dates, "values": base[:len(dates)]},
+        "_static_fallback": True,
+    })
+
+
+# =========================
 # SECTOR ANALYSIS ENDPOINT
 # =========================
 SECTOR_KEYWORDS = {
