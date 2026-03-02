@@ -4,22 +4,24 @@ AI Recommendation Engine menggunakan Google Gemini API
 """
 
 import os
-from google import genai
-
-
-def _is_quota_error(e: Exception) -> bool:
-    """Deteksi apakah error adalah quota/rate limit Gemini."""
-    msg = str(e).lower()
-    return any(k in msg for k in [
-        "429", "quota", "resource_exhausted", "rate_limit",
-        "too many requests", "retry_after"
-    ])
-
+import google.generativeai as genai  # <-- Library stabil
 
 def generate_ai_insight(data: dict) -> str:
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
-        return "⚠ AI Insight tidak tersedia — GEMINI_API_KEY belum dikonfigurasi."
+        return "⚠ AI Insight tidak tersedia."
+
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel('gemini-2.5-flash') # Tetap bisa pakai model terbaru
+    
+    prompt = _build_prompt(data)
+    
+    try:
+        response = model.generate_content(prompt)
+        return response.text.strip()
+    except Exception as e:
+        # ... logic error handling Anda ...
+        return f"⚠ AI Insight sementara tidak tersedia."
 
     prompt = _build_prompt(data)
 
