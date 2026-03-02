@@ -5,9 +5,9 @@ urllib3==1.26.18
 scikit-learn==1.5.1
 pandas==2.2.2
 numpy==1.26.4
-google-genai==1.16.0
+google-generativeai 
 gunicorn==22.0.0
-supabase==2.28.0
+supabase            
 reportlab==4.2.2
 fake-useragent==1.5.1
 gevent==24.2.1
