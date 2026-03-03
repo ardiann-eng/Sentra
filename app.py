@@ -856,148 +856,162 @@ def _build_pdf(data: dict) -> io.BytesIO:
 # SECTOR RADAR (Radar Peluang Sektor) — NEW
 # No Google Trends, uses static data + RSS feeds + AI signal
 # =========================
-RSS_SOURCES = [
-    "https://www.antaranews.com/rss/ekonomi.xml",
-    "https://www.okezone.com/feed/",
-]
-
-DEMO_NEWS_FALLBACK = {
+RSS_SOURCES = {
     "fashion": [
-        {
-            "title": "Tren Fashion Muslim 2024: Modis Dengan Sentuhan Tradisional",
-            "source": "Fashion Trends",
-            "time_ago": "2 hari lalu",
-            "url": "#",
-        },
-        {
-            "title": "Batik Lokal Raih Pasar Global, Ekspor Naik 15%",
-            "source": "Bisnis News",
-            "time_ago": "1 hari lalu",
-            "url": "#",
-        },
+        "https://www.antaranews.com/rss/gaya-hidup.xml",
+        "https://ekonomi.bisnis.com/feed",
+        "https://www.kontan.co.id/rss/industri",
     ],
     "beauty": [
-        {
-            "title": "Skincare Lokal Indonesia Dominasi Pasar ASEAN",
-            "source": "Beauty Report",
-            "time_ago": "3 hari lalu",
-            "url": "#",
-        },
-        {
-            "title": "Makeup Halal Sertifikasi Melonjak Permintaan 40%",
-            "source": "Market Pulse",
-            "time_ago": "2 hari lalu",
-            "url": "#",
-        },
+        "https://www.antaranews.com/rss/gaya-hidup.xml",
+        "https://ekonomi.bisnis.com/feed",
+        "https://finance.detik.com/rss",
     ],
     "fnb": [
-        {
-            "title": "Cloud Kitchen Indonesia Capai 5000 Unit Aktif",
-            "source": "Food & Beverage",
-            "time_ago": "1 hari lalu",
-            "url": "#",
-        },
-        {
-            "title": "Makanan Tradisional Premium Raih Sertifikasi UMKM",
-            "source": "Kuliner News",
-            "time_ago": "4 jam lalu",
-            "url": "#",
-        },
+        "https://www.antaranews.com/rss/ekonomi.xml",
+        "https://ekonomi.bisnis.com/feed",
+        "https://www.kontan.co.id/rss/industri",
+        "https://finance.detik.com/rss",
     ],
     "gadget": [
-        {
-            "title": "Aksesori Smartphone Lokal Kompetitif Lawan Impor",
-            "source": "Tech Trends",
-            "time_ago": "6 jam lalu",
-            "url": "#",
-        },
-        {
-            "title": "Smart Home Devices Makin Terjangkau untuk UMKM",
-            "source": "Electronics",
-            "time_ago": "1 hari lalu",
-            "url": "#",
-        },
+        "https://www.antaranews.com/rss/tekno.xml",
+        "https://ekonomi.bisnis.com/feed",
+        "https://finance.detik.com/rss",
     ],
     "home": [
-        {
-            "title": "Furniture Minimalis Lokal Merebut Pasar Muda",
-            "source": "Home Living",
-            "time_ago": "2 hari lalu",
-            "url": "#",
-        },
-        {
-            "title": "Interior Design DIY Booming di Era Renovasi Rumah",
-            "source": "Design Trends",
-            "time_ago": "5 jam lalu",
-            "url": "#",
-        },
+        "https://www.antaranews.com/rss/gaya-hidup.xml",
+        "https://ekonomi.bisnis.com/feed",
+        "https://www.kontan.co.id/rss/industri",
     ],
     "hobi": [
-        {
-            "title": "Peralatan Olahraga Lokal Raih Standar Internasional",
-            "source": "Sports News",
-            "time_ago": "3 hari lalu",
-            "url": "#",
-        },
-        {
-            "title": "Lifestyle Content Creator Dorong Penjualan Hobi Gear",
-            "source": "Lifestyle Report",
-            "time_ago": "2 hari lalu",
-            "url": "#",
-        },
+        "https://www.antaranews.com/rss/olahraga.xml",
+        "https://www.antaranews.com/rss/gaya-hidup.xml",
+        "https://finance.detik.com/rss",
     ],
     "musiman": [
-        {
-            "title": "Hampers Lebaran 2024 Mulai Pre-Order di Bulan Sebelumnya",
-            "source": "Seasonal News",
-            "time_ago": "1 minggu lalu",
-            "url": "#",
-        },
-        {
-            "title": "Nataru Momentum Emas Penjualan UMKM Mencapai Puncak",
-            "source": "Business Trends",
-            "time_ago": "5 hari lalu",
-            "url": "#",
-        },
+        "https://www.antaranews.com/rss/ekonomi.xml",
+        "https://ekonomi.bisnis.com/feed",
+        "https://www.kontan.co.id/rss/industri",
+        "https://finance.detik.com/rss",
     ],
 }
 
+SECTOR_KEYWORDS = {
+    "fashion":  ["fashion", "baju", "pakaian", "batik", "tekstil", "busana",
+                 "hijab", "outfit", "garmen", "apparel", "clothing"],
+    "beauty":   ["skincare", "kosmetik", "kecantikan", "makeup", "perawatan",
+                 "beauty", "serum", "lotion", "parfum", "salon"],
+    "fnb":      ["makanan", "minuman", "kuliner", "restoran", "fnb", "pangan",
+                 "food", "beverage", "cafe", "kafe", "warung", "catering"],
+    "gadget":   ["gadget", "elektronik", "smartphone", "teknologi", "digital",
+                 "earphone", "laptop", "komputer", "handphone", "perangkat"],
+    "home":     ["furniture", "furnitur", "dekorasi", "interior", "rumah",
+                 "properti", "living", "home", "perabot", "dapur"],
+    "hobi":     ["olahraga", "hobi", "fitness", "gym", "travel", "gaming",
+                 "leisure", "sport", "outdoor", "wisata", "rekreasi"],
+    "musiman":  ["lebaran", "ramadan", "natal", "tahun baru", "hampers",
+                 "harbolnas", "musiman", "hari raya", "imlek", "parsel"],
+}
+
+# TTL khusus untuk news cache (30 menit)
+_NEWS_CACHE_TTL = 30 * 60
+
+
 def fetch_rss_news(sector: str, max_items: int = 3) -> list:
     """
-    Try to fetch news dari RSS feeds, pero since real feeds don't have
-    proper sector categorization, fallback to DEMO_NEWS_FALLBACK for consistency.
-    This ensures demo news is always shown unless real RSS articles are categorized.
-    Return list of {title, source, time_ago, url}
+    Fetch berita real dari RSS feeds yang relevan untuk setiap sektor.
+    Filter artikel berdasarkan SECTOR_KEYWORDS.
+    Cache hasil 30 menit di _mem_cache dengan key 'rss_{sector}'.
+    Return [] jika tidak ada artikel yang cocok — frontend sudah handle ini.
     """
-    try:
-        import feedparser
-        from datetime import datetime, timedelta
+    import feedparser
+    from datetime import datetime, timezone
 
-        all_articles = []
+    # --- 30-minute news cache ---
+    news_cache_key = f"rss_{sector}"
+    with _cache_lock:
+        entry = _mem_cache.get(news_cache_key)
+        if entry and (time.time() - entry["ts"]) < _NEWS_CACHE_TTL:
+            return entry["data"]
 
-        # Try to fetch from real RSS feeds
-        for feed_url in RSS_SOURCES:
-            try:
-                feed = feedparser.parse(feed_url)
+    keywords = SECTOR_KEYWORDS.get(sector, [])
+    feeds = RSS_SOURCES.get(sector, [])
+    results = []
 
-                if not hasattr(feed, 'entries') or len(feed.entries) == 0:
+    for feed_url in feeds:
+        if len(results) >= max_items:
+            break
+        try:
+            feed = feedparser.parse(
+                feed_url,
+                request_headers={
+                    "User-Agent": "Mozilla/5.0 (compatible; SentraBI/2.0)"
+                }
+            )
+            if not feed.entries:
+                continue
+
+            for entry in feed.entries[:25]:
+                if len(results) >= max_items:
+                    break
+
+                title   = entry.get("title", "").lower()
+                summary = entry.get("summary", "").lower()
+                content = title + " " + summary
+
+                # Filter: minimal 1 keyword sektor harus cocok
+                if not any(kw in content for kw in keywords):
                     continue
 
-                # For now, just return demo fallback since RSS doesn't have proper categorization
-                if sector in DEMO_NEWS_FALLBACK:
-                    return DEMO_NEWS_FALLBACK[sector][:max_items]
+                # Hitung time_ago dari waktu publikasi
+                time_ago = "Baru saja"
+                try:
+                    published = (
+                        entry.get("published_parsed") or
+                        entry.get("updated_parsed")
+                    )
+                    if published:
+                        pub_dt = datetime(*published[:6], tzinfo=timezone.utc)
+                        diff   = datetime.now(timezone.utc) - pub_dt
+                        secs   = diff.total_seconds()
+                        if secs < 3600:
+                            time_ago = f"{int(secs // 60)} menit lalu"
+                        elif secs < 86400:
+                            time_ago = f"{int(secs // 3600)} jam lalu"
+                        elif secs < 604800:
+                            time_ago = f"{int(secs // 86400)} hari lalu"
+                        else:
+                            time_ago = f"{int(secs // 604800)} minggu lalu"
+                except Exception:
+                    pass
 
-            except Exception:
-                pass
+                # Ekstrak nama source dari domain URL feed
+                try:
+                    from urllib.parse import urlparse
+                    domain = urlparse(feed_url).netloc.replace("www.", "")
+                    source = domain.split(".")[0].title()
+                except Exception:
+                    source = "Berita"
 
-    except Exception:
-        pass
+                results.append({
+                    "title":    entry.get("title", "Berita terkait"),
+                    "source":   source,
+                    "time_ago": time_ago,
+                    "url":      entry.get("link", "#"),
+                })
 
-    # Default to demo fallback for all sectors
-    if sector in DEMO_NEWS_FALLBACK:
-        return DEMO_NEWS_FALLBACK[sector][:max_items]
+        except Exception as e:
+            print(f"[RSS ERROR] {feed_url}: {e}")
+            continue
 
-    return []
+    final = results[:max_items]
+
+    # --- Simpan ke news cache (30 menit) ---
+    with _cache_lock:
+        _mem_cache[news_cache_key] = {"data": final, "ts": time.time()}
+
+    return final
+
 
 def _extract_domain(url: str) -> str:
     """Extract domain name from URL."""
@@ -1063,9 +1077,9 @@ def sector_radar():
     SECTOR_ALIASES = {'skincare': 'beauty', 'makanan': 'fnb', 'elektronik': 'gadget', 'furnitur': 'home', 'olahraga': 'hobi'}
     sector = SECTOR_ALIASES.get(sector, sector)
 
-    if sector not in DEMO_NEWS_FALLBACK:
+    if sector not in RSS_SOURCES:
         return jsonify({
-            "error": f"Sektor tidak dikenal. Pilih: {', '.join(DEMO_NEWS_FALLBACK.keys())}"
+            "error": f"Sektor tidak dikenal. Pilih: {', '.join(RSS_SOURCES.keys())}"
         }), 400
 
     # --- Generate cache key for 2-hour cache ---
