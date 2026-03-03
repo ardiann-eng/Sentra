@@ -2339,6 +2339,12 @@
       transform: translate(-50%, -50%) scale(1);
     }
 
+    /* Pastikan panel dan overlay tidak menghalangi saat tertutup */
+    #radar-float-panel:not(.open),
+    #radar-overlay:not(.open) {
+      pointer-events: none !important;
+    }
+
     /* ── PANEL INTERNALS ── */
     .panel-close-btn {
       position: absolute;
@@ -4163,7 +4169,7 @@
           <div class="search-prefix">›_</div>
           <input type="text" id="kw" placeholder="produk apa yang ingin kamu jual?" autocomplete="off"
             spellcheck="false" />
-          <button id="btn" onclick="doSearch()">Cek Peluang</button>
+          <button id="btn" onclick="doSearch()">Analisis Sekarang</button>
         </div>
       </div>
 
@@ -4474,7 +4480,7 @@
     <section class="radar-section" id="sector-dashboard">
       <div class="radar-head">
         <div class="radar-title">Radar Pasar Sentra</div>
-        <div class="radar-subtitle">Pilih sektor — Sentra tunjukkan peluang bisnis terkini</div>
+        <div class="radar-subtitle">Pasar mana yang sedang panas minggu ini?</div>
       </div>
       <div class="radar-grid" id="radar-grid">
 
@@ -6148,8 +6154,16 @@
       if (e.target === document.getElementById('upgrade-modal')) closeUpgradeModal();
     }
 
-    // Close modal on Escape key
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeUpgradeModal(); });
+    // Close modal on Escape key — unified handler (radar panel takes priority if open)
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Escape') return;
+      const panel = document.getElementById('radar-float-panel');
+      if (panel && panel.classList.contains('open')) {
+        closeRadarPanel();
+      } else {
+        closeUpgradeModal();
+      }
+    });
 
     /* ── TAB SWITCHER (How To Use) ── */
     function switchTab(tab) {
@@ -6281,23 +6295,24 @@
       const panel = document.getElementById('radar-float-panel');
       const overlay = document.getElementById('radar-overlay');
       if (!panel || !overlay) return;
+
       panel.classList.remove('open');
       overlay.classList.remove('open');
       document.querySelectorAll('.radar-card').forEach(c => c.classList.remove('active'));
-      // Reset ALL overflow properties to restore page scroll
-      document.body.style.overflow = '';
-      document.body.style.overflowY = '';
-      document.body.style.overflowX = '';
-      document.documentElement.style.overflow = '';
+
+      // Paksa pointer-events off agar tidak menghalangi scroll/klik
+      panel.style.pointerEvents = 'none';
+      overlay.style.pointerEvents = 'none';
+
+      // Reset semua overflow — gunakan removeProperty agar benar-benar hilang
+      document.body.style.removeProperty('overflow');
+      document.body.style.removeProperty('overflow-y');
+      document.body.style.removeProperty('overflow-x');
+      document.documentElement.style.removeProperty('overflow');
+      document.documentElement.style.removeProperty('overflow-y');
     }
 
-    // Escape key closes panel
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') {
-        const panel = document.getElementById('radar-float-panel');
-        if (panel && panel.classList.contains('open')) closeRadarPanel();
-      }
-    });
+
 
     function toggleRadarCard(sector, element) {
       const panel = document.getElementById('radar-float-panel');
@@ -6305,6 +6320,10 @@
 
       document.querySelectorAll('.radar-card').forEach(c => c.classList.remove('active'));
       element.classList.add('active');
+
+      // Reset pointer-events sebelum buka
+      panel.style.pointerEvents = '';
+      overlay.style.pointerEvents = '';
 
       panel.innerHTML = renderRadarSkeleton();
       panel.classList.add('open');
