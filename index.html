@@ -2497,6 +2497,7 @@
     #radar-overlay {
       position: fixed;
       inset: 0;
+      display: none;
       z-index: 9998;
       background: rgba(0, 0, 0, 0.7);
       backdrop-filter: blur(8px);
@@ -2507,6 +2508,7 @@
     }
 
     #radar-overlay.open {
+      display: block;
       opacity: 1;
       pointer-events: all;
     }
@@ -2516,6 +2518,7 @@
       position: fixed;
       top: 50%;
       left: 50%;
+      display: none;
       transform: translate(-50%, -50%) scale(0.92);
       z-index: 9999;
       width: min(680px, 92vw);
@@ -2545,6 +2548,7 @@
     }
 
     #radar-float-panel.open {
+      display: block;
       opacity: 1;
       pointer-events: all;
       transform: translate(-50%, -50%) scale(1);
@@ -6611,16 +6615,13 @@
       overlay.classList.remove('open');
       document.querySelectorAll('.radar-card').forEach(c => c.classList.remove('active'));
 
-      // Paksa pointer-events off agar tidak menghalangi scroll/klik
-      panel.style.pointerEvents = 'none';
-      overlay.style.pointerEvents = 'none';
+      // JANGAN set pointerEvents via inline style — biarkan CSS yang handle
+      // Cukup hapus inline style kalau ada
+      panel.style.removeProperty('pointer-events');
+      overlay.style.removeProperty('pointer-events');
 
-      // Reset semua overflow — gunakan removeProperty agar benar-benar hilang
-      document.body.style.removeProperty('overflow');
-      document.body.style.removeProperty('overflow-y');
-      document.body.style.removeProperty('overflow-x');
-      document.documentElement.style.removeProperty('overflow');
-      document.documentElement.style.removeProperty('overflow-y');
+      // Reset overflow body — satu cara saja, konsisten
+      document.body.style.overflow = '';
     }
 
 
@@ -6631,10 +6632,6 @@
 
       document.querySelectorAll('.radar-card').forEach(c => c.classList.remove('active'));
       element.classList.add('active');
-
-      // Reset pointer-events sebelum buka
-      panel.style.pointerEvents = '';
-      overlay.style.pointerEvents = '';
 
       panel.innerHTML = renderRadarSkeleton();
       panel.classList.add('open');
