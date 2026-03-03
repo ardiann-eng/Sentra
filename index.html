@@ -169,6 +169,548 @@
       gap: 20px;
     }
 
+    /* ── SECTION WRAPPER ── */
+    .howto-section {
+      position: relative;
+      z-index: 1;
+      padding: 72px 0 80px;
+      border-bottom: 1px solid var(--gold-line);
+      margin-bottom: 0;
+    }
+
+    /* ── HEADER ── */
+    .howto-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .howto-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .howto-eyebrow::before,
+    .howto-eyebrow::after {
+      content: '';
+      flex: 1;
+      max-width: 60px;
+      height: 1px;
+      background: var(--gold-line);
+    }
+
+    .howto-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .howto-title em {
+      color: var(--gold);
+      font-style: italic;
+    }
+
+    .howto-desc {
+      font-size: 14px;
+      color: var(--text-faint);
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* ── TAB SWITCHER ── */
+    .howto-tabs {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      margin-bottom: 44px;
+      border: 1px solid var(--gold-line);
+      background: var(--surface);
+      padding: 4px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: 48px;
+    }
+
+    .howto-tab {
+      flex: 1;
+      padding: 10px 20px;
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all .25s;
+      text-align: center;
+    }
+
+    .howto-tab.active {
+      background: var(--gold);
+      color: #0A0A08;
+    }
+
+    .howto-tab:not(.active):hover {
+      color: var(--gold);
+    }
+
+    /* ── TAB PANES ── */
+    .howto-pane {
+      display: none;
+    }
+
+    .howto-pane.active {
+      display: block;
+    }
+
+    /* ── STEP CARDS ── */
+    .howto-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      position: relative;
+    }
+
+    /* Connector line between cards */
+    .howto-steps::before {
+      content: '';
+      position: absolute;
+      top: 52px;
+      left: calc(33.33% - 16px);
+      width: calc(33.33% + 32px);
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .howto-card {
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      padding: 32px 28px 28px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color .3s, transform .3s, box-shadow .3s;
+      cursor: default;
+    }
+
+    .howto-card:hover {
+      border-color: var(--gold-line);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, .4), 0 0 0 1px rgba(212, 168, 67, .1);
+    }
+
+    .howto-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+
+    .howto-card:hover::before {
+      opacity: 1;
+    }
+
+    .howto-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, var(--gold-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Step number badge */
+    .howto-step-num {
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--gold-dim);
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 22px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .howto-step-num span {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    /* Icon */
+    .howto-card-icon {
+      position: absolute;
+      top: 28px;
+      right: 28px;
+      font-size: 20px;
+      color: var(--gold-dim);
+      opacity: .5;
+    }
+
+    /* Content */
+    .howto-card-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .howto-card-body {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+
+    .howto-card-body strong {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    /* Example chip */
+    .howto-example {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      background: rgba(212, 168, 67, .06);
+      border: 1px solid rgba(212, 168, 67, .2);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--gold-dim);
+      letter-spacing: .5px;
+    }
+
+    .howto-example .ex-label {
+      font-size: 9px;
+      color: var(--text-faint);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* ── TIPS GRID (tab 2) ── */
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2px;
+    }
+
+    .tip-card {
+      background: var(--surface2);
+      border: 1px solid rgba(212, 168, 67, .08);
+      padding: 26px 24px;
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      transition: border-color .25s, background .25s;
+    }
+
+    .tip-card:hover {
+      border-color: var(--gold-line);
+      background: rgba(212, 168, 67, .04);
+    }
+
+    .tip-icon-wrap {
+      width: 36px;
+      height: 36px;
+      background: var(--gold-glow);
+      border: 1px solid var(--gold-line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 15px;
+      color: var(--gold);
+    }
+
+    .tip-content-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .tip-content-body {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.75;
+    }
+
+    .tip-content-body strong {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    /* Contoh keyword pill group */
+    .kw-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .kw-pill {
+      padding: 4px 10px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text-dim);
+      border: 1px solid rgba(212, 168, 67, .15);
+      background: rgba(255, 255, 255, .02);
+      cursor: default;
+      transition: all .2s;
+    }
+
+    .kw-pill.good {
+      color: var(--green);
+      border-color: rgba(0, 230, 118, .25);
+      background: rgba(0, 230, 118, .05);
+    }
+
+    .kw-pill.bad {
+      color: var(--red);
+      border-color: rgba(255, 82, 82, .25);
+      background: rgba(255, 82, 82, .05);
+    }
+
+    /* ── METRIK GUIDE (tab 3) ── */
+    .metric-guide-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+
+    .metric-guide-card {
+      background: var(--surface2);
+      border: 1px solid rgba(212, 168, 67, .08);
+      padding: 22px 20px;
+      position: relative;
+      transition: border-color .25s;
+    }
+
+    .metric-guide-card:hover {
+      border-color: var(--gold-line);
+    }
+
+    .metric-guide-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+    }
+
+    .mg-green::before {
+      background: var(--green);
+    }
+
+    .mg-gold::before {
+      background: var(--gold);
+    }
+
+    .mg-blue::before {
+      background: var(--blue);
+    }
+
+    .mg-amber::before {
+      background: var(--amber);
+    }
+
+    .mg-red::before {
+      background: var(--red);
+    }
+
+    .mg-purple::before {
+      background: #B388FF;
+    }
+
+    .mg-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+      padding-left: 12px;
+    }
+
+    .mg-simple {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+      padding-left: 12px;
+      line-height: 1.2;
+    }
+
+    .mg-desc {
+      font-size: 12px;
+      color: var(--text-faint);
+      line-height: 1.7;
+      padding-left: 12px;
+    }
+
+    .mg-scale {
+      display: flex;
+      gap: 4px;
+      margin-top: 12px;
+      padding-left: 12px;
+    }
+
+    .mg-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    /* ── BOTTOM CTA ── */
+    .howto-cta {
+      text-align: center;
+      margin-top: 56px;
+      padding-top: 48px;
+      border-top: 1px solid var(--gold-line);
+    }
+
+    .howto-cta-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .howto-cta-text em {
+      color: var(--gold);
+      font-style: italic;
+    }
+
+    .howto-cta-sub {
+      font-size: 13px;
+      color: var(--text-faint);
+      margin-bottom: 24px;
+    }
+
+    .howto-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 36px;
+      background: var(--gold);
+      color: #0A0A08;
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: background .2s, box-shadow .2s;
+    }
+
+    .howto-cta-btn:hover {
+      background: var(--gold-bright);
+      box-shadow: 0 0 30px rgba(212, 168, 67, .35);
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .howto-card,
+    .tip-card,
+    .metric-guide-card {
+      animation: fadeUp .5s ease both;
+    }
+
+    .howto-card:nth-child(1) {
+      animation-delay: .05s;
+    }
+
+    .howto-card:nth-child(2) {
+      animation-delay: .15s;
+    }
+
+    .howto-card:nth-child(3) {
+      animation-delay: .25s;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .howto-steps {
+        grid-template-columns: 1fr;
+      }
+
+      .howto-steps::before {
+        display: none;
+      }
+
+      .tips-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-guide-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .howto-tabs {
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .howto-section {
+        padding: 48px 0 56px;
+      }
+
+      .howto-card {
+        padding: 24px 20px 22px;
+      }
+    }
+
     .splash-logo-wrap {
       position: relative;
       padding: 20px;
@@ -1475,6 +2017,7 @@
       border-left: 2px solid var(--blue)
     }
 
+
     .cmp-table .winner-cell {
       color: var(--gold);
       font-family: 'Syne', sans-serif;
@@ -1612,28 +2155,30 @@
       }
     }
 
-    /* ── SECTOR DASHBOARD ── */
-    .sector-section {
+    /* ── RADAR PELUANG SEKTOR ── */
+    .radar-section {
       padding: 52px 0 36px;
       border-bottom: 1px solid var(--gold-line);
       margin-bottom: 40px;
+      opacity: 1;
+      visibility: visible;
     }
 
-    .sector-head {
+    .radar-head {
       display: flex;
       align-items: baseline;
       justify-content: space-between;
       margin-bottom: 28px;
     }
 
-    .sector-title {
+    .radar-title {
       font-family: 'Cormorant Garamond', serif;
       font-size: 26px;
       font-weight: 600;
       color: var(--text);
     }
 
-    .sector-subtitle {
+    .radar-subtitle {
       font-family: 'Syne', sans-serif;
       font-size: 10px;
       font-weight: 600;
@@ -1642,74 +2187,309 @@
       color: var(--text-faint);
     }
 
-    .sector-grid {
+    .radar-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+      gap: 12px;
     }
 
-    .sector-card {
+    .radar-card {
       background: var(--surface2);
-      padding: 22px 20px;
-      cursor: pointer;
-      position: relative;
-      border: 1px solid transparent;
-      border-radius: 12px;
-      transition: border-color .25s;
+      border: 1px solid rgba(212, 168, 67, 0.15);
+      padding: 0;
       overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      max-height: 90px;
+    }
+
+    .radar-card:hover {
+      border-color: var(--gold-line);
+      background: rgba(212, 168, 67, 0.04);
+    }
+
+    .radar-card.open {
+      max-height: 800px;
+      grid-column: span 3;
+    }
+
+    .radar-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
       user-select: none;
     }
 
-    .sector-card::before {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 0%;
-      height: 2px;
-      background: var(--gold);
-      transition: width .3s ease;
-    }
-
-    .sector-card:hover {
-      border-color: var(--gold-line);
-    }
-
-    .sector-card:hover::before {
-      width: 100%;
-    }
-
-    .sector-card.loading-sector {
-      opacity: .6;
-      pointer-events: none;
-    }
-
-    .sector-icon {
-      width: 36px;
-      height: 36px;
-      margin-bottom: 14px;
+    .radar-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
       color: var(--gold-dim);
+      flex-shrink: 0;
     }
 
-    .sector-icon svg {
-      width: 100%;
-      height: 100%;
+    .radar-info {
+      flex: 1;
     }
 
-    .sector-name {
-      font-family: 'Plus Jakarta Sans', sans-serif;
+    .radar-name {
+      font-family: 'Syne', sans-serif;
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text);
       margin-bottom: 4px;
-      line-height: 1.35;
     }
 
-    .sector-kw {
+    .radar-badge {
       font-family: 'DM Mono', monospace;
       font-size: 10px;
+      color: var(--green);
+      letter-spacing: 0.5px;
+    }
+
+    .radar-chevron {
+      font-size: 14px;
       color: var(--text-faint);
-      letter-spacing: .5px;
+      transition: transform 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .radar-card.open .radar-chevron {
+      transform: rotate(180deg);
+    }
+
+    .radar-headline {
+      padding: 0 16px 12px;
+      font-size: 12px;
+      color: var(--text-dim);
+      height: 20px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .radar-headline.hidden {
+      display: none;
+    }
+
+    /* Expanded panel */
+    .radar-expand {
+      padding: 20px 16px;
+      border-top: 1px solid var(--gold-glow);
+      display: none;
+    }
+
+    .radar-card.open .radar-expand {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        max-height: 0;
+      }
+
+      to {
+        opacity: 1;
+        max-height: 700px;
+      }
+    }
+
+    .radar-stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .radar-stat {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .radar-stat-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      color: var(--text-faint);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .radar-stat-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .radar-subsectors {
+      margin-bottom: 16px;
+    }
+
+    .radar-subsectors-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .radar-subsectors-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .radar-subsector-pill {
+      padding: 6px 12px;
+      background: rgba(212, 168, 67, 0.08);
+      border: 1px solid var(--gold-line);
+      border-radius: 12px;
+      font-size: 11px;
+      color: var(--gold);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .radar-news {
+      margin-bottom: 16px;
+    }
+
+    .radar-news-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .radar-news-items {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .radar-news-item {
+      padding: 10px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 4px;
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    .radar-news-item-title {
+      color: var(--text);
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
+    .radar-news-item-meta {
+      font-size: 10px;
+      color: var(--text-faint);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .radar-ai-signal {
+      padding: 12px;
+      background: rgba(212, 168, 67, 0.06);
+      border: 1px dashed var(--gold-glow);
+      border-radius: 4px;
+      margin-bottom: 16px;
+    }
+
+    .radar-ai-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .radar-ai-content {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    .radar-analyze-btn {
+      width: 100%;
+      padding: 10px;
+      background: var(--gold);
+      color: var(--bg);
+      border: none;
+      border-radius: 4px;
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-bottom: 12px;
+    }
+
+    .radar-analyze-btn:hover {
+      background: var(--gold-bright);
+    }
+
+    .radar-source {
+      padding-top: 12px;
+      border-top: 1px solid var(--gold-line);
+      font-size: 10px;
+      color: var(--text-faint);
+      text-align: center;
+      letter-spacing: 0.5px;
+    }
+
+    /* Responsive for radar */
+    @media (max-width: 768px) {
+      .radar-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .radar-card.open {
+        grid-column: span 1;
+      }
+
+      .radar-stats-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .radar-section {
+        padding: 32px 0;
+      }
+
+      .radar-title {
+        font-size: 20px;
+      }
+
+      .radar-stats-row {
+        grid-template-columns: 1fr;
+      }
     }
 
     /* ── SINGLE TREND CHART ── */
@@ -1729,27 +2509,6 @@
     .trend-chart-wrap {
       position: relative;
       height: 200px;
-    }
-
-    @media(max-width:680px) {
-      .sector-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
-
-      .sector-card {
-        width: 100%;
-        margin-bottom: 0;
-      }
-
-      .sector-head {
-        flex-direction: column;
-        gap: 6px;
-      }
-
-      .trend-chart-wrap {
-        height: 160px;
-      }
     }
 
     /* ── STATUS BAR (quota + geo, single row) ── */
@@ -2356,7 +3115,7 @@
       }
 
       /* 5 ─ Sector grid: 1 column, full-width cards */
-      .sector-section {
+      .radar-section {
         padding: 32px 0;
       }
 
@@ -2882,409 +3641,125 @@
       letter-spacing: .5px;
     }
 
-    /* ══════════════════════════════════════════════════
-       SECTION 2 — LIVE MARKET INTELLIGENCE PREVIEW
-    ══════════════════════════════════════════════════ */
-    .intel-section {
-      padding: 64px 0 0;
+    /* ── SOCIAL PROOF SECTION ── */
+    .social-proof-section {
+      padding: 80px 0;
       border-bottom: 1px solid var(--gold-line);
-      margin-bottom: 0;
+      opacity: 1;
+      visibility: visible;
     }
 
-    .section-head {
+    .sp-stat-bar {
       display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      margin-bottom: 28px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .section-title-area {
-      display: flex;
+      justify-content: center;
       align-items: center;
-      gap: 12px;
+      gap: 16px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 32px;
+      opacity: 0.8;
     }
 
-    .live-dot {
-      width: 8px;
-      height: 8px;
-      background: var(--green);
-      border-radius: 50%;
-      box-shadow: 0 0 12px var(--green);
-      animation: blink 1.6s infinite;
-      flex-shrink: 0;
+    .sp-sep {
+      color: var(--gold-line);
     }
 
-    .section-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 26px;
-      font-weight: 600;
-      color: var(--text);
+    .sp-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
     }
 
-    .section-title em {
+    .sp-card {
+      background: var(--surface);
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      border: 1px solid rgba(212, 168, 67, 0.1);
+      padding: 32px;
+      position: relative;
+      transition: all 0.3s ease;
+      animation: fadeUp .8s ease forwards;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0.5;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .sp-card:hover {
+      border-color: var(--gold-dim);
+      background: rgba(212, 168, 67, 0.05);
+      transform: translateY(-5px);
+    }
+
+    .sp-stars {
       color: var(--gold);
+      font-size: 14px;
+      margin-bottom: 20px;
+      letter-spacing: 2px;
+    }
+
+    .sp-quote {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text-dim);
+      margin-bottom: 24px;
       font-style: italic;
     }
 
-    .section-badge {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--text-faint);
-      border: 1px solid var(--gold-line);
-      padding: 4px 10px;
-    }
-
-    .intel-keyword-tag {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      color: var(--gold-dim);
-      letter-spacing: 1px;
-    }
-
-    .intel-chart-card {
-      background: var(--glass);
-      backdrop-filter: var(--blur);
-      border: 1px solid var(--glass-border);
-      padding: 28px;
-      margin-bottom: 2px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .intel-chart-card::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background: linear-gradient(135deg, rgba(212, 168, 67, .04) 0%, transparent 60%);
-    }
-
-    .intel-chart-wrap {
-      position: relative;
-      height: 200px;
-    }
-
-    .intel-metrics {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 2px;
-      margin-top: 2px;
-      margin-bottom: 64px;
-    }
-
-    .intel-mc {
-      background: var(--surface);
-      border: 1px solid rgba(212, 168, 67, 0.08);
-      padding: 18px 20px;
-      position: relative;
-      transition: all .25s;
-    }
-
-    .intel-mc:hover {
-      border-color: var(--gold-line);
-      background: rgba(212, 168, 67, 0.05);
-    }
-
-    .intel-mc-lbl {
-      font-family: 'Syne', sans-serif;
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--text-faint);
-      margin-bottom: 10px;
-    }
-
-    .intel-mc-val {
-      font-family: 'DM Mono', monospace;
-      font-size: 22px;
-      font-weight: 500;
-      color: var(--gold);
-      line-height: 1;
-      margin-bottom: 4px;
-    }
-
-    .intel-mc-sub {
-      font-size: 11px;
-      color: var(--text-dim);
-    }
-
-    /* Skeleton loading */
-    .intel-skeleton {
-      background: var(--surface2);
-      border-radius: 3px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .intel-skeleton::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(90deg, transparent, rgba(212, 168, 67, .08), transparent);
-      transform: translateX(-100%);
-      animation: shimmer 1.4s infinite;
-    }
-
-    /* ══════════════════════════════════════════════════
-       SECTION 3 — AI INSIGHT PANEL (Glassmorphism)
-    ══════════════════════════════════════════════════ */
-    .ai-panel-section {
-      padding: 64px 0 0;
-    }
-
-    .ai-panel-card {
-      background: rgba(20, 17, 11, 0.85);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(212, 168, 67, .25);
-      border-top: 2px solid var(--gold);
-      box-shadow: 0 0 60px rgba(212, 168, 67, .06), 0 20px 60px rgba(0, 0, 0, .5);
-      padding: 36px 40px;
-      position: relative;
-      overflow: hidden;
-      margin-bottom: 2px;
-    }
-
-    .ai-panel-card::before {
-      content: '';
-      position: absolute;
-      top: -60px;
-      right: -60px;
-      width: 220px;
-      height: 220px;
-      background: radial-gradient(circle, rgba(212, 168, 67, .08) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
-    .ai-panel-card::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(212, 168, 67, .3), transparent);
-    }
-
-    .ai-panel-header {
+    .sp-user {
       display: flex;
       align-items: center;
       gap: 16px;
-      margin-bottom: 28px;
     }
 
-    .ai-badge {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--gold);
+    .sp-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--gold-glow);
       border: 1px solid var(--gold-dim);
-      padding: 5px 12px;
-      animation: glowPulse 3s infinite;
-    }
-
-    @keyframes glowPulse {
-
-      0%,
-      100% {
-        box-shadow: 0 0 8px rgba(212, 168, 67, .2);
-      }
-
-      50% {
-        box-shadow: 0 0 20px rgba(212, 168, 67, .5);
-      }
-    }
-
-    .ai-panel-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .ai-panel-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2px;
-    }
-
-    .ai-panel-col {
-      background: rgba(255, 255, 255, .02);
-      border: 1px solid rgba(212, 168, 67, .08);
-      padding: 22px 20px;
-      position: relative;
-    }
-
-    .ai-panel-col::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 2px;
-    }
-
-    .ai-panel-col.col-market::before {
-      background: var(--blue);
-    }
-
-    .ai-panel-col.col-action::before {
-      background: var(--gold);
-    }
-
-    .ai-panel-col.col-timing::before {
-      background: var(--green);
-    }
-
-    .ai-panel-col-title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-family: 'Syne', sans-serif;
-      font-size: 9px;
       font-weight: 700;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      margin-bottom: 14px;
-    }
-
-    .col-market .ai-panel-col-title {
-      color: var(--blue);
-    }
-
-    .col-action .ai-panel-col-title {
       color: var(--gold);
+      font-size: 18px;
     }
 
-    .col-timing .ai-panel-col-title {
-      color: var(--green);
-    }
-
-    .ai-panel-text {
-      font-size: 13px;
-      line-height: 1.9;
-      color: var(--text-dim);
-    }
-
-    .ai-panel-text strong {
+    .sp-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
       color: var(--gold);
-      font-weight: 600;
-    }
-
-    .ai-panel-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 28px;
-      padding-top: 18px;
-      border-top: 1px solid rgba(212, 168, 67, .1);
-    }
-
-    .ai-powered-badge {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      color: var(--text-faint);
-      letter-spacing: 1.5px;
-    }
-
-    .ai-report-tag {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      color: var(--text-faint);
-      letter-spacing: 1px;
-    }
-
-    /* ══════════════════════════════════════════════════
-       SECTION 4 — COMPARE MODE PREVIEW
-    ══════════════════════════════════════════════════ */
-    .compare-preview-section {
-      padding: 64px 0 64px;
-      border-bottom: 1px solid var(--gold-line);
-    }
-
-    .cmp-preview-winner {
-      background: linear-gradient(135deg, rgba(212, 168, 67, .08), rgba(212, 168, 67, .02));
-      border: 1px solid var(--gold-line);
-      padding: 16px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       margin-bottom: 2px;
     }
 
-    .cmp-preview-winner-label {
-      font-family: 'Syne', sans-serif;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
+    .sp-biz {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 12px;
       color: var(--text-faint);
     }
 
-    .cmp-preview-winner-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--gold);
+    @media (max-width: 992px) {
+      .sp-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
-    .cmp-preview-winner-score {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--text-dim);
-    }
 
-    .cmp-preview-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .cmp-preview-table th {
-      background: var(--surface);
-      font-family: 'Syne', sans-serif;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      padding: 14px 20px;
-      text-align: center;
-      border-bottom: 1px solid rgba(212, 168, 67, .12);
-    }
-
-    .cmp-preview-table th:first-child {
-      text-align: left;
-    }
-
-    .cmp-preview-table td {
-      background: var(--surface);
-      padding: 14px 20px;
-      text-align: center;
-      border-bottom: 1px solid rgba(74, 69, 53, .25);
-      font-family: 'DM Mono', monospace;
-      font-size: 14px;
-      transition: background .2s;
-    }
-
-    .cmp-preview-table td:first-child {
-      text-align: left;
-      font-family: 'Syne', sans-serif;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--text-faint);
-    }
-
-    .cmp-preview-table tr:hover td {
-      background: rgba(212, 168, 67, .04);
-    }
 
     .cmp-preview-table th.col-a {
       border-top: 2px solid var(--gold);
@@ -3485,65 +3960,12 @@
 
       /* Sections & Grids */
       .snapshot-grid,
-      .intel-metrics,
       .g3,
       .g2,
-      .ai-panel-grid,
       .sector-grid {
         grid-template-columns: 1fr;
       }
 
-      .mc {
-        padding: 16px 20px;
-      }
-
-      .mc-val {
-        font-size: 32px;
-      }
-
-      .ai-panel-card {
-        padding: 24px 20px;
-      }
-
-      .ai-panel-title {
-        font-size: 18px;
-      }
-
-      .section-head {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-      }
-
-      .section-title {
-        font-size: 24px;
-      }
-
-      /* Snapshot specifics */
-      .snapshot-value {
-        font-size: 24px !important;
-      }
-
-      /* Intel Preview specifics */
-      .intel-chart-wrap {
-        height: 180px;
-      }
-
-      /* Compare Table fixes */
-      .cmp-preview-table,
-      .cmp-table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-      }
-
-      .cmp-preview-winner {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        gap: 12px;
-      }
 
       /* Pricing Card fixes */
       .pricing-card {
@@ -3572,6 +3994,25 @@
       .risk-badge {
         flex-shrink: 0;
       }
+    }
+
+    /* Override apapun yang menyembunyikan section ini */
+    .radar-section,
+    .social-proof-section {
+      opacity: 1 !important;
+      visibility: visible !important;
+      display: block !important;
+      transform: none !important;
+      pointer-events: auto !important;
+    }
+
+    /* Pastikan grid radar juga ikut visible */
+    .radar-grid,
+    .radar-card,
+    .sp-grid,
+    .sp-card {
+      opacity: 1 !important;
+      visibility: visible !important;
     }
   </style>
 </head>
@@ -3680,9 +4121,412 @@
 
       <div id="err"></div>
     </div>
+  </div><!-- END .wrap (hero) -->
 
+  <div class="wrap" style="position:relative; z-index:1;">
+    <section class="howto-section" id="how-to-use">
 
-    <!-- ══════════ SECTION 1: MARKET SNAPSHOT ══════════ -->
+      <!-- Header -->
+      <div class="howto-header">
+        <div class="howto-eyebrow">Panduan Penggunaan</div>
+        <h2 class="howto-title">Mulai Analisis dalam<br><em>3 Langkah Mudah</em></h2>
+        <p class="howto-desc">Tidak perlu ahli data. Sentra mengubah tren pasar yang kompleks menjadi keputusan bisnis
+          yang sederhana.</p>
+      </div>
+
+      <!-- Tab Switcher -->
+      <div class="howto-tabs" role="tablist">
+        <button class="howto-tab active" onclick="switchTab('steps')" id="tab-steps" role="tab">
+          ✦ Cara Pakai
+        </button>
+        <button class="howto-tab" onclick="switchTab('tips')" id="tab-tips" role="tab">
+          Tips Keyword
+        </button>
+        <button class="howto-tab" onclick="switchTab('metrics')" id="tab-metrics" role="tab">
+          Baca Hasil
+        </button>
+      </div>
+
+      <!-- ── PANE 1: Cara Pakai ── -->
+      <div class="howto-pane active" id="pane-steps">
+        <div class="howto-steps">
+
+          <!-- Step 1 -->
+          <div class="howto-card">
+            <i class="fa-solid fa-magnifying-glass howto-card-icon"></i>
+            <div class="howto-step-num"><span>1</span></div>
+            <div class="howto-card-title">Ketik Keyword Produk</div>
+            <div class="howto-card-body">
+              Tulis nama produk atau kategori yang ingin kamu jual.
+              Gunakan kata yang <strong>biasa dicari pembeli</strong> di Google atau Tokopedia — bukan istilah internal
+              tokomu.
+              <br><br>
+              Semakin spesifik keyword-mu, semakin akurat datanya.
+            </div>
+            <div class="howto-example">
+              <span class="ex-label">Contoh</span>
+              <span>› skincare korea murah</span>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="howto-card">
+            <i class="fa-solid fa-chart-line howto-card-icon"></i>
+            <div class="howto-step-num"><span>2</span></div>
+            <div class="howto-card-title">Klik Analisis & Tunggu</div>
+            <div class="howto-card-body">
+              Sentra akan mengambil data dari <strong>Google Trends</strong> secara real-time,
+              lalu menghitung Growth, Momentum, dan tingkat persaingan pasar otomatis.
+              <br><br>
+              Proses biasanya selesai dalam <strong>10–30 detik</strong>.
+            </div>
+            <div class="howto-example">
+              <span class="ex-label">Proses</span>
+              <span>› Fetching · Calculating · AI Insight</span>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="howto-card">
+            <i class="fa-solid fa-lightbulb howto-card-icon"></i>
+            <div class="howto-step-num"><span>3</span></div>
+            <div class="howto-card-title">Baca Hasil & Ambil Keputusan</div>
+            <div class="howto-card-body">
+              Lihat <strong>Entry Timing Score</strong> untuk tahu apakah sekarang waktu yang tepat.
+              Baca <strong>AI Insight</strong> untuk rekomendasi langkah konkret yang bisa langsung kamu jalankan.
+              <br><br>
+              Tidak perlu paham angka — cukup ikuti rekomendasinya.
+            </div>
+            <div class="howto-example">
+              <span class="ex-label">Hasil</span>
+              <span>› Score 82/100 — Waktu Terbaik ✓</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── PANE 2: Tips Keyword ── -->
+      <div class="howto-pane" id="pane-tips">
+        <div class="tips-grid">
+
+          <div class="tip-card">
+            <div class="tip-icon-wrap"><i class="fa-solid fa-check"></i></div>
+            <div>
+              <div class="tip-content-title">Gunakan Kata yang Dicari Pembeli</div>
+              <div class="tip-content-body">
+                Tulis seperti cara <strong>pembeli mengetik di Google</strong>, bukan nama katalog tokomu.
+                Hasil lebih akurat karena data berasal dari pencarian nyata.
+              </div>
+              <div class="kw-pills">
+                <span class="kw-pill good">✓ sepatu sneakers pria</span>
+                <span class="kw-pill good">✓ kue kering lebaran</span>
+                <span class="kw-pill bad">✗ footwear collection</span>
+                <span class="kw-pill bad">✗ produk premium kami</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tip-card">
+            <div class="tip-icon-wrap"><i class="fa-solid fa-layer-group"></i></div>
+            <div>
+              <div class="tip-content-title">Mulai dari Kategori, Lalu Spesifik</div>
+              <div class="tip-content-body">
+                Coba dulu kategori luas untuk lihat gambaran besar, lalu persempit ke produk spesifik untuk hasil yang
+                lebih tajam dan relevan.
+              </div>
+              <div class="kw-pills">
+                <span class="kw-pill">skincare</span>
+                <span>→</span>
+                <span class="kw-pill">serum vitamin c</span>
+                <span>→</span>
+                <span class="kw-pill">serum vitamin c lokal</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tip-card">
+            <div class="tip-icon-wrap"><i class="fa-solid fa-code-compare"></i></div>
+            <div>
+              <div class="tip-content-title">Gunakan Mode Banding untuk Keputusan</div>
+              <div class="tip-content-body">
+                Tidak yakin mau jual produk A atau B? Aktifkan <strong>Mode Banding</strong> di atas untuk membandingkan
+                dua keyword sekaligus dan lihat mana yang lebih menjanjikan.
+              </div>
+              <div class="kw-pills">
+                <span class="kw-pill">baju gamis</span>
+                <span style="color:var(--gold); font-size:11px;">vs</span>
+                <span class="kw-pill">baju tunik</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tip-card">
+            <div class="tip-icon-wrap"><i class="fa-solid fa-calendar"></i></div>
+            <div>
+              <div class="tip-content-title">Perhatikan Tren Musiman</div>
+              <div class="tip-content-body">
+                Produk tertentu punya lonjakan di bulan-bulan tertentu. Cek bagian <strong>Pola Musiman</strong> di
+                hasil analisis agar kamu bisa persiapkan stok dan iklan tepat waktu.
+              </div>
+              <div class="kw-pills">
+                <span class="kw-pill good">✓ hampers → puncak Mar–Apr</span>
+                <span class="kw-pill good">✓ baju renang → puncak Jun–Jul</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── PANE 3: Cara Baca Hasil ── -->
+      <div class="howto-pane" id="pane-metrics">
+        <div class="metric-guide-grid">
+
+          <div class="metric-guide-card mg-green">
+            <div class="mg-name">Entry Timing Score</div>
+            <div class="mg-simple">Apakah sekarang waktu yang tepat untuk mulai?</div>
+            <div class="mg-desc">Skor 0–100. <strong style="color:var(--green)">80+</strong> = langsung gas. <strong
+                style="color:var(--amber)">40–79</strong> = boleh coba tapi siapkan strategi. <strong
+                style="color:var(--red)">Di bawah 40</strong> = tunggu dulu atau pilih produk lain.</div>
+            <div class="mg-scale">
+              <div class="mg-dot" style="background:var(--red)"></div>
+              <div class="mg-dot" style="background:var(--amber)"></div>
+              <div class="mg-dot" style="background:var(--amber)"></div>
+              <div class="mg-dot" style="background:var(--green)"></div>
+              <div class="mg-dot" style="background:var(--green)"></div>
+            </div>
+          </div>
+
+          <div class="metric-guide-card mg-gold">
+            <div class="mg-name">Growth 7 Hari</div>
+            <div class="mg-simple">Tren naik atau turun minggu ini?</div>
+            <div class="mg-desc">Angka <strong style="color:var(--green)">positif (+%)</strong> artinya minat pembeli
+              sedang naik. Angka <strong style="color:var(--red)">negatif (−%)</strong> artinya minat sedang turun.
+              Idealnya cari yang di atas +10%.</div>
+            <div class="mg-scale">
+              <div class="mg-dot" style="background:var(--red)"></div>
+              <div class="mg-dot" style="background:var(--text-faint)"></div>
+              <div class="mg-dot" style="background:var(--gold)"></div>
+              <div class="mg-dot" style="background:var(--green)"></div>
+              <div class="mg-dot" style="background:var(--green)"></div>
+            </div>
+          </div>
+
+          <div class="metric-guide-card mg-blue">
+            <div class="mg-name">Lifecycle Stage</div>
+            <div class="mg-simple">Produk ini di fase apa sekarang?</div>
+            <div class="mg-desc">
+              <strong style="color:var(--blue)">Emerging</strong> = baru naik daun, peluang bagus.<br>
+              <strong style="color:var(--gold)">Rising</strong> = sedang tren, masih bisa masuk.<br>
+              <strong style="color:var(--amber)">Peak</strong> = di puncak, segera action.<br>
+              <strong style="color:var(--red)">Declining</strong> = mulai turun, hati-hati.
+            </div>
+          </div>
+
+          <div class="metric-guide-card mg-amber">
+            <div class="mg-name">Market Pulse Score</div>
+            <div class="mg-simple">Seberapa sehat pasar produk ini?</div>
+            <div class="mg-desc">Skor kesehatan pasar secara keseluruhan dari 0–100. <strong
+                style="color:var(--green)">65+</strong> artinya pasar aktif dan bergairah. Di bawah 40 artinya pasar
+              lesu atau jenuh.</div>
+            <div class="mg-scale">
+              <div class="mg-dot" style="background:var(--red)"></div>
+              <div class="mg-dot" style="background:var(--amber)"></div>
+              <div class="mg-dot" style="background:var(--gold)"></div>
+              <div class="mg-dot" style="background:var(--green)"></div>
+              <div class="mg-dot" style="background:var(--green)"></div>
+            </div>
+          </div>
+
+          <div class="metric-guide-card mg-red">
+            <div class="mg-name">FOMO Index</div>
+            <div class="mg-simple">Ini tren asli atau sekadar hype sesaat?</div>
+            <div class="mg-desc">Angka <strong style="color:var(--red)">tinggi (0.7+)</strong> = banyak yang
+              ikut-ikutan, bisa cepat turun. Angka <strong style="color:var(--green)">rendah (0–0.3)</strong> = tren
+              organik, lebih stabil untuk bisnis jangka panjang.</div>
+          </div>
+
+          <div class="metric-guide-card mg-purple">
+            <div class="mg-name">Saturasi Pasar</div>
+            <div class="mg-simple">Seberapa ramai persaingan di produk ini?</div>
+            <div class="mg-desc">Angka <strong style="color:var(--green)">rendah</strong> = persaingan sedikit, peluang
+              lebih besar. Angka <strong style="color:var(--red)">tinggi (0.7+)</strong> = pasar sudah penuh pesaing,
+              butuh diferensiasi yang kuat.</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Bottom CTA -->
+      <div class="howto-cta">
+        <div class="howto-cta-text">Siap analisis produkmu <em>sekarang?</em></div>
+        <div class="howto-cta-sub">Gratis · Tidak perlu daftar · Hasil dalam 30 detik</div>
+        <button class="howto-cta-btn"
+          onclick="document.getElementById('kw').focus(); document.getElementById('kw').scrollIntoView({behavior:'smooth', block:'center'})">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          Mulai Analisis Gratis
+        </button>
+      </div>
+
+    </section>
+  </div><!-- END .wrap (howto) -->
+
+  <div class="wrap" style="position:relative; z-index:1;">
+    <!-- ══════════ RADAR PELUANG SEKTOR ══════════ -->
+    <section class="radar-section" id="sector-dashboard">
+      <div class="radar-head">
+        <div class="radar-title">Radar Peluang Sektor</div>
+        <div class="radar-subtitle">Klik sektor untuk insight, berita & peluang</div>
+      </div>
+      <div class="radar-grid" id="radar-grid">
+        <!-- Fashion -->
+        <div class="radar-card" data-sector="fashion" onclick="toggleRadarCard('fashion', this)">
+          <div class="radar-header">
+            <div class="radar-icon"><i class="fa-solid fa-shirt"></i></div>
+            <div class="radar-info">
+              <div class="radar-name">Fashion</div>
+              <div class="radar-badge" style="color:var(--green)">+6.2% YoY</div>
+            </div>
+            <div class="radar-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+          </div>
+          <div class="radar-headline"></div>
+        </div>
+        <!-- Beauty -->
+        <div class="radar-card" data-sector="beauty" onclick="toggleRadarCard('beauty', this)">
+          <div class="radar-header">
+            <div class="radar-icon"><i class="fa-solid fa-sparkles"></i></div>
+            <div class="radar-info">
+              <div class="radar-name">Beauty & Perawatan</div>
+              <div class="radar-badge" style="color:var(--green)">+12.4% YoY</div>
+            </div>
+            <div class="radar-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+          </div>
+          <div class="radar-headline"></div>
+        </div>
+        <!-- FnB -->
+        <div class="radar-card" data-sector="fnb" onclick="toggleRadarCard('fnb', this)">
+          <div class="radar-header">
+            <div class="radar-icon"><i class="fa-solid fa-utensils"></i></div>
+            <div class="radar-info">
+              <div class="radar-name">Makanan & Minuman</div>
+              <div class="radar-badge" style="color:var(--green)">+8.7% YoY</div>
+            </div>
+            <div class="radar-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+          </div>
+          <div class="radar-headline"></div>
+        </div>
+        <!-- Gadget -->
+        <div class="radar-card" data-sector="gadget" onclick="toggleRadarCard('gadget', this)">
+          <div class="radar-header">
+            <div class="radar-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+            <div class="radar-info">
+              <div class="radar-name">Gadget & Elektronik</div>
+              <div class="radar-badge" style="color:var(--green)">+4.8% YoY</div>
+            </div>
+            <div class="radar-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+          </div>
+          <div class="radar-headline"></div>
+        </div>
+        <!-- Home -->
+        <div class="radar-card" data-sector="home" onclick="toggleRadarCard('home', this)">
+          <div class="radar-header">
+            <div class="radar-icon"><i class="fa-solid fa-house-chimney"></i></div>
+            <div class="radar-info">
+              <div class="radar-name">Home & Living</div>
+              <div class="radar-badge" style="color:var(--green)">+5.3% YoY</div>
+            </div>
+            <div class="radar-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+          </div>
+          <div class="radar-headline"></div>
+        </div>
+        <!-- Hobi -->
+        <div class="radar-card" data-sector="hobi" onclick="toggleRadarCard('hobi', this)">
+          <div class="radar-header">
+            <div class="radar-icon"><i class="fa-solid fa-star"></i></div>
+            <div class="radar-info">
+              <div class="radar-name">Hobi & Lifestyle</div>
+              <div class="radar-badge" style="color:var(--green)">+9.1% YoY</div>
+            </div>
+            <div class="radar-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+          </div>
+          <div class="radar-headline"></div>
+        </div>
+        <!-- Musiman -->
+        <div class="radar-card" data-sector="musiman" onclick="toggleRadarCard('musiman', this)">
+          <div class="radar-header">
+            <div class="radar-icon"><i class="fa-solid fa-calendar-day"></i></div>
+            <div class="radar-info">
+              <div class="radar-name">Tren Musiman</div>
+              <div class="radar-badge" style="color:var(--green)">+28.5% YoY</div>
+            </div>
+            <div class="radar-chevron"><i class="fa-solid fa-chevron-down"></i></div>
+          </div>
+          <div class="radar-headline"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ SECTION: SOCIAL PROOF ══════════ -->
+    <section class="social-proof-section" id="social-proof">
+      <div class="sp-stat-bar">
+        <span>1.200+ UMKM</span>
+        <span class="sp-sep">·</span>
+        <span>7 Sektor</span>
+        <span class="sp-sep">·</span>
+        <span>34 Provinsi</span>
+      </div>
+
+      <div class="section-head" style="justify-content: center; text-align: center; margin-bottom: 48px;">
+        <h2 class="section-title">Dipercaya Pelaku <em>UMKM Indonesia</em></h2>
+      </div>
+
+      <div class="sp-grid">
+        <!-- Card 1 -->
+        <div class="sp-card">
+          <div class="sp-stars">✦✦✦✦✦</div>
+          <p class="sp-quote">"Sentra BI bantu saya stok barang pas tren naik. Penjualan naik 30% karena tidak telat
+            sedia barang!"</p>
+          <div class="sp-user">
+            <div class="sp-avatar">B</div>
+            <div class="sp-info">
+              <div class="sp-name">Budi Santoso</div>
+              <div class="sp-biz">Pemilik Toko Sepatu · Bandung</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="sp-card">
+          <div class="sp-stars">✦✦✦✦✦</div>
+          <p class="sp-quote">"Dulu cuma tebak-tebak produk mana yang laku. Sekarang ada datanya, jadi gak pernah salah
+            pilih produk lagi."</p>
+          <div class="sp-user">
+            <div class="sp-avatar">S</div>
+            <div class="sp-info">
+              <div class="sp-name">Siti Aminah</div>
+              <div class="sp-biz">Retail Hijab Online · Jakarta</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="sp-card">
+          <div class="sp-stars">✦✦✦✦✦</div>
+          <p class="sp-quote">"Sangat terbantu buat tahu kapan harus promosi gede-gedean. Gak boncos iklan lagi karena
+            tahu timing yang pas."</p>
+          <div class="sp-user">
+            <div class="sp-avatar">A</div>
+            <div class="sp-info">
+              <div class="sp-name">Andi Wijaya</div>
+              <div class="sp-biz">UMKM Kuliner · Surabaya</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ SECTION: MARKET SNAPSHOT ══════════ -->
     <section class="snapshot-section" id="market-snapshot">
       <div class="snapshot-label">Market Intelligence · Live Feed</div>
       <div class="snapshot-grid">
@@ -3709,231 +4553,6 @@
       </div>
     </section>
 
-    <!-- ══════════ SECTION 2: LIVE MARKET INTELLIGENCE PREVIEW ══════════ -->
-    <section class="intel-section" id="intel-preview">
-      <div class="section-head">
-        <div class="section-title-area">
-          <div class="live-dot"></div>
-          <div class="section-title">Live Market <em>Intelligence</em></div>
-        </div>
-        <div style="display:flex;align-items:center;gap:14px">
-          <span class="intel-keyword-tag" id="intel-kw-tag">› skincare</span>
-          <span class="section-badge">Tren 90 Hari</span>
-        </div>
-      </div>
-
-      <!-- Chart Card -->
-      <div class="intel-chart-card" id="intel-chart-card">
-        <!-- Skeleton mode shown while loading -->
-        <div id="intel-chart-skeleton"
-          style="height:200px; display:flex; flex-direction:column; gap:16px; justify-content:flex-end;">
-          <div class="intel-skeleton" style="height:80%; border-radius:2px;"></div>
-        </div>
-        <!-- Real chart, hidden until loaded -->
-        <div class="intel-chart-wrap" id="intel-chart-wrap" style="display:none;">
-          <canvas id="intel-chart"></canvas>
-        </div>
-      </div>
-
-      <!-- Metric mini-cards -->
-      <div class="intel-metrics">
-        <div class="intel-mc">
-          <div class="intel-mc-lbl">Market Pulse</div>
-          <div class="intel-mc-val" id="intel-pulse">
-            <span class="intel-skeleton" style="display:inline-block;width:60px;height:22px;border-radius:2px;"></span>
-          </div>
-          <div class="intel-mc-sub" id="intel-pulse-sub">memuat...</div>
-        </div>
-        <div class="intel-mc">
-          <div class="intel-mc-lbl">Lifecycle Stage</div>
-          <div class="intel-mc-val" id="intel-stage">
-            <span class="intel-skeleton" style="display:inline-block;width:80px;height:22px;border-radius:2px;"></span>
-          </div>
-          <div class="intel-mc-sub" id="intel-stage-sub">memuat...</div>
-        </div>
-        <div class="intel-mc">
-          <div class="intel-mc-lbl">Risk Level</div>
-          <div class="intel-mc-val" id="intel-risk">
-            <span class="intel-skeleton" style="display:inline-block;width:70px;height:22px;border-radius:2px;"></span>
-          </div>
-          <div class="intel-mc-sub" id="intel-risk-sub">memuat...</div>
-        </div>
-        <div class="intel-mc">
-          <div class="intel-mc-lbl">Saturation Index</div>
-          <div class="intel-mc-val" id="intel-sat">
-            <span class="intel-skeleton" style="display:inline-block;width:55px;height:22px;border-radius:2px;"></span>
-          </div>
-          <div class="intel-mc-sub" id="intel-sat-sub">memuat...</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ══════════ SECTION 3: AI INSIGHT PANEL ══════════ -->
-    <section class="ai-panel-section" id="ai-panel-preview">
-      <!-- wrap inside 'wrap' div was already open; this section is inside .wrap -->
-      <div class="section-head" style="margin-bottom:20px;">
-        <div class="section-title-area">
-          <div class="section-title">AI Business <em>Insight</em></div>
-        </div>
-        <span class="section-badge">System-Generated Report</span>
-      </div>
-      <div class="ai-panel-card">
-        <div class="ai-panel-header">
-          <div class="ai-badge">✦ AI Engine</div>
-          <div class="ai-panel-title">Analisis Pasar — Skincare Indonesia</div>
-        </div>
-        <div class="ai-panel-grid">
-          <div class="ai-panel-col col-market">
-            <div class="ai-panel-col-title">Analisis Pasar</div>
-            <p class="ai-panel-text">
-              Pasar <strong>skincare</strong> Indonesia tengah berada di fase <strong>Rising</strong> dengan momentum
-              solid.
-              Volume pencarian meningkat <strong>18%</strong> dalam 30 hari terakhir didorong oleh meningkatnya
-              kesadaran perawatan kulit di kalangan Gen Z dan Milenial.
-              Tren terkuat terkonsentrasi di wilayah <strong>Jawa &amp; Bali</strong>.
-            </p>
-          </div>
-          <div class="ai-panel-col col-action">
-            <div class="ai-panel-col-title">Rekomendasi Aksi</div>
-            <p class="ai-panel-text">
-              Ini adalah <strong>waktu optimal</strong> untuk masuk ke pasar. Prioritaskan produk dengan klaim <em>lokal
-                &amp; halal</em> karena segmen ini tumbuh 2x lebih cepat.
-              Jalankan kampanye digital di <strong>Q1–Q2</strong> untuk memaksimalkan momen peak demand.
-              Pertimbangkan bundle produk untuk meningkatkan nilai transaksi rata-rata.
-            </p>
-          </div>
-          <div class="ai-panel-col col-timing">
-            <div class="ai-panel-col-title">Strategi Waktu</div>
-            <p class="ai-panel-text">
-              Window terbaik adalah <strong>Maret–Mei</strong> (pre-Ramadan &amp; Lebaran).
-              Hindari peluncuran di <strong>Juli–Agustus</strong> karena historis menunjukkan penurunan minat.
-              Entry timing score saat ini: <strong>82/100</strong> — sinyal sangat positif untuk memulai strategi
-              pemasaran agresif.
-            </p>
-          </div>
-        </div>
-        <div class="ai-panel-footer">
-          <span class="ai-powered-badge">✦ Powered by Gemini AI · Sentra BI v2.0</span>
-          <span class="ai-report-tag" id="ai-panel-ts">—</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- ══════════ SECTION 4: COMPARE MODE PREVIEW ══════════ -->
-    <section class="compare-preview-section" id="compare-preview">
-      <div class="section-head">
-        <div class="section-title">Compare Mode <em>Preview</em></div>
-        <span class="section-badge">Head-to-Head Analysis</span>
-      </div>
-
-      <!-- Winner Banner -->
-      <div class="cmp-preview-winner">
-        <div>
-          <div class="cmp-preview-winner-label">Pemenang Keseluruhan</div>
-          <div class="cmp-preview-winner-name">Skincare</div>
-        </div>
-        <div style="text-align:right">
-          <div class="cmp-preview-winner-score">Score 74 vs 58 · Unggul di 4 dari 5 metrik</div>
-          <div style="margin-top:6px;"><span class="val-chip chip-green">▲ Clear Winner</span></div>
-        </div>
-      </div>
-
-      <!-- Comparison Table -->
-      <table class="cmp-preview-table">
-        <thead>
-          <tr>
-            <th>Metrik</th>
-            <th class="col-a">Skincare</th>
-            <th class="col-b">Baju Wanita</th>
-            <th>Unggul</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Growth 7 Hari</td>
-            <td class="col-a"><span class="val-chip chip-green">+12.4%</span></td>
-            <td class="col-b"><span class="val-chip chip-red">−3.1%</span></td>
-            <td><span class="val-chip chip-gold">Skincare</span></td>
-          </tr>
-          <tr>
-            <td>Lifecycle Stage</td>
-            <td class="col-a"><span class="val-chip chip-blue">Rising</span></td>
-            <td class="col-b"><span class="val-chip chip-yellow">Peak</span></td>
-            <td><span class="val-chip chip-gold">Skincare</span></td>
-          </tr>
-          <tr>
-            <td>Risk Level</td>
-            <td class="col-a"><span class="val-chip chip-yellow">Medium</span></td>
-            <td class="col-b"><span class="val-chip chip-red">High</span></td>
-            <td><span class="val-chip chip-gold">Skincare</span></td>
-          </tr>
-          <tr>
-            <td>Market Pulse Score</td>
-            <td class="col-a">74 / 100</td>
-            <td class="col-b">58 / 100</td>
-            <td><span class="val-chip chip-gold">Skincare</span></td>
-          </tr>
-          <tr>
-            <td>Saturation Index</td>
-            <td class="col-a"><span class="val-chip chip-yellow">62%</span></td>
-            <td class="col-b"><span class="val-chip chip-red">81%</span></td>
-            <td><span class="val-chip chip-gold">Skincare</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-
-    <!-- ══════════ SEKTOR DASHBOARD ══════════ -->
-    <section class="sector-section" id="sector-dashboard">
-      <div class="sector-head">
-        <div class="sector-title">Pusat Tren Sektoral</div>
-        <div class="sector-subtitle">Klik untuk analisis instan</div>
-      </div>
-      <div class="sector-grid">
-        <!-- Fashion -->
-        <div class="sector-card" onclick="analyzeCategory('fashion')" id="sc-fashion">
-          <div class="sector-icon"><i class="fa-solid fa-shirt"></i></div>
-          <div class="sector-name">Fashion</div>
-          <div class="sector-kw">baju wanita · outfit</div>
-        </div>
-        <!-- Beauty -->
-        <div class="sector-card" onclick="analyzeCategory('beauty')" id="sc-beauty">
-          <div class="sector-icon"><i class="fa-solid fa-sparkles"></i></div>
-          <div class="sector-name">Beauty & Personal Care</div>
-          <div class="sector-kw">skincare · kosmetik</div>
-        </div>
-        <!-- Makanan & Minuman -->
-        <div class="sector-card" onclick="analyzeCategory('fnb')" id="sc-fnb">
-          <div class="sector-icon"><i class="fa-solid fa-utensils"></i></div>
-          <div class="sector-name">Makanan & Minuman</div>
-          <div class="sector-kw">kuliner · produk UMKM</div>
-        </div>
-        <!-- Gadget -->
-        <div class="sector-card" onclick="analyzeCategory('gadget')" id="sc-gadget">
-          <div class="sector-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
-          <div class="sector-name">Gadget & Aksesoris</div>
-          <div class="sector-kw">smartphone · earbuds</div>
-        </div>
-        <!-- Home & Living -->
-        <div class="sector-card" onclick="analyzeCategory('home')" id="sc-home">
-          <div class="sector-icon"><i class="fa-solid fa-house-chimney"></i></div>
-          <div class="sector-name">Home & Living</div>
-          <div class="sector-kw">dekorasi · furniture</div>
-        </div>
-        <!-- Hobi & Lifestyle -->
-        <div class="sector-card" onclick="analyzeCategory('hobi')" id="sc-hobi">
-          <div class="sector-icon"><i class="fa-solid fa-star"></i></div>
-          <div class="sector-name">Hobi & Lifestyle</div>
-          <div class="sector-kw">olahraga · traveling</div>
-        </div>
-        <!-- Tren Musiman -->
-        <div class="sector-card" onclick="analyzeCategory('musiman')" id="sc-musiman">
-          <div class="sector-icon"><i class="fa-solid fa-calendar-day"></i></div>
-          <div class="sector-name">Tren Musiman</div>
-          <div class="sector-kw">lebaran · akhir tahun</div>
-        </div>
-      </div>
-    </section>
 
     <!-- ══════════ SINGLE RESULTS ══════════ -->
     <div id="results">
@@ -4300,6 +4919,7 @@
     }
 
     /* ── SPLASH SCREEN LOGIC ── */
+
     const loadingTexts = [
       "Initializing Neural Network...",
       "Fetching Market Intelligence...",
@@ -4308,6 +4928,14 @@
       "Analyzing Lifecycle Stages...",
       "Calibrating Forecast Engine..."
     ];
+
+    // Selector yang akan di-animate saat splash
+    // CATATAN: radar-section & social-proof SENGAJA tidak dimasukkan
+    // agar tidak terjebak opacity:0 jika GSAP gagal animate
+    const SPLASH_TARGETS = 'header, .hero, .howto-section, #market-snapshot, .pricing-section';
+
+    // Set initial hidden state — hanya untuk above-fold elements
+    gsap.set(SPLASH_TARGETS, { opacity: 0, y: 30 });
 
     function startSplashScreen() {
       const textEl = document.getElementById('splash-text');
@@ -4318,17 +4946,29 @@
         textIdx = (textIdx + 1) % loadingTexts.length;
       }, 600);
 
-      // End splash after 2.5s
       setTimeout(() => {
         clearInterval(textInterval);
 
         const tl = gsap.timeline({
           onComplete: () => {
-            document.getElementById('splash-screen').remove();
-            document.body.style.overflowY = 'auto'; // Re-enable scroll
+            const splashEl = document.getElementById('splash-screen');
+            if (splashEl) splashEl.remove();
+            document.body.style.overflowY = 'auto';
+
+            // Hard fallback: pastikan semua section visible
+            // gunakan querySelectorAll, bukan GSAP selector
+            document.querySelectorAll(
+              'header, .hero, .howto-section, .radar-section, ' +
+              '.social-proof-section, #market-snapshot, .pricing-section'
+            ).forEach(el => {
+              el.style.opacity = '1';
+              el.style.transform = 'none';
+              el.style.visibility = 'visible';
+            });
           }
         });
 
+        // Fade out splash
         tl.to('#splash-screen', {
           duration: 1,
           opacity: 0,
@@ -4337,19 +4977,18 @@
           ease: 'power3.inOut'
         });
 
-        // Stagger reveal main content
-        tl.to(['header', '.hero', '.sector-section', '#results', '#compare-results', '.pricing-section'], {
+        // Reveal HANYA above-fold sections via GSAP
+        tl.to(SPLASH_TARGETS, {
           duration: 0.8,
           opacity: 1,
           y: 0,
-          stagger: 0.15,
+          stagger: 0.1,
           ease: 'power2.out'
         }, "-=0.5");
 
       }, 2500);
     }
 
-    // Call splash screen
     startSplashScreen();
 
     /* ── USER STATUS / QUOTA ── */
@@ -4560,188 +5199,11 @@
     ══════════════════════════════════════════════════ */
     let intelChartInstance = null;
 
-    async function initIntelPreview() {
-      try {
-        const res = await fetch('/api/preview');
-        const data = await res.json();
-
-        if (data.error && data.fallback) {
-          // Silently show skeleton on error — don't break page
-          return;
-        }
-
-        // Populate metric cards
-        const pulse = data.market_pulse_score ?? null;
-        const stage = data.lifecycle_stage ?? '—';
-        const risk = data.risk_level ?? '—';
-        const sat = data.saturation_index ?? null;
-
-        const set = (id, val) => {
-          const el = document.getElementById(id);
-          if (el) el.innerHTML = val;
-        };
-
-        set('intel-pulse', pulse !== null ? `${pulse.toFixed(0)}<span style="font-size:14px;color:var(--text-faint)">/100</span>` : '—');
-        set('intel-pulse-sub', pulse !== null ? (pulse >= 70 ? 'Pasar Sangat Aktif' : pulse >= 50 ? 'Pasar Moderat' : 'Pasar Lesu') : '—');
-
-        set('intel-stage', stage);
-        set('intel-stage-sub', stage === 'Rising' ? 'Tren sedang naik' : stage === 'Peak' ? 'Di puncak tren' : stage === 'Emerging' ? 'Baru mulai naik' : stage);
-
-        const riskColors = { 'High Risk': 'var(--red)', 'Medium Risk': 'var(--amber)', 'Low Risk': 'var(--green)' };
-        set('intel-risk', `<span style="color:${riskColors[risk] || 'var(--gold)'}">${risk}</span>`);
-        set('intel-risk-sub', risk.includes('High') ? 'Volatilitas tinggi' : risk.includes('Medium') ? 'Cukup stabil' : 'Sangat stabil');
-
-        // saturation_index is 0–1 from engine; multiply by 100 for display
-        const satPct = sat !== null ? sat * 100 : null;
-        set('intel-sat', satPct !== null ? `${satPct.toFixed(0)}%` : '—');
-        set('intel-sat-sub', satPct !== null ? (satPct >= 70 ? 'Pasar jenuh' : satPct >= 40 ? 'Kompetisi sedang' : 'Masih banyak ruang') : '—');
-
-        // Build chart from raw_trend (engine field: raw_trend.dates[], raw_trend.values[])
-        const rawTrend = data.raw_trend || {};
-        const tDates = rawTrend.dates || [];
-        const tValues = rawTrend.values || [];
-        if (tDates.length === 0) return;
-
-        const labels = tDates.map(d => d ? d.substring(5) : ''); // MM-DD format
-        const values = tValues;
-
-        // Build linear forecast extending 30 days past the last real data point
-        const lastVal = values[values.length - 1];
-        // Use last 14 points for trend slope (handles both weekly & daily data)
-        const slopeWindow = Math.min(14, Math.floor(values.length / 4));
-        const trend = (lastVal - values[Math.max(0, values.length - slopeWindow)]) / slopeWindow;
-
-        // Clamp trend to prevent runaway lines
-        const clampedTrend = Math.max(-0.5, Math.min(0.5, trend));
-
-        const fcastData = Array(values.length).fill(null);
-
-        // Compute actual future dates from the last real date for a seamless x-axis
-        const lastRealDate = tDates.length > 0 ? new Date(tDates[tDates.length - 1]) : new Date();
-        for (let i = 1; i <= 30; i++) {
-          // Add micro-fluctuations (±0.8%) to make it look "active"
-          const noise = (Math.random() - 0.5) * 1.6;
-          // Apply momentum decay so the forecast doesn't stay linear forever
-          const decay = Math.pow(0.96, i);
-          const fval = lastVal + (clampedTrend * i * decay) + noise;
-          fcastData.push(Math.min(100, Math.max(0, fval)));
-          const fDate = new Date(lastRealDate);
-          fDate.setDate(fDate.getDate() + i);
-          const mm = String(fDate.getMonth() + 1).padStart(2, '0');
-          const dd = String(fDate.getDate()).padStart(2, '0');
-          labels.push(`${mm}-${dd}`);
-        }
-        const mainData = [...values, ...Array(30).fill(null)];
-
-        // Switch from skeleton to chart
-        document.getElementById('intel-chart-skeleton').style.display = 'none';
-        const chartWrap = document.getElementById('intel-chart-wrap');
-        chartWrap.style.display = 'block';
-
-        // Wait a frame for the browser to lay out the canvas before Chart.js measures it
-        await new Promise(r => requestAnimationFrame(r));
-        await new Promise(r => setTimeout(r, 60));
-
-        const ctx = document.getElementById('intel-chart').getContext('2d');
-        if (intelChartInstance) intelChartInstance.destroy();
-
-        intelChartInstance = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels,
-            datasets: [
-              {
-                label: 'Tren Aktual',
-                data: mainData,
-                borderColor: 'rgba(212,168,67,0.9)',
-                backgroundColor: (context) => {
-                  const gradient = context.chart.ctx.createLinearGradient(0, 0, 0, 200);
-                  gradient.addColorStop(0, 'rgba(212,168,67,0.18)');
-                  gradient.addColorStop(1, 'rgba(212,168,67,0.00)');
-                  return gradient;
-                },
-                fill: true,
-                tension: 0.45,
-                borderWidth: 2,
-                pointRadius: (ctx2) => ctx2.dataIndex === values.length - 1 ? 5 : 0,
-                pointBackgroundColor: 'var(--gold)',
-                pointBorderColor: '#0A0A08',
-                pointBorderWidth: 2,
-                spanGaps: false,
-              },
-              {
-                label: 'Forecast 30 Hari',
-                data: fcastData,
-                borderColor: 'rgba(68,138,255,0.7)',
-                backgroundColor: 'transparent',
-                fill: false,
-                tension: 0.4,
-                borderWidth: 1.5,
-                borderDash: [5, 5],
-                pointRadius: 0,
-                spanGaps: false,
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: { duration: 1200, easing: 'easeInOutQuart' },
-            plugins: {
-              legend: { display: false },
-              tooltip: {
-                backgroundColor: 'rgba(20,17,11,0.95)',
-                borderColor: 'rgba(212,168,67,0.4)',
-                borderWidth: 1,
-                titleColor: 'rgba(212,168,67,0.9)',
-                bodyColor: '#D0C9A8',
-                padding: 10,
-                callbacks: {
-                  title: (items) => items[0].label,
-                  label: (item) => item.raw !== null ? ` ${item.dataset.label}: ${item.raw.toFixed(0)}` : null,
-                }
-              }
-            },
-            scales: {
-              x: {
-                ticks: { color: '#4A4535', maxTicksLimit: 10, font: { size: 9, family: 'DM Mono' } },
-                grid: { color: 'rgba(212,168,67,0.04)' },
-                border: { color: 'rgba(212,168,67,0.1)' }
-              },
-              y: {
-                min: 0, max: 100,
-                ticks: {
-                  color: '#4A4535', stepSize: 25, font: { size: 9, family: 'DM Mono' },
-                  callback: v => v
-                },
-                grid: { color: 'rgba(212,168,67,0.06)' },
-                border: { color: 'rgba(212,168,67,0.1)' }
-              }
-            }
-          }
-        });
-      } catch (err) {
-        console.warn('[IntelPreview] Failed to load:', err);
-      }
-    }
-
-    // Run all homepage init after splash exits
     function initHomepageSections() {
       initMarketSnapshot();
-      initIntelPreview();
-
-      // Include new sections in GSAP stagger reveal
-      gsap.to(['#market-snapshot', '#intel-preview', '#ai-panel-preview', '#compare-preview'], {
-        duration: 0.7,
-        opacity: 1,
-        y: 0,
-        stagger: 0.1,
-        ease: 'power2.out',
-        delay: 0.2,
-      });
     }
 
-    // Kick off after 2.5s (same as splash screen)
+    // Tetap panggil setelah splash selesai
     setTimeout(initHomepageSections, 2600);
 
 
@@ -5215,7 +5677,39 @@
       const aiEl = document.getElementById('cmp-ai');
       const cleaned = (d.ai_insight || 'Insight tidak tersedia.').replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
       typeWriter(aiEl, cleaned, 6);
+      function switchTab(tab) {
+        // Update button states
+        document.querySelectorAll('.howto-tab').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('tab-' + tab).classList.add('active');
 
+        // Update pane visibility dengan fade
+        document.querySelectorAll('.howto-pane').forEach(pane => {
+          pane.classList.remove('active');
+        });
+
+        const targetPane = document.getElementById('pane-' + tab);
+        targetPane.classList.add('active');
+
+        // Re-trigger animations on cards inside pane
+        const cards = targetPane.querySelectorAll('.howto-card, .tip-card, .metric-guide-card');
+        cards.forEach((card, i) => {
+          card.style.animation = 'none';
+          card.offsetHeight; // reflow
+          card.style.animation = `fadeUp .4s ease ${i * 0.08}s both`;
+        });
+      }
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.animationPlayState = 'running';
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('.howto-card, .tip-card, .metric-guide-card').forEach(el => {
+        el.style.animationPlayState = 'paused';
+        observer.observe(el);
+      });
       // Show
       document.getElementById('compare-results').style.display = 'block';
       setTimeout(() => document.getElementById('compare-results').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
@@ -5545,6 +6039,243 @@
 
     // Close modal on Escape key
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeUpgradeModal(); });
+
+    /* ── TAB SWITCHER (How To Use) ── */
+    function switchTab(tab) {
+      document.querySelectorAll('.howto-tab').forEach(btn => btn.classList.remove('active'));
+      const activeTab = document.getElementById('tab-' + tab);
+      if (activeTab) activeTab.classList.add('active');
+
+      document.querySelectorAll('.howto-pane').forEach(pane => {
+        pane.classList.remove('active');
+      });
+
+      const targetPane = document.getElementById('pane-' + tab);
+      if (targetPane) {
+        targetPane.classList.add('active');
+        const cards = targetPane.querySelectorAll('.howto-card, .tip-card, .metric-guide-card');
+        cards.forEach((card, i) => {
+          card.style.animation = 'none';
+          card.offsetHeight; // reflow
+          card.style.animation = `fadeUp .4s ease ${i * 0.08}s both`;
+        });
+      }
+    }
+
+    /* ── RADAR PELUANG SEKTOR ── */
+
+    // Cache untuk radar cards yang sudah di-load
+    const radarDataCache = {};
+
+    function timeAgo(isoString) {
+      if (!isoString) return 'baru saja';
+      const d = new Date(isoString);
+      const now = new Date();
+      const secs = (now - d) / 1000;
+
+      const minutes = Math.floor(secs / 60);
+      const hours = Math.floor(secs / 3600);
+      const days = Math.floor(secs / 86400);
+
+      if (secs < 60) return 'baru saja';
+      if (minutes < 60) return `${minutes} menit lalu`;
+      if (hours < 24) return `${hours} jam lalu`;
+      if (days === 1) return 'kemarin';
+      if (days < 7) return `${days} hari lalu`;
+      return `${Math.floor(days / 7)} minggu lalu`;
+    }
+
+    function renderRadarSkeleton() {
+      return `
+        <div style="padding: 20px 16px;">
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;">
+            <div class="skeleton-line" style="height: 50px;"></div>
+            <div class="skeleton-line" style="height: 50px;"></div>
+            <div class="skeleton-line" style="height: 50px;"></div>
+          </div>
+          <div class="skeleton-line" style="height: 20px; margin-bottom: 16px;"></div>
+          <div class="skeleton-line" style="height: 60px; margin-bottom: 16px;"></div>
+          <div class="skeleton-line" style="height: 80px;"></div>
+        </div>
+      `;
+    }
+
+    function renderRadarExpand(sector, data) {
+      const { static: staticData, news, ai_signal } = data;
+
+      // Build subsector pills
+      const subsectorPills = (staticData.top_subsectors || [])
+        .map(s => `<div class="radar-subsector-pill">${s}</div>`)
+        .join('');
+
+      // Build news items
+      const newsHTML = (news && news.length > 0)
+        ? news.map(n => `
+          <div class="radar-news-item">
+            <div class="radar-news-item-title">${n.title || 'Berita'}</div>
+            <div class="radar-news-item-meta">
+              <span>${n.source || 'Sumber'}</span>
+              <span>•</span>
+              <span>${n.time_ago || 'baru saja'}</span>
+            </div>
+          </div>
+        `).join('')
+        : '<div style="color: var(--text-faint); padding: 10px; text-align: center; font-size: 12px;">Tidak ada berita terbaru</div>';
+
+      // AI Signal
+      const aiSignalHTML = ai_signal
+        ? `
+          <div class="radar-ai-signal">
+            <div class="radar-ai-label">
+              <span>✦ AI SIGNAL</span>
+            </div>
+            <div class="radar-ai-content">${ai_signal}</div>
+          </div>
+        `
+        : '';
+
+      return `
+        <div class="radar-expand">
+          <div class="radar-stats-row">
+            <div class="radar-stat">
+              <div class="radar-stat-label">Nilai Pasar</div>
+              <div class="radar-stat-value">${staticData.market_size_label || '—'}</div>
+            </div>
+            <div class="radar-stat">
+              <div class="radar-stat-label">Growth YoY</div>
+              <div class="radar-stat-value" style="color: var(--green);">+${staticData.yoy_growth || 0}%</div>
+            </div>
+            <div class="radar-stat">
+              <div class="radar-stat-label">UMKM Share</div>
+              <div class="radar-stat-value">${staticData.umkm_share || 0}%</div>
+            </div>
+          </div>
+
+          <div class="radar-subsectors">
+            <div class="radar-subsectors-label">Sub-sektor Populer</div>
+            <div class="radar-subsectors-list">
+              ${subsectorPills}
+            </div>
+          </div>
+
+          <div class="radar-news">
+            <div class="radar-news-label">Berita Terkini</div>
+            <div class="radar-news-items">
+              ${newsHTML}
+            </div>
+          </div>
+
+          ${aiSignalHTML}
+
+          <button class="radar-analyze-btn" onclick="analyzeCategory('${sector}')">
+            Analisis Keyword →
+          </button>
+
+          <div class="radar-source">
+            BPS ${staticData.quarter || 'Q3 2024'} · Berita: Bisnis.com, Kontan, Antara
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleRadarCard(sector, element) {
+      // Close all other open cards
+      document.querySelectorAll('.radar-card.open').forEach(card => {
+        if (card !== element) {
+          card.classList.remove('open');
+          const expand = card.querySelector('.radar-expand');
+          if (expand) expand.remove();
+        }
+      });
+
+      // Toggle current card
+      const isOpen = element.classList.contains('open');
+
+      if (isOpen) {
+        // Close
+        element.classList.remove('open');
+        const expand = element.querySelector('.radar-expand');
+        if (expand) expand.remove();
+      } else {
+        // Open
+        element.classList.add('open');
+
+        // Check cache
+        if (radarDataCache[sector]) {
+          // Render from cache
+          const expandHtml = renderRadarExpand(sector, radarDataCache[sector]);
+          const temp = document.createElement('div');
+          temp.innerHTML = expandHtml;
+          element.appendChild(temp.firstElementChild);
+        } else {
+          // Show skeleton and fetch
+          const skeletonHtml = renderRadarSkeleton();
+          const temp = document.createElement('div');
+          temp.innerHTML = skeletonHtml;
+          element.appendChild(temp.firstElementChild);
+
+          // Fetch data
+          fetch('/api/sector-radar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sector })
+          })
+            .then(r => r.json())
+            .then(data => {
+              if (data && !data.error) {
+                radarDataCache[sector] = data;
+                // Replace skeleton with actual content
+                const expand = element.querySelector('.radar-expand');
+                if (expand) expand.remove();
+                const expandHtml = renderRadarExpand(sector, data);
+                const temp2 = document.createElement('div');
+                temp2.innerHTML = expandHtml;
+                element.appendChild(temp2.firstElementChild);
+              }
+            })
+            .catch(e => console.error('Radar fetch error:', e));
+        }
+      }
+    }
+
+    // Observer removed to prevent visibility issues. Animations now run on load.
+
+    // Initialize radar headlines
+    function initRadarHeadlines() {
+      const sectors = ['fashion', 'beauty', 'fnb', 'gadget', 'home', 'hobi', 'musiman'];
+      sectors.forEach(sector => {
+        fetch('/api/sector-radar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sector })
+        })
+          .then(r => r.json())
+          .then(data => {
+            if (data && !data.error && data.news && data.news[0]) {
+              radarDataCache[sector] = data;
+              const headline = data.news[0].title || '';
+              const card = document.querySelector(`[data-sector="${sector}"]`);
+              if (card) {
+                const headlineEl = card.querySelector('.radar-headline');
+                if (headlineEl) {
+                  headlineEl.textContent = headline;
+                }
+              }
+            }
+          })
+          .catch(e => console.error(`Init radar ${sector} error:`, e));
+      });
+    }
+
+    // Initialize headlines on load
+    document.addEventListener('DOMContentLoaded', initRadarHeadlines);
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initRadarHeadlines);
+    } else {
+      initRadarHeadlines();
+    }
+
+
   </script>
 </body>
 
