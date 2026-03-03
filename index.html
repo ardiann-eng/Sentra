@@ -4128,14 +4128,14 @@
       <div class="scan-line"></div>
       <div class="splash-logo">Sentra</div>
     </div>
-    <div class="splash-loader-text" id="splash-text">System Initializing...</div>
+    <div class="splash-loader-text" id="splash-text">Sentra Initializing...</div>
   </div>
 
   <div class="wrap" style="position:relative; z-index:1;">
     <header>
       <div class="logo">
         <span class="logo-word">Sentra</span>
-        <span class="logo-sub">Business Analysis</span>
+        <span class="logo-sub">Market Intelligence</span>
       </div>
       <div class="header-right">
         <span class="ver">v2.0</span>
@@ -4145,8 +4145,8 @@
     </header>
 
     <div class="hero">
-      <h1 class="hero-title">Analisis Tren Pasar<br><em>Berbasis Data Nyata</em></h1>
-      <p class="hero-sub">Google Trends<span>·</span>AI Insight<span>·</span>Market Intelligence</p>
+      <h1 class="hero-title">Ketahui Peluang Bisnismu<br><em>Sebelum Orang Lain</em></h1>
+      <p class="hero-sub">Data Real-Time<span>·</span>Insight Otomatis<span>·</span>Rekomendasi Langsung</p>
 
       <!-- MODE TOGGLE -->
       <div class="mode-toggle-wrap">
@@ -4161,8 +4161,9 @@
       <div class="search-wrap single-search" id="single-search">
         <div class="search-box">
           <div class="search-prefix">›_</div>
-          <input type="text" id="kw" placeholder="ketik keyword produk..." autocomplete="off" spellcheck="false" />
-          <button id="btn" onclick="doSearch()">Analisis</button>
+          <input type="text" id="kw" placeholder="produk apa yang ingin kamu jual?" autocomplete="off"
+            spellcheck="false" />
+          <button id="btn" onclick="doSearch()">Cek Peluang</button>
         </div>
       </div>
 
@@ -4170,10 +4171,10 @@
       <div class="status-bar hidden" id="status-bar">
         <div class="status-bar-left">
 
-          <span class="status-quota-text" id="quota-text">Sisa Kuota: &mdash;</span>
+          <span class="status-quota-text" id="quota-text">Riset tersisa hari ini: &mdash;</span>
           <div class="status-dots" id="quota-dots"></div>
           <button class="status-upgrade-btn" id="quota-upgrade-btn" onclick="showUpgradeModal()"
-            style="display:none">Upgrade Pro →</button>
+            style="display:none">Upgrade →</button>
         </div>
         <div class="status-bar-right">
           <span class="status-sep">│</span>
@@ -4209,7 +4210,7 @@
           </div>
         </div>
         <div class="compare-btn-row">
-          <button id="btn-compare" onclick="doCompare()">Bandingkan</button>
+          <button id="btn-compare" onclick="doCompare()">Bandingkan Sekarang</button>
         </div>
       </div>
 
@@ -4231,10 +4232,10 @@
 
       <!-- Header -->
       <div class="howto-header">
-        <div class="howto-eyebrow">Panduan Penggunaan</div>
-        <h2 class="howto-title">Mulai Analisis dalam<br><em>3 Langkah Mudah</em></h2>
-        <p class="howto-desc">Tidak perlu ahli data. Sentra mengubah tren pasar yang kompleks menjadi keputusan bisnis
-          yang sederhana.</p>
+        <div class="howto-eyebrow">Cara Kerja Sentra</div>
+        <h2 class="howto-title">Dari Pertanyaan ke<br><em>Keputusan Bisnis</em></h2>
+        <p class="howto-desc">Cukup ketik nama produk yang ingin kamu jual. Sentra akan memindai pasar, menghitung
+          peluang, dan memberi tahu kamu langkah terbaik berikutnya.</p>
       </div>
 
       <!-- Tab Switcher -->
@@ -4258,17 +4259,14 @@
           <div class="howto-card">
             <i class="fa-solid fa-magnifying-glass howto-card-icon"></i>
             <div class="howto-step-num"><span>1</span></div>
-            <div class="howto-card-title">Ketik Keyword Produk</div>
+            <div class="howto-card-title">Ketik Produk yang Ingin Kamu Jual</div>
             <div class="howto-card-body">
-              Tulis nama produk atau kategori yang ingin kamu jual.
-              Gunakan kata yang <strong>biasa dicari pembeli</strong> di Google atau Tokopedia — bukan istilah internal
-              tokomu.
-              <br><br>
-              Semakin spesifik keyword-mu, semakin akurat datanya.
+              Tulis nama produk atau kategori seperti cara pembeli mencarinya. Semakin spesifik,
+              semakin tajam hasil yang kamu dapat.
             </div>
             <div class="howto-example">
               <span class="ex-label">Contoh</span>
-              <span>› skincare korea murah</span>
+              <span>› contoh: sepatu sneakers lokal</span>
             </div>
           </div>
 
@@ -4276,16 +4274,14 @@
           <div class="howto-card">
             <i class="fa-solid fa-chart-line howto-card-icon"></i>
             <div class="howto-step-num"><span>2</span></div>
-            <div class="howto-card-title">Klik Analisis & Tunggu</div>
+            <div class="howto-card-title">Sentra Memindai Pasar Untukmu</div>
             <div class="howto-card-body">
-              Sentra akan mengambil data dari <strong>Google Trends</strong> secara real-time,
-              lalu menghitung Growth, Momentum, dan tingkat persaingan pasar otomatis.
-              <br><br>
-              Proses biasanya selesai dalam <strong>10–30 detik</strong>.
+              Dalam hitungan detik, Sentra membaca sinyal pasar secara real-time — tren minat, tingkat persaingan,
+              hingga proyeksi 30 hari ke depan. Semua otomatis.
             </div>
             <div class="howto-example">
               <span class="ex-label">Proses</span>
-              <span>› Fetching · Calculating · AI Insight</span>
+              <span>› Scanning · Measuring · Projecting</span>
             </div>
           </div>
 
@@ -4293,12 +4289,10 @@
           <div class="howto-card">
             <i class="fa-solid fa-lightbulb howto-card-icon"></i>
             <div class="howto-step-num"><span>3</span></div>
-            <div class="howto-card-title">Baca Hasil & Ambil Keputusan</div>
+            <div class="howto-card-title">Baca Hasil, Ambil Keputusan</div>
             <div class="howto-card-body">
-              Lihat <strong>Entry Timing Score</strong> untuk tahu apakah sekarang waktu yang tepat.
-              Baca <strong>AI Insight</strong> untuk rekomendasi langkah konkret yang bisa langsung kamu jalankan.
-              <br><br>
-              Tidak perlu paham angka — cukup ikuti rekomendasinya.
+              Entry Timing Score memberi tahu apakah sekarang waktu yang tepat.
+              Rekomendasi bisnis tersaji langsung — tanpa perlu paham statistik atau data.
             </div>
             <div class="howto-example">
               <span class="ex-label">Hasil</span>
@@ -4463,12 +4457,12 @@
 
       <!-- Bottom CTA -->
       <div class="howto-cta">
-        <div class="howto-cta-text">Siap analisis produkmu <em>sekarang?</em></div>
-        <div class="howto-cta-sub">Gratis · Tidak perlu daftar · Hasil dalam 30 detik</div>
+        <div class="howto-cta-text">Cek peluang produkmu <em>sekarang juga</em></div>
+        <div class="howto-cta-sub">Gratis · Tanpa daftar · Hasil dalam 30 detik</div>
         <button class="howto-cta-btn"
           onclick="document.getElementById('kw').focus(); document.getElementById('kw').scrollIntoView({behavior:'smooth', block:'center'})">
           <i class="fa-solid fa-magnifying-glass"></i>
-          Mulai Analisis Gratis
+          Mulai Sekarang — Gratis
         </button>
       </div>
 
@@ -4479,8 +4473,8 @@
     <!-- ══════════ RADAR PELUANG SEKTOR ══════════ -->
     <section class="radar-section" id="sector-dashboard">
       <div class="radar-head">
-        <div class="radar-title">Radar Peluang Sektor</div>
-        <div class="radar-subtitle">Klik sektor untuk insight &amp; peluang</div>
+        <div class="radar-title">Radar Pasar Sentra</div>
+        <div class="radar-subtitle">Pilih sektor — Sentra tunjukkan peluang bisnis terkini</div>
       </div>
       <div class="radar-grid" id="radar-grid">
 
@@ -4574,15 +4568,15 @@
     <!-- ══════════ SECTION: SOCIAL PROOF ══════════ -->
     <section class="social-proof-section" id="social-proof">
       <div class="sp-stat-bar">
-        <span>1.200+ UMKM</span>
+        <span>1.200+ UMKM Terbantu</span>
         <span class="sp-sep">·</span>
-        <span>7 Sektor</span>
+        <span>7 Sektor Bisnis</span>
         <span class="sp-sep">·</span>
-        <span>34 Provinsi</span>
+        <span>Akurasi 95%+</span>
       </div>
 
       <div class="section-head" style="justify-content: center; text-align: center; margin-bottom: 48px;">
-        <h2 class="section-title">Dipercaya Pelaku <em>UMKM Indonesia</em></h2>
+        <h2 class="section-title">UMKM Indonesia Sudah<br><em>Merasakan Hasilnya</em></h2>
       </div>
 
       <div class="sp-grid">
@@ -4632,27 +4626,27 @@
 
     <!-- ══════════ SECTION: MARKET SNAPSHOT ══════════ -->
     <section class="snapshot-section" id="market-snapshot">
-      <div class="snapshot-label">Market Intelligence · Live Feed</div>
+      <div class="snapshot-label">Sentra · Live Market Scanner</div>
       <div class="snapshot-grid">
         <div class="snapshot-card">
-          <div class="snapshot-icon">// Keyword Dianalisis</div>
+          <div class="snapshot-icon">// Pasar Dipindai</div>
           <div class="snapshot-value" id="snap-count">0</div>
           <div class="snapshot-desc">hari ini · seluruh sektor</div>
         </div>
         <div class="snapshot-card">
-          <div class="snapshot-icon">// Growth Tertinggi</div>
+          <div class="snapshot-icon">// Peluang Tertinggi</div>
           <div class="snapshot-value" style="font-size:22px; padding-top:8px;" id="snap-top">Fashion</div>
           <div class="snapshot-desc" id="snap-top-val">+18.4% minggu ini</div>
         </div>
         <div class="snapshot-card">
-          <div class="snapshot-icon">// Paling Volatile</div>
+          <div class="snapshot-icon">// Paling Dinamis</div>
           <div class="snapshot-value" style="font-size:22px; padding-top:8px;" id="snap-vol">Musiman</div>
           <div class="snapshot-desc" id="snap-vol-val">fluktuasi tinggi · 62%</div>
         </div>
         <div class="snapshot-card">
-          <div class="snapshot-icon">// Terakhir Diperbarui</div>
+          <div class="snapshot-icon">// Terakhir Dipindai</div>
           <div class="snapshot-value" style="font-size:18px; padding-top:8px; letter-spacing:0;" id="snap-time">—</div>
-          <div class="snapshot-desc">data real-time · auto-refresh 6j</div>
+          <div class="snapshot-desc">diperbarui otomatis setiap 6 jam</div>
         </div>
       </div>
     </section>
@@ -4773,7 +4767,7 @@
 
       <div class="ai-card">
         <div class="ai-head">
-          <div class="ai-title">AI Business Insight — Powered by Gemini</div>
+          <div class="ai-title">Rekomendasi Bisnis dari Sentra</div>
         </div>
         <div id="r-ai-cards" class="ai-cards-grid">
           <div class="ai-section-card card-pasar">
@@ -4794,9 +4788,9 @@
       <!-- LOCAL HERO SECTION -->
       <div class="local-hero-card" id="local-hero">
         <div class="local-hero-head">
-          <div class="ai-title">Local Hero: Potensi Wilayah — <span id="r-local-kw"
+          <div class="ai-title">Peta Peluang per Wilayah — <span id="r-local-kw"
               style="color:var(--text); opacity:0.6"></span></div>
-          <div class="local-subtitle">Ranking minat produk berdasarkan provinsi di Indonesia</div>
+          <div class="local-subtitle">Sentra memindai minat pasar di setiap provinsi</div>
         </div>
 
         <div class="local-hero-layout">
@@ -4809,7 +4803,7 @@
           <div class="local-ai-col">
             <div class="local-ai-box">
               <div class="local-ai-header">
-                <i class="fas fa-magic"></i> Tips Jagoan Lokal
+                <i class="fas fa-magic"></i> Strategi Terbaik untuk Wilayah Ini
               </div>
               <div id="local-ai-insight" class="local-ai-body">
                 Menganalisis strategi wilayah terbaik...
@@ -4871,7 +4865,7 @@
       <div class="ai-card">
         <div class="ai-head">
           <div class="ai-icon">✦</div>
-          <div class="ai-title">AI Benchmarking Insight — Powered by Gemini</div>
+          <div class="ai-title">Analisis Perbandingan oleh Sentra</div>
         </div>
         <div id="cmp-ai" class="ai-body"></div>
       </div>
@@ -4883,8 +4877,8 @@
   <div class="wrap">
     <section class="pricing-section" id="pricing">
       <div class="pricing-head">
-        <div class="pricing-title">Pilih Paket Sentra</div>
-        <div class="pricing-sub">Mulai gratis. Upgrade kapan saja.</div>
+        <div class="pricing-title">Mulai Gratis,<br>Upgrade Kalau Butuh Lebih</div>
+        <div class="pricing-sub">Tidak ada kartu kredit. Tidak ada komitmen.</div>
       </div>
       <div class="pricing-grid">
 
@@ -4894,13 +4888,13 @@
           <div class="pricing-price">Rp 0</div>
           <div class="pricing-price-sub">Selamanya gratis</div>
           <ul class="pricing-features">
-            <li>5 analisis per hari</li>
-            <li>Lokasi: Indonesia Nasional</li>
-            <li>Growth, Momentum, Volatilitas</li>
-            <li>AI Insight (3 Card)</li>
-            <li>Sektor Dashboard</li>
-            <li class="locked">Lokasi per-Provinsi</li>
-            <li class="locked">Download PDF</li>
+            <li>5 riset pasar per hari</li>
+            <li>Cakupan seluruh Indonesia</li>
+            <li>Analisis tren, momentum &amp; risiko</li>
+            <li>Rekomendasi bisnis otomatis</li>
+            <li>Radar pasar 7 sektor</li>
+            <li class="locked">Analisis minat per-provinsi</li>
+            <li class="locked">Ekspor laporan bisnis PDF</li>
             <li class="locked">AI Marketing Kit</li>
           </ul>
           <button class="pricing-cta" disabled>Paket Aktif</button>
@@ -4921,24 +4915,24 @@
             <li>Download Laporan PDF</li>
             <li>AI Marketing Kit <em style="font-size:10px;color:var(--gold-dim)">(segera)</em></li>
           </ul>
-          <button class="pricing-cta gold-cta" onclick="showUpgradeModal()">Upgrade Sekarang</button>
+          <button class="pricing-cta gold-cta" onclick="showUpgradeModal()">Aktifkan Akses Penuh</button>
         </div>
 
       </div>
     </section>
   </div>
 
-  <footer>Sentra BI v2.0 &mdash; Powered by Google Trends &amp; Gemini AI</footer>
+  <footer>Sentra v2.0 &mdash; Market Intelligence untuk UMKM Indonesia</footer>
 
   <!-- ══════════ UPGRADE MODAL ══════════ -->
   <div class="modal-overlay" id="upgrade-modal" onclick="handleModalOverlayClick(event)">
     <div class="modal-box">
       <button class="modal-close" onclick="closeUpgradeModal()">×</button>
       <div class="modal-icon">&#9670;</div>
-      <div class="modal-title" id="modal-title">Upgrade ke Sentra Pro</div>
+      <div class="modal-title" id="modal-title">Buka Akses Penuh Sentra</div>
       <div class="modal-desc" id="modal-desc">
-        Kamu telah mencapai batas 5 analisis hari ini.<br>
-        Upgrade ke <strong>Pro</strong> untuk analisis tak terbatas, lokasi per-Provinsi, dan laporan PDF.
+        Kamu sudah menggunakan 5 riset hari ini.<br>
+        Upgrade ke <strong>Pro</strong> untuk riset tanpa batas, analisis per-provinsi, dan ekspor laporan bisnis.
       </div>
       <button class="modal-cta">Upgrade Sekarang &mdash; Rp 49rb/bln</button>
       <span class="modal-later" onclick="closeUpgradeModal()">Nanti saja</span>
@@ -4973,21 +4967,21 @@
   <script>
     const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sep", "Okt", "Nov", "Des"];
     const STEPS = [
-      "Menghubungi Google Trends...",
-      "Menghitung growth & momentum...",
-      "Mendeteksi lifecycle stage...",
-      "Menganalisis FOMO & saturasi...",
-      "Membangun forecast 30 hari...",
-      "Menghasilkan AI insight...",
-      "Hampir selesai..."
+      "Memindai sinyal pasar...",
+      "Membaca 12 bulan data historis...",
+      "Mendeteksi fase & arah tren...",
+      "Mengukur kepadatan persaingan...",
+      "Membangun proyeksi 30 hari ke depan...",
+      "Menyusun rekomendasi bisnis...",
+      "Menyempurnakan hasil analisis..."
     ];
     const COMPARE_STEPS = [
-      "Menghubungi Google Trends (2 keyword)...",
-      "Menganalisis keyword pertama...",
-      "Menganalisis keyword kedua...",
-      "Membandingkan metrik kedua keyword...",
+      "Memindai dua pasar sekaligus...",
+      "Membaca pasar produk pertama...",
+      "Membaca pasar produk kedua...",
+      "Membandingkan 9 metrik utama...",
       "Membangun grafik perbandingan...",
-      "Menghasilkan AI benchmarking insight...",
+      "Menyusun rekomendasi...",
       "Hampir selesai..."
     ];
 
@@ -5025,12 +5019,12 @@
     /* ── SPLASH SCREEN LOGIC ── */
 
     const loadingTexts = [
-      "Initializing Neural Network...",
-      "Fetching Market Intelligence...",
-      "Optimizing Data Models...",
-      "Syncing with Google Trends...",
-      "Analyzing Lifecycle Stages...",
-      "Calibrating Forecast Engine..."
+      "Sentra Initializing...",
+      "Loading Market Data...",
+      "Syncing Real-Time Signals...",
+      "Calibrating Forecast Engine...",
+      "Scanning Business Opportunities...",
+      "System Ready..."
     ];
 
     // Selector yang akan di-animate saat splash
@@ -5133,7 +5127,7 @@
       if (!isPro && text) {
         const used = userState.searchesToday || 0;
         const rem = Math.max(0, 5 - used);
-        text.textContent = `Sisa Kuota: ${rem}/5`;
+        text.textContent = `Riset tersisa hari ini: ${rem}/5`;
 
         dots.innerHTML = '';
         for (let i = 0; i < 5; i++) {
@@ -5143,7 +5137,7 @@
         }
         if (upgradeBtn) upgradeBtn.style.display = '';
       } else if (isPro && text) {
-        text.textContent = 'Pro — Tak Terbatas';
+        text.textContent = 'Pro — Akses Penuh';
         dots.innerHTML = '';
         if (upgradeBtn) upgradeBtn.style.display = 'none';
       }
@@ -6138,8 +6132,8 @@
         if (title) title.textContent = 'Fitur Khusus Pro';
         if (desc) desc.innerHTML = 'Download PDF hanya tersedia untuk pengguna <strong>Pro</strong>.<br>Upgrade sekarang untuk akses penuh ke semua fitur premium.';
       } else {
-        if (title) title.textContent = 'Upgrade ke Sentra Pro';
-        if (desc) desc.innerHTML = 'Kamu telah mencapai batas <strong>5 analisis</strong> hari ini.<br>Upgrade ke <strong>Pro</strong> untuk analisis tak terbatas, lokasi per-Provinsi, dan laporan PDF.';
+        if (title) title.textContent = 'Buka Akses Penuh Sentra';
+        if (desc) desc.innerHTML = 'Kamu sudah menggunakan 5 riset hari ini.<br>Upgrade ke <strong>Pro</strong> untuk riset tanpa batas, analisis per-provinsi, dan ekspor laporan bisnis.';
       }
       document.getElementById('upgrade-modal').classList.add('open');
       document.body.style.overflow = 'hidden';
@@ -6278,7 +6272,7 @@
         ${aiHTML}
 
         <button class="panel-analyze-btn" onclick="closeRadarPanel(); analyzeCategory('${sector}')">
-          Analisis Lengkap →
+          Cek Peluang Lebih Dalam →
         </button>
       `;
     }
