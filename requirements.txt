@@ -11,3 +11,4 @@ supabase
 reportlab==4.2.2
 fake-useragent==1.5.1
 gevent==24.2.1
+feedparser==6.0.10
