@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 
 <head>
@@ -2155,7 +2155,9 @@
       }
     }
 
-    /* ── RADAR PELUANG SEKTOR v2 ── */
+    /* ══════════════════════════════════════════════
+       RADAR PELUANG SEKTOR — dark luxury sci-fi
+    ══════════════════════════════════════════════ */
     .radar-section {
       padding: 52px 0;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -2185,27 +2187,28 @@
       color: var(--text-faint);
     }
 
+    /* ── 7-CARD GRID: 3 cols, no ghost cards ── */
     .radar-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
+      gap: 10px;
     }
 
     .radar-card {
-      background: #0f0f12;
-      border: 1px solid rgba(255, 255, 255, .06);
+      background: rgba(15, 12, 8, 0.85);
+      border: 1px solid rgba(212, 168, 67, 0.1);
       padding: 20px;
       cursor: pointer;
-      transition: all .2s ease;
+      transition: border-color .25s ease, box-shadow .25s ease, background .25s ease;
       position: relative;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      height: 124px;
+      min-height: 116px;
       user-select: none;
     }
 
-    /* Accent line kiri — muncul saat hover/active */
+    /* Gold left-accent bar */
     .radar-card::before {
       content: '';
       position: absolute;
@@ -2215,7 +2218,8 @@
       width: 2px;
       background: var(--gold);
       transform: scaleY(0);
-      transition: transform .2s ease;
+      transition: transform .25s ease;
+      transform-origin: bottom;
     }
 
     .radar-card:hover::before,
@@ -2224,13 +2228,15 @@
     }
 
     .radar-card:hover {
-      background: #141418;
-      border-color: rgba(212, 168, 67, .15);
+      border-color: rgba(212, 168, 67, 0.4);
+      box-shadow: 0 0 18px rgba(212, 168, 67, 0.08), inset 0 0 24px rgba(212, 168, 67, 0.03);
+      background: rgba(20, 16, 10, 0.92);
     }
 
     .radar-card.active {
-      background: #141418;
-      border-color: rgba(212, 168, 67, .15);
+      border-color: rgba(212, 168, 67, 0.5);
+      box-shadow: 0 0 24px rgba(212, 168, 67, 0.12);
+      background: rgba(22, 18, 12, 0.95);
     }
 
     .radar-header {
@@ -2276,141 +2282,163 @@
       display: block;
     }
 
-    .radar-chevron {
-      margin-left: auto;
-      color: rgba(255, 255, 255, .2);
-      font-size: 12px;
-      transition: transform .25s, color .2s;
-    }
-
-    .radar-card.active .radar-chevron {
-      transform: rotate(180deg);
-      color: var(--gold);
-    }
-
-    .radar-headline {
-      font-size: 11px;
-      color: rgba(255, 255, 255, .3);
-      margin-top: 12px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-family: 'DM Mono', monospace;
-    }
-
-    /* Floating Panel & Overlay */
-    .radar-overlay {
+    /* ── OVERLAY: fixed, fullscreen, z-index 9998 ── */
+    #radar-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, .6);
-      backdrop-filter: blur(4px);
-      z-index: 1000;
+      z-index: 9998;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       opacity: 0;
       pointer-events: none;
-      transition: opacity .3s;
+      transition: opacity .3s ease;
     }
 
-    .radar-overlay.open {
+    #radar-overlay.open {
       opacity: 1;
       pointer-events: all;
     }
 
-    .radar-float-panel {
+    /* ── FLOATING PANEL: centered in viewport, z-index 9999 ── */
+    #radar-float-panel {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      max-height: 80vh;
-      background: #0f0f12;
-      border-top: 1px solid rgba(212, 168, 67, .25);
-      transform: translateY(100%);
-      transition: transform .35s cubic-bezier(.4, 0, .2, 1);
-      z-index: 1001;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.92);
+      z-index: 9999;
+      width: min(680px, 92vw);
+      max-height: 85vh;
       overflow-y: auto;
-      padding: 40px 0;
+      background: rgba(10, 10, 8, 0.97);
+      border: 1px solid rgba(212, 168, 67, 0.25);
+      border-top: 2px solid var(--gold);
+      padding: 40px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s ease, transform .3s ease;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(212, 168, 67, .2) transparent;
     }
 
-    .radar-float-panel.open {
-      transform: translateY(0);
+    #radar-float-panel::-webkit-scrollbar {
+      width: 4px;
     }
 
-    .panel-container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 0 24px;
-      position: relative;
+    #radar-float-panel::-webkit-scrollbar-thumb {
+      background: rgba(212, 168, 67, .2);
     }
 
-    .panel-close {
+    #radar-float-panel::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #radar-float-panel.open {
+      opacity: 1;
+      pointer-events: all;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    /* ── PANEL INTERNALS ── */
+    .panel-close-btn {
       position: absolute;
-      top: -10px;
-      right: 24px;
-      font-size: 28px;
-      color: rgba(255, 255, 255, .3);
+      top: 16px;
+      right: 20px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 300;
+      color: rgba(245, 240, 224, 0.4);
       cursor: pointer;
-      transition: color .2s;
+      border: 1px solid rgba(212, 168, 67, 0.12);
+      background: transparent;
+      transition: color .2s, border-color .2s;
+      line-height: 1;
+      font-family: sans-serif;
     }
 
-    .panel-close:hover {
-      color: #fff;
+    .panel-close-btn:hover {
+      color: var(--text);
+      border-color: rgba(212, 168, 67, 0.4);
     }
 
-    .panel-top-info {
+    .panel-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
-      margin-bottom: 24px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, .05);
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(212, 168, 67, 0.12);
     }
 
     .panel-sector-name {
       font-family: 'Cormorant Garamond', serif;
       font-size: 32px;
       font-weight: 600;
-      color: #fff;
+      color: var(--text);
+      line-height: 1.1;
+    }
+
+    .panel-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--gold);
+      background: rgba(212, 168, 67, 0.08);
+      border: 1px solid rgba(212, 168, 67, 0.25);
+      padding: 6px 12px;
+      flex-shrink: 0;
     }
 
     .panel-stats-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      border: 1px solid rgba(255, 255, 255, .06);
+      gap: 1px;
+      background: rgba(212, 168, 67, 0.08);
+      border: 1px solid rgba(212, 168, 67, 0.1);
       margin-bottom: 32px;
-      background: #0a0a0c;
     }
 
     .panel-stat {
-      padding: 24px;
+      padding: 20px 16px;
       text-align: center;
-    }
-
-    .panel-stat:not(:last-child) {
-      border-right: 1px solid rgba(255, 255, 255, .06);
+      background: rgba(10, 10, 8, 0.9);
     }
 
     .panel-stat-label {
       font-family: 'DM Mono', monospace;
       font-size: 9px;
-      color: rgba(255, 255, 255, .4);
+      color: rgba(245, 240, 224, 0.35);
       letter-spacing: 2px;
       text-transform: uppercase;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .panel-stat-value {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 700;
       color: var(--gold);
+      line-height: 1;
+    }
+
+    .panel-divider {
+      height: 1px;
+      background: rgba(212, 168, 67, 0.08);
+      margin: 0 0 24px;
     }
 
     .panel-section-label {
       font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 1px;
+      font-size: 9px;
+      letter-spacing: 2px;
       text-transform: uppercase;
-      color: rgba(255, 255, 255, .3);
-      margin-bottom: 16px;
+      color: rgba(245, 240, 224, 0.3);
+      margin-bottom: 14px;
       display: block;
     }
 
@@ -2418,92 +2446,119 @@
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-bottom: 32px;
-      padding-bottom: 32px;
-      border-bottom: 1px solid rgba(255, 255, 255, .05);
+      margin-bottom: 28px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid rgba(212, 168, 67, 0.07);
+    }
+
+    .radar-subsector-pill {
+      padding: 5px 12px;
+      background: rgba(212, 168, 67, 0.04);
+      border: 1px solid rgba(212, 168, 67, 0.18);
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: rgba(212, 168, 67, 0.7);
+      letter-spacing: 0.5px;
     }
 
     .panel-news-items {
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      margin-bottom: 32px;
-      padding-bottom: 32px;
-      border-bottom: 1px solid rgba(255, 255, 255, .05);
+      gap: 14px;
+      margin-bottom: 28px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid rgba(212, 168, 67, 0.07);
     }
 
     .panel-news-item-title {
-      color: #fff;
-      font-size: 14px;
-      margin-bottom: 6px;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      line-height: 1.5;
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      margin-bottom: 5px;
+      line-height: 1.45;
     }
 
     .panel-news-item-meta {
       font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      color: rgba(255, 255, 255, .3);
+      font-size: 9px;
+      color: rgba(245, 240, 224, 0.28);
       text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .panel-ai-signal {
+      padding: 18px 20px;
+      background: rgba(212, 168, 67, 0.03);
+      border: 1px dashed rgba(212, 168, 67, 0.22);
+      margin-bottom: 28px;
+    }
+
+    .panel-ai-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .panel-ai-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      line-height: 1.8;
+      color: rgba(245, 240, 224, 0.82);
+      font-style: italic;
     }
 
     .panel-analyze-btn {
       width: 100%;
-      padding: 18px;
+      padding: 17px;
       background: var(--gold);
-      color: #000;
+      color: #0A0A08;
       border: none;
       font-family: 'Syne', sans-serif;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 2px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2.5px;
       text-transform: uppercase;
       cursor: pointer;
-      transition: background .2s;
+      transition: background .2s, transform .15s;
+      display: block;
     }
 
     .panel-analyze-btn:hover {
       background: var(--gold-bright);
+      transform: translateY(-1px);
     }
 
-    .panel-ai-signal {
-      margin-top: 32px;
-      padding: 20px;
-      background: rgba(212, 168, 67, .03);
-      border: 1px dashed rgba(212, 168, 67, .2);
-      font-size: 13px;
-      line-height: 1.8;
-      color: rgba(255, 255, 255, .8);
-      font-style: italic;
-      margin-bottom: 32px;
-    }
-
+    /* ── Responsive mobile radar ── */
     @media (max-width: 768px) {
       .radar-grid {
         grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      #radar-float-panel {
+        width: 100vw;
+        max-height: 90vh;
+        padding: 28px 20px;
       }
 
       .panel-stats-row {
         grid-template-columns: 1fr;
-        border: none;
       }
 
-      .panel-stat {
-        border: 1px solid rgba(255, 255, 255, .06);
-      }
-
-      .panel-stat:not(:last-child) {
-        border-right: 1px solid rgba(255, 255, 255, .06);
-        border-bottom: none;
-      }
-
-      .radar-float-panel {
-        max-height: 90vh;
-        padding: 30px 0;
+      .panel-sector-name {
+        font-size: 26px;
       }
     }
 
     /* ── SINGLE TREND CHART ── */
+
     .trend-chart-card {
       background: var(--surface);
       padding: 24px 28px 20px;
@@ -2532,268 +2587,8 @@
       color: var(--text);
     }
 
-    .radar-badge {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      color: var(--green);
-      letter-spacing: 0.5px;
-    }
-
-    .radar-chevron {
-      font-size: 12px;
-      color: var(--text-faint);
-      transition: transform 0.3s ease;
-      flex-shrink: 0;
-    }
-
-    .radar-card.open .radar-chevron {
-      transform: rotate(180deg);
-    }
-
-    .radar-headline {
-      padding: 0;
-      font-size: 12px;
-      color: var(--text-dim);
-      line-height: 1.6;
-      height: 20px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .radar-headline.hidden {
-      display: none;
-    }
-
-    /* Expanded panel */
-    .radar-expand {
-      padding: 24px 0 0;
-      display: none;
-    }
-
-    .radar-card.open .radar-expand {
-      display: block;
-      animation: fadeIn 0.4s ease;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .radar-stats-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      border: 1px solid var(--gold-line);
-      margin-bottom: 28px;
-    }
-
-    .radar-stat {
-      padding: 20px;
-      text-align: center;
-    }
-
-    .radar-stat:not(:last-child) {
-      border-right: 1px solid var(--gold-line);
-    }
-
-    .radar-stat-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      color: var(--text-faint);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-
-    .radar-stat-value {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--gold);
-    }
-
-    .radar-subsectors {
-      margin-bottom: 24px;
-    }
-
-    .radar-subsectors-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      font-weight: 400;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: var(--text-faint);
-      margin-bottom: 12px;
-    }
-
-    .radar-subsectors-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .radar-subsector-pill {
-      padding: 6px 14px;
-      background: rgba(212, 168, 67, 0.05);
-      border: 1px solid var(--gold-line);
-      border-radius: 2px;
-      font-size: 11px;
-      color: var(--gold-dim);
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-
-    .radar-news {
-      margin-bottom: 24px;
-    }
-
-    .radar-news-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      font-weight: 400;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: var(--text-faint);
-      margin-bottom: 12px;
-    }
-
-    .radar-news-items {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      background: var(--gold-line);
-    }
-
-    .radar-news-item {
-      padding: 14px 18px;
-      background: var(--surface);
-      font-size: 13px;
-      color: var(--text);
-      line-height: 1.8;
-      border: none;
-    }
-
-    .radar-news-item-title {
-      color: var(--text);
-      margin-bottom: 6px;
-      font-weight: 500;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-
-    .radar-news-item-meta {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      color: var(--text-faint);
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      text-transform: uppercase;
-    }
-
-    .radar-ai-signal {
-      padding: 20px;
-      background: rgba(212, 168, 67, 0.03);
-      border: 1px dashed var(--gold-line);
-      border-radius: 2px;
-      margin-bottom: 24px;
-    }
-
-    .radar-ai-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      font-weight: 400;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .radar-ai-content {
-      font-size: 13px;
-      color: var(--text);
-      line-height: 1.8;
-      font-style: italic;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-
-    .radar-analyze-btn {
-      width: 100%;
-      padding: 10px;
-      background: var(--gold);
-      color: var(--bg);
-      border: none;
-      border-radius: 4px;
-      font-family: 'Syne', sans-serif;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: background 0.2s;
-      margin-bottom: 12px;
-    }
-
-    .radar-analyze-btn:hover {
-      background: var(--gold-bright);
-    }
-
-    .radar-source {
-      padding-top: 12px;
-      border-top: 1px solid var(--gold-line);
-      font-size: 10px;
-      color: var(--text-faint);
-      text-align: center;
-      letter-spacing: 0.5px;
-    }
-
-    /* Responsive for radar */
-    @media (max-width: 768px) {
-      .radar-grid {
-        grid-template-columns: 1fr;
-        gap: 2px;
-      }
-
-      .radar-card.open {
-        grid-column: span 1;
-      }
-
-      .radar-stats-row {
-        grid-template-columns: 1fr;
-        border: none;
-      }
-
-      .radar-stat:not(:last-child) {
-        border-right: none;
-        border-bottom: 1px solid var(--gold-line);
-      }
-    }
-
-    @media (max-width: 600px) {
-      .radar-section {
-        padding: 40px 0;
-        margin-bottom: 48px;
-      }
-
-      .radar-title {
-        font-size: 22px;
-      }
-
-      .radar-stat-value {
-        font-size: 22px;
-      }
-    }
-
     /* ── SINGLE TREND CHART ── */
+
     .trend-chart-card {
       background: var(--surface);
       padding: 24px 28px 20px;
@@ -4685,12 +4480,9 @@
     <section class="radar-section" id="sector-dashboard">
       <div class="radar-head">
         <div class="radar-title">Radar Peluang Sektor</div>
-        <div class="radar-subtitle">Klik sektor untuk insight, berita & peluang</div>
+        <div class="radar-subtitle">Klik sektor untuk insight &amp; peluang</div>
       </div>
       <div class="radar-grid" id="radar-grid">
-        <!-- Overlay & Floating Panel -->
-        <div class="radar-overlay" id="radar-overlay" onclick="closeRadarPanel()"></div>
-        <div class="radar-float-panel" id="radar-float-panel"></div>
 
         <!-- Fashion -->
         <div class="radar-card" data-sector="fashion" onclick="toggleRadarCard('fashion', this)">
@@ -4700,70 +4492,70 @@
               <div class="radar-name">Fashion</div>
               <div class="radar-yoy">+6.2% YoY</div>
             </div>
-            <div class="radar-chevron"><i class="fa-solid fa-chevron-right"></i></div>
           </div>
           <div class="radar-headline"></div>
         </div>
+
         <!-- Beauty -->
         <div class="radar-card" data-sector="beauty" onclick="toggleRadarCard('beauty', this)">
           <div class="radar-header">
             <div class="radar-icon-badge">BTY</div>
             <div class="radar-info">
-              <div class="radar-name">Beauty & Perawatan</div>
+              <div class="radar-name">Beauty &amp; Perawatan</div>
               <div class="radar-yoy">+12.4% YoY</div>
             </div>
-            <div class="radar-chevron"><i class="fa-solid fa-chevron-right"></i></div>
           </div>
           <div class="radar-headline"></div>
         </div>
+
         <!-- FnB -->
         <div class="radar-card" data-sector="fnb" onclick="toggleRadarCard('fnb', this)">
           <div class="radar-header">
             <div class="radar-icon-badge">FNB</div>
             <div class="radar-info">
-              <div class="radar-name">Makanan & Minuman</div>
+              <div class="radar-name">Makanan &amp; Minuman</div>
               <div class="radar-yoy">+8.7% YoY</div>
             </div>
-            <div class="radar-chevron"><i class="fa-solid fa-chevron-right"></i></div>
           </div>
           <div class="radar-headline"></div>
         </div>
+
         <!-- Gadget -->
         <div class="radar-card" data-sector="gadget" onclick="toggleRadarCard('gadget', this)">
           <div class="radar-header">
             <div class="radar-icon-badge">GDG</div>
             <div class="radar-info">
-              <div class="radar-name">Gadget & Elektronik</div>
+              <div class="radar-name">Gadget &amp; Elektronik</div>
               <div class="radar-yoy">+4.8% YoY</div>
             </div>
-            <div class="radar-chevron"><i class="fa-solid fa-chevron-right"></i></div>
           </div>
           <div class="radar-headline"></div>
         </div>
+
         <!-- Home -->
         <div class="radar-card" data-sector="home" onclick="toggleRadarCard('home', this)">
           <div class="radar-header">
             <div class="radar-icon-badge">HME</div>
             <div class="radar-info">
-              <div class="radar-name">Home & Living</div>
+              <div class="radar-name">Home &amp; Living</div>
               <div class="radar-yoy">+5.3% YoY</div>
             </div>
-            <div class="radar-chevron"><i class="fa-solid fa-chevron-right"></i></div>
           </div>
           <div class="radar-headline"></div>
         </div>
+
         <!-- Hobi -->
         <div class="radar-card" data-sector="hobi" onclick="toggleRadarCard('hobi', this)">
           <div class="radar-header">
             <div class="radar-icon-badge">HBI</div>
             <div class="radar-info">
-              <div class="radar-name">Hobi & Lifestyle</div>
+              <div class="radar-name">Hobi &amp; Lifestyle</div>
               <div class="radar-yoy">+9.1% YoY</div>
             </div>
-            <div class="radar-chevron"><i class="fa-solid fa-chevron-right"></i></div>
           </div>
           <div class="radar-headline"></div>
         </div>
+
         <!-- Musiman -->
         <div class="radar-card" data-sector="musiman" onclick="toggleRadarCard('musiman', this)">
           <div class="radar-header">
@@ -4772,14 +4564,11 @@
               <div class="radar-name">Tren Musiman</div>
               <div class="radar-yoy">+28.5% YoY</div>
             </div>
-            <div class="radar-chevron"><i class="fa-solid fa-chevron-right"></i></div>
           </div>
           <div class="radar-headline"></div>
         </div>
-        <!-- Ghost Cards for alignment -->
-        <div class="radar-card" style="visibility: hidden"></div>
-        <div class="radar-card" style="visibility: hidden"></div>
-      </div>
+
+      </div><!-- end .radar-grid -->
     </section>
 
     <!-- ══════════ SECTION: SOCIAL PROOF ══════════ -->
@@ -6392,130 +6181,134 @@
 
     /* ── RADAR PELUANG SEKTOR ── */
 
-    // Cache untuk radar cards yang sudah di-load
+    // Data cache — pre-seeded by initRadarHeadlines
     const radarDataCache = {};
 
-    function timeAgo(isoString) {
-      if (!isoString) return 'baru saja';
-      const d = new Date(isoString);
-      const now = new Date();
-      const secs = (now - d) / 1000;
+    const SECTOR_NAMES = {
+      fashion: 'Fashion', beauty: 'Beauty & Perawatan',
+      fnb: 'Makanan & Minuman', gadget: 'Gadget & Elektronik',
+      home: 'Home & Living', hobi: 'Hobi & Lifestyle', musiman: 'Tren Musiman'
+    };
 
-      const minutes = Math.floor(secs / 60);
-      const hours = Math.floor(secs / 3600);
-      const days = Math.floor(secs / 86400);
-
-      if (secs < 60) return 'baru saja';
-      if (minutes < 60) return `${minutes} menit lalu`;
-      if (hours < 24) return `${hours} jam lalu`;
-      if (days === 1) return 'kemarin';
-      if (days < 7) return `${days} hari lalu`;
-      return `${Math.floor(days / 7)} minggu lalu`;
-    }
+    const SECTOR_BADGES = {
+      fashion: 'FSH', beauty: 'BTY', fnb: 'FNB', gadget: 'GDG',
+      home: 'HME', hobi: 'HBI', musiman: 'MSM'
+    };
 
     function renderRadarSkeleton() {
       return `
-        <div style="padding: 40px 24px;">
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 32px;">
-            <div class="skeleton-line" style="height: 80px;"></div>
-            <div class="skeleton-line" style="height: 80px;"></div>
-            <div class="skeleton-line" style="height: 80px;"></div>
+        <button class="panel-close-btn" onclick="closeRadarPanel()">&#215;</button>
+        <div style="padding:8px 0 32px;">
+          <div class="skeleton-line" style="height:36px;width:55%;margin-bottom:24px;"></div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-bottom:28px;">
+            <div class="skeleton-line" style="height:80px;"></div>
+            <div class="skeleton-line" style="height:80px;"></div>
+            <div class="skeleton-line" style="height:80px;"></div>
           </div>
-          <div class="skeleton-line" style="height: 20px; margin-bottom: 24px; width: 40%"></div>
-          <div class="skeleton-line" style="height: 120px; margin-bottom: 32px;"></div>
-          <div class="skeleton-line" style="height: 150px;"></div>
+          <div class="skeleton-line" style="height:14px;width:30%;margin-bottom:14px;"></div>
+          <div class="skeleton-line" style="height:100px;margin-bottom:28px;"></div>
+          <div class="skeleton-line" style="height:14px;width:30%;margin-bottom:14px;"></div>
+          <div class="skeleton-line" style="height:120px;margin-bottom:32px;"></div>
+          <div class="skeleton-line" style="height:52px;"></div>
         </div>
       `;
     }
 
     function renderRadarExpand(sector, data) {
-      const { static: staticData, news, ai_signal } = data;
-      const badges = {
-        fashion: 'FSH', beauty: 'BTY', fnb: 'FNB', gadget: 'GDG',
-        home: 'HME', hobi: 'HBI', musiman: 'MSM'
-      };
+      const s = data.static || {};
+      const news = data.news || [];
+      const aiSignal = data.ai_signal || '';
+      const badge = SECTOR_BADGES[sector] || 'SEC';
+      const name = SECTOR_NAMES[sector] || sector;
 
-      const subsectorPills = (staticData.top_subsectors || [])
-        .map(s => `<div class="radar-subsector-pill">${s}</div>`)
+      const pillsHTML = (s.top_subsectors || [])
+        .map(sub => `<span class="radar-subsector-pill">${sub}</span>`)
         .join('');
 
-      const newsHTML = (news && news.length > 0)
+      const newsHTML = news.length > 0
         ? news.slice(0, 3).map(n => `
-          <div class="panel-news-item">
-            <div class="panel-news-item-title">${n.title || 'Berita'}</div>
-            <div class="panel-news-item-meta">
-              <span>${n.source || 'Sumber'}</span>
-              <span>•</span>
-              <span>${n.time_ago || 'Baru saja'}</span>
-            </div>
-          </div>
-        `).join('')
-        : '<div style="color: rgba(255,255,255,.3); padding: 20px; text-align: center; font-size: 13px;">Tidak ada berita terbaru</div>';
+            <div class="panel-news-item">
+              <div class="panel-news-item-title">${n.title || 'Berita'}</div>
+              <div class="panel-news-item-meta">
+                <span>${n.source || 'Sumber'}</span>
+                <span>·</span>
+                <span>${n.time_ago || 'baru saja'}</span>
+              </div>
+            </div>`).join('')
+        : `<div style="color:rgba(245,240,224,.25);font-size:12px;padding:16px 0;font-family:'DM Mono',monospace">Tidak ada berita terkini</div>`;
 
-      const aiSignalHTML = ai_signal
-        ? `
-          <div class="panel-ai-signal">
-            <div style="font-family:'DM Mono'; font-size:10px; color:var(--gold); margin-bottom:8px; letter-spacing:1px">✦ AI SIGNAL</div>
-            <div>${ai_signal}</div>
-          </div>
-        `
+      const aiHTML = aiSignal
+        ? `<div class="panel-ai-signal">
+             <span class="panel-ai-label">✦ AI SIGNAL</span>
+             <div class="panel-ai-text">${aiSignal}</div>
+           </div>`
         : '';
 
       return `
-        <div class="panel-container">
-          <div class="panel-close" onclick="closeRadarPanel()">×</div>
-          
-          <div class="panel-top-info">
-            <div class="panel-sector-name">${staticData.name || sector}</div>
-            <div class="radar-icon-badge">${badges[sector] || 'SEC'}</div>
-          </div>
+        <button class="panel-close-btn" onclick="closeRadarPanel()">&#215;</button>
 
-          <div class="panel-stats-row">
-            <div class="panel-stat">
-              <div class="panel-stat-label">Nilai Pasar</div>
-              <div class="panel-stat-value">${staticData.market_size_label || '—'}</div>
-            </div>
-            <div class="panel-stat">
-              <div class="panel-stat-label">Growth YoY</div>
-              <div class="panel-stat-value" style="color: var(--green);">+${staticData.yoy_growth || 0}%</div>
-            </div>
-            <div class="panel-stat">
-              <div class="panel-stat-label">UMKM Share</div>
-              <div class="panel-stat-value">${staticData.umkm_share || 0}%</div>
-            </div>
-          </div>
-
-          <span class="panel-section-label">Sub-sektor Populer</span>
-          <div class="panel-subsectors-list">
-            ${subsectorPills}
-          </div>
-
-          <span class="panel-section-label">Berita Terkini</span>
-          <div class="panel-news-items">
-            ${newsHTML}
-          </div>
-
-          ${aiSignalHTML}
-
-          <button class="panel-analyze-btn" onclick="analyzeCategory('${sector}')">
-            Analisis Keyword Lengkap →
-          </button>
+        <div class="panel-header">
+          <div class="panel-sector-name">${name}</div>
+          <div class="panel-badge">${badge}</div>
         </div>
+
+        <div class="panel-stats-row">
+          <div class="panel-stat">
+            <div class="panel-stat-label">Nilai Pasar</div>
+            <div class="panel-stat-value">${s.market_size_label || '—'}</div>
+          </div>
+          <div class="panel-stat">
+            <div class="panel-stat-label">Growth YoY</div>
+            <div class="panel-stat-value" style="color:var(--green)">+${s.yoy_growth || 0}%</div>
+          </div>
+          <div class="panel-stat">
+            <div class="panel-stat-label">UMKM Share</div>
+            <div class="panel-stat-value">${s.umkm_share || 0}%</div>
+          </div>
+        </div>
+
+        <div class="panel-divider"></div>
+
+        <span class="panel-section-label">Sub-sektor Populer</span>
+        <div class="panel-subsectors-list">${pillsHTML}</div>
+
+        <span class="panel-section-label">Berita Terkini</span>
+        <div class="panel-news-items">${newsHTML}</div>
+
+        ${aiHTML}
+
+        <button class="panel-analyze-btn" onclick="closeRadarPanel(); analyzeCategory('${sector}')">
+          Analisis Lengkap →
+        </button>
       `;
     }
 
     function closeRadarPanel() {
-      document.getElementById('radar-float-panel').classList.remove('open');
-      document.getElementById('radar-overlay').classList.remove('open');
+      const panel = document.getElementById('radar-float-panel');
+      const overlay = document.getElementById('radar-overlay');
+      if (!panel || !overlay) return;
+      panel.classList.remove('open');
+      overlay.classList.remove('open');
       document.querySelectorAll('.radar-card').forEach(c => c.classList.remove('active'));
+      // Reset ALL overflow properties to restore page scroll
       document.body.style.overflow = '';
+      document.body.style.overflowY = '';
+      document.body.style.overflowX = '';
+      document.documentElement.style.overflow = '';
     }
+
+    // Escape key closes panel
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        const panel = document.getElementById('radar-float-panel');
+        if (panel && panel.classList.contains('open')) closeRadarPanel();
+      }
+    });
 
     function toggleRadarCard(sector, element) {
       const panel = document.getElementById('radar-float-panel');
       const overlay = document.getElementById('radar-overlay');
 
-      // Clear other actives
       document.querySelectorAll('.radar-card').forEach(c => c.classList.remove('active'));
       element.classList.add('active');
 
@@ -6526,7 +6319,44 @@
 
       if (radarDataCache[sector]) {
         panel.innerHTML = renderRadarExpand(sector, radarDataCache[sector]);
-      } else {
+        return;
+      }
+
+      fetch('/api/sector-radar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sector })
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data && !data.error) {
+            radarDataCache[sector] = data;
+            if (panel.classList.contains('open')) {
+              panel.innerHTML = renderRadarExpand(sector, data);
+            }
+          } else {
+            panel.innerHTML = `<button class="panel-close-btn" onclick="closeRadarPanel()">&#215;</button>
+              <div style="padding:60px 0;text-align:center;color:rgba(245,240,224,.4);font-family:'DM Mono',monospace;font-size:12px">
+                Gagal memuat data sektor
+              </div>`;
+          }
+        })
+        .catch(() => {
+          panel.innerHTML = `<button class="panel-close-btn" onclick="closeRadarPanel()">&#215;</button>
+            <div style="padding:60px 0;text-align:center;color:rgba(245,240,224,.4);font-family:'DM Mono',monospace;font-size:12px">
+              Koneksi gagal
+            </div>`;
+        });
+    }
+
+    // Initialize card headline teasers async after DOM ready
+    function initRadarHeadlines() {
+      const sectors = ['fashion', 'beauty', 'fnb', 'gadget', 'home', 'hobi', 'musiman'];
+      sectors.forEach(sector => {
+        if (radarDataCache[sector]) {
+          _applyHeadline(sector, radarDataCache[sector]);
+          return;
+        }
         fetch('/api/sector-radar', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -6536,49 +6366,22 @@
           .then(data => {
             if (data && !data.error) {
               radarDataCache[sector] = data;
-              panel.innerHTML = renderRadarExpand(sector, data);
-            } else {
-              panel.innerHTML = '<div style="padding:40px; text-align:center; color:white">Gagal memuat data sektor</div>';
+              _applyHeadline(sector, data);
             }
           })
-          .catch(err => {
-            console.error(err);
-            panel.innerHTML = '<div style="padding:40px; text-align:center; color:white">Error loading data</div>';
-          });
-      }
-    }
-
-    // Observer removed to prevent visibility issues. Animations now run on load.
-
-    // Initialize radar headlines
-    function initRadarHeadlines() {
-      const sectors = ['fashion', 'beauty', 'fnb', 'gadget', 'home', 'hobi', 'musiman'];
-      sectors.forEach(sector => {
-        fetch('/api/sector-radar', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sector })
-        })
-          .then(r => r.json())
-          .then(data => {
-            if (data && !data.error && data.news && data.news[0]) {
-              radarDataCache[sector] = data;
-              const headline = data.news[0].title || '';
-              const card = document.querySelector(`[data-sector="${sector}"]`);
-              if (card) {
-                const headlineEl = card.querySelector('.radar-headline');
-                if (headlineEl) {
-                  headlineEl.textContent = headline;
-                }
-              }
-            }
-          })
-          .catch(e => console.error(`Init radar ${sector} error:`, e));
+          .catch(e => console.warn(`Radar headline ${sector}:`, e));
       });
     }
 
-    // Initialize headlines on load
-    document.addEventListener('DOMContentLoaded', initRadarHeadlines);
+    function _applyHeadline(sector, data) {
+      const headline = (data.news && data.news[0] && data.news[0].title) || '';
+      const card = document.querySelector(`[data-sector="${sector}"]`);
+      if (card && headline) {
+        const el = card.querySelector('.radar-headline');
+        if (el) el.textContent = headline;
+      }
+    }
+
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initRadarHeadlines);
     } else {
@@ -6587,6 +6390,10 @@
 
 
   </script>
+  <!-- â•â•â•â•â•â•â•â•â•â• RADAR OVERLAY & FLOATING PANEL â•â•â•â•â•â•â•â•â•â• -->
+  <div id="radar-overlay" onclick="closeRadarPanel()"></div>
+  <div id="radar-float-panel"></div>
+
 </body>
 
 </html>
