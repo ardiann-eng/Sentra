@@ -57,7 +57,6 @@
       font-size: 15px;
       min-height: 100vh;
       overflow-x: hidden;
-      overflow-y: hidden;
       /* Lock scroll initially */
     }
 
@@ -4313,30 +4312,41 @@
       }
     }
 
-    /* Override apapun yang menyembunyikan section ini */
+    /* Override GSAP sisa — pastikan semua section normal */
     .radar-section,
     .social-proof-section,
+    #market-snapshot,
+    .snapshot-section,
     #results,
     #compare-results {
       opacity: 1 !important;
       visibility: visible !important;
       transform: none !important;
+      filter: none !important;
+      will-change: auto !important;
       pointer-events: auto !important;
+      position: relative !important;
     }
 
-    /* Khusus radar dan social proof tetap display:block */
+    /* Khusus section yang harus selalu display:block */
     .radar-section,
-    .social-proof-section {
+    .social-proof-section,
+    #market-snapshot,
+    .snapshot-section {
       display: block !important;
     }
 
-    /* Pastikan grid radar juga ikut visible */
+    /* Pastikan grid dan card di dalamnya juga normal */
     .radar-grid,
     .radar-card,
     .sp-grid,
-    .sp-card {
+    .sp-card,
+    .snapshot-grid,
+    .snapshot-card {
       opacity: 1 !important;
       visibility: visible !important;
+      transform: none !important;
+      filter: none !important;
     }
   </style>
 </head>
@@ -4886,91 +4896,95 @@
     </section>
   </div><!-- end .wrap (radar) -->
 
-  <!-- ══════════ SECTION: SOCIAL PROOF ══════════ -->
-  <section class="social-proof-section" id="social-proof">
-    <div class="sp-stat-bar">
-      <span>1.200+ UMKM Terbantu</span>
-      <span class="sp-sep">·</span>
-      <span>7 Sektor Bisnis</span>
-      <span class="sp-sep">·</span>
-      <span>Akurasi 95%+</span>
-    </div>
+  <div class="wrap" style="position:relative; z-index:1;">
+    <!-- ══════════ SECTION: SOCIAL PROOF ══════════ -->
+    <section class="social-proof-section" id="social-proof">
+      <div class="sp-stat-bar">
+        <span>1.200+ UMKM Terbantu</span>
+        <span class="sp-sep">·</span>
+        <span>7 Sektor Bisnis</span>
+        <span class="sp-sep">·</span>
+        <span>Akurasi 95%+</span>
+      </div>
 
-    <div class="section-head" style="justify-content: center; text-align: center; margin-bottom: 48px;">
-      <h2 class="section-title">UMKM Indonesia Sudah<br><em>Merasakan Hasilnya</em></h2>
-    </div>
+      <div class="section-head" style="justify-content: center; text-align: center; margin-bottom: 48px;">
+        <h2 class="section-title">UMKM Indonesia Sudah<br><em>Merasakan Hasilnya</em></h2>
+      </div>
 
-    <div class="sp-grid">
-      <!-- Card 1 -->
-      <div class="sp-card">
-        <div class="sp-stars">✦✦✦✦✦</div>
-        <p class="sp-quote">"Sentra BI bantu saya stok barang pas tren naik. Penjualan naik 30% karena tidak telat
-          sedia barang!"</p>
-        <div class="sp-user">
-          <div class="sp-avatar">B</div>
-          <div class="sp-info">
-            <div class="sp-name">Budi Santoso</div>
-            <div class="sp-biz">Pemilik Toko Sepatu · Bandung</div>
+      <div class="sp-grid">
+        <!-- Card 1 -->
+        <div class="sp-card">
+          <div class="sp-stars">✦✦✦✦✦</div>
+          <p class="sp-quote">"Sentra BI bantu saya stok barang pas tren naik. Penjualan naik 30% karena tidak telat
+            sedia barang!"</p>
+          <div class="sp-user">
+            <div class="sp-avatar">B</div>
+            <div class="sp-info">
+              <div class="sp-name">Budi Santoso</div>
+              <div class="sp-biz">Pemilik Toko Sepatu · Bandung</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="sp-card">
+          <div class="sp-stars">✦✦✦✦✦</div>
+          <p class="sp-quote">"Dulu cuma tebak-tebak produk mana yang laku. Sekarang ada datanya, jadi gak pernah salah
+            pilih produk lagi."</p>
+          <div class="sp-user">
+            <div class="sp-avatar">S</div>
+            <div class="sp-info">
+              <div class="sp-name">Siti Aminah</div>
+              <div class="sp-biz">Retail Hijab Online · Jakarta</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="sp-card">
+          <div class="sp-stars">✦✦✦✦✦</div>
+          <p class="sp-quote">"Sangat terbantu buat tahu kapan harus promosi gede-gedean. Gak boncos iklan lagi karena
+            tahu timing yang pas."</p>
+          <div class="sp-user">
+            <div class="sp-avatar">A</div>
+            <div class="sp-info">
+              <div class="sp-name">Andi Wijaya</div>
+              <div class="sp-biz">UMKM Kuliner · Surabaya</div>
+            </div>
           </div>
         </div>
       </div>
+    </section>
+  </div>
 
-      <!-- Card 2 -->
-      <div class="sp-card">
-        <div class="sp-stars">✦✦✦✦✦</div>
-        <p class="sp-quote">"Dulu cuma tebak-tebak produk mana yang laku. Sekarang ada datanya, jadi gak pernah salah
-          pilih produk lagi."</p>
-        <div class="sp-user">
-          <div class="sp-avatar">S</div>
-          <div class="sp-info">
-            <div class="sp-name">Siti Aminah</div>
-            <div class="sp-biz">Retail Hijab Online · Jakarta</div>
-          </div>
+  <div class="wrap" style="position:relative; z-index:1;">
+    <!-- ══════════ SECTION: MARKET SNAPSHOT ══════════ -->
+    <section class="snapshot-section" id="market-snapshot">
+      <div class="snapshot-label">Sentra · Live Market Scanner</div>
+      <div class="snapshot-grid">
+        <div class="snapshot-card">
+          <div class="snapshot-icon">// Pasar Dipindai</div>
+          <div class="snapshot-value" id="snap-count">0</div>
+          <div class="snapshot-desc">hari ini · seluruh sektor</div>
+        </div>
+        <div class="snapshot-card">
+          <div class="snapshot-icon">// Peluang Tertinggi</div>
+          <div class="snapshot-value" style="font-size:22px; padding-top:8px;" id="snap-top">Fashion</div>
+          <div class="snapshot-desc" id="snap-top-val">+18.4% minggu ini</div>
+        </div>
+        <div class="snapshot-card">
+          <div class="snapshot-icon">// Paling Dinamis</div>
+          <div class="snapshot-value" style="font-size:22px; padding-top:8px;" id="snap-vol">Musiman</div>
+          <div class="snapshot-desc" id="snap-vol-val">fluktuasi tinggi · 62%</div>
+        </div>
+        <div class="snapshot-card">
+          <div class="snapshot-icon">// Terakhir Dipindai</div>
+          <div class="snapshot-value" style="font-size:18px; padding-top:8px; letter-spacing:0;" id="snap-time">—</div>
+          <div class="snapshot-desc">diperbarui otomatis setiap 6 jam</div>
         </div>
       </div>
-
-      <!-- Card 3 -->
-      <div class="sp-card">
-        <div class="sp-stars">✦✦✦✦✦</div>
-        <p class="sp-quote">"Sangat terbantu buat tahu kapan harus promosi gede-gedean. Gak boncos iklan lagi karena
-          tahu timing yang pas."</p>
-        <div class="sp-user">
-          <div class="sp-avatar">A</div>
-          <div class="sp-info">
-            <div class="sp-name">Andi Wijaya</div>
-            <div class="sp-biz">UMKM Kuliner · Surabaya</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════ SECTION: MARKET SNAPSHOT ══════════ -->
-  <section class="snapshot-section" id="market-snapshot">
-    <div class="snapshot-label">Sentra · Live Market Scanner</div>
-    <div class="snapshot-grid">
-      <div class="snapshot-card">
-        <div class="snapshot-icon">// Pasar Dipindai</div>
-        <div class="snapshot-value" id="snap-count">0</div>
-        <div class="snapshot-desc">hari ini · seluruh sektor</div>
-      </div>
-      <div class="snapshot-card">
-        <div class="snapshot-icon">// Peluang Tertinggi</div>
-        <div class="snapshot-value" style="font-size:22px; padding-top:8px;" id="snap-top">Fashion</div>
-        <div class="snapshot-desc" id="snap-top-val">+18.4% minggu ini</div>
-      </div>
-      <div class="snapshot-card">
-        <div class="snapshot-icon">// Paling Dinamis</div>
-        <div class="snapshot-value" style="font-size:22px; padding-top:8px;" id="snap-vol">Musiman</div>
-        <div class="snapshot-desc" id="snap-vol-val">fluktuasi tinggi · 62%</div>
-      </div>
-      <div class="snapshot-card">
-        <div class="snapshot-icon">// Terakhir Dipindai</div>
-        <div class="snapshot-value" style="font-size:18px; padding-top:8px; letter-spacing:0;" id="snap-time">—</div>
-        <div class="snapshot-desc">diperbarui otomatis setiap 6 jam</div>
-      </div>
-    </div>
-  </section>
+    </section>
+  </div>
 
 
   <!-- ══════════ SINGLE RESULTS ══════════ -->
@@ -5308,6 +5322,13 @@
 
     let stepTimer = null;
     let compareMode = false;
+    function unlockScroll() {
+      document.body.style.removeProperty('overflow');
+      document.body.style.removeProperty('overflow-y');
+      document.body.style.removeProperty('overflow-x');
+      document.documentElement.style.removeProperty('overflow');
+      document.documentElement.style.removeProperty('overflow-y');
+    }
     let trendChart = null;
 
     // ─ AUTO-GENERATE GUEST ID ─
@@ -5351,7 +5372,7 @@
     // Selector yang akan di-animate saat splash
     // CATATAN: radar-section & social-proof SENGAJA tidak dimasukkan
     // agar tidak terjebak opacity:0 jika GSAP gagal animate
-    const SPLASH_TARGETS = 'header, .hero, .howto-section, #market-snapshot, .pricing-section';
+    const SPLASH_TARGETS = 'header, .hero, .howto-section, .pricing-section';
 
     // Set initial hidden state — hanya untuk above-fold elements
     gsap.set(SPLASH_TARGETS, { opacity: 0, y: 30 });
@@ -5373,6 +5394,8 @@
             const splashEl = document.getElementById('splash-screen');
             if (splashEl) splashEl.remove();
             document.body.style.overflowY = 'auto';
+            // Bersihkan semua inline style sisa GSAP agar tidak ada stacking context tersisa
+            gsap.set(SPLASH_TARGETS, { clearProps: 'all' });
 
             // Hard fallback: pastikan semua section visible
             // gunakan querySelectorAll, bukan GSAP selector
@@ -5384,17 +5407,17 @@
               el.style.opacity = '1';
               el.style.transform = 'none';
               el.style.visibility = 'visible';
+              el.style.filter = 'none';
+              el.style.willChange = 'auto';
             });
           }
         });
 
         // Fade out splash
         tl.to('#splash-screen', {
-          duration: 1,
+          duration: 0.8,
           opacity: 0,
-          scale: 1.1,
-          filter: 'blur(20px)',
-          ease: 'power3.inOut'
+          ease: 'power2.inOut'
         });
 
         // Reveal HANYA above-fold sections via GSAP
@@ -5539,7 +5562,7 @@
 
     function closeAuthModal() {
       document.getElementById('auth-modal').classList.remove('open');
-      document.body.style.overflow = '';
+      unlockScroll();
       document.getElementById('auth-err').textContent = '';
     }
 
@@ -6462,7 +6485,7 @@
 
     function closeUpgradeModal() {
       document.getElementById('upgrade-modal').classList.remove('open');
-      document.body.style.overflow = '';
+      unlockScroll();
     }
 
     function handleModalOverlayClick(e) {
@@ -6615,15 +6638,11 @@
       overlay.classList.remove('open');
       document.querySelectorAll('.radar-card').forEach(c => c.classList.remove('active'));
 
-      // JANGAN set pointerEvents via inline style — biarkan CSS yang handle
-      // Cukup hapus inline style kalau ada
-      panel.style.removeProperty('pointer-events');
-      overlay.style.removeProperty('pointer-events');
+      panel.style.pointerEvents = 'none';
+      overlay.style.pointerEvents = 'none';
 
-      // Reset overflow body — satu cara saja, konsisten
-      document.body.style.overflow = '';
+      unlockScroll();
     }
-
 
 
     function toggleRadarCard(sector, element) {

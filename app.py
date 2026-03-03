@@ -316,6 +316,13 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/sentra.png")
+@app.route("/favicon.ico")
+def favicon():
+    """Serve the favicon/logo from the root directory."""
+    return send_file("sentra.png", mimetype="image/png")
+
+
 @app.route("/api/config", methods=["GET"])
 def get_config():
     """Expose public Supabase credentials (anon key only, never service_role) to frontend."""
