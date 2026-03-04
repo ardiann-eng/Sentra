@@ -316,11 +316,9 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/sentra.png")
 @app.route("/favicon.ico")
 def favicon():
-    """Serve the favicon/logo from the root directory."""
-    return send_file("sentra.png", mimetype="image/png")
+    return send_file("static/sentra.png", mimetype="image/png")
 
 
 @app.route("/api/config", methods=["GET"])
