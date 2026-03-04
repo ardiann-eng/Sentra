@@ -1161,6 +1161,98 @@ def analyze_local_route():
     })
 
 
+# =========================
+# KEYWORD NEWS ENDPOINT
+# =========================
+_NEWS_CACHE_TTL = 30 * 60  # 30 minutes
+
+@app.route("/api/keyword-news", methods=["POST"])
+def keyword_news():
+    """
+    Fetch berita dari Google News RSS berdasarkan keyword yang dianalisis user.
+    Cache 30 menit di _mem_cache.
+    """
+    import feedparser
+    from urllib.parse import quote
+    from datetime import datetime, timezone
+
+    data = request.get_json(silent=True) or {}
+    keyword = (data.get("keyword") or "").strip()
+
+    if not keyword:
+        return jsonify({"error": "Keyword tidak boleh kosong."}), 400
+
+    # --- 30-minute cache ---
+    news_cache_key = f"gnews_{keyword.lower()}"
+    with _cache_lock:
+        entry = _mem_cache.get(news_cache_key)
+        if entry and (time.time() - entry["ts"]) < _NEWS_CACHE_TTL:
+            return jsonify({"news": entry["data"], "from_cache": True})
+
+    # --- Fetch Google News RSS ---
+    encoded_kw = quote(keyword)
+    feed_url = f"https://news.google.com/rss/search?q={encoded_kw}&hl=id&gl=ID&ceid=ID:id"
+
+    results = []
+    try:
+        feed = feedparser.parse(
+            feed_url,
+            request_headers={"User-Agent": "Mozilla/5.0 (compatible; SentraBI/2.0)"}
+        )
+
+        for entry in feed.entries[:5]:
+            time_ago = "Baru saja"
+            try:
+                published = entry.get("published_parsed") or entry.get("updated_parsed")
+                if published:
+                    pub_dt = datetime(*published[:6], tzinfo=timezone.utc)
+                    diff = datetime.now(timezone.utc) - pub_dt
+                    secs = diff.total_seconds()
+                    if secs < 3600:
+                        time_ago = f"{int(secs // 60)} menit lalu"
+                    elif secs < 86400:
+                        time_ago = f"{int(secs // 3600)} jam lalu"
+                    elif secs < 604800:
+                        time_ago = f"{int(secs // 86400)} hari lalu"
+                    else:
+                        time_ago = f"{int(secs // 604800)} minggu lalu"
+            except Exception:
+                pass
+
+            # Extract source dari field "source" Google News atau dari title
+            source = "Google News"
+            try:
+                raw_source = entry.get("source", {})
+                if isinstance(raw_source, dict):
+                    source = raw_source.get("title", "Google News")
+                elif isinstance(raw_source, str):
+                    source = raw_source
+                # Google News kadang taruh source di title setelah " - "
+                if " - " in entry.get("title", ""):
+                    parts = entry["title"].rsplit(" - ", 1)
+                    if len(parts) == 2:
+                        source = parts[1].strip()
+            except Exception:
+                pass
+
+            results.append({
+                "title": entry.get("title", "").rsplit(" - ", 1)[0].strip(),
+                "source": source,
+                "time_ago": time_ago,
+                "url": entry.get("link", "#"),
+            })
+
+    except Exception as e:
+        print(f"[KEYWORD NEWS ERROR] {e}")
+        return jsonify({"news": [], "error": str(e)})
+
+    # --- Simpan ke cache ---
+    with _cache_lock:
+        _mem_cache[news_cache_key] = {"data": results, "ts": time.time()}
+
+    return jsonify({"news": results, "from_cache": False})
+
+
 @app.route("/api/health")
 def health():
     sb_ok = get_supabase() is not None
