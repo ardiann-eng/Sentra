@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 
 <head>
@@ -1900,6 +1900,7 @@
       position: relative;
       overflow: hidden;
     }
+
     .summary-card::before {
       content: '';
       position: absolute;
@@ -1918,6 +1919,7 @@
       gap: 12px;
       margin-bottom: 20px;
     }
+
     .summary-inline-label {
       font-family: 'DM Mono', monospace;
       font-size: 11px;
@@ -1927,6 +1929,7 @@
       color: #C9A84C;
       white-space: nowrap;
     }
+
     .summary-inline-line {
       flex: 1;
       height: 1px;
@@ -1937,6 +1940,7 @@
     .summary-verdict-section {
       margin-bottom: 28px;
     }
+
     .summary-verdict-label {
       font-family: 'DM Mono', monospace;
       font-size: 9px;
@@ -1946,6 +1950,7 @@
       margin-bottom: 10px;
       opacity: 0.7;
     }
+
     .summary-verdict-content {
       display: flex;
       align-items: flex-start;
@@ -1956,6 +1961,7 @@
     .summary-badge {
       flex-shrink: 0;
     }
+
     .summary-badge-item {
       display: inline-block;
       padding: 6px 14px;
@@ -1966,21 +1972,25 @@
       letter-spacing: 1px;
       text-transform: uppercase;
     }
+
     .summary-badge-item.good {
       background: rgba(46, 204, 113, 0.12);
       border: 1px solid rgba(46, 204, 113, 0.3);
       color: var(--green);
     }
+
     .summary-badge-item.warn {
       background: rgba(241, 196, 15, 0.12);
       border: 1px solid rgba(241, 196, 15, 0.3);
       color: var(--amber);
     }
+
     .summary-badge-item.alert {
       background: rgba(230, 126, 34, 0.12);
       border: 1px solid rgba(230, 126, 34, 0.3);
       color: #e67e22;
     }
+
     .summary-badge-item.bad {
       background: rgba(231, 76, 60, 0.12);
       border: 1px solid rgba(231, 76, 60, 0.3);
@@ -1990,6 +2000,7 @@
     #summary-verdict {
       flex: 1;
     }
+
     #summary-verdict p {
       margin: 0;
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -1997,7 +2008,10 @@
       line-height: 1.6;
       color: var(--text);
     }
-    #summary-verdict strong { color: var(--gold); }
+
+    #summary-verdict strong {
+      color: var(--gold);
+    }
 
     /* Grid 3-Kolom dengan Accent Bars */
     .summary-grid {
@@ -2006,10 +2020,11 @@
       gap: 14px;
       margin-bottom: 32px;
     }
+
     .summary-item {
       background: var(--surface2);
-      border: 1px solid rgba(212,168,67,0.08);
-      border-left: 3px solid rgba(212,168,67,0.2);
+      border: 1px solid rgba(212, 168, 67, 0.08);
+      border-left: 3px solid rgba(212, 168, 67, 0.2);
       padding: 16px 18px;
       display: flex;
       flex-direction: column;
@@ -2017,34 +2032,44 @@
       transition: all 0.3s ease;
       cursor: default;
     }
+
     .summary-item:hover {
       border-left-color: rgba(201, 168, 76, 0.6);
       background: rgba(201, 168, 76, 0.05);
     }
+
     .summary-item.si-good {
       border-left-color: var(--green);
     }
+
     .summary-item.si-good:hover {
       background: rgba(46, 204, 113, 0.04);
     }
+
     .summary-item.si-warn {
       border-left-color: var(--amber);
     }
+
     .summary-item.si-warn:hover {
       background: rgba(241, 196, 15, 0.04);
     }
+
     .summary-item.si-alert {
       border-left-color: #e67e22;
     }
+
     .summary-item.si-alert:hover {
       background: rgba(230, 126, 34, 0.04);
     }
+
     .summary-item.si-bad {
       border-left-color: var(--red);
     }
+
     .summary-item.si-bad:hover {
       background: rgba(231, 76, 60, 0.04);
     }
+
     .summary-item.si-neutral {
       border-left-color: var(--text-dim);
     }
@@ -2058,6 +2083,7 @@
       color: var(--text-faint);
       opacity: 0.8;
     }
+
     .summary-item-value {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 16px;
@@ -2065,21 +2091,27 @@
       line-height: 1.4;
       color: var(--text);
     }
+
     .summary-item-value.good {
       color: var(--green);
     }
+
     .summary-item-value.warn {
       color: var(--amber);
     }
+
     .summary-item-value.alert {
       color: #e67e22;
     }
+
     .summary-item-value.bad {
       color: var(--red);
     }
+
     .summary-item-value.neutral {
       color: var(--text);
     }
+
     .summary-item-explanation {
       font-size: 11px;
       color: #9CA3AF;
@@ -2166,6 +2198,7 @@
       border: 1px solid rgba(255, 255, 255, 0.07);
       border-left: 3px solid rgba(201, 168, 76, 0.5);
     }
+
     .summary-news-label {
       font-family: 'DM Mono', monospace;
       font-size: 9px;
@@ -2175,11 +2208,13 @@
       margin-bottom: 12px;
       opacity: 0.7;
     }
+
     .summary-news-list {
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
+
     .summary-news-item {
       padding: 10px 12px;
       background: rgba(0, 0, 0, 0.2);
@@ -2188,10 +2223,12 @@
       transition: all 0.3s ease;
       cursor: pointer;
     }
+
     .summary-news-item:hover {
       border-color: rgba(201, 168, 76, 0.5);
       background: rgba(201, 168, 76, 0.05);
     }
+
     .summary-news-item-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 12px;
@@ -2200,6 +2237,7 @@
       color: var(--text);
       margin-bottom: 4px;
     }
+
     .summary-news-item-meta {
       display: flex;
       gap: 10px;
@@ -2212,9 +2250,10 @@
     .summary-action-section {
       margin-top: 28px;
       padding: 16px 18px;
-      background: rgba(212,168,67,0.04);
-      border: 1px dashed rgba(212,168,67,0.2);
+      background: rgba(212, 168, 67, 0.04);
+      border: 1px dashed rgba(212, 168, 67, 0.2);
     }
+
     .summary-hint-label {
       font-family: 'DM Mono', monospace;
       font-size: 9px;
@@ -2224,16 +2263,19 @@
       margin-bottom: 10px;
       opacity: 0.7;
     }
+
     .summary-action-hint {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 13px;
       line-height: 1.7;
       color: var(--text);
     }
+
     .summary-action-hint strong {
       color: var(--gold);
       font-weight: 600;
     }
+
     .summary-action-hint em {
       font-style: italic;
       opacity: 0.9;
@@ -2244,9 +2286,11 @@
       .summary-grid {
         grid-template-columns: repeat(2, 1fr);
       }
+
       .summary-header {
         gap: 14px;
       }
+
       .summary-card {
         padding: 24px 28px;
       }
@@ -2258,18 +2302,22 @@
         grid-template-columns: 1fr;
         gap: 12px;
       }
+
       .summary-header-icon {
         width: 40px;
         height: 40px;
         font-size: 16px;
       }
+
       .summary-title {
         font-size: 22px;
       }
+
       .summary-card {
         padding: 18px 16px;
         margin-bottom: 1px;
       }
+
       .summary-header {
         margin-bottom: 20px;
         padding-bottom: 16px;
@@ -2436,15 +2484,20 @@
     }
 
     .skeleton-line {
-      background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
       background-size: 200% 100%;
       animation: skeleton-loading 1.5s infinite;
       border-radius: 2px;
     }
 
     @keyframes skeleton-loading {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
     }
 
     @media (max-width: 680px) {
@@ -2609,6 +2662,7 @@
       gap: 24px;
       flex-wrap: wrap;
     }
+
     .ai-trigger-left {
       display: flex;
       align-items: flex-start;
@@ -2616,6 +2670,7 @@
       flex: 1;
       min-width: 0;
     }
+
     .ai-trigger-icon {
       width: 38px;
       height: 38px;
@@ -2627,6 +2682,7 @@
       font-size: 18px;
       flex-shrink: 0;
     }
+
     .ai-trigger-title {
       font-family: 'Cormorant Garamond', serif;
       font-size: 20px;
@@ -2634,11 +2690,13 @@
       color: var(--gold);
       margin-bottom: 4px;
     }
+
     .ai-trigger-desc {
       font-size: 13px;
       color: var(--text-dim);
       line-height: 1.6;
     }
+
     .ai-trigger-btn {
       display: flex;
       align-items: center;
@@ -2658,18 +2716,28 @@
       flex-shrink: 0;
       animation: btnPulse 3s infinite;
     }
+
     .ai-trigger-btn:hover {
       background: var(--gold-bright);
-      box-shadow: 0 0 30px rgba(212,168,67,.4);
+      box-shadow: 0 0 30px rgba(212, 168, 67, .4);
       transform: translateY(-1px);
     }
+
     .ai-trigger-btn:disabled {
       opacity: .5;
       cursor: not-allowed;
       animation: none;
     }
-    .ai-btn-icon { font-size: 14px; transition: transform .2s; }
-    .ai-trigger-btn:hover .ai-btn-icon { transform: translateX(4px); }
+
+    .ai-btn-icon {
+      font-size: 14px;
+      transition: transform .2s;
+    }
+
+    .ai-trigger-btn:hover .ai-btn-icon {
+      transform: translateX(4px);
+    }
+
     .ai-trigger-note {
       margin-top: 14px;
       font-family: 'DM Mono', monospace;
@@ -2685,6 +2753,7 @@
       gap: 14px;
       margin-bottom: 24px;
     }
+
     .ai-gen-icon-pulse {
       width: 34px;
       height: 34px;
@@ -2696,23 +2765,35 @@
       font-size: 16px;
       animation: aiIconSpin 2s linear infinite;
     }
+
     @keyframes aiIconSpin {
-      0%   { box-shadow: 0 0 0 0 rgba(212,168,67,0); }
-      50%  { box-shadow: 0 0 0 8px rgba(212,168,67,.15); }
-      100% { box-shadow: 0 0 0 0 rgba(212,168,67,0); }
+      0% {
+        box-shadow: 0 0 0 0 rgba(212, 168, 67, 0);
+      }
+
+      50% {
+        box-shadow: 0 0 0 8px rgba(212, 168, 67, .15);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(212, 168, 67, 0);
+      }
     }
+
     .ai-gen-title {
       font-family: 'Cormorant Garamond', serif;
       font-size: 20px;
       font-weight: 700;
       color: var(--gold);
     }
+
     .ai-gen-steps {
       display: flex;
       flex-direction: column;
       gap: 12px;
       margin-bottom: 20px;
     }
+
     .ai-gen-step {
       display: flex;
       align-items: center;
@@ -2722,7 +2803,11 @@
       color: var(--text-faint);
       transition: color .3s;
     }
-    .ai-gen-step.done { color: var(--text-dim); }
+
+    .ai-gen-step.done {
+      color: var(--text-dim);
+    }
+
     .step-dot {
       width: 8px;
       height: 8px;
@@ -2731,26 +2816,30 @@
       flex-shrink: 0;
       transition: background .3s, box-shadow .3s;
     }
+
     .step-dot.active {
       background: var(--gold);
-      box-shadow: 0 0 8px rgba(212,168,67,.6);
+      box-shadow: 0 0 8px rgba(212, 168, 67, .6);
       animation: blink 1s infinite;
     }
+
     .step-dot.done {
       background: var(--green);
       box-shadow: none;
       animation: none;
     }
+
     .ai-gen-bar-track {
       height: 3px;
-      background: rgba(212,168,67,.12);
+      background: rgba(212, 168, 67, .12);
       overflow: hidden;
     }
+
     .ai-gen-bar-fill {
       height: 100%;
       width: 0%;
       background: var(--gold);
-      box-shadow: 0 0 10px rgba(212,168,67,.6);
+      box-shadow: 0 0 10px rgba(212, 168, 67, .6);
       transition: width .4s ease;
     }
 
@@ -2769,11 +2858,23 @@
       transition: border-color .2s, color .2s, transform .3s;
       flex-shrink: 0;
     }
-    .ai-refresh-btn:hover { border-color: var(--gold); color: var(--gold); transform: rotate(180deg); }
 
-    @media(max-width:680px){
-      .ai-trigger-row { flex-direction: column; align-items: flex-start; }
-      .ai-trigger-btn { width: 100%; justify-content: center; }
+    .ai-refresh-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      transform: rotate(180deg);
+    }
+
+    @media(max-width:680px) {
+      .ai-trigger-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .ai-trigger-btn {
+        width: 100%;
+        justify-content: center;
+      }
     }
 
     /* ── COMPARE RESULTS ── */
@@ -3468,6 +3569,515 @@
       pointer-events: none !important;
     }
 
+    /* ── IDE PRODUK WIZARD OVERLAY & MODAL ── */
+    #ip-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9990;
+      background: rgba(6, 6, 5, 0.75);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s ease;
+    }
+
+    #ip-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    #ip-modal {
+      width: 100%;
+      max-width: 820px;
+      max-height: 85vh;
+      overflow-y: auto;
+      background: rgba(14, 12, 9, 0.72);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(212, 168, 67, 0.2);
+      box-shadow:
+        0 32px 80px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(212, 168, 67, 0.04) inset,
+        0 1px 0 rgba(212, 168, 67, 0.12) inset;
+      border-radius: 2px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(212, 168, 67, 0.12) transparent;
+      animation: ip-modalIn .3s cubic-bezier(.32, .72, 0, 1) both;
+    }
+
+    @keyframes ip-modalIn {
+      from { opacity: 0; transform: translateY(24px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    #ip-modal-inner {
+      padding: 48px 52px 56px;
+    }
+
+    #ip-modal::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #ip-modal::-webkit-scrollbar-thumb {
+      background: rgba(212, 168, 67, 0.12);
+    }
+
+    #ip-modal::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    @media (max-width: 768px) {
+      #ip-modal-inner {
+        padding: 36px 28px 44px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      #ip-modal-inner {
+        padding: 28px 20px 36px;
+      }
+    }
+
+    .ip-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .ip-header-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-faint);
+    }
+
+    .ip-header-close {
+      font-size: 20px;
+      color: var(--text-faint);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px 4px;
+      line-height: 1;
+    }
+
+    .ip-header-close:hover {
+      color: var(--text);
+    }
+
+    .ip-divider {
+      margin: 16px 0 32px;
+      border: 0;
+      border-top: 1px solid rgba(212, 168, 67, .1);
+    }
+
+    .ip-step-indicator {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+
+    .ip-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 56px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 52px;
+    }
+
+    .ip-cat-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 2px;
+    }
+
+    .ip-cat-card {
+      background: rgba(18, 16, 11, 0.45);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(212, 168, 67, 0.18);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(212, 168, 67, 0.08);
+      padding: 32px 18px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .25s ease;
+    }
+
+    .ip-cat-card span {
+      display: block;
+    }
+
+    .ip-cat-code {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+
+    .ip-cat-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-dim);
+    }
+
+    .ip-cat-card:hover,
+    .ip-cat-card.ip-active {
+      background: rgba(212, 168, 67, 0.06);
+      border-color: rgba(212, 168, 67, 0.45);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(212, 168, 67, 0.15);
+      transform: translateY(-3px);
+    }
+
+    .ip-modal-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 2px;
+    }
+
+    .ip-modal-card {
+      background: rgba(18, 16, 11, 0.45);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(212, 168, 67, 0.18);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(212, 168, 67, 0.08);
+      padding: 40px 36px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all .25s ease;
+    }
+
+    .ip-modal-card:hover,
+    .ip-modal-card.ip-active {
+      background: rgba(212, 168, 67, 0.06);
+      border-color: rgba(212, 168, 67, 0.45);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(212, 168, 67, 0.15);
+      transform: translateY(-3px);
+    }
+
+    .ip-modal-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .ip-modal-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .ip-modal-ket {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--text-faint);
+    }
+
+    .ip-modal-code {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 3px;
+      color: var(--gold);
+    }
+
+    .ip-result-header {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 28px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text-faint);
+    }
+
+    .ip-chip {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      padding: 4px 10px;
+      border: 1px solid var(--gold-line);
+      color: var(--gold);
+      background: rgba(212, 168, 67, .06);
+      text-transform: uppercase;
+    }
+
+    .ip-result-count {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text-faint);
+    }
+
+    .ip-card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 2px;
+    }
+
+    @media (max-width: 992px) {
+      .ip-cat-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      .ip-card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 600px) {
+      .ip-cat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .ip-card-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .ip-card {
+      background: rgba(18, 16, 11, 0.45);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(212, 168, 67, 0.18);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(212, 168, 67, 0.08);
+      padding: 28px 24px;
+      position: relative;
+      transition: all .25s ease;
+      animation: ip-fadeUp .4s ease both;
+      animation-delay: calc(var(--i) * 80ms);
+    }
+
+    .ip-card:hover {
+      background: rgba(212, 168, 67, 0.06);
+      border-color: rgba(212, 168, 67, 0.45);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(212, 168, 67, 0.15);
+      transform: translateY(-3px);
+    }
+
+    @keyframes ip-fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .ip-badge-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .ip-badge {
+      font-family: 'Syne', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border: 1px solid;
+      backdrop-filter: blur(8px);
+    }
+
+    .ip-badge-status-naik {
+      color: #22c55e;
+      border-color: rgba(34, 197, 94, .35);
+      background: rgba(34, 197, 94, .08);
+    }
+
+    .ip-badge-status-stabil {
+      color: #448AFF;
+      border-color: rgba(68, 138, 255, .35);
+      background: rgba(68, 138, 255, .08);
+    }
+
+    .ip-badge-status-turun {
+      color: #94a3b8;
+      border-color: rgba(148, 163, 184, .25);
+      background: transparent;
+    }
+
+    .ip-badge-status-jenuh {
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, .35);
+      background: rgba(239, 68, 68, .08);
+    }
+
+    .ip-badge-rec-gas {
+      color: #22c55e;
+      border-color: rgba(34, 197, 94, .35);
+      background: rgba(34, 197, 94, .08);
+    }
+
+    .ip-badge-rec-potensial {
+      color: var(--gold);
+      border-color: rgba(212, 168, 67, .35);
+      background: rgba(212, 168, 67, .08);
+    }
+
+    .ip-badge-rec-perlu-riset {
+      color: #94a3b8;
+      border-color: rgba(148, 163, 184, .25);
+      background: transparent;
+    }
+
+    .ip-badge-rec-hindari {
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, .35);
+      background: rgba(239, 68, 68, .08);
+    }
+
+    .ip-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .ip-highlight {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13px;
+      font-style: italic;
+      color: var(--text-faint);
+      line-height: 1.75;
+      margin-bottom: 20px;
+    }
+
+    .ip-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .ip-stat-label {
+      display: block;
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 4px;
+    }
+
+    .ip-stat-value {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dim);
+    }
+
+    .ip-skor-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .ip-skor-row .ip-skor-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-faint);
+    }
+
+    .ip-skor-value {
+      font-family: 'DM Mono', monospace;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .ip-skor-track {
+      height: 3px;
+      background: rgba(255, 255, 255, .06);
+      border-radius: 999px;
+      overflow: hidden;
+      backdrop-filter: blur(4px);
+    }
+
+    .ip-skor-fill {
+      height: 100%;
+      width: 0;
+      border-radius: 999px;
+      transition: width .9s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    .ip-card-footer {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text-faint);
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(212, 168, 67, 0.08);
+    }
+
+    .ip-empty {
+      padding: 48px 0;
+      text-align: center;
+    }
+
+    .ip-empty-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      color: var(--text-dim);
+    }
+
+    .ip-empty-sub {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13px;
+      color: var(--text-faint);
+      margin-top: 8px;
+    }
+
+    .ip-reset-btn {
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: rgba(212, 168, 67, 0.06);
+      border: 1px solid rgba(212, 168, 67, 0.2);
+      backdrop-filter: blur(8px);
+      padding: 12px 32px;
+      cursor: pointer;
+      margin: 40px auto 0;
+      display: block;
+      transition: all .2s ease;
+    }
+
+    .ip-reset-btn:hover {
+      background: rgba(212, 168, 67, 0.1);
+      border-color: rgba(212, 168, 67, 0.4);
+    }
+
     /* ── PANEL INTERNALS ── */
     .panel-close-btn {
       position: absolute;
@@ -3751,6 +4361,45 @@
       color: var(--text-faint);
       background: var(--surface);
       border: 1px solid var(--gold-line);
+    }
+
+    .ip-entry {
+      display: flex;
+      justify-content: center;
+      margin: 20px auto 0;
+    }
+
+    .ip-entry-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-faint);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      letter-spacing: 0.3px;
+      transition: color .2s, gap .2s;
+    }
+
+    .ip-entry-btn:hover {
+      color: var(--gold);
+      gap: 16px;
+    }
+
+    .ip-entry-arrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 16px;
+      color: var(--gold);
+      transition: transform .2s;
+      display: inline-block;
+    }
+
+    .ip-entry-btn:hover .ip-entry-arrow {
+      transform: translateX(4px);
     }
 
     .status-bar.hidden {
@@ -5063,6 +5712,10 @@
       .ai-cards-grid {
         grid-template-columns: 1fr;
       }
+
+      .ip-card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
 
     @media (max-width: 600px) {
@@ -5072,6 +5725,18 @@
 
       .wrap {
         padding: 0 12px 60px;
+      }
+
+      .ip-cat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .ip-modal-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .ip-card-grid {
+        grid-template-columns: 1fr;
       }
 
       /* Header fixes */
@@ -5254,6 +5919,7 @@
       transform: none !important;
       filter: none !important;
     }
+
     /* ── STICKY NAVBAR: SENTRA AI ── */
     .sticky-nav {
       position: fixed;
@@ -5480,6 +6146,13 @@
           </select>
           <span class="status-geo-lock" id="geo-lock" title="Upgrade ke Pro untuk analisis per-Provinsi">🔒</span>
         </div>
+      </div>
+
+      <div id="ip-entry" class="ip-entry">
+        <button class="ip-entry-btn" onclick="openIdeWizard()">
+          Tentukan produkmu
+          <span class="ip-entry-arrow">→</span>
+        </button>
       </div>
 
       <!-- COMPARE INPUTS -->
@@ -5757,39 +6430,39 @@
   </div><!-- END .wrap (howto) -->
 
   <div class="wrap" style="position:relative; z-index:1;">
-   
-  <!-- ══════════ WHITEPAPER CTA SECTION ══════════ -->
-  <section class="wp-section" id="whitepaper">
-    <div class="wrap">
-      <div class="wp-inner">
-        <div class="howto-eyebrow" style="margin-bottom:28px;">TRANSPARANSI &amp; METODOLOGI</div>
-        <h2 class="wp-heading">
-          Kami Tunjukkan Cara Kerjanya
-          <br><em class="wp-sub">Sampai ke Rumusnya</em>
-        </h2>
-        <p class="wp-desc">
-          Sentra AI merilis whitepaper terbuka yang menjelaskan metodologi, formula kalkulasi,
-          validasi akurasi, dan landasan akademis di balik setiap metrik.
-        </p>
-        <div class="wp-grid">
-          <div class="mc wp-card">         
-            <div class="wp-card-label">9 Metrik Dijelaskan</div>
+
+    <!-- ══════════ WHITEPAPER CTA SECTION ══════════ -->
+    <section class="wp-section" id="whitepaper">
+      <div class="wrap">
+        <div class="wp-inner">
+          <div class="howto-eyebrow" style="margin-bottom:28px;">TRANSPARANSI &amp; METODOLOGI</div>
+          <h2 class="wp-heading">
+            Kami Tunjukkan Cara Kerjanya
+            <br><em class="wp-sub">Sampai ke Rumusnya</em>
+          </h2>
+          <p class="wp-desc">
+            Sentra AI merilis whitepaper terbuka yang menjelaskan metodologi, formula kalkulasi,
+            validasi akurasi, dan landasan akademis di balik setiap metrik.
+          </p>
+          <div class="wp-grid">
+            <div class="mc wp-card">
+              <div class="wp-card-label">9 Metrik Dijelaskan</div>
+            </div>
+            <div class="mc wp-card">
+              <div class="wp-card-label">Akurasi 78–85%</div>
+            </div>
+            <div class="mc wp-card">
+              <div class="wp-card-label">6 Referensi Akademis</div>
+            </div>
           </div>
-          <div class="mc wp-card">
-            <div class="wp-card-label">Akurasi 78–85%</div>
-          </div>
-          <div class="mc wp-card">
-            <div class="wp-card-label">6 Referensi Akademis</div>
-          </div>
+          <a href="/static/Sentra_AI_Whitepaper.pdf" download class="wp-btn">
+            Download Whitepaper — Gratis
+          </a>
+          <div class="wp-note">PDF · 14 Halaman · Bahasa Indonesia</div>
         </div>
-        <a href="/static/Sentra_AI_Whitepaper.pdf" download class="wp-btn">
-          Download Whitepaper — Gratis
-        </a>
-        <div class="wp-note">PDF · 14 Halaman · Bahasa Indonesia</div>
       </div>
-    </div>
-  </section>
-   <!-- ══════════ RADAR PASAR SENTRA ══════════ -->
+    </section>
+    <!-- ══════════ RADAR PASAR SENTRA ══════════ -->
     <section class="radar-section" id="sector-dashboard">
 
       <!-- Header -->
@@ -6215,7 +6888,8 @@
             </div>
           </div>
           <div class="timing-info">
-            <div class="timing-lbl-sm">Entry Timing Score <span class="help-tip" tabindex="0">?<span class="tip-text">Skor
+            <div class="timing-lbl-sm">Entry Timing Score <span class="help-tip" tabindex="0">?<span
+                  class="tip-text">Skor
                   yang menunjukkan apakah SEKARANG waktu yang tepat untuk mulai jualan produk ini. 80-100 = waktu
                   terbaik!</span></span></div>
             <div id="r-timing-lbl" class="timing-lbl-big">—</div>
@@ -6321,7 +6995,8 @@
               <div class="ai-trigger-icon">✦</div>
               <div>
                 <div class="ai-trigger-title">Rekomendasi Bisnis dari Sentra AI</div>
-                <div class="ai-trigger-desc">Analisis mendalam dari Claude AI — strategi, timing, dan peluang spesifik untuk produk kamu</div>
+                <div class="ai-trigger-desc">Analisis mendalam dari Claude AI — strategi, timing, dan peluang spesifik
+                  untuk produk kamu</div>
               </div>
             </div>
             <button class="ai-trigger-btn" id="ai-trigger-btn" onclick="triggerAiInsight()">
@@ -6352,7 +7027,9 @@
               <span class="step-text">Menyusun rekomendasi bisnis...</span>
             </div>
           </div>
-          <div class="ai-gen-bar-track"><div class="ai-gen-bar-fill" id="ai-gen-bar"></div></div>
+          <div class="ai-gen-bar-track">
+            <div class="ai-gen-bar-fill" id="ai-gen-bar"></div>
+          </div>
         </div>
 
         <!-- STATE 3: Result (hidden by default) -->
@@ -6579,6 +7256,8 @@
     };
     let sb = null;
     let authMode = 'login';
+    let selectedKategori = null;
+    let selectedModalTier = null;
     let lastAnalysisResult = null; // for PDF download
     let _aiInsightGenerated = false; // flag: sudah di-generate untuk keyword ini?
 
@@ -7504,20 +8183,20 @@
       const badgeEl = document.getElementById('summary-badge');
       const score = d.entry_timing_score || 0;
       let badgeClass = '', badgeText = '';
-      if (score >= 80)      { badgeClass = 'good'; badgeText = 'Kondisi Baik'; }
+      if (score >= 80) { badgeClass = 'good'; badgeText = 'Kondisi Baik'; }
       else if (score >= 60) { badgeClass = 'warn'; badgeText = 'Perlu Persiapan'; }
       else if (score >= 40) { badgeClass = 'alert'; badgeText = 'Hati-hati'; }
-      else                  { badgeClass = 'bad'; badgeText = 'Tidak Disarankan'; }
+      else { badgeClass = 'bad'; badgeText = 'Tidak Disarankan'; }
       badgeEl.innerHTML = `<div class="summary-badge-item ${badgeClass}">${badgeText}</div>`;
 
       // ── VERDICT TEXT ──
       const verdictEl = document.getElementById('summary-verdict');
       const keyword = d.keyword || '(keyword)';
       let verdictText = '';
-      if (score >= 80)      verdictText = `Ini waktu yang <strong>bagus</strong> untuk mulai jualan <strong>${keyword}</strong>. Data menunjukkan pasar sedang tumbuh dan persaingan masih bisa ditembus.`;
+      if (score >= 80) verdictText = `Ini waktu yang <strong>bagus</strong> untuk mulai jualan <strong>${keyword}</strong>. Data menunjukkan pasar sedang tumbuh dan persaingan masih bisa ditembus.`;
       else if (score >= 60) verdictText = `Peluang untuk <strong>${keyword}</strong> cukup menjanjikan, tapi <em>perlu persiapan</em>. Pasar aktif tapi ada beberapa hal yang perlu kamu waspadai.`;
       else if (score >= 40) verdictText = `Hati-hati sebelum jual <strong>${keyword}</strong>. Kondisi pasar sedang kurang stabil. Boleh dicoba tapi dengan modal kecil dulu.`;
-      else                  verdictText = `Saat ini <em>bukan waktu terbaik</em> untuk <strong>${keyword}</strong>. Tren sedang turun atau pasar sudah terlalu penuh.`;
+      else verdictText = `Saat ini <em>bukan waktu terbaik</em> untuk <strong>${keyword}</strong>. Tren sedang turun atau pasar sudah terlalu penuh.`;
       verdictEl.innerHTML = `<p>${verdictText}</p>`;
 
       // ── 6-ITEM METRIC GRID (3-COLUMN) ──
@@ -7666,15 +8345,15 @@
       document.getElementById('ai-result-state').style.display = 'none';
 
       // Reset step indicators
-      ['gen-step-1','gen-step-2','gen-step-3'].forEach(id => {
+      ['gen-step-1', 'gen-step-2', 'gen-step-3'].forEach(id => {
         const el = document.getElementById(id);
-        if (el) { el.classList.remove('done'); el.querySelector('.step-dot').classList.remove('active','done'); }
+        if (el) { el.classList.remove('done'); el.querySelector('.step-dot').classList.remove('active', 'done'); }
       });
 
       // Animasi progress bar dan steps
       const bar = document.getElementById('ai-gen-bar');
       const steps = [
-        { id: 'gen-step-1', delay: 0,    progress: 30 },
+        { id: 'gen-step-1', delay: 0, progress: 30 },
         { id: 'gen-step-2', delay: 2000, progress: 65 },
         { id: 'gen-step-3', delay: 4000, progress: 85 },
       ];
@@ -7684,7 +8363,7 @@
         const t = setTimeout(() => {
           // Mark previous as done
           if (i > 0) {
-            const prev = document.getElementById(steps[i-1].id);
+            const prev = document.getElementById(steps[i - 1].id);
             if (prev) { prev.classList.add('done'); const dot = prev.querySelector('.step-dot'); dot.classList.remove('active'); dot.classList.add('done'); }
           }
           // Activate current
@@ -7724,13 +8403,13 @@
           renderAiCards(aiData.ai_insight);
           _aiInsightGenerated = true;
         } else {
-          ['r-ai-pasar','r-ai-aksi','r-ai-waktu'].forEach(id => {
+          ['r-ai-pasar', 'r-ai-aksi', 'r-ai-waktu'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.innerHTML = 'Insight tidak tersedia saat ini.';
           });
         }
 
-      } catch(err) {
+      } catch (err) {
         stepTimers.forEach(t => clearTimeout(t));
         document.getElementById('ai-loading-state').style.display = 'none';
         // Kembali ke trigger state dengan pesan error
@@ -8247,9 +8926,172 @@
       if (e.target === document.getElementById('upgrade-modal')) closeUpgradeModal();
     }
 
+    /* ── IDE PRODUK WIZARD ── */
+    const IP_KATEGORI = [
+      { kode: 'MKN', nama: 'Makanan', value: 'Makanan' },
+      { kode: 'MNM', nama: 'Minuman', value: 'Minuman' },
+      { kode: 'FSH', nama: 'Fashion', value: 'Fashion' },
+      { kode: 'BTY', nama: 'Kecantikan', value: 'Produk Kecantikan' },
+      { kode: 'AKS', nama: 'Aksesoris', value: 'Aksesoris' },
+      { kode: 'HMD', nama: 'Handmade', value: 'Handmade' },
+      { kode: 'DGT', nama: 'Digital', value: 'Produk Digital' },
+      { kode: 'HTG', nama: 'Rumah Tangga', value: 'Produk Rumah Tangga' },
+      { kode: 'HBI', nama: 'Hobi & Kreatif', value: 'Hobi & Kreatif' },
+      { kode: 'ANK', nama: 'Produk Anak', value: 'Produk Anak' }
+    ];
+    const IP_MODAL = [
+      { label: 'Modal Kecil', ket: 'Di bawah Rp 10 juta', kode: 'KCL', tier: 'Kecil' },
+      { label: 'Modal Menengah', ket: 'Rp 10 – 50 juta', kode: 'MNG', tier: 'Menengah' },
+      { label: 'Modal Besar', ket: 'Di atas Rp 50 juta', kode: 'BSR', tier: 'Besar' }
+    ];
+
+    function openIdeWizard() {
+      document.getElementById('ip-overlay').classList.add('open');
+      document.getElementById('ip-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+      renderIdeState(1);
+    }
+
+    function closeIdeWizard() {
+      document.getElementById('ip-overlay').classList.remove('open');
+      document.getElementById('ip-modal').classList.remove('open');
+      document.body.style.removeProperty('overflow');
+    }
+
+    function resetIdeWizard() {
+      selectedKategori = null;
+      selectedModalTier = null;
+      renderIdeState(1);
+    }
+
+    function ipHeaderHtml() {
+      return '<div class="ip-header"><span class="ip-header-label">SENTRA · IDE PRODUK</span><button type="button" class="ip-header-close" onclick="closeIdeWizard()">&times;</button></div><hr class="ip-divider">';
+    }
+
+    function renderIdeState(step, data) {
+      const inner = document.getElementById('ip-modal-inner');
+      if (!inner) return;
+      let body = '';
+      if (step === 1) {
+        body = '<div class="ip-step-indicator">01 / 02</div><h2 class="ip-title">Kategori mana yang ingin kamu masuki?</h2><div class="ip-cat-grid">' +
+          IP_KATEGORI.map(k => '<div class="ip-cat-card' + (selectedKategori === k.value ? ' ip-active' : '') + '" onclick="handleKategoriSelect(\'' + k.value.replace(/'/g, "\\'") + '\')"><span class="ip-cat-code">' + k.kode + '</span><span class="ip-cat-name">' + k.nama + '</span></div>').join('') +
+          '</div>';
+      } else if (step === 2) {
+        body = '<div class="ip-step-indicator">02 / 02</div><h2 class="ip-title">Berapa modal yang siap kamu alokasikan?</h2><div class="ip-modal-grid">' +
+          IP_MODAL.map(m => '<div class="ip-modal-card' + (selectedModalTier === m.tier ? ' ip-active' : '') + '" onclick="handleModalSelect(\'' + m.tier + '\')"><div class="ip-modal-left"><span class="ip-modal-label">' + m.label + '</span><span class="ip-modal-ket">' + m.ket + '</span></div><span class="ip-modal-code">' + m.kode + '</span></div>').join('') +
+          '</div>';
+      } else if (step === 3) {
+        body = '<div class="ai-gen-header"><div class="ai-gen-icon-pulse">&#10022;</div><div class="ai-gen-title">Sentra memindai database...</div></div><div class="ai-gen-steps">' +
+          '<div class="ai-gen-step" id="ip-gen-step-1"><span class="step-dot active"></span><span class="step-text">Memfilter berdasarkan kategori & modal...</span></div>' +
+          '<div class="ai-gen-step" id="ip-gen-step-2"><span class="step-dot"></span><span class="step-text">Menghitung skor peluang...</span></div>' +
+          '<div class="ai-gen-step" id="ip-gen-step-3"><span class="step-dot"></span><span class="step-text">Menyiapkan rekomendasi terbaik...</span></div></div>' +
+          '<div class="ai-gen-bar-track"><div class="ai-gen-bar-fill" id="ip-gen-bar"></div></div>';
+      } else if (step === 4) {
+        const list = data && data.length ? data : [];
+        const catLabel = selectedKategori || '';
+        const tierLabel = selectedModalTier || '';
+        body = '<div class="ip-result-header"><span class="ip-chip">' + catLabel + '</span><span class="ip-chip">' + tierLabel + '</span><span class="ip-result-count">· ' + list.length + ' ide ditemukan</span></div>';
+        if (list.length === 0) {
+          body += '<div class="ip-empty"><p class="ip-empty-title">Belum ada data untuk kombinasi ini.</p><p class="ip-empty-sub">Coba kategori atau modal yang berbeda.</p><button type="button" class="ip-reset-btn" onclick="resetIdeWizard()">Cari dengan kriteria lain</button></div>';
+        } else {
+          body += '<div class="ip-card-grid">' + list.map((row, i) => {
+            const status = (row.status_pasar || '').toLowerCase().replace(/\s/g, '-');
+            const rec = (row.rekomendasi || '').toLowerCase().replace(/\s/g, '-');
+            const statusClass = status ? 'ip-badge-status-' + status : '';
+            const recClass = rec ? 'ip-badge-rec-' + rec : '';
+            const skor = Number(row.skor_peluang) || 0;
+            const fillColor = skor > 75 ? '#22c55e' : skor > 50 ? 'var(--gold)' : '#ef4444';
+            return '<div class="ip-card" style="--i: ' + i + '"><div class="ip-badge-row"><span class="ip-badge ' + statusClass + '">' + (row.status_pasar || '—') + '</span><span class="ip-badge ' + recClass + '">' + (row.rekomendasi || '—') + '</span></div><div class="ip-name">' + (row.nama_produk || '—') + '</div><div class="ip-highlight">' + (row.highlight || '—') + '</div><div class="ip-stats-grid"><div><span class="ip-stat-label">Tren</span><span class="ip-stat-value">' + (row.tren_persen != null ? row.tren_persen + '%' : '—') + '</span></div><div><span class="ip-stat-label">Margin</span><span class="ip-stat-value">' + (row.margin_persen != null ? row.margin_persen + '%' : '—') + '</span></div><div><span class="ip-stat-label">Kompetisi</span><span class="ip-stat-value">' + (row.kompetisi || '—') + '</span></div><div><span class="ip-stat-label">Target</span><span class="ip-stat-value">' + (row.target || '—') + '</span></div></div><div class="ip-skor-row"><span class="ip-skor-label">Skor peluang</span><span class="ip-skor-value">' + skor + '</span></div><div class="ip-skor-track"><div class="ip-skor-fill" id="ip-skor-fill-' + i + '" style="width:0;background:' + fillColor + '"></div></div><div class="ip-card-footer">Rp ' + (row.modal_min_juta != null ? row.modal_min_juta : '—') + ' – ' + (row.modal_max_juta != null ? row.modal_max_juta : '—') + ' juta  ·  ' + (row.puncak_penjualan || '—') + '</div></div>';
+          }).join('') + '</div><button type="button" class="ip-reset-btn" onclick="resetIdeWizard()">Cari dengan kriteria lain</button>';
+        }
+      }
+      inner.innerHTML = ipHeaderHtml() + body;
+      if (step === 3) startIdeLoadingAnim();
+      if (step === 4 && data && data.length) {
+        requestAnimationFrame(() => {
+          data.forEach((row, i) => {
+            const el = document.getElementById('ip-skor-fill-' + i);
+            if (el) {
+              const skor = Math.min(100, Math.max(0, Number(row.skor_peluang) || 0));
+              el.style.width = skor + '%';
+            }
+          });
+        });
+      }
+    }
+
+    function startIdeLoadingAnim() {
+      const bar = document.getElementById('ip-gen-bar');
+      const steps = [
+        { id: 'ip-gen-step-1', delay: 0, progress: 30 },
+        { id: 'ip-gen-step-2', delay: 700, progress: 65 },
+        { id: 'ip-gen-step-3', delay: 1400, progress: 85 }
+      ];
+      steps.forEach((s, i) => {
+        setTimeout(() => {
+          if (i > 0) {
+            const prev = document.getElementById(steps[i - 1].id);
+            if (prev) { prev.classList.add('done'); const dot = prev.querySelector('.step-dot'); if (dot) { dot.classList.remove('active'); dot.classList.add('done'); } }
+          }
+          const cur = document.getElementById(s.id);
+          if (cur) { const dot = cur.querySelector('.step-dot'); if (dot) dot.classList.add('active'); }
+          if (bar) bar.style.width = s.progress + '%';
+        }, s.delay);
+      });
+      setTimeout(() => {
+        steps.forEach(s => {
+          const el = document.getElementById(s.id);
+          if (el) { el.classList.add('done'); const dot = el.querySelector('.step-dot'); if (dot) { dot.classList.remove('active'); dot.classList.add('done'); } }
+        });
+        if (bar) bar.style.width = '100%';
+      }, 2100);
+    }
+
+    function handleKategoriSelect(supabaseValue) {
+      selectedKategori = supabaseValue;
+      setTimeout(() => renderIdeState(2), 350);
+    }
+
+    function handleModalSelect(tier) {
+      selectedModalTier = tier;
+      renderIdeState(3);
+      fetchIdeProduk();
+    }
+
+    async function fetchIdeProduk() {
+      const inner = document.getElementById('ip-modal-inner');
+      const start = Date.now();
+      let data = [];
+      let err = null;
+      try {
+        const url = '/api/ide-produk?kategori=' + encodeURIComponent(selectedKategori || '') + '&modal_tier=' + encodeURIComponent(selectedModalTier || '');
+        const res = await fetch(url);
+        const json = await res.json();
+        data = json.data || [];
+        if (!res.ok) err = json.error || res.statusText;
+      } catch (e) {
+        err = e.message || 'Gagal memuat data';
+      }
+      const elapsed = Date.now() - start;
+      const remaining = Math.max(0, 2000 - elapsed);
+      setTimeout(() => {
+        if (err && inner) {
+          const msg = (err && err.length > 300) ? err.slice(0, 300) + '…' : (err || 'Gagal memuat data. Coba lagi.');
+          inner.innerHTML = ipHeaderHtml() + '<p class="ip-empty-title" style="padding:24px 0; max-width:520px; margin:0 auto;">' + msg + '</p><button type="button" class="ip-reset-btn" onclick="resetIdeWizard()">Cari dengan kriteria lain</button>';
+        } else {
+          renderIdeState(4, data);
+        }
+      }, remaining);
+    }
+
     // Close modal on Escape key — unified handler (radar panel takes priority if open)
     document.addEventListener('keydown', e => {
       if (e.key !== 'Escape') return;
+      const ipModal = document.getElementById('ip-modal');
+      if (ipModal && ipModal.classList.contains('open')) {
+        closeIdeWizard();
+        return;
+      }
       const panel = document.getElementById('radar-float-panel');
       if (panel && panel.classList.contains('open')) {
         closeRadarPanel();
@@ -8583,17 +9425,17 @@
         "coba: camilan sehat anak"
       ];
 
-      const TYPING_SPEED    = 55;   // ms per karakter saat mengetik
-      const DELETING_SPEED  = 28;   // ms per karakter saat menghapus
-      const PAUSE_FULL      = 2200; // jeda setelah teks penuh sebelum dihapus
-      const PAUSE_EMPTY     = 400;  // jeda setelah teks terhapus sebelum teks berikutnya
+      const TYPING_SPEED = 55;   // ms per karakter saat mengetik
+      const DELETING_SPEED = 28;   // ms per karakter saat menghapus
+      const PAUSE_FULL = 2200; // jeda setelah teks penuh sebelum dihapus
+      const PAUSE_EMPTY = 400;  // jeda setelah teks terhapus sebelum teks berikutnya
 
       // Semua state disimpan dalam closure — tidak ada variabel global
       let currentIndex = 0;
-      let charIndex    = 0;
-      let isDeleting   = false;
-      let isPaused     = false;
-      let timeoutId    = null;
+      let charIndex = 0;
+      let isDeleting = false;
+      let isPaused = false;
+      let timeoutId = null;
 
       function tick() {
         if (isPaused) return;
@@ -8635,18 +9477,16 @@
         input.placeholder = '';
       });
 
-      // Mulai kembali saat blur dan value kosong — resume dari item berikutnya
       input.addEventListener('blur', function () {
         if (input.value === '') {
           isPaused = false;
           currentIndex = (currentIndex + 1) % phrases.length;
-          charIndex    = 0;
-          isDeleting   = false;
-          timeoutId    = setTimeout(tick, PAUSE_EMPTY);
+          charIndex = 0;
+          isDeleting = false;
+          timeoutId = setTimeout(tick, PAUSE_EMPTY);
         }
       });
 
-      // Mulai animasi pertama kali
       timeoutId = setTimeout(tick, PAUSE_EMPTY);
     }
 
@@ -8654,7 +9494,11 @@
 
 
   </script>
-  <!-- â•â•â•â•â•â•â•â•â•â• RADAR OVERLAY & FLOATING PANEL â•â•â•â•â•â•â•â•â•â• -->
+  <div id="ip-overlay" onclick="closeIdeWizard()">
+    <div id="ip-modal" onclick="event.stopPropagation()">
+      <div id="ip-modal-inner"></div>
+    </div>
+  </div>
   <div id="radar-overlay" onclick="closeRadarPanel()"></div>
   <div id="radar-float-panel"></div>
 

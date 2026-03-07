@@ -143,8 +143,8 @@ def get_supabase():
     global _supabase_client
     if _supabase_client is not None:
         return _supabase_client
-    url = os.environ.get("SUPABASE_URL", "")
-    key = os.environ.get("SUPABASE_KEY", "")
+    url = (os.environ.get("SUPABASE_URL") or "").strip()
+    key = (os.environ.get("SUPABASE_KEY") or os.environ.get("SUPABASE_ANON_KEY") or "").strip()
     if not url or not key:
         return None
     try:
@@ -321,12 +321,72 @@ def favicon():
     return send_file("static/sentra.png", mimetype="image/png")
 
 
+def _map_ide_produk_row(row):
+    """Map kolom tabel ide_produk (nama dengan spasi) ke format frontend (snake_case)."""
+    def get(*keys):
+        for k in keys:
+            if k in row and row[k] is not None:
+                return row[k]
+        return None
+    return {
+        "nama_produk": get("Nama Produk", "nama produk"),
+        "kategori": get("Kategori", "kategori"),
+        "modal_tier": get("Modal Tier", "modal tier"),
+        "modal_min_juta": get("Modal Min (Juta)", "modal min (juta)"),
+        "modal_max_juta": get("Modal Max (Juta)", "modal max (juta)"),
+        "tren_persen": get("Tren (%)", "tren (%)"),
+        "status_pasar": get("Status Pasar", "status pasar"),
+        "puncak_penjualan": get("Puncak Penjualan", "puncak penjualan"),
+        "kompetisi": get("Kompetisi", "kompetisi"),
+        "margin_persen": get("Margin (%)", "margin (%)"),
+        "target": get("Target Pasar", "target pasar"),
+        "highlight": get("Highlight Analisis", "highlight analisis"),
+        "skor_peluang": get("Skor Peluang", "skor peluang"),
+        "rekomendasi": get("Rekomendasi", "rekomendasi"),
+    }
+
+
+@app.route("/api/ide-produk", methods=["GET"])
+def api_ide_produk():
+    """Return ide_produk rows for wizard: ?kategori=...&modal_tier=..."""
+    kategori = (request.args.get("kategori") or "").strip()
+    modal_tier = (request.args.get("modal_tier") or "").strip()
+    if not kategori or not modal_tier:
+        return jsonify({"error": "kategori dan modal_tier wajib", "data": []}), 400
+    sb = get_supabase()
+    if not sb:
+        return jsonify({"error": "Koneksi database tidak tersedia", "data": []}), 503
+    try:
+        # Kolom di DB bisa "Kategori" atau "kategori" (PG lowercase jika tanpa quote)
+        res = (
+            sb.table("ide_produk")
+            .select("*")
+            .eq("Kategori", kategori)
+            .eq("Modal Tier", modal_tier)
+            .order("Skor Peluang", desc=True)
+            .limit(6)
+            .execute()
+        )
+        raw = list(res.data) if res.data else []
+        data = [_map_ide_produk_row(r) for r in raw]
+        return jsonify({"data": data})
+    except Exception as e:
+        msg = str(e)
+        if "does not exist" in msg or "relation" in msg.lower() or "column" in msg.lower():
+            msg = "Tabel/kolom ide_produk tidak cocok. Pastikan kolom: Kategori, Modal Tier, Skor Peluang, Nama Produk, dll."
+        elif "RLS" in msg or "policy" in msg.lower():
+            msg = "Akses ditolak (RLS). Aktifkan SELECT untuk anon di tabel ide_produk."
+        return jsonify({"error": msg, "data": []}), 500
+
+
 @app.route("/api/config", methods=["GET"])
 def get_config():
     """Expose public Supabase credentials (anon key only, never service_role) to frontend."""
+    url = (os.environ.get("SUPABASE_URL") or "").strip()
+    anon_key = (os.environ.get("SUPABASE_ANON_KEY") or os.environ.get("SUPABASE_KEY") or "").strip()
     return jsonify({
-        "supabase_url":      os.environ.get("SUPABASE_URL", ""),
-        "supabase_anon_key": os.environ.get("SUPABASE_ANON_KEY", ""),
+        "supabase_url":      url,
+        "supabase_anon_key": anon_key,
     })
 
 
