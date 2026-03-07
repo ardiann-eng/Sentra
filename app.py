@@ -850,7 +850,7 @@ def _build_pdf(data: dict) -> io.BytesIO:
     story.append(Spacer(1, 0.6*cm))
     story.append(HRFlowable(width="100%", thickness=0.5, color=GRAY))
     story.append(Spacer(1, 0.15*cm))
-    story.append(Paragraph("Sentra BI v2.0 — Powered by Google Trends & Gemini AI", label_style))
+    story.append(Paragraph("Sentra BI v2.0 — Powered by Google Trends & Claude AI", label_style))
 
     doc.build(story)
     buf.seek(0)
@@ -1032,7 +1032,7 @@ def generate_sector_ai_signal(sector: str, static_data: dict, news_items: list) 
     Generate 1-sentence actionable insight (max 20 words) based on:
     - Sector static data (growth, stage)
     - News headlines
-    Return empty string if Gemini fails or too slow.
+    Return empty string if Claude fails or too slow.
     """
     try:
         growth = static_data.get("yoy_growth", 0)
@@ -1047,7 +1047,7 @@ Berita: {headlines if headlines else 'N/A'}
 Buat HANYA 1 kalimat actionable insight dalam Bahasa Indonesia (max 20 kata).
 Insight:"""
 
-        # Pass to AI engine - will fail gracefully if Gemini is slow/unavailable
+        # Pass to AI engine - will fail gracefully if Claude is slow/unavailable
         insight = generate_ai_insight({
             "keyword": f"{sector} insight",
             "context": prompt,
@@ -1254,7 +1254,7 @@ def keyword_news():
 @app.route("/api/health")
 def health():
     sb_ok = get_supabase() is not None
-    return jsonify({"status": "ok", "version": "2.0", "supabase": sb_ok})
+    return jsonify({"status": "ok", "version": "2.0", "supabase": sb_ok, "claude": bool(os.environ.get("ANTHROPIC_API_KEY"))})
 
 
 if __name__ == "__main__":

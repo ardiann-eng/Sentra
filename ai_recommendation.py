@@ -1,127 +1,129 @@
 """
-Sentra BI v2.0 — AI Recommendation Engine (google-genai SDK)
+Sentra BI v2.0 — AI Recommendation Engine (Claude API / Anthropic)
 """
 import os
-import time
-from google import genai
-from google.genai import types
+import requests
 
 
 def generate_ai_insight(data: dict) -> str:
-    api_key = os.environ.get("GEMINI_API_KEY")
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
-        return "⚠ GEMINI_API_KEY belum dikonfigurasi."
+        return "⚠ ANTHROPIC_API_KEY belum dikonfigurasi."
 
-    client = genai.Client(api_key=api_key)
     prompt = _build_prompt(data)
 
-    models_to_try = [
-        "gemini-2.5-flash",
-        "gemini-2.0-flash",
-        "gemini-1.5-flash",
-    ]
+    try:
+        response = requests.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={
+                "x-api-key": api_key,
+                "anthropic-version": "2023-06-01",
+                "content-type": "application/json",
+            },
+            json={
+                "model": "claude-haiku-4-5-20251001",
+                "max_tokens": 1024,
+                "messages": [{"role": "user", "content": prompt}],
+            },
+            timeout=45,
+        )
 
-    for model_name in models_to_try:
-        for attempt in range(2):
-            try:
-                print(f"[AI] Mencoba: {model_name} (attempt {attempt+1})")
-                response = client.models.generate_content(
-                    model=model_name,
-                    contents=prompt,
-                )
-                text = response.text.strip()
-                if text:
-                    print(f"[AI] Berhasil: {model_name}")
-                    return text
-            except Exception as e:
-                err = str(e)
-                print(f"[AI ERROR] {model_name}: {type(e).__name__}: {e}")
+        if response.status_code != 200:
+            print(f"[AI ERROR] Claude API status {response.status_code}: {response.text[:300]}")
+            return f"⚠ Claude AI error (HTTP {response.status_code}). Coba lagi nanti."
 
-                if "429" in err or "quota" in err.lower() or "ResourceExhausted" in type(e).__name__:
-                    # Parse retry delay dari error message
-                    retry_sec = 40
-                    try:
-                        import re
-                        match = re.search(r'retry_delay\s*\{\s*seconds:\s*(\d+)', err)
-                        if match:
-                            retry_sec = int(match.group(1)) + 2
-                    except Exception:
-                        pass
+        text = response.json()["content"][0]["text"].strip()
+        if text:
+            print("[AI] Berhasil: claude-haiku-4-5-20251001")
+            return text
 
-                    if attempt == 0 and retry_sec <= 45:
-                        print(f"[AI] Quota 429, tunggu {retry_sec}s lalu retry...")
-                        time.sleep(retry_sec)
-                        continue
-                    else:
-                        # Kuota model ini habis, coba model berikutnya
-                        print(f"[AI] Skip ke model berikutnya (retry terlalu lama)")
-                        break
+        return "⚠ Claude AI mengembalikan respons kosong. Coba lagi."
 
-                elif "404" in err or "not found" in err.lower():
-                    # Model tidak tersedia, langsung skip
-                    break
-
-                elif attempt == 0:
-                    time.sleep(2)
-                    continue
-                else:
-                    break
-
-    return "⚠ Kuota AI harian habis. Hasil analisis data di atas tetap akurat. Coba lagi besok atau upgrade ke Gemini API berbayar."
+    except requests.exceptions.Timeout:
+        print("[AI ERROR] Claude API timeout (45s)")
+        return "⚠ Gagal menghubungi Claude AI (timeout). Coba lagi."
+    except Exception as e:
+        print(f"[AI ERROR] {type(e).__name__}: {e}")
+        return "⚠ Gagal menghubungi Claude AI. Coba lagi."
 
 
 def generate_compare_insight(compare_data: dict) -> str:
-    api_key = os.environ.get("GEMINI_API_KEY")
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         return "⚠ AI Insight tidak tersedia."
 
-    client = genai.Client(api_key=api_key)
     prompt = _build_compare_prompt(compare_data)
 
-    for model_name in ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]:
-        try:
-            print(f"[AI COMPARE] Mencoba: {model_name}")
-            response = client.models.generate_content(
-                model=model_name,
-                contents=prompt,
-            )
-            text = response.text.strip()
-            if text:
-                return text
-        except Exception as e:
-            print(f"[AI COMPARE ERROR] {model_name}: {e}")
-            if "429" in str(e):
-                time.sleep(5)
-            continue
+    try:
+        response = requests.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={
+                "x-api-key": api_key,
+                "anthropic-version": "2023-06-01",
+                "content-type": "application/json",
+            },
+            json={
+                "model": "claude-haiku-4-5-20251001",
+                "max_tokens": 1024,
+                "messages": [{"role": "user", "content": prompt}],
+            },
+            timeout=45,
+        )
 
-    return "⚠ AI Compare Insight tidak tersedia saat ini."
+        if response.status_code != 200:
+            print(f"[AI COMPARE ERROR] Claude API status {response.status_code}: {response.text[:300]}")
+            return "⚠ AI Compare Insight tidak tersedia saat ini."
+
+        text = response.json()["content"][0]["text"].strip()
+        if text:
+            return text
+
+        return "⚠ AI Compare Insight tidak tersedia saat ini."
+
+    except Exception as e:
+        print(f"[AI COMPARE ERROR] {type(e).__name__}: {e}")
+        return "⚠ AI Compare Insight tidak tersedia saat ini."
 
 
 def generate_local_insight(keyword: str, regional_data: list) -> str:
-    api_key = os.environ.get("GEMINI_API_KEY")
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         return "⚠ AI Local Insight tidak tersedia."
 
     if not regional_data:
         return "Tidak ada data regional yang cukup untuk dianalisis."
 
-    client = genai.Client(api_key=api_key)
     prompt = _build_local_prompt(keyword, regional_data)
 
-    for model_name in ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]:
-        try:
-            response = client.models.generate_content(
-                model=model_name,
-                contents=prompt,
-            )
-            return response.text.strip()
-        except Exception as e:
-            print(f"[AI LOCAL ERROR] {model_name}: {e}")
-            if "429" in str(e):
-                time.sleep(3)
-            continue
+    try:
+        response = requests.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={
+                "x-api-key": api_key,
+                "anthropic-version": "2023-06-01",
+                "content-type": "application/json",
+            },
+            json={
+                "model": "claude-haiku-4-5-20251001",
+                "max_tokens": 1024,
+                "messages": [{"role": "user", "content": prompt}],
+            },
+            timeout=45,
+        )
 
-    return "⚠ Strategi lokal tidak dapat dimuat saat ini."
+        if response.status_code != 200:
+            print(f"[AI LOCAL ERROR] Claude API status {response.status_code}: {response.text[:300]}")
+            return "Strategi lokal tidak dapat dimuat saat ini."
+
+        text = response.json()["content"][0]["text"].strip()
+        if text:
+            return text
+
+        return "Strategi lokal tidak dapat dimuat saat ini."
+
+    except Exception as e:
+        print(f"[AI LOCAL ERROR] {type(e).__name__}: {e}")
+        return "Strategi lokal tidak dapat dimuat saat ini."
 
 
 def _format_seasonality(data: dict) -> str:
@@ -155,35 +157,37 @@ def _build_prompt(data: dict) -> str:
     timing_label   = data.get('entry_timing_label', 'N/A')
     seasonality_str = _format_seasonality(data)
 
-    return f"""Kamu adalah konsultan bisnis yang membantu pemilik UMKM dan orang yang baru mau mulai usaha. Gaya bicaramu santai tapi tetap profesional.
+    return f"""Kamu adalah analis pasar senior Sentra BI. Tulis insight bisnis dalam Bahasa Indonesia — 
+nada profesional, langsung ke poin, tanpa basa-basi pembuka.
 
-Data analisis tren dari Sentra BI v2.0:
+═══ DATA PASAR: {data.get('keyword', 'N/A').upper()} ═══
+Fase          : {data.get('lifecycle_stage', 'N/A')} | Risiko: {data.get('risk_level', 'N/A')}
+Growth 7 hari : {growth_pct} | Momentum: {momentum_str}
+Volatilitas   : {volatility_pct} | Market Pulse: {data.get('market_pulse_score', 'N/A')}/100
+FOMO Index    : {fomo:.2f} ({fomo_label}) | Saturasi: {saturation:.1f} ({sat_label})
+Entry Timing  : {timing_score}/100 — {timing_label}
+Forecast 30hr : {forecast_str}
+Musiman       : {seasonality_str}
 
-KEYWORD          : {data.get('keyword', 'N/A')}
-Growth (7 hari)  : {growth_pct}
-Momentum         : {momentum_str}
-Volatilitas      : {volatility_pct}
-Fase tren        : {data.get('lifecycle_stage', 'N/A')}
-FOMO Index       : {fomo:.2f} — {fomo_label}
-Saturasi         : {saturation:.1f} ({sat_label})
-Tingkat risiko   : {data.get('risk_level', 'N/A')}
-Market Pulse     : {data.get('market_pulse_score', 'N/A')}/100
-Forecast 30 hr   : {forecast_str}
-Musiman?         : {seasonality_str}
-Entry Timing     : {timing_score}/100 — {timing_label}
+Tulis analisis dengan TEPAT 3 bagian berikut:
 
-Tulis analisis dalam Bahasa Indonesia dengan 3 bagian:
+**1. Kondisi Pasar**
+3 kalimat. Baca data secara holistik — sebutkan fase, arah momentum, dan apakah 
+permintaan ini organik atau hype sesaat berdasarkan FOMO Index.
 
-1. Kondisi Pasar Saat Ini
-Ceritakan kondisi tren dalam 3-4 kalimat. Jelaskan apakah tren sedang panas, stabil, atau meredup. Singgung FOMO index dan apakah ini tren organik atau hype sesaat.
+**2. Rekomendasi Aksi**
+Tepat 3 rekomendasi. Setiap rekomendasi: 1 kalimat aksi spesifik + 1 kalimat alasan 
+dari data. Mulai tiap poin dengan kata kerja (Fokuskan, Manfaatkan, Hindari, dst).
 
-2. Peluang & Rekomendasi untuk UMKM  
-Berikan 3 rekomendasi konkret yang bisa langsung dijalankan. Tiap rekomendasi 2-3 kalimat.
+**3. Timing & Keputusan**
+2 kalimat. Berikan keputusan tegas: apakah sekarang waktu masuk, tunggu, atau hindari — 
+berdasarkan Entry Timing Score {timing_score}/100 dan fase {data.get('lifecycle_stage', 'N/A')}.
 
-3. Kapan Harus Action?
-Dalam 2-3 kalimat, jelaskan rekomendasi timing berdasarkan Entry Timing Score ({timing_score}/100).
-
-Panjang total: 220-300 kata."""
+ATURAN:
+- Total 180-220 kata (lebih singkat = lebih baik)
+- Tidak ada kalimat pembuka seperti "Berikut analisis saya..."
+- Sebut angka spesifik dari data, bukan generik
+- Gunakan format bold untuk heading tiap bagian"""
 
 
 def _build_compare_prompt(compare_data: dict) -> str:

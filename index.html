@@ -3958,6 +3958,115 @@
       margin-right: 6px;
     }
 
+    /* ── WHITEPAPER CTA SECTION ── */
+    .wp-section {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--gold-line);
+      background: var(--bg);
+    }
+
+    .wp-inner {
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
+    .wp-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .wp-sub {
+      color: var(--gold);
+      font-style: italic;
+    }
+
+    .wp-desc {
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.8;
+      max-width: 560px;
+      margin: 0 auto 40px;
+    }
+
+    .wp-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      margin-bottom: 40px;
+    }
+
+    .wp-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 28px 20px;
+      text-align: center;
+    }
+
+    .wp-card-icon {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .wp-card-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--text);
+    }
+
+    .wp-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 40px;
+      background: var(--gold);
+      color: #0A0A08;
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: background .2s, box-shadow .2s;
+      margin-bottom: 16px;
+    }
+
+    .wp-btn:hover {
+      background: var(--gold-bright);
+      box-shadow: 0 0 30px rgba(212, 168, 67, .35);
+    }
+
+    .wp-note {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-faint);
+    }
+
+    @media (max-width: 680px) {
+      .wp-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .wp-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
     /* ── PRICING SECTION ── */
     .pricing-section {
       padding: 72px 0 56px;
@@ -5499,7 +5608,39 @@
   </div><!-- END .wrap (howto) -->
 
   <div class="wrap" style="position:relative; z-index:1;">
-    <!-- ══════════ RADAR PASAR SENTRA ══════════ -->
+   
+  <!-- ══════════ WHITEPAPER CTA SECTION ══════════ -->
+  <section class="wp-section" id="whitepaper">
+    <div class="wrap">
+      <div class="wp-inner">
+        <div class="howto-eyebrow" style="margin-bottom:28px;">TRANSPARANSI &amp; METODOLOGI</div>
+        <h2 class="wp-heading">
+          Kami Tunjukkan Cara Kerjanya
+          <br><em class="wp-sub">Sampai ke Rumusnya</em>
+        </h2>
+        <p class="wp-desc">
+          Sentra AI merilis whitepaper terbuka yang menjelaskan metodologi, formula kalkulasi,
+          validasi akurasi, dan landasan akademis di balik setiap metrik.
+        </p>
+        <div class="wp-grid">
+          <div class="mc wp-card">         
+            <div class="wp-card-label">9 Metrik Dijelaskan</div>
+          </div>
+          <div class="mc wp-card">
+            <div class="wp-card-label">Akurasi 78–85%</div>
+          </div>
+          <div class="mc wp-card">
+            <div class="wp-card-label">6 Referensi Akademis</div>
+          </div>
+        </div>
+        <a href="/static/Sentra_AI_Whitepaper.pdf" download class="wp-btn">
+          Download Whitepaper — Gratis
+        </a>
+        <div class="wp-note">PDF · 14 Halaman · Bahasa Indonesia</div>
+      </div>
+    </div>
+  </section>
+   <!-- ══════════ RADAR PASAR SENTRA ══════════ -->
     <section class="radar-section" id="sector-dashboard">
 
       <!-- Header -->
@@ -6031,7 +6172,7 @@
               <div class="ai-trigger-icon">✦</div>
               <div>
                 <div class="ai-trigger-title">Rekomendasi Bisnis dari Sentra AI</div>
-                <div class="ai-trigger-desc">Analisis mendalam dari Gemini AI — strategi, timing, dan peluang spesifik untuk produk kamu</div>
+                <div class="ai-trigger-desc">Analisis mendalam dari Claude AI — strategi, timing, dan peluang spesifik untuk produk kamu</div>
               </div>
             </div>
             <button class="ai-trigger-btn" id="ai-trigger-btn" onclick="triggerAiInsight()">
@@ -6039,7 +6180,7 @@
               <span class="ai-btn-icon">→</span>
             </button>
           </div>
-          <div class="ai-trigger-note">✦ Membutuhkan koneksi ke Gemini AI · Gratis untuk semua user</div>
+          <div class="ai-trigger-note">✦ Membutuhkan koneksi ke Claude AI · Gratis untuk semua user</div>
         </div>
 
         <!-- STATE 2: Loading (hidden by default) -->
@@ -6148,6 +6289,7 @@
   </div><!-- end .wrap (results) -->
 
   </div><!-- /wrap -->
+
 
   <!-- ══════════ PRICING SECTION ══════════ -->
   <div class="wrap">
@@ -6342,7 +6484,7 @@
             // Hard fallback: pastikan semua section visible
             // gunakan querySelectorAll, bukan GSAP selector
             document.querySelectorAll(
-              'header, .hero, .howto-section, .radar-section, ' +
+              'header, .hero, .howto-section, .radar-section, .wp-section, ' +
               '.social-proof-section, #market-snapshot, .pricing-section, ' +
               '#results, #compare-results'
             ).forEach(el => {
@@ -8210,6 +8352,91 @@
       initRadarHeadlines();
       initSparklines();
     }
+
+    // ── ANIMATED TYPING PLACEHOLDER ──
+    function initTypingPlaceholder() {
+      const input = document.getElementById('kw');
+      if (!input) return;
+
+      const phrases = [
+        "coba: sepatu sneakers lokal",
+        "coba: kue kering lebaran",
+        "coba: skincare vitamin c",
+        "coba: tas rajut handmade",
+        "coba: kopi arabika kemasan",
+        "coba: baju gamis modern",
+        "coba: lilin aromaterapi",
+        "coba: camilan sehat anak"
+      ];
+
+      const TYPING_SPEED    = 55;   // ms per karakter saat mengetik
+      const DELETING_SPEED  = 28;   // ms per karakter saat menghapus
+      const PAUSE_FULL      = 2200; // jeda setelah teks penuh sebelum dihapus
+      const PAUSE_EMPTY     = 400;  // jeda setelah teks terhapus sebelum teks berikutnya
+
+      // Semua state disimpan dalam closure — tidak ada variabel global
+      let currentIndex = 0;
+      let charIndex    = 0;
+      let isDeleting   = false;
+      let isPaused     = false;
+      let timeoutId    = null;
+
+      function tick() {
+        if (isPaused) return;
+
+        const phrase = phrases[currentIndex];
+
+        if (!isDeleting) {
+          // Fase mengetik: tambah satu karakter
+          charIndex++;
+          input.placeholder = phrase.slice(0, charIndex);
+
+          if (charIndex === phrase.length) {
+            // Teks penuh — jeda sebelum mulai menghapus
+            isDeleting = true;
+            timeoutId = setTimeout(tick, PAUSE_FULL);
+          } else {
+            timeoutId = setTimeout(tick, TYPING_SPEED);
+          }
+        } else {
+          // Fase menghapus: kurangi satu karakter
+          charIndex--;
+          input.placeholder = phrase.slice(0, charIndex);
+
+          if (charIndex === 0) {
+            // Teks habis — pindah ke item berikutnya lalu jeda
+            isDeleting = false;
+            currentIndex = (currentIndex + 1) % phrases.length;
+            timeoutId = setTimeout(tick, PAUSE_EMPTY);
+          } else {
+            timeoutId = setTimeout(tick, DELETING_SPEED);
+          }
+        }
+      }
+
+      // Berhenti total saat input mendapat fokus
+      input.addEventListener('focus', function () {
+        isPaused = true;
+        clearTimeout(timeoutId);
+        input.placeholder = '';
+      });
+
+      // Mulai kembali saat blur dan value kosong — resume dari item berikutnya
+      input.addEventListener('blur', function () {
+        if (input.value === '') {
+          isPaused = false;
+          currentIndex = (currentIndex + 1) % phrases.length;
+          charIndex    = 0;
+          isDeleting   = false;
+          timeoutId    = setTimeout(tick, PAUSE_EMPTY);
+        }
+      });
+
+      // Mulai animasi pertama kali
+      timeoutId = setTimeout(tick, PAUSE_EMPTY);
+    }
+
+    initTypingPlaceholder();
 
 
   </script>
