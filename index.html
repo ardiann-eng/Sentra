@@ -5254,10 +5254,159 @@
       transform: none !important;
       filter: none !important;
     }
+    /* ── STICKY NAVBAR: SENTRA AI ── */
+    .sticky-nav {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      transform: translate(-50%, -18px);
+      width: min(1120px, calc(100% - 28px));
+      z-index: 12000;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: transform .35s ease, opacity .35s ease, visibility .35s ease;
+    }
+
+    .sticky-nav.visible {
+      transform: translate(-50%, 0);
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .sticky-nav-inner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(10, 10, 8, 0.56);
+      border: 1px solid rgba(212, 168, 67, 0.24);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .sticky-nav-logo {
+      border: none;
+      background: transparent;
+      color: var(--gold);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .sticky-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .sticky-nav-link {
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-dim);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 9px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: color .2s ease, border-color .2s ease, background .2s ease;
+    }
+
+    .sticky-nav-link:hover {
+      color: var(--text);
+      border-color: rgba(212, 168, 67, 0.2);
+      background: rgba(212, 168, 67, 0.07);
+    }
+
+    .sticky-nav-link.active {
+      color: var(--gold);
+      border-color: rgba(212, 168, 67, 0.3);
+      background: rgba(212, 168, 67, 0.12);
+    }
+
+    .sticky-nav-cta {
+      border: 1px solid var(--gold);
+      background: linear-gradient(180deg, #E0B95A 0%, #D4A843 100%);
+      color: #0A0A08;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      padding: 10px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset;
+    }
+
+    .sticky-nav-cta:hover {
+      background: var(--gold-bright);
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 640px) {
+      .sticky-nav {
+        top: 10px;
+        width: calc(100% - 16px);
+      }
+
+      .sticky-nav-inner {
+        padding: 8px;
+        gap: 6px;
+      }
+
+      .sticky-nav-logo {
+        font-size: 17px;
+        letter-spacing: 3px;
+        padding: 7px 9px;
+      }
+
+      .sticky-nav-link {
+        font-size: 11px;
+        padding: 8px 10px;
+      }
+
+      .sticky-nav-link.hide-mobile {
+        display: none;
+      }
+
+      .sticky-nav-cta {
+        font-size: 10px;
+        padding: 9px 12px;
+      }
+    }
   </style>
 </head>
 
 <body>
+
+  <nav class="sticky-nav" id="sticky-nav" aria-label="Sticky Navigation Sentra AI">
+    <div class="sticky-nav-inner">
+      <button class="sticky-nav-logo" data-target="top">SENTRA</button>
+      <div class="sticky-nav-links">
+        <button class="sticky-nav-link" data-target="kw"><i class="fa-solid fa-magnifying-glass"></i>Analisis</button>
+        <button class="sticky-nav-link hide-mobile" data-target="how-to-use">Cara Kerja</button>
+        <button class="sticky-nav-link hide-mobile" data-target="sector-dashboard">Radar Pasar</button>
+        <button class="sticky-nav-link hide-mobile" data-target="whitepaper">Whitepaper</button>
+      </div>
+      <button class="sticky-nav-cta" data-target="kw">Upgrade ke Pro</button>
+    </div>
+  </nav>
 
   <!-- ══════════ AI SPLASH SCREEN ══════════ -->
   <div id="splash-screen">
@@ -6733,6 +6882,71 @@
     // Tetap panggil setelah splash selesai
     setTimeout(initHomepageSections, 2600);
 
+
+    // ── STICKY NAVBAR LOGIC ──
+    const STICKY_SCROLL_SHOW = 320;
+    const STICKY_OFFSET = 80;
+    const stickyNav = document.getElementById('sticky-nav');
+    const stickyNavButtons = stickyNav ? Array.from(stickyNav.querySelectorAll('[data-target]')) : [];
+    const stickySectionIds = ['kw', 'how-to-use', 'sector-dashboard', 'whitepaper', 'pricing'];
+
+    function scrollWithOffsetTo(targetId) {
+      if (targetId === 'top') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      const el = document.getElementById(targetId);
+      if (!el) return;
+
+      const top = window.pageYOffset + el.getBoundingClientRect().top - STICKY_OFFSET;
+      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+
+      if (targetId === 'kw') {
+        setTimeout(() => el.focus(), 420);
+      }
+    }
+
+    function updateStickyVisibility() {
+      if (!stickyNav) return;
+      if (window.scrollY > STICKY_SCROLL_SHOW) stickyNav.classList.add('visible');
+      else stickyNav.classList.remove('visible');
+    }
+
+    function updateStickyActiveLink() {
+      if (!stickyNavButtons.length) return;
+
+      const viewportProbe = window.scrollY + STICKY_OFFSET + 120;
+      let activeId = 'kw';
+
+      for (const id of stickySectionIds) {
+        const section = document.getElementById(id);
+        if (!section) continue;
+        if (section.offsetTop <= viewportProbe) activeId = id;
+      }
+
+      stickyNavButtons.forEach(btn => {
+        const target = btn.getAttribute('data-target');
+        const shouldActive = target === activeId || (activeId === 'kw' && target === 'kw');
+        btn.classList.toggle('active', !!shouldActive && btn.classList.contains('sticky-nav-link'));
+      });
+    }
+
+    function handleStickyScroll() {
+      updateStickyVisibility();
+      updateStickyActiveLink();
+    }
+
+    stickyNavButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-target');
+        scrollWithOffsetTo(target);
+      });
+    });
+
+    window.addEventListener('scroll', handleStickyScroll);
+    window.addEventListener('resize', updateStickyActiveLink);
+    handleStickyScroll();
 
     document.getElementById('kw').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
     document.getElementById('kw-a').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('kw-b').focus(); });

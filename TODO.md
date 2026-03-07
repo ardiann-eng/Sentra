@@ -1,30 +1,11 @@
-# Sentra AI — Migrasi Gemini → Claude API
+# TODO — Sticky Navbar Sentra AI
 
-## Tasks
-
-- [x] **Task 1**: Rewrite `ai_recommendation.py` — Replace Gemini SDK with Claude API (Anthropic)
-  - Replaced `google.genai` imports with `requests`
-  - All 3 functions (`generate_ai_insight`, `generate_compare_insight`, `generate_local_insight`) now call `https://api.anthropic.com/v1/messages`
-  - Model: `claude-haiku-4-5-20251001`
-  - Headers: `x-api-key`, `anthropic-version: 2023-06-01`
-  - Timeout: 45s
-  - All prompts (`_build_prompt`, `_build_compare_prompt`, `_build_local_prompt`) preserved exactly
-  - All helper functions preserved (`_format_seasonality`)
-
-- [x] **Task 2**: Update `app.py`
-  - PDF footer: "Gemini AI" → "Claude AI"
-  - Comments: "Gemini" → "Claude"
-  - `/api/health` endpoint: `"gemini"` → `"claude": bool(os.environ.get("ANTHROPIC_API_KEY"))`
-
-- [x] **Task 3**: Update `index.html`
-  - "Analisis mendalam dari Gemini AI" → "Analisis mendalam dari Claude AI"
-  - "Membutuhkan koneksi ke Gemini AI" → "Membutuhkan koneksi ke Claude AI"
-
-- [x] **Task 4**: Update `requirements.txt`
-  - Removed: `google-genai>=0.8.0`
-  - Added: `requests>=2.31.0`
-
-## Verification
-- [x] No remaining "Gemini" references in `.py` files
-- [x] No remaining "Gemini" references in `.html` files
-- [x] No `google-genai` in `requirements.txt`
+- [x] Tambah CSS navbar glassmorphism sticky (desktop + mobile behavior)
+- [x] Tambah HTML komponen navbar sesuai urutan item
+- [x] Tambah JavaScript behavior:
+  - [x] Hidden on load
+  - [x] Show slide-down setelah scroll > 320px
+  - [x] Smooth scroll dengan offset 80px
+  - [x] Focus `#kw` untuk Analisis/CTA
+  - [x] Active link highlight berdasarkan section viewport
+- [x] Uji integrasi cepat (struktur & potensi bentrok style/script)
