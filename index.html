@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 
 <head>
@@ -1425,6 +1425,168 @@
       color: var(--text-dim)
     }
 
+    /* ── ANALISIS TEKNIKAL TOGGLE ── */
+    .tech-toggle-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 20px;
+      margin: 24px 0 14px;
+      border-radius: 8px;
+      background: rgba(201, 168, 76, 0.08);
+      border: 1px solid rgba(201, 168, 76, 0.25);
+      cursor: pointer;
+      transition: background .2s ease, border-color .2s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+    .tech-toggle-card:hover {
+      background: rgba(201, 168, 76, 0.14);
+      border-color: rgba(201, 168, 76, 0.4);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .tech-toggle-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .tech-toggle-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #C9A84C;
+    }
+
+    .tech-toggle-subtitle {
+      font-size: 12px;
+      color: #6B7280;
+    }
+
+    .tech-toggle-btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid rgba(201, 168, 76, 0.4);
+      background: rgba(201, 168, 76, 0.15);
+      color: #C9A84C;
+      font-size: 12px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600;
+      letter-spacing: .5px;
+      cursor: pointer;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background .2s ease, border-color .2s ease;
+    }
+
+    .tech-toggle-card:hover .tech-toggle-btn {
+      background: rgba(201, 168, 76, 0.25);
+      border-color: rgba(201, 168, 76, 0.5);
+    }
+
+    .tech-section {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transform-origin: top;
+      transition: max-height .3s ease, opacity .3s ease;
+    }
+
+    .tech-section.open {
+      max-height: 4000px;
+      opacity: 1;
+    }
+
+    /* ── TEKNIKAL DETAIL LAYOUT ── */
+    .mc-tech-main {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .mc-tech-main .mc-val {
+      margin-bottom: 0;
+    }
+
+    .mc-spark {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .mc-spark .sparkline-canvas {
+      width: 100% !important;
+      height: 32px;
+    }
+
+    .metric-range {
+      margin-top: 8px;
+      width: 100%;
+    }
+
+    .metric-range-track {
+      position: relative;
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(55, 65, 81, 0.85);
+      overflow: hidden;
+    }
+
+    .metric-range-thumb {
+      position: absolute;
+      top: 50%;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #F5F5F5;
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.9), 0 0 10px rgba(0, 0, 0, 0.45);
+      transform: translate(-50%, -50%);
+      transition: left .3s ease;
+    }
+
+    .metric-range-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 4px;
+      font-size: 10px;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .metric-range-track.momentum {
+      background: linear-gradient(90deg, #EF4444, #EAB308, #22C55E);
+    }
+
+    .metric-range-track.volatility {
+      background: linear-gradient(90deg, #22C55E, #EAB308, #EF4444);
+    }
+
+    .metric-range-track.fomo {
+      background: linear-gradient(90deg, #22C55E, #EAB308, #EF4444);
+    }
+
+    .metric-range-track.saturation {
+      background: linear-gradient(90deg, #22C55E, #EAB308, #EF4444);
+    }
+
+    @media (max-width: 640px) {
+      .tech-toggle-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .tech-toggle-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
     /* ── TOOLTIP ── */
     .help-tip {
       display: inline-flex;
@@ -1510,18 +1672,24 @@
     }
 
     .pulse-track {
-      height: 5px;
-      background: var(--text-faint);
-      border-radius: 3px;
-      margin: 12px 0 8px;
+      position: relative;
+      height: 10px;
+      background: linear-gradient(90deg, #EF4444, #EAB308, #22C55E);
+      border-radius: 999px;
+      margin: 12px 0 10px;
       overflow: hidden
     }
 
     .pulse-fill {
-      height: 100%;
-      border-radius: 3px;
-      width: 0%;
-      transition: width 1.3s cubic-bezier(.4, 0, .2, 1)
+      position: absolute;
+      top: 50%;
+      width: 2px;
+      height: 18px;
+      border-radius: 999px;
+      background: #F5F5F5;
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.9), 0 0 12px rgba(0, 0, 0, 0.45);
+      transform: translate(-50%, -50%);
+      transition: left .3s ease;
     }
 
     .pulse-nums {
@@ -1724,9 +1892,9 @@
     .summary-card {
       background: var(--glass);
       backdrop-filter: var(--blur);
-      border: 1px solid var(--glass-border);
-      border-top: 2px solid var(--blue);
-      padding: 32px 36px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-top: 1px solid rgba(201, 168, 76, 0.6);
+      padding: 28px 30px;
       margin-bottom: 2px;
       animation: up .5s ease;
       position: relative;
@@ -1737,52 +1905,32 @@
       position: absolute;
       top: 0;
       right: -20%;
-      width: 300px;
-      height: 300px;
-      background: radial-gradient(circle, rgba(68, 138, 255, 0.03), transparent);
+      width: 260px;
+      height: 260px;
+      background: radial-gradient(circle, rgba(201, 168, 76, 0.10), transparent);
       pointer-events: none;
     }
 
-    /* Header dengan Font Awesome icon */
+    /* Header compact inline */
     .summary-header {
       display: flex;
-      align-items: flex-start;
-      gap: 20px;
-      margin-bottom: 28px;
-      padding-bottom: 22px;
-      border-bottom: 1px solid var(--gold-line);
-    }
-    .summary-header-icon {
-      width: 48px;
-      height: 48px;
-      min-width: 48px;
-      display: flex;
       align-items: center;
-      justify-content: center;
-      border: 2px solid var(--gold);
-      border-radius: 0;
-      font-size: 20px;
-      color: var(--gold);
+      gap: 12px;
+      margin-bottom: 20px;
     }
-    .summary-header-text {
-      flex: 1;
-      min-width: 0;
-    }
-    .summary-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.2;
-      margin-bottom: 6px;
-    }
-    .summary-subtitle {
+    .summary-inline-label {
       font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      color: var(--text-faint);
-      letter-spacing: 1.5px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
       text-transform: uppercase;
-      opacity: 0.8;
+      color: #C9A84C;
+      white-space: nowrap;
+    }
+    .summary-inline-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(201, 168, 76, 0.2), transparent);
     }
 
     /* Verdict Section dengan Terminal Prefix */
@@ -1856,7 +2004,7 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 14px;
-      margin-bottom: 28px;
+      margin-bottom: 32px;
     }
     .summary-item {
       background: var(--surface2);
@@ -1870,8 +2018,8 @@
       cursor: default;
     }
     .summary-item:hover {
-      border-left-color: var(--blue);
-      background: rgba(68, 138, 255, 0.04);
+      border-left-color: rgba(201, 168, 76, 0.6);
+      background: rgba(201, 168, 76, 0.05);
     }
     .summary-item.si-good {
       border-left-color: var(--green);
@@ -1934,18 +2082,89 @@
     }
     .summary-item-explanation {
       font-size: 11px;
-      color: var(--text-dim);
+      color: #9CA3AF;
       line-height: 1.5;
       font-weight: 400;
+    }
+
+    /* Metric main row: value + status */
+    .summary-item-main {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 2px;
+      flex-wrap: wrap;
+    }
+
+    .summary-item-status {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .status-good {
+      color: #22C55E;
+    }
+
+    .status-warn {
+      color: #EAB308;
+    }
+
+    .status-bad {
+      color: #EF4444;
+    }
+
+    /* Gauge bar under metric value */
+    .summary-item-gauge {
+      margin-top: 4px;
+    }
+
+    .summary-metric-gauge-track {
+      position: relative;
+      width: 100%;
+      height: 4px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    .summary-metric-gauge-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 99px;
+      transition: width 0.8s ease;
+    }
+
+    .summary-metric-gauge-fill.status-good {
+      background: #22C55E;
+    }
+
+    .summary-metric-gauge-fill.status-warn {
+      background: #EAB308;
+    }
+
+    .summary-metric-gauge-fill.status-bad {
+      background: #EF4444;
+    }
+
+    /* Divider between metrics and news */
+    .summary-divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(201, 168, 76, 0.2), transparent);
+      margin: 24px 0;
     }
 
     /* News Section */
     .summary-news-section {
       margin-bottom: 28px;
       padding: 16px 18px;
-      background: rgba(68, 138, 255, 0.04);
-      border: 1px solid rgba(68, 138, 255, 0.1);
-      border-left: 3px solid var(--blue);
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-left: 3px solid rgba(201, 168, 76, 0.5);
     }
     .summary-news-label {
       font-family: 'DM Mono', monospace;
@@ -1970,8 +2189,8 @@
       cursor: pointer;
     }
     .summary-news-item:hover {
-      border-color: var(--blue);
-      background: rgba(68, 138, 255, 0.08);
+      border-color: rgba(201, 168, 76, 0.5);
+      background: rgba(201, 168, 76, 0.05);
     }
     .summary-news-item-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -2060,9 +2279,9 @@
 
     /* ── SUMMARY NEWS SECTION ── */
     .summary-news-section {
-      margin-top: 20px;
+      margin-top: 8px;
       padding-top: 20px;
-      border-top: 1px solid rgba(212, 168, 67, 0.1);
+      border-top: 1px solid rgba(201, 168, 76, 0.1);
     }
 
     .summary-news-header {
@@ -2140,8 +2359,8 @@
     .news-item-num {
       font-family: 'DM Mono', monospace;
       font-size: 10px;
-      color: var(--gold-dim);
-      opacity: 0.4;
+      color: #C9A84C;
+      opacity: 0.7;
       flex-shrink: 0;
       margin-top: 2px;
       user-select: none;
@@ -5578,117 +5797,176 @@
         <span id="r-risk" class="risk-badge"></span>
       </div>
 
-      <div class="g3">
-        <div class="mc">
-          <div class="mc-lbl">Growth 7 Hari <span class="help-tip" tabindex="0">?<span class="tip-text">Mengukur
-                kenaikan atau penurunan minat orang terhadap produk ini dalam 7 hari terakhir.</span></span></div>
-          <div id="r-growth" class="mc-val neu">—</div>
-          <div class="mc-sub">perubahan minat</div>
+      <div class="tech-toggle-card" id="tech-toggle-card" onclick="toggleTechnicalSection()">
+        <div class="tech-toggle-left">
+          <div class="tech-toggle-title">Analisis Teknikal Lengkap</div>
+          <div class="tech-toggle-subtitle">Untuk pengguna yang ingin memahami data di balik analisis ini</div>
         </div>
-        <div class="mc">
-          <div class="mc-lbl">Momentum <span class="help-tip" tabindex="0">?<span class="tip-text">Arah pergerakan
-                tren:
-                apakah minat sedang naik atau turun secara konsisten.</span></span></div>
-          <div id="r-mom" class="mc-val neu">—</div>
-          <div class="mc-sub">arah tren</div>
-        </div>
-        <div class="mc">
-          <div class="mc-lbl">Volatilitas <span class="help-tip" tabindex="0">?<span class="tip-text">Seberapa stabil
-                minat terhadap produk ini. Angka tinggi = naik-turun tidak menentu, berisiko.</span></span></div>
-          <div id="r-vol" class="mc-val neu">—</div>
-          <div class="mc-sub">fluktuasi pasar</div>
-        </div>
+        <button type="button" class="tech-toggle-btn" id="tech-toggle-btn" aria-expanded="false">
+          Lihat Analisis Teknikal Lengkap ↓
+        </button>
       </div>
 
-      <div class="g2">
-        <div class="mc">
-          <div class="mc-lbl">FOMO Index <span class="help-tip" tabindex="0">?<span class="tip-text">Mengukur seberapa
-                viral produk ini akibat ikut-ikutan (hype). Angka tinggi = bisa jadi tren sesaat, bukan minat
-                asli.</span></span></div>
-          <div id="r-fomo" class="mc-val neu">—</div>
-          <div id="r-fomo-l" class="mc-sub">—</div>
-        </div>
-        <div class="mc">
-          <div class="mc-lbl">Saturasi Pasar <span class="help-tip" tabindex="0">?<span class="tip-text">Seberapa
-                penuh
-                pasar dengan penjual produk ini. Angka tinggi = sudah banyak pesaing, sulit bersaing.</span></span>
+      <div id="tech-section" class="tech-section">
+        <div class="g3">
+          <div class="mc">
+            <div class="mc-lbl">Growth 7 Hari <span class="help-tip" tabindex="0">?<span class="tip-text">Mengukur
+                  kenaikan atau penurunan minat orang terhadap produk ini dalam 7 hari terakhir.</span></span></div>
+            <div class="mc-tech-main">
+              <div id="r-growth" class="mc-val neu">—</div>
+              <div class="mc-spark">
+                <canvas id="growth-spark" class="sparkline-canvas" width="120" height="32"></canvas>
+              </div>
+            </div>
+            <div class="mc-sub">perubahan minat</div>
           </div>
-          <div id="r-sat" class="mc-val neu">—</div>
-          <div id="r-sat-l" class="mc-sub">—</div>
-        </div>
-      </div>
-
-      <div class="pulse-card">
-        <div class="mc-lbl">Market Pulse Score <span class="help-tip" tabindex="0">?<span class="tip-text">Skor
-              kesehatan pasar secara keseluruhan. Makin tinggi = pasar makin aktif dan menjanjikan.</span></span>
-        </div>
-        <div class="pulse-track">
-          <div id="r-pulse-fill" class="pulse-fill"></div>
-        </div>
-        <div class="pulse-nums"><span>0</span><span id="r-pulse" style="color:var(--gold)">—</span><span>100</span>
-        </div>
-      </div>
-
-      <div class="timing-card">
-        <div class="ring-wrap">
-          <svg width="96" height="96" viewBox="0 0 96 96">
-            <circle class="ring-bg" cx="48" cy="48" r="40" />
-            <circle id="r-ring" class="ring-fg" cx="48" cy="48" r="40" stroke-dasharray="251.33"
-              stroke-dashoffset="251.33" />
-          </svg>
-          <div class="ring-center">
-            <div id="r-ring-num" class="ring-num">—</div>
-            <div class="ring-denom">/100</div>
+          <div class="mc">
+            <div class="mc-lbl">Momentum <span class="help-tip" tabindex="0">?<span class="tip-text">Arah pergerakan
+                  tren:
+                  apakah minat sedang naik atau turun secara konsisten.</span></span></div>
+            <div class="mc-tech-main">
+              <div id="r-mom" class="mc-val neu">—</div>
+              <div class="metric-range">
+                <div class="metric-range-track momentum">
+                  <div id="mom-thumb" class="metric-range-thumb"></div>
+                </div>
+                <div class="metric-range-labels">
+                  <span>-2</span>
+                  <span>0</span>
+                  <span>+2</span>
+                </div>
+              </div>
+            </div>
+            <div class="mc-sub">arah tren</div>
+          </div>
+          <div class="mc">
+            <div class="mc-lbl">Volatilitas <span class="help-tip" tabindex="0">?<span class="tip-text">Seberapa stabil
+                  minat terhadap produk ini. Angka tinggi = naik-turun tidak menentu, berisiko.</span></span></div>
+            <div class="mc-tech-main">
+              <div id="r-vol" class="mc-val neu">—</div>
+              <div class="metric-range">
+                <div class="metric-range-track volatility">
+                  <div id="vol-thumb" class="metric-range-thumb"></div>
+                </div>
+                <div class="metric-range-labels">
+                  <span>Rendah</span>
+                  <span>Sedang</span>
+                  <span>Tinggi</span>
+                </div>
+              </div>
+            </div>
+            <div class="mc-sub">fluktuasi pasar</div>
           </div>
         </div>
-        <div class="timing-info">
-          <div class="timing-lbl-sm">Entry Timing Score <span class="help-tip" tabindex="0">?<span class="tip-text">Skor
-                yang menunjukkan apakah SEKARANG waktu yang tepat untuk mulai jualan produk ini. 80-100 = waktu
-                terbaik!</span></span></div>
-          <div id="r-timing-lbl" class="timing-lbl-big">—</div>
-          <div id="r-timing-desc" class="timing-desc">—</div>
-        </div>
-      </div>
 
-      <div class="fc-card">
-        <div class="fc-head">
-          <div class="fc-lbl">Prediksi 30 Hari ke Depan</div>
-          <div id="r-fc-val" class="fc-val">—</div>
-        </div>
-        <div class="fc-bar-track">
-          <div id="r-fc-bar" class="fc-bar-fill"></div>
-        </div>
-        <div class="fc-conf"><span>Tingkat keyakinan forecast</span><span id="r-fc-conf">—</span></div>
-      </div>
-
-      <!-- Trend chart -->
-      <div class="trend-chart-card">
-        <div class="trend-chart-head">
-          <div class="mc-lbl">Tren Minat — 3 Bulan Terakhir</div>
-          <div id="r-trend-range" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-faint)">
+        <div class="g2">
+          <div class="mc">
+            <div class="mc-lbl">FOMO Index <span class="help-tip" tabindex="0">?<span class="tip-text">Mengukur seberapa
+                  viral produk ini akibat ikut-ikutan (hype). Angka tinggi = bisa jadi tren sesaat, bukan minat
+                  asli.</span></span></div>
+            <div class="mc-tech-main">
+              <div id="r-fomo" class="mc-val neu">—</div>
+              <div class="metric-range">
+                <div class="metric-range-track fomo">
+                  <div id="fomo-thumb" class="metric-range-thumb"></div>
+                </div>
+                <div class="metric-range-labels">
+                  <span>Organik</span>
+                  <span>Waspada</span>
+                  <span>Hype</span>
+                </div>
+              </div>
+            </div>
+            <div id="r-fomo-l" class="mc-sub">—</div>
+          </div>
+          <div class="mc">
+            <div class="mc-lbl">Saturasi Pasar <span class="help-tip" tabindex="0">?<span class="tip-text">Seberapa
+                  penuh
+                  pasar dengan penjual produk ini. Angka tinggi = sudah banyak pesaing, sulit bersaing.</span></span>
+            </div>
+            <div class="mc-tech-main">
+              <div id="r-sat" class="mc-val neu">—</div>
+              <div class="metric-range">
+                <div class="metric-range-track saturation">
+                  <div id="sat-thumb" class="metric-range-thumb"></div>
+                </div>
+                <div class="metric-range-labels">
+                  <span>Terbuka</span>
+                  <span>Moderat</span>
+                  <span>Jenuh</span>
+                </div>
+              </div>
+            </div>
+            <div id="r-sat-l" class="mc-sub">—</div>
           </div>
         </div>
-        <div class="trend-chart-wrap">
-          <canvas id="single-chart"></canvas>
-        </div>
-      </div>
 
-      <div class="season-card">
-        <div class="mc-lbl" style="margin-bottom:10px">Pola Musiman</div>
-        <div id="r-season-txt" class="season-txt"></div>
-        <div id="r-months" class="month-chips"></div>
+        <div class="pulse-card">
+          <div class="mc-lbl">Market Pulse Score <span class="help-tip" tabindex="0">?<span class="tip-text">Skor
+                kesehatan pasar secara keseluruhan. Makin tinggi = pasar makin aktif dan menjanjikan.</span></span>
+          </div>
+          <div class="pulse-track">
+            <div id="r-pulse-fill" class="pulse-fill"></div>
+          </div>
+          <div class="pulse-nums"><span>0</span><span id="r-pulse" style="color:var(--gold)">—</span><span>100</span>
+          </div>
+        </div>
+
+        <div class="timing-card">
+          <div class="ring-wrap">
+            <svg width="96" height="96" viewBox="0 0 96 96">
+              <circle class="ring-bg" cx="48" cy="48" r="40" />
+              <circle id="r-ring" class="ring-fg" cx="48" cy="48" r="40" stroke-dasharray="251.33"
+                stroke-dashoffset="251.33" />
+            </svg>
+            <div class="ring-center">
+              <div id="r-ring-num" class="ring-num">—</div>
+              <div class="ring-denom">/100</div>
+            </div>
+          </div>
+          <div class="timing-info">
+            <div class="timing-lbl-sm">Entry Timing Score <span class="help-tip" tabindex="0">?<span class="tip-text">Skor
+                  yang menunjukkan apakah SEKARANG waktu yang tepat untuk mulai jualan produk ini. 80-100 = waktu
+                  terbaik!</span></span></div>
+            <div id="r-timing-lbl" class="timing-lbl-big">—</div>
+            <div id="r-timing-desc" class="timing-desc">—</div>
+          </div>
+        </div>
+
+        <div class="fc-card">
+          <div class="fc-head">
+            <div class="fc-lbl">Prediksi 30 Hari ke Depan</div>
+            <div id="r-fc-val" class="fc-val">—</div>
+          </div>
+          <div class="fc-bar-track">
+            <div id="r-fc-bar" class="fc-bar-fill"></div>
+          </div>
+          <div class="fc-conf"><span>Tingkat keyakinan forecast</span><span id="r-fc-conf">—</span></div>
+        </div>
+
+        <!-- Trend chart -->
+        <div class="trend-chart-card">
+          <div class="trend-chart-head">
+            <div class="mc-lbl">Tren Minat — 3 Bulan Terakhir</div>
+            <div id="r-trend-range" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-faint)">
+            </div>
+          </div>
+          <div class="trend-chart-wrap">
+            <canvas id="single-chart"></canvas>
+          </div>
+        </div>
+
+        <div class="season-card">
+          <div class="mc-lbl" style="margin-bottom:10px">Pola Musiman</div>
+          <div id="r-season-txt" class="season-txt"></div>
+          <div id="r-months" class="month-chips"></div>
+        </div>
       </div>
 
       <div class="summary-card" id="summary-card" style="display:none;">
-        <!-- Header dengan Font Awesome icon -->
         <div class="summary-header">
-          <div class="summary-header-icon">
-            <i class="fa-solid fa-chart-simple"></i>
-          </div>
-          <div class="summary-header-text">
-            <div class="summary-title">Ringkasan Analisis</div>
-            <div class="summary-subtitle">Penjelasan hasil analisis dalam bahasa sederhana</div>
-          </div>
+          <div class="summary-inline-label">// RINGKASAN ANALISIS</div>
+          <div class="summary-inline-line"></div>
         </div>
 
         <!-- Verdict Section dengan Terminal Prefix -->
@@ -5702,6 +5980,8 @@
 
         <!-- Grid 3 Kolom dengan Accent Bars -->
         <div class="summary-grid" id="summary-grid"></div>
+
+        <div class="summary-divider"></div>
 
         <!-- Berita Section -->
         <div class="summary-news-section" id="summary-news-section" style="display:none;">
@@ -6386,14 +6666,17 @@
     }
 
     function renderPulse(score) {
-      const v = Math.max(0, Math.min(100, score));
-      const c = v >= 65 ? 'var(--green)' : v >= 40 ? 'var(--gold)' : 'var(--red)';
-      const f = document.getElementById('r-pulse-fill');
-      f.style.background = `linear-gradient(90deg,${c}66,${c})`;
-      f.style.boxShadow = `0 0 10px ${c}`;
-      setTimeout(() => f.style.width = v + '%', 60);
+      const v = Math.max(0, Math.min(100, score || 0));
+      const marker = document.getElementById('r-pulse-fill');
+      if (marker) {
+        marker.style.left = v + '%';
+      }
       const el = document.getElementById('r-pulse');
-      el.textContent = v.toFixed(1) + ' / 100'; el.style.color = c;
+      if (el) {
+        const c = v >= 65 ? 'var(--green)' : v >= 40 ? 'var(--gold)' : 'var(--red)';
+        el.textContent = v.toFixed(1) + ' / 100';
+        el.style.color = c;
+      }
     }
 
     function renderRing(score) {
@@ -6429,6 +6712,78 @@
         el.textContent += text[i++];
         if (i >= text.length) { clearInterval(t); el.classList.remove('typing'); }
       }, speed);
+    }
+
+    // ── ANALISIS TEKNIKAL: TOGGLE & DETAIL ──
+    let _techSectionOpen = false;
+
+    function setTechnicalToggleState(isOpen) {
+      const section = document.getElementById('tech-section');
+      const btn = document.getElementById('tech-toggle-btn');
+      _techSectionOpen = !!isOpen;
+
+      if (section) {
+        if (isOpen) {
+          section.classList.add('open');
+        } else {
+          section.classList.remove('open');
+        }
+      }
+
+      if (btn) {
+        btn.textContent = isOpen
+          ? '📊 Sembunyikan Analisis Teknikal ↑'
+          : '📊 Lihat Analisis Teknikal Lengkap ↓';
+        btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      }
+    }
+
+    function toggleTechnicalSection() {
+      setTechnicalToggleState(!_techSectionOpen);
+    }
+
+    function renderGrowthSpark(d) {
+      const raw = d && d.raw_trend;
+      if (!raw || !Array.isArray(raw.values) || raw.values.length === 0) return;
+      const values = raw.values.slice(-7);
+      drawSparkline('growth-spark', values, '#C9A84C');
+    }
+
+    function renderMomentumRange(value) {
+      const thumb = document.getElementById('mom-thumb');
+      if (!thumb) return;
+      const v = Math.max(-2, Math.min(2, value || 0));
+      const pct = ((v + 2) / 4) * 100;
+      thumb.style.left = pct + '%';
+    }
+
+    function renderVolatilityRange(value) {
+      const thumb = document.getElementById('vol-thumb');
+      if (!thumb) return;
+      const v = Math.max(0, Math.min(1, value || 0));
+      thumb.style.left = (v * 100) + '%';
+    }
+
+    function renderFomoRange(value) {
+      const thumb = document.getElementById('fomo-thumb');
+      if (!thumb) return;
+      const v = Math.max(0, Math.min(1, value || 0));
+      thumb.style.left = (v * 100) + '%';
+    }
+
+    function renderSaturationRange(value) {
+      const thumb = document.getElementById('sat-thumb');
+      if (!thumb) return;
+      const v = Math.max(0, Math.min(1, value || 0));
+      thumb.style.left = (v * 100) + '%';
+    }
+
+    function renderTechnicalDetails(d) {
+      renderGrowthSpark(d);
+      renderMomentumRange(d.momentum);
+      renderVolatilityRange(d.volatility);
+      renderFomoRange(d.fomo_index);
+      renderSaturationRange(d.saturation_index);
     }
 
     function renderResults(d) {
@@ -6472,6 +6827,10 @@
       se.textContent = sv.toFixed(1);
       se.className = 'mc-val ' + (sv >= 0.7 ? 'neg' : sv >= 0.4 ? 'neu' : 'pos');
       document.getElementById('r-sat-l').textContent = sv >= 0.7 ? 'Pasar jenuh' : sv >= 0.4 ? 'Persaingan ketat' : '✓ Pasar terbuka';
+
+      // Reset & render analisis teknikal (selalu hidden secara default)
+      setTechnicalToggleState(false);
+      renderTechnicalDetails(d);
 
       renderPulse(d.market_pulse_score);
       renderRing(d.entry_timing_score);
@@ -6672,49 +7031,116 @@
       }
 
       // ── METRICS HELPER ──
-      const getValue = (metricName, value, comparison) => {
-        switch(metricName) {
+      const getValue = (metricName, value) => {
+        switch (metricName) {
           case 'growth': {
-            const g = value;
-            if (g > 0.1)       return { status: 'good', text: `+${(g*100).toFixed(1)}%` };
-            if (g > 0)         return { status: 'neutral', text: `+${(g*100).toFixed(1)}%` };
-            if (g > -0.1)      return { status: 'warn', text: `${(g*100).toFixed(1)}%` };
-            return { status: 'bad', text: `${(g*100).toFixed(1)}%` };
+            const g = (value || 0) * 100; // to percent
+            const clamped = Math.max(-50, Math.min(150, g));
+            const gauge = ((clamped + 50) / 200) * 100; // -50..150 -> 0..100
+            let status = 'warn';
+            let label = 'Pertumbuhan moderat';
+            if (g > 30) {
+              status = 'good';
+              label = 'Pertumbuhan kuat';
+            } else if (g < 0) {
+              status = 'bad';
+              label = 'Sedang turun';
+            }
+            const text = (g >= 0 ? '+' : '') + g.toFixed(1) + '%';
+            return { status, text, label, gauge };
           }
           case 'momentum': {
-            const m = value;
-            if (m > 0.2)       return { status: 'good', text: `↗ +${m.toFixed(3)}` };
-            if (m > 0)         return { status: 'neutral', text: `→ +${m.toFixed(3)}` };
-            if (m > -0.2)      return { status: 'warn', text: `↘ ${m.toFixed(3)}` };
-            return { status: 'bad', text: `↘ ${m.toFixed(3)}` };
+            const m = value || 0;
+            const clamped = Math.max(-2, Math.min(2, m));
+            const gauge = ((clamped + 2) / 4) * 100; // -2..2 -> 0..100
+            let status, label;
+            if (m > 0.3) {
+              status = 'good';
+              label = 'Tren sedang menguat ↑';
+            } else if (m >= -0.3) {
+              status = 'warn';
+              label = 'Tren bergerak sideways →';
+            } else {
+              status = 'bad';
+              label = 'Tren sedang melemah ↓';
+            }
+            const text = (m >= 0 ? '▲ ' : '▼ ') + Math.abs(m).toFixed(3);
+            return { status, text, label, gauge };
           }
           case 'volatility': {
-            const v = value;
-            if (v < 0.3)       return { status: 'good', text: `${(v*100).toFixed(1)}%` };
-            if (v < 0.5)       return { status: 'warn', text: `${(v*100).toFixed(1)}%` };
-            return { status: 'bad', text: `${(v*100).toFixed(1)}%` };
+            const v = (value || 0) * 100;
+            const clamped = Math.max(0, Math.min(100, v));
+            const gauge = clamped;
+            let status, label;
+            if (v < 35) {
+              status = 'good';
+              label = 'Stabil';
+            } else if (v <= 60) {
+              status = 'warn';
+              label = 'Fluktuasi sedang';
+            } else {
+              status = 'bad';
+              label = 'Fluktuasi tinggi';
+            }
+            const text = v.toFixed(1) + '%';
+            return { status, text, label, gauge };
           }
           case 'pulse': {
-            const p = value;
-            if (p >= 75)       return { status: 'good', text: `${p.toFixed(0)}/100` };
-            if (p >= 50)       return { status: 'neutral', text: `${p.toFixed(0)}/100` };
-            if (p >= 25)       return { status: 'warn', text: `${p.toFixed(0)}/100` };
-            return { status: 'bad', text: `${p.toFixed(0)}/100` };
+            const p = value || 0;
+            const clamped = Math.max(0, Math.min(100, p));
+            const gauge = clamped;
+            let status, label;
+            if (p > 65) {
+              status = 'good';
+              label = 'Pasar sehat';
+            } else if (p >= 40) {
+              status = 'warn';
+              label = 'Cukup sehat';
+            } else {
+              status = 'bad';
+              label = 'Pasar lemah';
+            }
+            const text = p.toFixed(0) + '/100';
+            return { status, text, label, gauge };
           }
           case 'timing': {
-            const t = value;
-            if (t >= 75)       return { status: 'good', text: `${t.toFixed(0)}/100` };
-            if (t >= 50)       return { status: 'neutral', text: `${t.toFixed(0)}/100` };
-            if (t >= 25)       return { status: 'warn', text: `${t.toFixed(0)}/100` };
-            return { status: 'bad', text: `${t.toFixed(0)}/100` };
+            const t = value || 0;
+            const clamped = Math.max(0, Math.min(100, t));
+            const gauge = clamped;
+            let status, label;
+            if (t > 70) {
+              status = 'good';
+              label = 'Waktu sangat baik';
+            } else if (t >= 45) {
+              status = 'warn';
+              label = 'Waktu cukup baik';
+            } else {
+              status = 'bad';
+              label = 'Belum saat terbaik';
+            }
+            const text = t.toFixed(0) + '/100';
+            return { status, text, label, gauge };
           }
           case 'fomo': {
-            const f = value;
-            if (f < 0.3)       return { status: 'good', text: `${f.toFixed(2)}` };
-            if (f < 0.6)       return { status: 'warn', text: `${f.toFixed(2)}` };
-            return { status: 'bad', text: `${f.toFixed(2)}` };
+            const f = value || 0;
+            const clamped = Math.max(0, Math.min(1, f));
+            const gauge = clamped * 100;
+            let status, label;
+            if (f < 0.2) {
+              status = 'good';
+              label = 'Tren organik';
+            } else if (f <= 0.5) {
+              status = 'warn';
+              label = 'Ada indikasi hype';
+            } else {
+              status = 'bad';
+              label = 'Hype tinggi, waspada';
+            }
+            const text = f.toFixed(2);
+            return { status, text, label, gauge };
           }
-          default: return { status: 'neutral', text: '—' };
+          default:
+            return { status: 'neutral', text: '—', label: '', gauge: 0 };
         }
       };
 
@@ -6744,47 +7170,74 @@
 
       const metrics = [
         {
+          key: 'growth',
           label: 'Pertumbuhan 7 Hari',
           getValue: () => getValue('growth', d.growth || 0),
-          explain: 'Perubahan minat pembicara minggu ini'
+          getExplain: (val) => val.label
         },
         {
+          key: 'momentum',
           label: 'Momentum',
           getValue: () => getValue('momentum', d.momentum || 0),
-          explain: 'Arah tren — mendaki atau menurun?'
+          getExplain: (val) => val.label
         },
         {
+          key: 'volatility',
           label: 'Volatilitas',
           getValue: () => getValue('volatility', d.volatility || 0),
-          explain: 'Tingkat fluktuasi pasar'
+          getExplain: (val) => `Status: ${val.label}`
         },
         {
+          key: 'pulse',
           label: 'Kesehatan Pasar',
           getValue: () => getValue('pulse', d.market_pulse_score || 0),
-          explain: 'Skor kesehatan pasar umum'
+          getExplain: (val) => `Status: ${val.label}`
         },
         {
+          key: 'timing',
           label: 'Entry Timing',
           getValue: () => getValue('timing', d.entry_timing_score || 0),
-          explain: 'Waktu terbaik untuk masuk pasar'
+          getExplain: (val) => val.label
         },
         {
+          key: 'fomo',
           label: 'FOMO Index',
           getValue: () => getValue('fomo', d.fomo_index || 0),
-          explain: 'Tingkat hype di pasar'
+          getExplain: (val) => val.label
         }
       ];
 
       metrics.forEach(metric => {
         const val = metric.getValue();
+        const status = val.status || 'neutral';
+        const gauge = typeof val.gauge === 'number' ? Math.max(0, Math.min(100, val.gauge)) : 0;
+        const explain = metric.getExplain ? metric.getExplain(val, d) : (metric.explain || '');
+
         const div = document.createElement('div');
-        div.className = `summary-item si-${val.status}`;
+        div.className = `summary-item si-${status}`;
         div.innerHTML = `
           <div class="summary-item-label">${metric.label}</div>
-          <div class="summary-item-value ${val.status}">${val.text}</div>
-          <div class="summary-item-explanation">${metric.explain}</div>
+          <div class="summary-item-main">
+            <div class="summary-item-value ${status}">${val.text}</div>
+            <div class="summary-item-status status-${status}">${val.label || ''}</div>
+          </div>
+          <div class="summary-item-gauge">
+            <div class="summary-metric-gauge-track">
+              <div class="summary-metric-gauge-fill status-${status}" data-target="${gauge}"></div>
+            </div>
+          </div>
+          <div class="summary-item-explanation">${explain}</div>
         `;
         gridEl.appendChild(div);
+      });
+
+      // Animate gauge bars after DOM insertion
+      requestAnimationFrame(() => {
+        gridEl.querySelectorAll('.summary-metric-gauge-fill').forEach(el => {
+          const target = parseFloat(el.getAttribute('data-target') || '0');
+          const pct = Math.max(0, Math.min(100, target));
+          el.style.width = pct + '%';
+        });
       });
 
       // ── NEWS SECTION (if data exists) ──
