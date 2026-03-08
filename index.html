@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 
 <head>
@@ -3611,8 +3611,15 @@
     }
 
     @keyframes ip-modalIn {
-      from { opacity: 0; transform: translateY(24px) scale(0.98); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
+      from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
     #ip-modal-inner {
@@ -3697,104 +3704,181 @@
 
     .ip-cat-grid {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 2px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    @media (min-width: 768px) {
+      .ip-cat-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .ip-cat-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
     }
 
     .ip-cat-card {
-      background: rgba(18, 16, 11, 0.45);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(212, 168, 67, 0.18);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(212, 168, 67, 0.08);
-      padding: 32px 18px;
+      background: rgba(14, 12, 9, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(212, 168, 67, 0.15);
+      padding: 28px 16px 24px;
       text-align: center;
       cursor: pointer;
-      transition: all .25s ease;
+      position: relative;
+      overflow: hidden;
+      transition: border-color .25s, background .25s, transform .2s;
     }
 
-    .ip-cat-card span {
+    .ip-cat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(212, 168, 67, .7), transparent);
+      opacity: 0;
+      transition: opacity .25s;
+    }
+
+    .ip-cat-card:hover::before {
+      opacity: 1;
+    }
+
+    .ip-cat-card:hover {
+      border-color: rgba(212, 168, 67, .4);
+      background: rgba(212, 168, 67, .05);
+      transform: translateY(-3px);
+    }
+
+    .ip-cat-card.selected {
+      border-color: rgba(212, 168, 67, .6);
+      background: rgba(212, 168, 67, .07);
+      box-shadow: 0 0 0 1px rgba(212, 168, 67, .2), 0 8px 32px rgba(0, 0, 0, .4);
+      animation: ip-border-pulse 2s ease infinite;
+    }
+
+    @keyframes ip-border-pulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 1px rgba(212, 168, 67, .2), 0 8px 32px rgba(0, 0, 0, .4);
+      }
+
+      50% {
+        box-shadow: 0 0 0 2px rgba(212, 168, 67, .35), 0 8px 32px rgba(0, 0, 0, .4);
+      }
+    }
+
+    .ip-cat-card svg {
       display: block;
-    }
-
-    .ip-cat-code {
-      font-family: 'DM Mono', monospace;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 3px;
-      color: var(--gold);
-      margin-bottom: 12px;
+      margin: 0 auto 12px;
+      stroke: rgba(212, 168, 67, 0.85);
+      stroke-width: 1.5px;
+      fill: none;
     }
 
     .ip-cat-name {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
       color: var(--text-dim);
     }
 
-    .ip-cat-card:hover,
-    .ip-cat-card.ip-active {
-      background: rgba(212, 168, 67, 0.06);
-      border-color: rgba(212, 168, 67, 0.45);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(212, 168, 67, 0.15);
-      transform: translateY(-3px);
-    }
-
     .ip-modal-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 2px;
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    @media (min-width: 768px) {
+      .ip-modal-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
     }
 
     .ip-modal-card {
-      background: rgba(18, 16, 11, 0.45);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(212, 168, 67, 0.18);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(212, 168, 67, 0.08);
-      padding: 40px 36px;
+      background: rgba(14, 12, 9, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(212, 168, 67, 0.15);
+      padding: 36px 28px;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
       transition: all .25s ease;
     }
 
-    .ip-modal-card:hover,
-    .ip-modal-card.ip-active {
-      background: rgba(212, 168, 67, 0.06);
-      border-color: rgba(212, 168, 67, 0.45);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(212, 168, 67, 0.15);
-      transform: translateY(-3px);
+    .ip-modal-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, transparent, rgba(212, 168, 67, .7), transparent);
+      opacity: 0;
+      transition: opacity .25s;
     }
 
-    .ip-modal-left {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+    .ip-modal-card::after {
+      content: attr(data-index);
+      position: absolute;
+      bottom: -10px;
+      right: 12px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 96px;
+      font-weight: 700;
+      color: rgba(212, 168, 67, .04);
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .ip-modal-card:hover::before {
+      opacity: 1;
+    }
+
+    .ip-modal-card:hover {
+      border-color: rgba(212, 168, 67, .4);
+      background: rgba(212, 168, 67, .05);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, .4);
+    }
+
+    .ip-modal-card.selected {
+      border-color: rgba(212, 168, 67, .6);
+      animation: ip-border-pulse 2s ease infinite;
     }
 
     .ip-modal-label {
       font-family: 'Syne', sans-serif;
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 700;
       color: var(--text);
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .ip-modal-ket {
       font-family: 'DM Mono', monospace;
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-faint);
+      white-space: nowrap;
     }
 
     .ip-modal-code {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
       font-family: 'DM Mono', monospace;
-      font-size: 13px;
+      font-size: 11px;
       letter-spacing: 3px;
-      color: var(--gold);
+      color: rgba(212, 168, 67, .4);
     }
 
     .ip-result-header {
@@ -3878,6 +3962,7 @@
         opacity: 0;
         transform: translateY(20px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
@@ -5205,217 +5290,586 @@
       }
     }
 
-    /* ── AUTH MODAL ── */
-    .auth-btn {
+    /* ── AUTH & PROFILE SYSTEM ── */
+
+    /* Navbar auth button (logged out) */
+    .auth-nav-login {
       background: none;
-      border: 1px solid var(--gold-dim);
+      border: 1px solid var(--gold-line);
       color: var(--gold);
       font-family: 'DM Mono', monospace;
       font-size: 11px;
       padding: 6px 14px;
-      border-radius: 3px;
       cursor: pointer;
       letter-spacing: .06em;
-      transition: background .2s, color .2s;
+      transition: background .2s, border-color .2s;
     }
 
-    .auth-btn:hover {
+    .auth-nav-login:hover {
       background: var(--gold-glow);
+      border-color: var(--gold);
     }
 
-    .auth-avatar {
+    /* Navbar profile button (logged in) */
+    .auth-profile-btn {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 12px;
-      color: var(--text-dim);
-      font-family: 'DM Mono', monospace;
+      background: none;
+      border: 1px solid var(--gold-line);
+      padding: 6px 12px 6px 8px;
       cursor: pointer;
+      transition: border-color .2s;
     }
 
-    .auth-avatar .av-circle {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--gold-glow);
-      border: 1px solid var(--gold-dim);
+    .auth-profile-btn:hover {
+      border-color: var(--gold);
+    }
+
+    .auth-avatar {
+      width: 24px;
+      height: 24px;
+      background: rgba(212, 168, 67, .15);
+      border: 1px solid rgba(212, 168, 67, .3);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
-      color: var(--gold);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
       font-weight: 700;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+
+    .auth-plan-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .auth-plan-badge.free {
+      color: var(--text-faint);
+    }
+
+    .auth-plan-badge.pro {
+      color: var(--gold);
+    }
+
+    /* Auth overlay */
+    #auth-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9990;
+      background: rgba(6, 6, 5, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s ease;
+    }
+
+    #auth-overlay.open {
+      opacity: 1;
+      pointer-events: all;
     }
 
     /* Auth modal */
-    .auth-modal {
-      display: none;
+    #auth-modal {
       position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, .75);
-      z-index: 9999;
-      align-items: center;
-      justify-content: center;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) translateY(16px);
+      z-index: 9991;
+      width: 90%;
+      max-width: 460px;
+      background: rgba(12, 10, 7, 0.65);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid rgba(212, 168, 67, 0.18);
+      box-shadow:
+        0 32px 80px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(212, 168, 67, 0.1);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s ease, transform .3s cubic-bezier(.32, .72, 0, 1);
     }
 
-    .auth-modal.open {
+    #auth-modal.open {
+      opacity: 1;
+      pointer-events: all;
+      transform: translate(-50%, -50%) translateY(0);
+    }
+
+    #auth-modal-inner {
+      padding: 44px 40px 48px;
+    }
+
+    /* Auth modal header */
+    .auth-modal-header {
       display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
     }
 
-    .auth-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 36px 40px;
-      width: min(420px, 92vw);
-      position: relative;
+    .auth-modal-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0;
     }
 
-    .auth-box h2 {
-      font-family: 'Syne', sans-serif;
-      font-size: 20px;
-      color: var(--gold);
-      margin-bottom: 6px;
-    }
-
-    .auth-box p.auth-sub {
-      font-size: 12px;
-      color: var(--text-dim);
-      margin-bottom: 24px;
-    }
-
-    .auth-tabs {
-      display: flex;
-      gap: 0;
-      margin-bottom: 24px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .auth-tab {
+    .auth-modal-close {
       background: none;
       border: none;
-      color: var(--text-dim);
-      font-family: 'DM Mono', monospace;
-      font-size: 12px;
-      padding: 8px 20px 10px;
+      color: var(--text-faint);
+      font-size: 22px;
       cursor: pointer;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
+      line-height: 1;
+      padding: 0;
       transition: color .2s;
     }
 
-    .auth-tab.active {
-      color: var(--gold);
+    .auth-modal-close:hover {
+      color: var(--text);
+    }
+
+    .auth-modal-sub {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13px;
+      color: var(--text-faint);
+      margin-top: 8px;
+    }
+
+    /* Auth tabs */
+    .auth-tabs {
+      display: flex;
+      gap: 0;
+      margin-top: 28px;
+      border-bottom: 1px solid rgba(212, 168, 67, 0.1);
+    }
+
+    .auth-tab-btn {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-faint);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 0 0 12px;
+      margin-right: 28px;
+      cursor: pointer;
+      transition: color .2s, border-color .2s;
+      margin-bottom: -1px;
+    }
+
+    .auth-tab-btn.active {
+      color: var(--text);
       border-bottom-color: var(--gold);
     }
 
-    .auth-field {
+    /* Auth form */
+    .auth-form-fields {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      margin-bottom: 16px;
+      gap: 10px;
+      margin-top: 28px;
     }
 
-    .auth-field label {
-      font-size: 11px;
-      color: var(--text-dim);
+    .auth-input {
+      width: 100%;
+      box-sizing: border-box;
       font-family: 'DM Mono', monospace;
-      letter-spacing: .06em;
-    }
-
-    .auth-field input {
-      background: var(--surface2);
-      border: 1px solid var(--border);
+      font-size: 13px;
       color: var(--text);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(212, 168, 67, 0.15);
+      padding: 14px 16px;
+      outline: none;
+      transition: border-color .2s, background .2s;
+      caret-color: var(--gold);
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .auth-input::placeholder {
+      color: var(--text-faint);
+      opacity: 1;
+    }
+
+    .auth-input:focus {
+      border-color: rgba(212, 168, 67, 0.45);
+      background: rgba(212, 168, 67, 0.03);
+    }
+
+    /* Paksa override autofill browser (penyebab background putih) */
+    .auth-input:-webkit-autofill,
+    .auth-input:-webkit-autofill:hover,
+    .auth-input:-webkit-autofill:focus {
+      -webkit-box-shadow: 0 0 0px 1000px rgba(12, 10, 7, 0.9) inset;
+      -webkit-text-fill-color: var(--text);
+      caret-color: var(--gold);
+      border-color: rgba(212, 168, 67, 0.15);
+      transition: background-color 5000s ease-in-out 0s;
+    }
+
+    .auth-input-select {
       font-family: 'DM Mono', monospace;
-      font-size: 14px;
-      padding: 10px 14px;
-      border-radius: 4px;
+      font-size: 13px;
+      color: var(--text);
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--gold-line);
+      padding: 14px 16px;
       outline: none;
       transition: border-color .2s;
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
     }
 
-    .auth-field input:focus {
-      border-color: var(--gold-dim);
+    .auth-input-select:focus {
+      border-color: var(--gold);
     }
 
+    .auth-input-select option {
+      background: #0A0A08;
+      color: var(--text);
+    }
+
+    .auth-textarea {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--text);
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--gold-line);
+      padding: 14px 16px;
+      outline: none;
+      transition: border-color .2s;
+      resize: none;
+    }
+
+    .auth-textarea::placeholder {
+      color: var(--text-faint);
+    }
+
+    .auth-textarea:focus {
+      border-color: var(--gold);
+    }
+
+    /* Auth submit button */
+    .auth-submit-btn,
     .auth-submit {
       width: 100%;
+      padding: 15px;
       background: var(--gold);
-      color: #0d0d0d;
+      color: #0A0A08;
       font-family: 'Syne', sans-serif;
+      font-size: 12px;
       font-weight: 700;
-      font-size: 13px;
-      letter-spacing: .1em;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
       border: none;
-      padding: 13px;
-      border-radius: 4px;
       cursor: pointer;
-      margin-top: 6px;
+      margin-top: 4px;
       transition: opacity .2s;
     }
 
+    .auth-submit-btn:hover,
+    .auth-submit:hover {
+      opacity: 0.85;
+    }
+
+    .auth-submit-btn:disabled,
     .auth-submit:disabled {
-      opacity: .5;
+      opacity: 0.5;
       cursor: not-allowed;
     }
 
-    .auth-msg {
-      font-size: 12px;
-      margin-top: 12px;
+    /* Auth error message */
+    .auth-error-msg,
+    .auth-error {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: #ef4444;
+      margin-top: 10px;
       text-align: center;
-      min-height: 18px;
+      min-height: 16px;
     }
 
-    .auth-msg.ok {
-      color: #6fcf97;
+    /* ── AUTH LOADINGS & SHAKE ── */
+    .auth-submit {
+      position: relative;
+      overflow: hidden;
     }
 
-    .auth-msg.err {
-      color: #eb5757;
-    }
-
-    .auth-close {
+    /* Shimmer sweep saat loading */
+    .auth-submit.loading::after {
+      content: '';
       position: absolute;
-      top: 14px;
-      right: 18px;
-      background: none;
-      border: none;
-      color: var(--text-dim);
-      font-size: 20px;
-      cursor: pointer;
-      line-height: 1;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .15), transparent);
+      animation: auth-shimmer .9s ease infinite;
     }
 
-    .auth-divider {
+    @keyframes auth-shimmer {
+      from {
+        left: -100%;
+      }
+
+      to {
+        left: 100%;
+      }
+    }
+
+    /* Tiga titik bouncing */
+    .auth-dots {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .auth-dots span {
+      width: 5px;
+      height: 5px;
+      background: #0A0A08;
+      border-radius: 50%;
+      display: inline-block;
+      animation: auth-bounce .6s ease infinite alternate;
+    }
+
+    .auth-dots span:nth-child(2) {
+      animation-delay: .15s;
+    }
+
+    .auth-dots span:nth-child(3) {
+      animation-delay: .3s;
+    }
+
+    @keyframes auth-bounce {
+      from {
+        transform: translateY(0);
+        opacity: .6;
+      }
+
+      to {
+        transform: translateY(-4px);
+        opacity: 1;
+      }
+    }
+
+    @keyframes auth-shake {
+      0% {
+        transform: translateX(0);
+      }
+
+      20% {
+        transform: translateX(-6px);
+      }
+
+      40% {
+        transform: translateX(6px);
+      }
+
+      60% {
+        transform: translateX(-4px);
+      }
+
+      80% {
+        transform: translateX(4px);
+      }
+
+      100% {
+        transform: translateX(0);
+      }
+    }
+
+    .auth-shake {
+      animation: auth-shake .45s cubic-bezier(.36, .07, .19, .97) both;
+    }
+
+    /* ── PROFILE DROPDOWN ── */
+    .profile-dropdown {
+      position: fixed;
+      top: 56px;
+      right: 24px;
+      z-index: 9991;
+      width: 280px;
+      background: rgba(12, 10, 7, 0.92);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(212, 168, 67, 0.18);
+      box-shadow:
+        0 16px 48px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(212, 168, 67, 0.08);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-8px);
+      transition: opacity .2s ease, transform .2s ease;
+    }
+
+    .profile-dropdown.open {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateY(0);
+    }
+
+    #profile-dropdown-inner {
+      padding: 24px 20px 20px;
+    }
+
+    .profile-dropdown-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .profile-avatar-md {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(212, 168, 67, 0.1);
+      border: 1px solid rgba(212, 168, 67, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      color: var(--gold);
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .profile-info-col {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .profile-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gold);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+
+    .profile-email {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 12px;
+      color: var(--text-faint);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .profile-plan-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 4px 10px;
+      border-radius: 2px;
+      margin-bottom: 16px;
+    }
+
+    .profile-plan-badge.free {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-dim);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .profile-plan-badge.pro {
+      background: rgba(212, 168, 67, 0.1);
+      color: var(--gold);
+      border: 1px solid rgba(212, 168, 67, 0.3);
+      box-shadow: 0 0 12px rgba(212, 168, 67, 0.15);
+    }
+
+    .profile-divider {
       border: none;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid rgba(212, 168, 67, 0.15);
       margin: 16px 0;
     }
 
-    .auth-logout-btn {
-      width: 100%;
-      background: none;
-      border: 1px solid var(--border);
+    .profile-usaha-wrapper {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 12px;
+      border-radius: 4px;
+    }
+
+    .profile-usaha-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--text-faint);
+      margin-bottom: 6px;
+    }
+
+    .profile-usaha-nama {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .profile-usaha-detail {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11px;
       color: var(--text-dim);
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    .profile-usaha-edit,
+    .profile-usaha-btn,
+    .profile-logout-btn {
+      width: 100%;
+      padding: 10px;
       font-family: 'DM Mono', monospace;
       font-size: 11px;
-      padding: 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      letter-spacing: .06em;
-      transition: border-color .2s;
-    }
-
-    .auth-logout-btn:hover {
-      border-color: var(--gold-dim);
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: transparent;
+      border: 1px solid rgba(212, 168, 67, 0.3);
       color: var(--gold);
+      cursor: pointer;
+      transition: all 0.2s;
     }
 
-    @media(max-width:480px) {
-      .auth-box {
-        padding: 28px 20px;
-      }
+    .profile-usaha-btn {
+      background: rgba(212, 168, 67, 0.08);
+    }
+
+    .profile-usaha-edit:hover,
+    .profile-usaha-btn:hover {
+      background: rgba(212, 168, 67, 0.15);
+      border-color: rgba(212, 168, 67, 0.6);
+    }
+
+    .profile-logout-btn {
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #ef4444;
+    }
+
+    .profile-logout-btn:hover {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.5);
     }
 
     /* ══════════════════════════════════════════════════
@@ -5688,6 +6142,126 @@
       color: var(--gold);
       background: rgba(212, 168, 67, .1);
       border: 1px solid rgba(212, 168, 67, .25);
+    }
+
+    /* ── USAHA SETUP MODAL CUSTOM CSS ── */
+    .usaha-input-wrapper {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid rgba(212, 168, 67, 0.25);
+      padding-bottom: 10px;
+      transition: border-bottom-color 0.2s;
+    }
+
+    .usaha-input-wrapper:focus-within {
+      border-bottom-color: rgba(212, 168, 67, 0.6);
+    }
+
+    #usaha-nama-input {
+      flex: 1;
+      font-family: 'DM Mono', monospace;
+      font-size: 15px;
+      color: var(--text);
+      background: none;
+      border: none;
+      outline: none;
+      caret-color: var(--gold);
+    }
+
+    #usaha-nama-input::placeholder {
+      color: var(--text-faint);
+    }
+
+    .usaha-cat-chip {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 10px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .usaha-cat-chip:hover {
+      color: var(--gold);
+      border-color: rgba(212, 168, 67, 0.3);
+      background: rgba(212, 168, 67, 0.05);
+    }
+
+    .usaha-cat-chip.selected {
+      color: var(--gold);
+      border-color: rgba(212, 168, 67, 0.5);
+      background: rgba(212, 168, 67, 0.08);
+      box-shadow: 0 0 12px rgba(212, 168, 67, 0.1);
+    }
+
+    #usaha-deskripsi-input {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      border-bottom: 1px solid rgba(212, 168, 67, 0.2);
+      padding: 10px 0;
+      width: 100%;
+      box-sizing: border-box;
+      resize: none;
+      outline: none;
+      caret-color: var(--gold);
+      transition: border-bottom-color 0.2s;
+    }
+
+    #usaha-deskripsi-input::placeholder {
+      color: var(--text-faint);
+    }
+
+    #usaha-deskripsi-input:focus {
+      border-bottom-color: rgba(212, 168, 67, 0.5);
+    }
+
+    .usaha-submit {
+      width: 100%;
+      padding: 16px;
+      background: transparent;
+      color: var(--gold);
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      border: 1px solid rgba(212, 168, 67, 0.35);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .usaha-submit::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(212, 168, 67, 0.08), transparent);
+      transition: left 0.4s ease;
+    }
+
+    .usaha-submit:hover {
+      border-color: rgba(212, 168, 67, 0.7);
+      color: #fff;
+    }
+
+    .usaha-submit:hover::before {
+      left: 100%;
     }
 
     /* ── RESPONSIVE OVERRIDES ── */
@@ -6056,6 +6630,683 @@
         padding: 9px 12px;
       }
     }
+
+    /* ─────────────────────────────────────────────── */
+    /*            MOBILE REFACTOR ≤ 768px             */
+    /* ─────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      /* ── TIPOGRAFI GLOBAL ── */
+      html,
+      body {
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      /* Hapus / sembunyikan teks mikro < 12px yang dekoratif */
+      .ver,
+      .summary-inline-label,
+      .summary-verdict-label,
+      .summary-news-label,
+      .summary-news-meta,
+      .summary-hint-label,
+      .summary-action-meta,
+      .howto-example,
+      .howto-example .ex-label,
+      .radar-header-hint,
+      .wp-note {
+        display: none;
+      }
+
+      /* Naikkan label penting ke minimum 12px */
+      .mc-lbl,
+      .fc-lbl,
+      .timing-lbl-sm,
+      .ai-section-title,
+      .snapshot-label,
+      .snapshot-icon,
+      .pricing-plan,
+      .pricing-price-sub {
+        font-size: 12px;
+      }
+
+      /* ── SPACING GLOBAL ── */
+      .wrap {
+        padding: 0 24px 80px;
+      }
+
+      .howto-section,
+      .radar-section,
+      .pricing-section,
+      .wp-section,
+      .snapshot-section,
+      #market-snapshot,
+      #results,
+      #compare-results {
+        padding-top: 64px;
+        padding-bottom: 64px;
+      }
+
+      .wrap + .wrap {
+        margin-top: 32px;
+      }
+
+      section + section {
+        margin-top: 24px;
+      }
+
+      /* ── HERO ── */
+      .hero {
+        padding: 44px 0 40px;
+        text-align: center;
+      }
+
+      .hero-title {
+        font-size: clamp(32px, 9vw, 44px);
+        margin-bottom: 14px;
+      }
+
+      .hero-sub {
+        font-size: 12px;
+        letter-spacing: 2px;
+        margin-bottom: 28px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .hero-sub span {
+        margin: 0 6px;
+      }
+
+      /* ── FORM PENCARIAN MOBILE ─ */
+      .search-wrap {
+        width: 100%;
+        padding: 0 16px;
+      }
+
+      .search-wrap.single-search {
+        width: 100%;
+        margin-bottom: 12px;
+      }
+
+      .search-box {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        background: transparent;
+        border: none;
+      }
+
+      .search-prefix {
+        display: none;
+      }
+
+      #kw {
+        width: 100%;
+        padding: 14px 16px;
+        font-size: 15px;
+        color: #F5F0E0;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(212, 168, 67, 0.2);
+        text-align: left;
+      }
+
+      #kw::placeholder {
+        color: rgba(255, 255, 255, 0.3);
+        font-size: 14px;
+      }
+
+      #btn {
+        width: 100%;
+        height: 48px;
+        max-height: 52px;
+        background: #D4A843;
+        color: #0A0A08 !important;
+        font-family: 'Syne', sans-serif;
+        font-size: 12px !important;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        white-space: nowrap;
+        overflow: visible;
+      }
+
+      #btn::after {
+        content: none;
+      }
+
+      /* Tombol sekunder jadi link kecil di bawah CTA */
+      .ip-entry {
+        margin-top: 8px;
+      }
+
+      .ip-entry-btn {
+        font-size: 13px;
+        color: #D4A843;
+        text-decoration: underline;
+        gap: 4px;
+      }
+
+      .ip-entry-arrow {
+        display: none;
+      }
+
+      /* ── KARTU HASIL ANALISIS ── */
+      #results {
+        border-radius: 18px;
+        background: rgba(14, 14, 10, 0.9);
+        padding: 20px 18px 24px;
+      }
+
+      #results .res-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        margin-bottom: 12px;
+      }
+
+      #results .res-kw {
+        font-size: 22px;
+        line-height: 1.3;
+      }
+
+      #results .res-ts,
+      #results .badge-row {
+        display: none;
+      }
+
+      /* Entry Timing sebagai focal point */
+      #results .timing-card {
+        margin-top: 12px;
+        padding: 16px 14px;
+        border-radius: 16px;
+        background: rgba(212, 168, 67, 0.06);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      #results .ring-wrap {
+        flex-shrink: 0;
+      }
+
+      #results .ring-num {
+        font-size: 42px;
+      }
+
+      #results .timing-lbl-sm {
+        font-size: 12px;
+        margin-bottom: 6px;
+      }
+
+      #results .timing-lbl-big {
+        font-size: 16px;
+        margin-bottom: 4px;
+      }
+
+      #results .timing-desc {
+        font-size: 14px;
+        line-height: 1.7;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      /* Accordion "Lihat Selengkapnya" (pakai tech-toggle-card) */
+      #results .tech-toggle-card {
+        margin-top: 18px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(212, 168, 67, 0.4);
+        background: rgba(212, 168, 67, 0.05);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+      }
+
+      #results .tech-toggle-left {
+        display: none;
+      }
+
+      #tech-toggle-btn {
+        background: none;
+        border: none;
+        padding: 0;
+        font-size: 13px;
+        letter-spacing: 0;
+        position: relative;
+        color: transparent;
+      }
+
+      #tech-toggle-btn::after {
+        content: "Lihat Selengkapnya";
+        color: #D4A843;
+        text-decoration: underline;
+      }
+
+      #tech-toggle-btn[aria-expanded="true"]::after {
+        content: "Tutup Detail";
+      }
+
+      /* Sembunyikan detail tambahan sampai accordion dibuka */
+      .tech-section:not(.open) ~ .trend-chart-card,
+      .tech-section:not(.open) ~ .season-card,
+      .tech-section:not(.open) ~ #summary-card {
+        display: none !important;
+      }
+
+      .tech-section.open ~ .trend-chart-card,
+      .tech-section.open ~ .season-card,
+      .tech-section.open ~ #summary-card {
+        display: block !important;
+      }
+
+      #summary-card {
+        margin-top: 20px;
+        padding: 18px 16px;
+        border-radius: 16px;
+      }
+
+      .summary-verdict-section {
+        margin-bottom: 12px;
+      }
+
+      .summary-verdict-content p {
+        font-size: 14px;
+        line-height: 1.7;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .summary-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .summary-item-label,
+      .summary-item-status,
+      .summary-item-explanation {
+        font-size: 12px;
+      }
+
+      /* ── SECTION CARA KERJA ── */
+      .howto-section {
+        padding-top: 64px;
+        padding-bottom: 64px;
+      }
+
+      .howto-header {
+        text-align: left;
+      }
+
+      .howto-title {
+        font-size: 24px;
+        line-height: 1.3;
+      }
+
+      .howto-desc {
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .howto-steps {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .howto-card {
+        padding: 20px 18px 18px;
+        border-radius: 16px;
+      }
+
+      .howto-card-icon {
+        display: none;
+      }
+
+      .howto-step-num {
+        width: auto;
+        height: auto;
+        border: none;
+        background: transparent;
+        margin-bottom: 8px;
+      }
+
+      .howto-step-num span {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 52px;
+        font-weight: 600;
+        color: #D4A843;
+        line-height: 1;
+      }
+
+      /* Tambah leading zero pada nomor langkah */
+      .howto-step-num span::before {
+        content: "0";
+      }
+
+      .howto-card-title {
+        font-size: 15px;
+        margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .howto-card-body {
+        font-size: 14px;
+        line-height: 1.7;
+        margin-bottom: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      /* ── RADAR PASAR / SEKTOR ── */
+      .radar-section {
+        padding-top: 64px;
+        padding-bottom: 64px;
+      }
+
+      .radar-section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .radar-grid {
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        gap: 12px;
+        overflow-x: auto;
+        padding-bottom: 10px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+
+      .radar-grid::-webkit-scrollbar {
+        display: none;
+      }
+
+      .radar-card {
+        flex: 0 0 auto;
+        min-width: 140px;
+        padding: 18px 16px;
+        border-radius: 14px;
+        scroll-snap-align: start;
+      }
+
+      /* Fade gradient di ujung kanan sebagai hint konten lanjut */
+      .radar-grid::after {
+        content: "";
+        position: sticky;
+        right: -24px;
+        top: 0;
+        width: 48px;
+        height: 100%;
+        pointer-events: none;
+        background: linear-gradient(
+          to left,
+          #0A0A08 0%,
+          rgba(10, 10, 8, 0.0) 100%
+        );
+      }
+
+      /* ── PRICING ── */
+      .pricing-section {
+        padding-top: 64px;
+        padding-bottom: 64px;
+      }
+
+      .pricing-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .pricing-card {
+        width: 100%;
+        padding: 24px;
+        border-radius: 18px;
+      }
+
+      /* Free: redup */
+      .pricing-card:not(.pro-card) {
+        border: 1px solid rgba(212, 168, 67, 0.25);
+        opacity: 0.9;
+      }
+
+      /* Pro: highlight + label "Paling Populer" */
+      .pricing-card.pro-card {
+        position: relative;
+        border: 2px solid #D4A843;
+        box-shadow: 0 0 0 1px rgba(212, 168, 67, 0.2);
+      }
+
+      .pricing-card.pro-card::before {
+        content: "Paling Populer";
+        position: absolute;
+        top: -14px;
+        left: 18px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: #D4A843;
+        color: #0A0A08;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+      }
+
+      /* ── NAVBAR MOBILE ─ */
+      .sticky-nav {
+        padding: 0 0;
+        overflow: hidden;
+      }
+
+      .sticky-nav-inner {
+        height: 48px;
+        padding: 0 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        background: rgba(10, 10, 8, 0.75);
+        border-bottom: 1px solid rgba(212, 168, 67, 0.1);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 999px;
+      }
+
+      .sticky-nav-logo,
+      .sticky-nav-link,
+      .sticky-nav-cta,
+      .auth-nav-login {
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .sticky-nav-logo {
+        font-size: 13px;
+        letter-spacing: 2px;
+      }
+
+      .sticky-nav-links,
+      .sticky-nav-link {
+        display: none;
+      }
+
+      .sticky-nav-cta {
+        display: none;
+      }
+
+      /* Tombol Masuk di sticky nav */
+      .auth-nav-login {
+        padding: 7px 14px;
+        font-size: 11px;
+        border-radius: 999px;
+        border: 1px solid rgba(212, 168, 67, 0.3);
+        background: transparent;
+        color: #D4A843;
+      }
+
+      /* ── STICKY CTA "MULAI GRATIS" (BOTTOM FLOATING) ─ */
+      .howto-cta {
+        position: fixed;
+        left: 50%;
+        bottom: 24px;
+        transform: translate(-50%, 12px);
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        border-top: none;
+        text-align: center;
+        z-index: 999;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.25s ease, transform 0.25s ease;
+      }
+
+      .howto-cta-text,
+      .howto-cta-sub {
+        display: none;
+      }
+
+      /* Muncul setelah scroll 300px (toggle class via JS) */
+      /* SESUAIKAN: tambahkan .is-visible ke .howto-cta saat scrollY > 300 */
+      .howto-cta.is-visible {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+
+      .howto-cta.is-visible .howto-cta-btn {
+        pointer-events: auto;
+      }
+
+      /* Hilang saat user di section pricing */
+      /* SESUAIKAN: tambahkan class .at-pricing ke <body> ketika #pricing aktif */
+      body.at-pricing .howto-cta {
+        opacity: 0;
+        pointer-events: none;
+        transform: translate(-50%, 12px);
+      }
+
+      .howto-cta-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        max-width: 220px;
+        width: auto;
+        padding: 12px 28px;
+        border-radius: 999px;
+        background: rgba(10, 10, 8, 0.85);
+        border: 1px solid rgba(212, 168, 67, 0.35);
+        backdrop-filter: blur(16px);
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+        font-family: 'Syne', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-weight: 700;
+        font-size: 0;
+        color: transparent;
+        gap: 8px;
+        cursor: pointer;
+        transform: scale(1);
+        transition:
+          border-color 0.2s ease,
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .howto-cta-btn::after {
+        content: "Mulai Gratis";
+        font-size: 12px;
+        color: #D4A843;
+      }
+
+      .howto-cta-btn i {
+        font-size: 12px;
+        color: rgba(212, 168, 67, 0.8);
+        margin-right: 4px;
+      }
+
+      .howto-cta-btn:hover,
+      .howto-cta-btn:active {
+        border-color: rgba(212, 168, 67, 0.7);
+        transform: scale(1.02);
+        box-shadow: 0 6px 28px rgba(0, 0, 0, 0.65);
+      }
+
+      /* ── DOWNLOAD WHITEPAPER PILL ─ */
+      .wp-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 28px;
+        border-radius: 999px;
+        background: rgba(10, 10, 8, 0.85);
+        border: 1px solid rgba(212, 168, 67, 0.35);
+        color: #D4A843;
+        font-family: 'Syne', sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        text-decoration: none;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+        max-width: 220px;
+        width: auto;
+        margin: 24px auto 8px;
+      }
+
+      .wp-btn:hover,
+      .wp-btn:active {
+        border-color: rgba(212, 168, 67, 0.7);
+        box-shadow: 0 6px 28px rgba(0, 0, 0, 0.65);
+        transform: scale(1.02);
+      }
+    }
+
+    /* ── SCROLL TO TOP (GLOBAL) ── */
+    .scroll-to-top {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(212, 168, 67, 0.15);
+      border: 1px solid rgba(212, 168, 67, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #D4A843;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      z-index: 999;
+      backdrop-filter: blur(4px);
+    }
+
+    .scroll-to-top.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .scroll-to-top i {
+      font-size: 18px;
+    }
   </style>
 </head>
 
@@ -6071,6 +7322,7 @@
         <button class="sticky-nav-link hide-mobile" data-target="whitepaper">Whitepaper</button>
       </div>
       <button class="sticky-nav-cta" data-target="kw">Upgrade ke Pro</button>
+      <div id="sticky-nav-auth"></div>
     </div>
   </nav>
 
@@ -7183,29 +8435,15 @@
     </div>
   </div>
 
-  <!-- AUTH MODAL -->
-  <div class="auth-modal" id="auth-modal">
-    <div class="auth-box">
-      <button class="modal-close" onclick="closeAuthModal()">×</button>
-      <h2>Selamat Datang</h2>
-      <p class="auth-sub">Masuk untuk menyimpan riwayat dan akses fitur Pro.</p>
+  <!-- AUTH OVERLAY + MODAL -->
+  <div id="auth-overlay" onclick="closeAuthModal()"></div>
+  <div id="auth-modal" onclick="event.stopPropagation()">
+    <div id="auth-modal-inner"></div>
+  </div>
 
-      <div class="auth-tabs">
-        <div class="auth-tab active" id="tab-login" onclick="setAuthTab('login')">Login</div>
-        <div class="auth-tab" id="tab-signup" onclick="setAuthTab('signup')">Daftar</div>
-      </div>
-
-      <form id="auth-form" onsubmit="event.preventDefault(); handleAuth();">
-        <div class="auth-field">
-          <input type="email" id="auth-email" class="auth-input" placeholder="Email" required>
-        </div>
-        <div class="auth-field">
-          <input type="password" id="auth-pass" class="auth-input" placeholder="Password" required>
-        </div>
-        <button type="submit" class="auth-submit" id="auth-submit-btn">Masuk</button>
-      </form>
-      <div id="auth-err" class="auth-error-msg"></div>
-    </div>
+  <!-- PROFILE DROPDOWN -->
+  <div id="profile-dropdown" class="profile-dropdown">
+    <div id="profile-dropdown-inner"></div>
   </div>
 
   <script>
@@ -7256,6 +8494,8 @@
     };
     let sb = null;
     let authMode = 'login';
+    let currentUser = null;
+    let currentProfile = null;
     let selectedKategori = null;
     let selectedModalTier = null;
     let lastAnalysisResult = null; // for PDF download
@@ -7420,99 +8660,452 @@
         const res = await fetch('/api/config');
         const config = await res.json();
         if (!config.supabase_url) return;
-
         sb = supabase.createClient(config.supabase_url, config.supabase_anon_key);
+        await initAuth();
+      } catch (e) { /* silent */ }
+    }
 
-        sb.auth.onAuthStateChange((event, session) => {
-          if (session) {
-            userState.userId = session.user.id;
-            userState.token = session.access_token;
-            updateUserHeader(session.user);
-          } else {
-            userState.userId = localStorage.getItem('sentra_uid');
-            userState.token = null;
-            updateUserHeader(null);
-          }
-          fetchUserStatus();
-        });
+    async function initAuth() {
+      if (!sb) return;
+      const { data: { session } } = await sb.auth.getSession();
+      if (session && session.user) {
+        currentUser = session.user;
+        userState.userId = session.user.id;
+        userState.token = session.access_token;
+        await loadProfile(currentUser.id);
+        updateNavAuth();
+        fetchUserStatus();
+      }
 
-        // Force initial session check for faster restoration
-        const { data: { session } } = await sb.auth.getSession();
-        if (session) {
+      sb.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          currentUser = session.user;
           userState.userId = session.user.id;
           userState.token = session.access_token;
-          updateUserHeader(session.user);
+          await loadProfile(currentUser.id);
+          updateNavAuth();
           fetchUserStatus();
         }
-      } catch (e) { console.error("Supabase init error:", e); }
+        if (event === 'SIGNED_OUT') {
+          currentUser = null;
+          currentProfile = null;
+          userState.userId = localStorage.getItem('sentra_uid');
+          userState.token = null;
+          updateNavAuth();
+        }
+      });
     }
 
-    function updateUserHeader(user) {
-      const container = document.getElementById('auth-header-action');
-      if (!user) {
-        container.innerHTML = `<button class="auth-btn" onclick="openAuthModal()">Login / Sign Up</button>`;
-        return;
-      }
-      const initial = (user.user_metadata?.full_name || user.email || '?')[0].toUpperCase();
-      container.innerHTML = `
-        <div class="auth-avatar" onclick="openAuthModal()">
-          <div class="av-circle">${initial}</div>
-          <span>${user.tier === 'pro' ? 'Pro' : 'Free'} Tier</span>
-        </div>
-      `;
+    async function loadProfile(userId) {
+      if (!sb) return;
+      try {
+        const { data } = await sb
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
+          .single();
+        currentProfile = data;
+      } catch (e) { currentProfile = null; }
     }
 
-    async function openAuthModal() {
-      if (sb && (await sb.auth.getSession()).data.session) {
-        // Simple logout if already logged in (for demo purposes, could be a profile card)
-        if (confirm("Logout dari akun Anda?")) sb.auth.signOut();
+    function updateNavAuth() {
+      const headerContainer = document.getElementById('auth-header-action');
+      const stickyContainer = document.getElementById('sticky-nav-auth');
+
+      if (!currentUser) {
+        const loginBtn = '<button class="auth-nav-login" onclick="openAuthModal(\'login\')">Masuk</button>';
+        if (headerContainer) headerContainer.innerHTML = loginBtn;
+        if (stickyContainer) stickyContainer.innerHTML = loginBtn;
         return;
       }
+
+      const initial = _getInitial();
+      const plan = (currentProfile && currentProfile.plan === 'pro') ? 'pro' : 'free';
+      const planLabel = plan === 'pro' ? 'PRO' : 'FREE';
+      const profileBtn = '<button id="auth-profile-btn" class="auth-profile-btn" onclick="event.stopPropagation(); openProfileDropdown()">' +
+        '<span class="auth-avatar">' + initial + '</span>' +
+        '<span class="auth-plan-badge ' + plan + '">' + planLabel + '</span>' +
+        '</button>';
+      if (headerContainer) headerContainer.innerHTML = profileBtn;
+      if (stickyContainer) stickyContainer.innerHTML = profileBtn;
+    }
+
+    function _getInitial() {
+      if (currentProfile && currentProfile.nama) return currentProfile.nama[0].toUpperCase();
+      if (currentUser && currentUser.email) return currentUser.email[0].toUpperCase();
+      return '?';
+    }
+
+    /* ── AUTH MODAL RENDERING ── */
+    function openAuthModal(tab) {
+      tab = tab || 'login';
+      authMode = tab;
+      renderAuthModalContent(tab);
+      document.getElementById('auth-overlay').classList.add('open');
       document.getElementById('auth-modal').classList.add('open');
       document.body.style.overflow = 'hidden';
     }
 
     function closeAuthModal() {
+      document.getElementById('auth-overlay').classList.remove('open');
       document.getElementById('auth-modal').classList.remove('open');
-      unlockScroll();
-      document.getElementById('auth-err').textContent = '';
+      document.body.style.removeProperty('overflow');
     }
 
-    function setAuthTab(tab) {
-      authMode = tab;
-      document.getElementById('tab-login').classList.toggle('active', tab === 'login');
-      document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
-      document.getElementById('auth-submit-btn').textContent = tab === 'login' ? 'Masuk' : 'Daftar';
+    function renderAuthModalContent(tab) {
+      const inner = document.getElementById('auth-modal-inner');
+      const isLogin = tab === 'login';
+
+      let formContent = '';
+      if (isLogin) {
+        formContent =
+          '<div class="auth-form-fields">' +
+          '<input id="auth-email" type="email" placeholder="Email" class="auth-input" />' +
+          '<input id="auth-password" type="password" placeholder="Password" class="auth-input" />' +
+          '</div>' +
+          '<button type="button" class="auth-submit" onclick="handleLoginAction()">MASUK</button>' +
+          '<div id="auth-error" class="auth-error"></div>';
+      } else {
+        formContent =
+          '<div class="auth-form-fields">' +
+          '<input id="auth-email" type="email" placeholder="Email" class="auth-input" />' +
+          '<input id="auth-password" type="password" placeholder="Password" class="auth-input" />' +
+          '</div>' +
+          '<button type="button" class="auth-submit" onclick="handleRegister()">DAFTAR</button>' +
+          '<div id="auth-error" class="auth-error"></div>';
+      }
+
+      inner.innerHTML =
+        '<div class="auth-modal-header">' +
+        '<div class="auth-modal-title">Selamat Datang</div>' +
+        '<button class="auth-modal-close" onclick="closeAuthModal()">&times;</button>' +
+        '</div>' +
+        '<div class="auth-modal-sub">Masuk untuk menyimpan riwayat dan akses fitur Pro.</div>' +
+        '<div class="auth-tabs">' +
+        '<button class="auth-tab-btn ' + (isLogin ? 'active' : '') + '" onclick="switchAuthTab(\'login\')">Login</button>' +
+        '<button class="auth-tab-btn ' + (!isLogin ? 'active' : '') + '" onclick="switchAuthTab(\'daftar\')">Daftar</button>' +
+        '</div>' +
+        formContent;
     }
 
-    async function handleAuth() {
-      const email = document.getElementById('auth-email').value;
-      const password = document.getElementById('auth-pass').value;
-      const errEl = document.getElementById('auth-err');
-      errEl.textContent = '';
+    function switchAuthTab(tab) {
+      authMode = tab === 'daftar' ? 'signup' : 'login';
+      renderAuthModalContent(authMode === 'signup' ? 'signup' : 'login');
+    }
 
-      if (!sb) return;
+    function setAuthLoading(isLoading, teksAsli) {
+      const btn = document.querySelector('.auth-submit');
+      if (!btn) return;
+
+      if (isLoading) {
+        btn.disabled = true;
+        btn.classList.add('loading');
+        btn.innerHTML =
+          '<span class="auth-dots">' +
+          '<span></span><span></span><span></span>' +
+          '</span>';
+      } else {
+        btn.disabled = false;
+        btn.classList.remove('loading');
+        btn.innerHTML = teksAsli;
+      }
+    }
+
+    async function handleLoginAction() {
+      const email = document.getElementById('auth-email')?.value?.trim();
+      const password = document.getElementById('auth-password')?.value;
+      const errorEl = document.getElementById('auth-error');
+
+      if (!email || !password) {
+        if (errorEl) errorEl.textContent = 'Email dan password wajib diisi.';
+        return;
+      }
+
+      if (errorEl) errorEl.textContent = '';
+      if (!sb) {
+        if (errorEl) errorEl.textContent = 'Koneksi database tidak tersedia.';
+        return;
+      }
+
+      setAuthLoading(true, 'MASUK');
 
       try {
-        let result;
-        if (authMode === 'login') {
-          result = await sb.auth.signInWithPassword({ email, password });
-        } else {
-          result = await sb.auth.signUp({ email, password });
-        }
+        const { error } = await sb.auth.signInWithPassword({ email, password });
+        setAuthLoading(false, 'MASUK');
 
-        if (result.error) {
-          errEl.textContent = result.error.message;
+        if (error) {
+          if (errorEl) errorEl.textContent = error.message; // temporary for debugging
+          const form = document.querySelector('.auth-form-fields');
+          if (form) {
+            form.classList.add('auth-shake');
+            setTimeout(() => form.classList.remove('auth-shake'), 500);
+          }
         } else {
           closeAuthModal();
         }
       } catch (e) {
-        errEl.textContent = "Terjadi kesalahan koneksi.";
+        setAuthLoading(false, 'MASUK');
+        if (errorEl) errorEl.textContent = 'Terjadi kesalahan koneksi.';
       }
     }
 
-    // Initialize on load
-    initSupabase();
+    async function handleRegister() {
+      if (!sb) {
+        document.getElementById('auth-error').textContent = 'Koneksi database tidak tersedia.';
+        return;
+      }
+
+      const email = document.getElementById('auth-email')?.value?.trim();
+      const password = document.getElementById('auth-password')?.value;
+      const errorEl = document.getElementById('auth-error');
+
+      if (!email || !password) {
+        errorEl.textContent = 'Email dan password wajib diisi.';
+        return;
+      }
+
+      if (password.length < 6) {
+        errorEl.textContent = 'Password minimal 6 karakter.';
+        return;
+      }
+
+      errorEl.textContent = '';
+      setAuthLoading(true, 'DAFTAR');
+
+      const { data, error } = await sb.auth.signUp({ email, password });
+
+      setAuthLoading(false, 'DAFTAR');
+
+      if (error) {
+        errorEl.textContent = error.message;
+        return;
+      }
+
+      if (data?.user) {
+        currentUser = data.user;
+        closeAuthModal();
+        openProfileSetup();
+      }
+    }
+
+    /* ── PROFILE SETUP (after first register) ── */
+    function openProfileSetup() {
+      var inner = document.getElementById('auth-modal-inner');
+      inner.innerHTML =
+        '<div class="auth-modal-header">' +
+        '<div class="auth-modal-title" style="font-size:32px">Satu langkah lagi</div>' +
+        '<button class="auth-modal-close" onclick="closeAuthModal()">&times;</button>' +
+        '</div>' +
+        '<div class="auth-modal-sub">Siapa namamu?</div>' +
+        '<div class="auth-form-fields" style="margin-top:24px">' +
+        '<input type="text" class="auth-input" id="profile-nama-input" placeholder="Nama kamu..." />' +
+        '</div>' +
+        '<button class="auth-submit-btn" onclick="saveProfileName()">SIMPAN & MULAI</button>';
+      document.getElementById('auth-overlay').classList.add('open');
+      document.getElementById('auth-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    async function saveProfileName() {
+      var namaInput = document.getElementById('profile-nama-input');
+      var nama = namaInput ? namaInput.value.trim() : '';
+      if (!nama || !sb || !currentUser) return;
+      await sb.from('profiles').update({ nama: nama }).eq('id', currentUser.id);
+      await loadProfile(currentUser.id);
+      updateNavAuth();
+      closeAuthModal();
+      setTimeout(function () { openProfilePanel(); }, 300);
+    }
+
+    /* ── PROFILE DROPDOWN ── */
+    function openProfileDropdown() {
+      renderProfileDropdown();
+      document.getElementById('profile-dropdown').classList.add('open');
+    }
+
+    function closeProfileDropdown() {
+      document.getElementById('profile-dropdown').classList.remove('open');
+    }
+
+    function renderProfileDropdown() {
+      var inner = document.getElementById('profile-dropdown-inner');
+      if (!inner || !currentUser) return;
+
+      var initial = _getInitial();
+      var displayName = (currentProfile && currentProfile.nama) ? currentProfile.nama : (currentUser.email || '');
+      var email = currentUser.email || '';
+      var plan = (currentProfile && currentProfile.plan === 'pro') ? 'pro' : 'free';
+      var planLabel = plan === 'pro' ? 'PRO' : 'FREE';
+
+      var usahaHTML = '';
+      if (currentProfile && currentProfile.usaha_nama) {
+        usahaHTML =
+          '<div class="profile-usaha-wrapper">' +
+          '<div class="profile-usaha-label">USAHAMU</div>' +
+          '<div class="profile-usaha-nama">' + currentProfile.usaha_nama + '</div>' +
+          '<div class="profile-usaha-detail">' +
+          (currentProfile.usaha_kategori || '') +
+          (currentProfile.usaha_deskripsi ? ' — ' + currentProfile.usaha_deskripsi : '') +
+          '</div>' +
+          '<button class="profile-usaha-edit" onclick="openUsahaSetup()">Ubah</button>' +
+          '</div>';
+      } else {
+        usahaHTML =
+          '<button class="profile-usaha-btn" onclick="openUsahaSetup()">MULAI USAHAMU</button>';
+      }
+
+      inner.innerHTML =
+        '<div class="profile-dropdown-header">' +
+        '<div class="profile-avatar-md">' + initial + '</div>' +
+        '<div class="profile-info-col">' +
+        '<div class="profile-name">' + displayName + '</div>' +
+        '<div class="profile-email">' + email + '</div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="profile-plan-badge ' + plan + '">' + planLabel + '</div>' +
+        '<hr class="profile-divider">' +
+        usahaHTML +
+        '<hr class="profile-divider">' +
+        '<button class="profile-logout-btn" onclick="handleLogout()">Keluar</button>';
+    }
+
+    async function handleLogout() {
+      if (!sb) return;
+      await sb.auth.signOut();
+      closeProfileDropdown();
+    }
+
+    document.addEventListener('click', function (e) {
+      var dropdown = document.getElementById('profile-dropdown');
+      var btn = document.getElementById('auth-profile-btn');
+      if (dropdown && dropdown.classList.contains('open')) {
+        if (!dropdown.contains(e.target) && (!btn || !btn.contains(e.target))) {
+          closeProfileDropdown();
+        }
+      }
+    });
+
+    /* ── USAHA SETUP MODAL ── */
+    let selectedUsahaKategori = null;
+
+    function openUsahaSetup() {
+      closeProfileDropdown();
+      selectedUsahaKategori = null; // Reset setiap kali buka
+      var inner = document.getElementById('auth-modal-inner');
+
+      var existingNama = (currentProfile && currentProfile.usaha_nama) || '';
+      var existingKat = (currentProfile && currentProfile.usaha_kategori) || '';
+      var existingDesc = (currentProfile && currentProfile.usaha_deskripsi) || '';
+
+      var categories = ['Makanan', 'Minuman', 'Fashion', 'Kecantikan', 'Aksesoris', 'Handmade', 'Digital', 'Rumah Tangga', 'Hobi & Kreatif', 'Produk Anak'];
+      var chipsHTML = categories.map(function (cat) {
+        var isSelected = (cat === existingKat) ? 'selected' : '';
+        if (isSelected) selectedUsahaKategori = cat;
+        return '<div class="usaha-cat-chip ' + isSelected + '" onclick="selectUsahaCategory(this, \'' + cat + '\')">' + cat + '</div>';
+      }).join('');
+
+      inner.innerHTML =
+        '<div class="auth-modal-header" style="flex-direction:column; align-items:flex-start; margin-bottom: 40px;">' +
+        '<div style="font-family:\'DM Mono\',monospace; font-size:9px; letter-spacing:4px; color:var(--gold); margin-bottom:20px; text-transform:uppercase;">PROFIL USAHA</div>' +
+        '<div style="font-family:\'Cormorant Garamond\',serif; font-size:44px; font-weight:600; line-height:1.1; color:var(--text);">Usaha apa yang akan<br>kamu mulai?</div>' +
+        '<button class="auth-modal-close" onclick="closeAuthModal()" style="position:absolute; top:40px; right:40px;">&times;</button>' +
+        '</div>' +
+
+        '<div style="margin-bottom: 32px;">' +
+        '<label style="font-family:\'DM Mono\',monospace; font-size:9px; letter-spacing:3px; color:var(--text-faint); display:block; margin-bottom:8px; text-transform:uppercase;">NAMA USAHA</label>' +
+        '<div class="usaha-input-wrapper" id="usaha-nama-wrapper">' +
+        '<span style="font-family:\'DM Mono\',monospace; font-size:14px; color:var(--gold); margin-right:10px; flex-shrink:0;">›_</span>' +
+        '<input type="text" id="usaha-nama-input" placeholder="ketik nama usahamu..." value="' + existingNama.replace(/"/g, '&quot;') + '" autocomplete="off" />' +
+        '</div>' +
+        '</div>' +
+
+        '<div style="margin-bottom: 32px;">' +
+        '<label style="font-family:\'DM Mono\',monospace; font-size:9px; letter-spacing:3px; color:var(--text-faint); display:block; margin-bottom:12px; text-transform:uppercase;">KATEGORI</label>' +
+        '<div id="usaha-cat-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(80px, 1fr)); gap:6px;">' + chipsHTML + '</div>' +
+        '</div>' +
+
+        '<div style="margin-bottom: 40px;">' +
+        '<label style="font-family:\'DM Mono\',monospace; font-size:9px; letter-spacing:3px; color:var(--text-faint); display:block; margin-bottom:8px; text-transform:uppercase;">DESKRIPSI SINGKAT</label>' +
+        '<textarea id="usaha-deskripsi-input" rows="2" placeholder="ceritakan singkat usahamu...">' + existingDesc + '</textarea>' +
+        '</div>' +
+
+        '<button class="usaha-submit" onclick="validateAndSaveUsaha()">SIMPAN USAHA</button>' +
+        '<div id="usaha-error" style="font-family:\'DM Mono\',monospace; font-size:11px; color:#ef4444; text-align:center; margin-top:12px; min-height:16px;"></div>';
+
+      document.getElementById('auth-overlay').classList.add('open');
+      document.getElementById('auth-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+
+      // Auto focus on name if empty
+      if (!existingNama) {
+        setTimeout(function () {
+          var input = document.getElementById('usaha-nama-input');
+          if (input) input.focus();
+        }, 100);
+      }
+    }
+
+    function selectUsahaCategory(element, category) {
+      if (!element || !category) return;
+      var chips = document.querySelectorAll('.usaha-cat-chip');
+      chips.forEach(function (c) { c.classList.remove('selected'); });
+      element.classList.add('selected');
+      selectedUsahaKategori = category;
+      var err = document.getElementById('usaha-error');
+      if (err) err.textContent = '';
+    }
+
+    function validateAndSaveUsaha() {
+      var namaInput = document.getElementById('usaha-nama-input');
+      var deskripsiInput = document.getElementById('usaha-deskripsi-input');
+      var namaWrapper = document.getElementById('usaha-nama-wrapper');
+      var catGrid = document.getElementById('usaha-cat-grid');
+      var err = document.getElementById('usaha-error');
+
+      var nama = namaInput ? namaInput.value.trim() : '';
+      var deskripsi = deskripsiInput ? deskripsiInput.value.trim() : '';
+
+      if (!nama || !selectedUsahaKategori) {
+        if (err) err.textContent = 'Nama usaha dan kategori wajib diisi.';
+
+        if (!nama && namaWrapper) {
+          namaWrapper.style.borderBottomColor = '#ef4444';
+          setTimeout(function () { namaWrapper.style.borderBottomColor = ''; }, 2000);
+        }
+
+        if (!selectedUsahaKategori && catGrid) {
+          var chips = catGrid.querySelectorAll('.usaha-cat-chip');
+          chips.forEach(function (c) {
+            var oldBorder = c.style.borderColor;
+            c.style.borderColor = '#ef4444';
+            setTimeout(function () { c.style.borderColor = oldBorder; }, 2000);
+          });
+        }
+        return;
+      }
+
+      saveUsaha_internal(nama, selectedUsahaKategori, deskripsi);
+    }
+
+    async function saveUsaha_internal(nama, kategori, deskripsi) {
+      if (!nama || !sb || !currentUser) return;
+      await sb.from('profiles').update({
+        usaha_nama: nama,
+        usaha_kategori: kategori,
+        usaha_deskripsi: deskripsi
+      }).eq('id', currentUser.id);
+      await loadProfile(currentUser.id);
+      closeAuthModal();
+      renderProfileDropdown();
+      openProfileDropdown();
+    }
+
+    // Initialize on load — show login button immediately
+    document.addEventListener('DOMContentLoaded', () => {
+      initAuth();
+      updateNavAuth();
+      initSupabase();
+    });
 
     /* ══════════════════════════════════════════════════
        SECTION 1 — Market Snapshot: Counter Animation
@@ -8928,16 +10521,16 @@
 
     /* ── IDE PRODUK WIZARD ── */
     const IP_KATEGORI = [
-      { kode: 'MKN', nama: 'Makanan', value: 'Makanan' },
-      { kode: 'MNM', nama: 'Minuman', value: 'Minuman' },
-      { kode: 'FSH', nama: 'Fashion', value: 'Fashion' },
-      { kode: 'BTY', nama: 'Kecantikan', value: 'Produk Kecantikan' },
-      { kode: 'AKS', nama: 'Aksesoris', value: 'Aksesoris' },
-      { kode: 'HMD', nama: 'Handmade', value: 'Handmade' },
-      { kode: 'DGT', nama: 'Digital', value: 'Produk Digital' },
-      { kode: 'HTG', nama: 'Rumah Tangga', value: 'Produk Rumah Tangga' },
-      { kode: 'HBI', nama: 'Hobi & Kreatif', value: 'Hobi & Kreatif' },
-      { kode: 'ANK', nama: 'Produk Anak', value: 'Produk Anak' }
+      { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h2v11M7 2v20M15 2c0 0-2 2-2 5s2 5 2 5v10M19 2v5h-4"/></svg>', nama: 'Makanan', value: 'Makanan' },
+      { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M5 3h14l-2 16H7L5 3z"/><path d="M3 3h18M10 7l4 4"/></svg>', nama: 'Minuman', value: 'Minuman' },
+      { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M12 3a2 2 0 0 1 2 2c0 .74-.4 1.38-1 1.73V8l8 6H3l8-6V6.73A2 2 0 0 1 10 5a2 2 0 0 1 2-2z"/><path d="M3 14v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"/></svg>', nama: 'Fashion', value: 'Fashion' },
+      { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><rect x="7" y="8" width="10" height="13" rx="2"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/><path d="M12 12v4M10 14h4"/></svg>', nama: 'Kecantikan', value: 'Produk Kecantikan' },
+      { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/><path d="M9 8l-2 3h10l-2-3H9zM7 11l5 7 5-7"/></svg>', nama: 'Aksesoris', value: 'Aksesoris' },
+      { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M3.5 20.5l10-10M8 3c0 0 1 4-1 6s-4 2-4 2"/><path d="M20.5 3.5c0 0-6 1-8 6s0 10 0 10"/><path d="M15 6l3-3 3 3-3 3-3-3z"/></svg>', nama: 'Handmade', value: 'Handmade' },
+      { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 18h20M10 11l2-3 2 3-2 1-2-1z"/></svg>', nama: 'Digital', value: 'Produk Digital' },
+      { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M3 12L12 3l9 9"/><path d="M9 21V12h6v9"/><path d="M3 12v9h18v-9"/></svg>', nama: 'Rumah Tangga', value: 'Produk Rumah Tangga' },
+      { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M12 19c-1.5 0-3-1-3-3 0-2 2-3 2-5"/><circle cx="12" cy="5" r="2"/><path d="M8 19h8"/><path d="M15 8c1.5 1 3 2.5 3 5a6 6 0 0 1-12 0c0-2.5 1.5-4 3-5"/></svg>', nama: 'Hobi & Kreatif', value: 'Hobi & Kreatif' },
+      { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>', nama: 'Produk Anak', value: 'Produk Anak' }
     ];
     const IP_MODAL = [
       { label: 'Modal Kecil', ket: 'Di bawah Rp 10 juta', kode: 'KCL', tier: 'Kecil' },
@@ -8974,11 +10567,11 @@
       let body = '';
       if (step === 1) {
         body = '<div class="ip-step-indicator">01 / 02</div><h2 class="ip-title">Kategori mana yang ingin kamu masuki?</h2><div class="ip-cat-grid">' +
-          IP_KATEGORI.map(k => '<div class="ip-cat-card' + (selectedKategori === k.value ? ' ip-active' : '') + '" onclick="handleKategoriSelect(\'' + k.value.replace(/'/g, "\\'") + '\')"><span class="ip-cat-code">' + k.kode + '</span><span class="ip-cat-name">' + k.nama + '</span></div>').join('') +
+          IP_KATEGORI.map(k => '<div class="ip-cat-card' + (selectedKategori === k.value ? ' selected' : '') + '" onclick="handleKategoriSelect(\'' + k.value.replace(/'/g, "\\'") + '\')">' + k.svg + '<span class="ip-cat-name">' + k.nama + '</span></div>').join('') +
           '</div>';
       } else if (step === 2) {
         body = '<div class="ip-step-indicator">02 / 02</div><h2 class="ip-title">Berapa modal yang siap kamu alokasikan?</h2><div class="ip-modal-grid">' +
-          IP_MODAL.map(m => '<div class="ip-modal-card' + (selectedModalTier === m.tier ? ' ip-active' : '') + '" onclick="handleModalSelect(\'' + m.tier + '\')"><div class="ip-modal-left"><span class="ip-modal-label">' + m.label + '</span><span class="ip-modal-ket">' + m.ket + '</span></div><span class="ip-modal-code">' + m.kode + '</span></div>').join('') +
+          IP_MODAL.map((m, i) => '<div class="ip-modal-card' + (selectedModalTier === m.tier ? ' selected' : '') + '" data-index="' + (i + 1) + '" onclick="handleModalSelect(\'' + m.tier + '\')"><span class="ip-modal-label">' + m.label + '</span><span class="ip-modal-ket">' + m.ket + '</span><span class="ip-modal-code">' + m.kode + '</span></div>').join('') +
           '</div>';
       } else if (step === 3) {
         body = '<div class="ai-gen-header"><div class="ai-gen-icon-pulse">&#10022;</div><div class="ai-gen-title">Sentra memindai database...</div></div><div class="ai-gen-steps">' +
@@ -9084,16 +10677,26 @@
       }, remaining);
     }
 
-    // Close modal on Escape key — unified handler (radar panel takes priority if open)
+    // Close modal on Escape key — unified handler
     document.addEventListener('keydown', e => {
       if (e.key !== 'Escape') return;
-      const ipModal = document.getElementById('ip-modal');
+      var authModal = document.getElementById('auth-modal');
+      if (authModal && authModal.classList.contains('open')) {
+        closeAuthModal();
+        return;
+      }
+      var profilePanel = document.getElementById('profile-panel');
+      if (profilePanel && profilePanel.classList.contains('open')) {
+        closeProfilePanel();
+        return;
+      }
+      var ipModal = document.getElementById('ip-modal');
       if (ipModal && ipModal.classList.contains('open')) {
         closeIdeWizard();
         return;
       }
-      const panel = document.getElementById('radar-float-panel');
-      if (panel && panel.classList.contains('open')) {
+      var radarPanel = document.getElementById('radar-float-panel');
+      if (radarPanel && radarPanel.classList.contains('open')) {
         closeRadarPanel();
       } else {
         closeUpgradeModal();
@@ -9492,6 +11095,22 @@
 
     initTypingPlaceholder();
 
+    // Scroll-to-top behavior (muncul setelah scroll > 400px)
+    const scrollTopBtn = document.getElementById('scrollTopBtn');
+    if (scrollTopBtn) {
+      window.addEventListener('scroll', function () {
+        if (window.scrollY > 400) {
+          scrollTopBtn.classList.add('is-visible');
+        } else {
+          scrollTopBtn.classList.remove('is-visible');
+        }
+      });
+
+      scrollTopBtn.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
 
   </script>
   <div id="ip-overlay" onclick="closeIdeWizard()">
@@ -9501,6 +11120,11 @@
   </div>
   <div id="radar-overlay" onclick="closeRadarPanel()"></div>
   <div id="radar-float-panel"></div>
+
+  <!-- Scroll to top button -->
+  <button id="scrollTopBtn" class="scroll-to-top" type="button" aria-label="Kembali ke atas">
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
 
 </body>
 

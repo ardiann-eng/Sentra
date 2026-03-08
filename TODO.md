@@ -1,11 +1,10 @@
-# TODO — Sticky Navbar Sentra AI
+# Auth System Implementation — TODO
 
-- [x] Tambah CSS navbar glassmorphism sticky (desktop + mobile behavior)
-- [x] Tambah HTML komponen navbar sesuai urutan item
-- [x] Tambah JavaScript behavior:
-  - [x] Hidden on load
-  - [x] Show slide-down setelah scroll > 320px
-  - [x] Smooth scroll dengan offset 80px
-  - [x] Focus `#kw` untuk Analisis/CTA
-  - [x] Active link highlight berdasarkan section viewport
-- [x] Uji integrasi cepat (struktur & potensi bentrok style/script)
+- [x] Step 1: Add new CSS for auth system (overlay, modal, profile panel, buttons)
+- [x] Step 2: Add `#sticky-nav-auth` slot in sticky navbar HTML
+- [x] Step 3: Replace old auth modal HTML with new overlay + modal + profile panel
+- [x] Step 4: Add global state variables (`currentUser`, `currentProfile`)
+- [x] Step 5: Rewrite auth JS (initAuth, loadProfile, updateNavAuth, modal rendering)
+- [x] Step 6: Add profile setup, profile panel, usaha setup functions
+- [x] Step 7: Update Escape key handler for new modals/panels
+- [x] Step 8: Ensure "Masuk" button renders immediately on page load (updateNavAuth before initSupabase)
