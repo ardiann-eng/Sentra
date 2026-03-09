@@ -1,10 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sentra AI</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Sentra AI — Result: Dubai Coklat</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap"
@@ -1113,77 +1112,53 @@
 
     /* ── LOADING BAR ── */
     #loading {
+      margin-top: 24px;
+      min-height: 48px;
       display: none;
-      max-width: 700px;
-      margin: 20px auto 0;
-      opacity: 0;
-      transition: opacity .3s ease;
-    }
-
-    #loading.visible {
-      opacity: 1;
     }
 
     .load-bar-track {
-      height: 3px;
-      background: rgba(212, 168, 67, .12);
-      border-radius: 2px;
+      width: 100%;
+      height: 1px;
+      background: rgba(212, 168, 67, 0.1);
+      position: relative;
       overflow: hidden;
+      border-radius: 2px;
     }
 
     .load-bar-fill {
+      position: absolute;
+      top: 0;
+      left: -50%;
+      width: 50%;
       height: 100%;
-      width: 0%;
-      background: var(--gold);
-      border-radius: 2px;
-      box-shadow: 0 0 10px rgba(212, 168, 67, .6);
-      animation: load-progress 2.4s ease-in-out infinite;
-    }
-
-    @keyframes load-progress {
-      0% {
-        width: 0%;
-        margin-left: 0%
-      }
-
-      50% {
-        width: 60%;
-        margin-left: 20%
-      }
-
-      100% {
-        width: 0%;
-        margin-left: 100%
-      }
+      background: linear-gradient(90deg, transparent, #D4A843, transparent);
+      animation: scanProgress 1.5s infinite linear;
     }
 
     .load-text {
       font-family: 'DM Mono', monospace;
       font-size: 11px;
-      letter-spacing: 1.5px;
+      letter-spacing: 2px;
       text-transform: uppercase;
-      color: var(--text-faint);
-      text-align: center;
-      margin-top: 10px;
-      animation: blink 1.6s infinite;
-    }
-
-    .load-step {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      color: var(--gold-dim);
-      text-align: center;
-      margin-top: 4px;
-      letter-spacing: 1px;
-    }
-
-
-    .load-step {
-      font-size: 13px;
-      color: var(--text-dim);
+      color: rgba(212, 168, 67, 0.6);
       margin-top: 12px;
-      min-height: 20px;
-      transition: opacity .4s;
+      text-align: center;
+      display: block;
+    }
+
+    #load-step {
+      display: none !important;
+    }
+
+    @keyframes scanProgress {
+      0% {
+        left: -50%;
+      }
+
+      100% {
+        left: 100%;
+      }
     }
 
     /* ── RESULTS ── */
@@ -4452,6 +4427,7 @@
       display: flex;
       justify-content: center;
       margin: 20px auto 0;
+      transition: opacity 0.2s ease;
     }
 
     .ip-entry-btn {
@@ -6635,6 +6611,7 @@
     /*            MOBILE REFACTOR ≤ 768px             */
     /* ─────────────────────────────────────────────── */
     @media (max-width: 768px) {
+
       /* ── TIPOGRAFI GLOBAL ── */
       html,
       body {
@@ -6686,11 +6663,11 @@
         padding-bottom: 64px;
       }
 
-      .wrap + .wrap {
+      .wrap+.wrap {
         margin-top: 32px;
       }
 
-      section + section {
+      section+section {
         margin-top: 24px;
       }
 
@@ -6892,15 +6869,15 @@
       }
 
       /* Sembunyikan detail tambahan sampai accordion dibuka */
-      .tech-section:not(.open) ~ .trend-chart-card,
-      .tech-section:not(.open) ~ .season-card,
-      .tech-section:not(.open) ~ #summary-card {
+      .tech-section:not(.open)~.trend-chart-card,
+      .tech-section:not(.open)~.season-card,
+      .tech-section:not(.open)~#summary-card {
         display: none !important;
       }
 
-      .tech-section.open ~ .trend-chart-card,
-      .tech-section.open ~ .season-card,
-      .tech-section.open ~ #summary-card {
+      .tech-section.open~.trend-chart-card,
+      .tech-section.open~.season-card,
+      .tech-section.open~#summary-card {
         display: block !important;
       }
 
@@ -7053,11 +7030,9 @@
         width: 48px;
         height: 100%;
         pointer-events: none;
-        background: linear-gradient(
-          to left,
-          #0A0A08 0%,
-          rgba(10, 10, 8, 0.0) 100%
-        );
+        background: linear-gradient(to left,
+            #0A0A08 0%,
+            rgba(10, 10, 8, 0.0) 100%);
       }
 
       /* ── PRICING ── */
@@ -8199,12 +8174,6 @@
 
         <div class="summary-divider"></div>
 
-        <!-- Berita Section -->
-        <div class="summary-news-section" id="summary-news-section" style="display:none;">
-          <div class="summary-news-label">// Berita Terkait</div>
-          <div class="summary-news-list" id="summary-news-list"></div>
-        </div>
-
         <!-- Action Hint dengan Terminal Prefix -->
         <div class="summary-action-section">
           <div class="summary-hint-label">// Rekomendasi</div>
@@ -9247,13 +9216,25 @@
     /* ── LOADING ── */
     function startSteps(steps) {
       let i = 0;
-      document.getElementById('load-step').textContent = steps[0];
+      const loadText = document.getElementById('load-text');
+
+      if (loadText) loadText.textContent = steps[0];
+
+      if (stepTimer) clearInterval(stepTimer);
+
       stepTimer = setInterval(() => {
-        i = Math.min(i + 1, steps.length - 1);
-        document.getElementById('load-step').textContent = steps[i];
-      }, 4500);
+        i++;
+        if (i >= steps.length) {
+          clearInterval(stepTimer);
+        } else {
+          if (loadText) loadText.textContent = steps[i];
+        }
+      }, 1500);
     }
-    function stopSteps() { clearInterval(stepTimer); document.getElementById('load-step').textContent = ''; }
+
+    function stopSteps() {
+      if (stepTimer) clearInterval(stepTimer);
+    }
 
     function showErr(msg) {
       const el = document.getElementById('err');
@@ -9263,25 +9244,29 @@
 
     function setLoading(on, isCompare = false) {
       const loadEl = document.getElementById('loading');
+      const hintText = document.getElementById('ip-entry');
+      const btnSingle = document.getElementById('btn');
+      const btnCompare = document.getElementById('btn-compare');
+
       if (on) {
-        // Show: set display first, then trigger opacity transition
+        if (hintText) {
+          hintText.style.opacity = '0';
+          hintText.style.pointerEvents = 'none';
+        }
         loadEl.style.display = 'block';
-        requestAnimationFrame(() => loadEl.classList.add('visible'));
-      } else {
-        // Hide: fade out, then set display:none after transition completes
-        loadEl.classList.remove('visible');
-        setTimeout(() => { loadEl.style.display = 'none'; }, 320);
-      }
-      if (!isCompare) document.getElementById('btn').disabled = on;
-      else document.getElementById('btn-compare').disabled = on;
-      if (on) {
+
+        if (!isCompare && btnSingle) btnSingle.disabled = true;
+        if (isCompare && btnCompare) btnCompare.disabled = true;
+
         document.getElementById('results').style.display = 'none';
         document.getElementById('compare-results').style.display = 'none';
         startSteps(isCompare ? COMPARE_STEPS : STEPS);
-        document.getElementById('load-text').textContent = isCompare
-          ? 'Membandingkan kedua keyword...'
-          : 'Menganalisis pasar...';
-      } else stopSteps();
+      } else {
+        stopSteps();
+        loadEl.style.display = 'none';
+        if (!isCompare && btnSingle) btnSingle.disabled = false;
+        if (isCompare && btnCompare) btnCompare.disabled = false;
+      }
     }
 
     /* ── SINGLE KEYWORD HELPERS ── */
@@ -10380,6 +10365,7 @@
         setLoading(false, false);
 
       } catch (e) {
+        console.error('[ANALYZE ERROR]', e);
         showErr(e.name === 'AbortError' ? 'Timeout. Coba lagi.' : 'Koneksi gagal.');
         setLoading(false, false);
       }
