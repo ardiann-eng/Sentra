@@ -22,7 +22,8 @@ Sentra AI menganalisis tren minat pasar secara real-time menggunakan data Google
 | Radar Peluang Sektor (7 sektor) | ✅ | ✅ |
 | Berita Terkini per Keyword | ✅ | ✅ |
 | Animated Typing Placeholder | ✅ | ✅ |
-| Lokasi per-Provinsi | ❌ | ✅ |
+| Lokasi per-Provinsi | ✅ | ✅ |
+| Analisis Regional & Lokal | ✅ | ✅ |
 | Download Laporan PDF | ❌ | ✅ |
 
 ---
@@ -201,6 +202,7 @@ Sentra/
 | `POST` | `/api/analyze-local` | Analisis minat per-provinsi + AI strategi lokal |
 | `POST` | `/api/sector-radar` | Data Radar Peluang Sektor (static + RSS news + AI signal) |
 | `POST` | `/api/keyword-news` | Berita terkini dari Google News RSS per keyword |
+| `GET`  | `/api/ide-produk` | Rekomendasi ide produk UMKM (wizard) |
 | `GET`  | `/api/preview` | Data preview homepage (cached, tanpa kuota) |
 | `POST` | `/api/user-status` | Cek kuota & tier user |
 | `GET`  | `/api/config` | Expose Supabase anon key ke frontend |
