@@ -1314,7 +1314,17 @@ def keyword_news():
 @app.route("/api/health")
 def health():
     sb_ok = get_supabase() is not None
-    return jsonify({"status": "ok", "version": "2.0", "supabase": sb_ok, "claude": bool(os.environ.get("ANTHROPIC_API_KEY"))})
+    return jsonify({"status": "ok", "version": "2.0", "supabase": sb_ok, "openrouter": bool(os.environ.get("OPENROUTER_API_KEY"))})
+
+
+@app.route("/api/admin/clear-cache", methods=["POST"])
+def clear_cache():
+    """Clear L1 memory cache. Panggil sekali setelah deploy fix tanggal."""
+    global _mem_cache
+    with _cache_lock:
+        count = len(_mem_cache)
+        _mem_cache.clear()
+    return jsonify({"cleared": count, "message": "L1 cache cleared"})
 
 
 if __name__ == "__main__":

@@ -28,6 +28,8 @@
       --gold-dim: #A8892E;
       --gold-glow: rgba(212, 168, 67, .15);
       --gold-line: rgba(212, 168, 67, .22);
+      --radius-sm: 4px; /* SENTRA AUDIT — radius token for badges/chips */
+      --radius-md: 8px; /* SENTRA AUDIT — radius token for cards/containers */
       --bg: #0A0A08;
       --surface: rgba(24, 21, 16, 0.6);
       --surface2: rgba(32, 29, 20, 0.8);
@@ -1391,6 +1393,10 @@
       color: var(--text)
     }
 
+    .mc-val.neu {
+      color: var(--text);
+    }
+
     .gld {
       color: var(--gold)
     }
@@ -1839,7 +1845,7 @@
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid var(--glass-border);
       border-top: 1px solid rgba(201, 168, 76, 0.5);
-      border-radius: 16px;
+      border-radius: 8px;
       padding: 24px;
       margin-bottom: 24px;
       animation: resSlideUp 0.5s ease both 0s;
@@ -1918,7 +1924,7 @@
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid var(--glass-border);
-      border-radius: 16px;
+      border-radius: 8px;
       padding: 18px;
       margin-bottom: 24px;
       animation: resSlideUp 0.5s ease both 0.16s;
@@ -1951,7 +1957,7 @@
       font-family: 'Cormorant Garamond', serif;
       font-size: 22px;
       font-weight: 700;
-      color: var(--green);
+      color: var(--text);
     }
 
     .chart-header-range {
@@ -1984,35 +1990,29 @@
       color: var(--amber);
     }
 
-    .chart-tabs {
+    .forecast-toggle-wrap {
       display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      padding-bottom: 8px;
+      justify-content: center;
+      margin-top: 12px;
     }
 
-    .chart-tab {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      padding: 6px 12px;
-      border-radius: 8px;
+    .forecast-toggle-btn {
       background: transparent;
-      border: 1px solid transparent;
-      color: var(--text-dim);
+      border: 1px solid rgba(212,168,67,0.4);
+      color: #D4A843;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      padding: 8px 20px;
+      border-radius: 4px;
       cursor: pointer;
       transition: all 0.2s ease;
     }
 
-    .chart-tab.active {
-      background: rgba(212, 168, 67, 0.15);
-      border-color: rgba(212, 168, 67, 0.3);
-      color: var(--gold);
-    }
-
-    .chart-tab:hover:not(.active) {
-      border-color: rgba(255, 255, 255, 0.1);
-      color: var(--text);
+    .forecast-toggle-btn:hover,
+    .forecast-toggle-btn.active {
+      background: rgba(212,168,67,0.1);
+      border-color: #D4A843;
     }
 
     /* Section Headers */
@@ -2057,7 +2057,7 @@
       backdrop-filter: var(--blur);
       -webkit-backdrop-filter: var(--blur);
       border: 1px solid var(--glass-border);
-      border-radius: 14px;
+      border-radius: 8px;
       padding: 14px 14px 12px;
       position: relative;
       overflow: hidden;
@@ -2130,10 +2130,10 @@
     }
 
     #r-months .chip {
-      background: rgba(0, 230, 118, 0.15);
-      border: 1px solid rgba(0, 230, 118, 0.3);
-      color: var(--green);
-      box-shadow: 0 0 8px rgba(0, 230, 118, 0.1);
+      background: rgba(212, 168, 67, 0.12);
+      border: 1px solid rgba(212, 168, 67, 0.3);
+      color: var(--gold);
+      box-shadow: 0 0 8px rgba(212, 168, 67, 0.1);
     }
 
     #r-months .chip.off {
@@ -2240,7 +2240,7 @@
       padding: 14px;
       background: var(--glass);
       border: 1px solid var(--glass-border);
-      border-radius: 12px;
+      border-radius: 6px;
       color: var(--text);
       font-size: 13px;
       font-weight: 600;
@@ -2260,7 +2260,7 @@
       padding: 14px;
       background: var(--gold);
       border: none;
-      border-radius: 12px;
+      border-radius: 6px;
       color: #0A0A08;
       font-size: 13px;
       font-weight: 700;
@@ -2313,7 +2313,7 @@
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid var(--glass-border);
-      border-radius: 14px;
+      border-radius: 8px;
       padding: 16px 18px;
       margin-bottom: 24px;
       overflow: hidden;
@@ -2336,12 +2336,12 @@
     }
 
     .season-badge {
-      background: rgba(0, 255, 135, 0.1);
-      border: 1px solid rgba(0, 255, 135, 0.2);
+      background: rgba(212, 168, 67, 0.1);
+      border: 1px solid rgba(212, 168, 67, 0.25);
       border-radius: 6px;
       padding: 3px 8px;
       font-size: 10px;
-      color: var(--green);
+      color: var(--gold);
       font-family: 'DM Mono', monospace;
     }
 
@@ -2599,7 +2599,7 @@
 
     .summary-item-explanation {
       font-size: 11px;
-      color: #9CA3AF;
+      color: var(--text-faint);
       line-height: 1.5;
       font-weight: 400;
     }
@@ -7914,6 +7914,826 @@
     .scroll-to-top i {
       font-size: 18px;
     }
+
+    /* SENTRA AUDIT — RESULTS RECONSTRUCTION */
+    #results {
+      border-radius: var(--radius-md); /* SENTRA AUDIT — radius standardization */
+    }
+
+    #results .res-result-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 48px 0 22px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--gold-line);
+    }
+
+    #results .res-result-header-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    #results .badge-row {
+      margin-bottom: 0;
+    }
+
+    /* SENTRA AUDIT — ENTRY TIMING FOCAL POINT */
+    #results .res-verdict-hero {
+      padding: 28px;
+      border-radius: var(--radius-sm);
+      border-top: 1px solid var(--gold);
+      margin-bottom: 0;
+    }
+
+    #results .res-section-micro-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    #results .r-verdict-text {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    #results .r-verdict-sub {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    #results .r-score-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    #results .r-score-block {
+      min-width: 84px;
+    }
+
+    #results #r-ring-num,
+    #results .r-ring-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 52px;
+      font-weight: 600;
+      color: var(--gold);
+      line-height: 1;
+      display: block;
+    }
+
+    #results .r-score-descriptor {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--text-faint);
+      display: block;
+      margin-top: 4px;
+      text-transform: uppercase;
+    }
+
+    #results .r-bar-block {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    #results .r-score-bar-track {
+      height: 6px;
+      background: linear-gradient(90deg, #E74C3C, #F39C12, #27AE60);
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 10px;
+      box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.3);
+    }
+
+    #results .r-score-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: rgba(255, 255, 255, 0.32);
+      border-radius: 2px;
+      transition: width 1.2s ease;
+    }
+
+    #results .r-bar-labels {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    #results .r-bar-labels span {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text-faint);
+      letter-spacing: 0.08em;
+    }
+
+    #results .r-bar-active-label {
+      display: none;
+      margin-top: 8px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--text-faint);
+      text-transform: uppercase;
+    }
+
+    #results .r-metrics-subrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text-faint);
+      margin-top: 12px;
+      margin-bottom: 16px;
+      letter-spacing: 0.05em;
+    }
+
+    #results .res-cta-primary {
+      width: 100%;
+      padding: 14px 20px;
+      background: var(--gold);
+      color: #0A0A08;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(212, 168, 67, 0.2);
+      transition: opacity 0.2s ease;
+    }
+
+    #results .res-cta-primary:hover {
+      opacity: 0.88;
+    }
+
+    /* SENTRA AUDIT — SECTION HEADER PATTERN */
+    #results .res-section-hdr {
+      padding: 24px 0 16px;
+      margin-top: 0;
+      gap: 0;
+      color: inherit;
+    }
+
+    #results .res-section-dot {
+      display: none;
+    }
+
+    #results .res-section-hdr-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+
+    /* SENTRA AUDIT — SPACING + GRID */
+    #results .res-section {
+      margin-bottom: 28px;
+    }
+
+    #results .g2,
+    #results .g3 {
+      gap: 12px;
+    }
+
+    #results #ai-business-insight {
+      padding: 16px 0;
+    }
+
+    #results .ai-insight-card {
+      border-radius: var(--radius-md);
+      padding: 16px;
+      border: 1px solid var(--glass-border);
+      border-left: 2px solid var(--gold);
+      background: var(--glass);
+    }
+
+    #results .ai-section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    #results .ai-trigger-icon {
+      font-size: 16px;
+      color: var(--gold);
+    }
+
+    /* SENTRA AUDIT — MARKET INTELLIGENCE REDESIGN (UMKM first) */
+    #results .market-intelligence-wrap {
+      padding: 0;
+      display: grid;
+      gap: 14px;
+    }
+
+    #results #res-market-intelligence .res-section-hdr-label {
+      font-family: 'DM Mono', monospace;
+      color: #D4A843;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    #results #res-market-intelligence .pulse-card.pulse-card-lux {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      padding: 16px;
+      background: #0F0F0C;
+      border: 1px solid rgba(212, 168, 67, 0.25);
+      border-radius: 12px;
+      box-shadow: 0 0 40px rgba(212, 168, 67, 0.06);
+    }
+
+    #results #res-market-intelligence .pulse-ring-wrap {
+      position: relative;
+      width: 168px;
+      height: 168px;
+      margin: 0 auto;
+    }
+
+    #results #res-market-intelligence .pulse-ring-svg {
+      width: 168px;
+      height: 168px;
+      transform: rotate(-90deg);
+    }
+
+    #results #res-market-intelligence .pulse-ring-track {
+      fill: none;
+      stroke: #1A1A14;
+      stroke-width: 10;
+    }
+
+    #results #res-market-intelligence .pulse-ring-fill {
+      fill: none;
+      stroke: url(#pulse-ring-gradient);
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 351.86;
+      stroke-dashoffset: 351.86;
+      transition: stroke-dashoffset 1.2s ease-out;
+      filter: drop-shadow(0 2px 6px rgba(212, 168, 67, 0.14));
+    }
+
+    #results #res-market-intelligence .pulse-ring-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      pointer-events: none;
+      padding: 20px;
+    }
+
+    #results #res-market-intelligence .pulse-ring-scoreline {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 2px;
+    }
+
+    #results #res-market-intelligence .pulse-ring-score {
+      font-family: 'DM Mono', monospace;
+      font-size: 36px;
+      font-weight: 700;
+      line-height: 1;
+      color: #D4A843;
+    }
+
+    #results #res-market-intelligence .pulse-ring-outof {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: rgba(212, 168, 67, 0.5);
+    }
+
+    #results #res-market-intelligence .pulse-ring-label {
+      margin-top: 6px;
+      font-family: 'Syne', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #D4A843;
+    }
+
+    #results #res-market-intelligence .pulse-ring-condition {
+      margin-top: 7px;
+      font-family: 'Syne', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #D4A843;
+      background: rgba(212, 168, 67, 0.1);
+      border: 1px solid rgba(212, 168, 67, 0.3);
+      border-radius: 4px;
+      padding: 2px 8px;
+    }
+
+    #results #res-market-intelligence .pulse-copy {
+      width: 100%;
+    }
+
+    #results #res-market-intelligence .pulse-gauge-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #D4A843;
+      margin-bottom: 6px;
+    }
+
+    #results #res-market-intelligence .pulse-copy-lead {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 1.3;
+      color: #F0E6CC;
+      margin-bottom: 10px;
+    }
+
+    #results #res-market-intelligence .pulse-reasons {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 6px;
+    }
+
+    #results #res-market-intelligence .pulse-reasons li {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13px;
+      color: #8A7A5A;
+    }
+
+    #results #res-market-intelligence .pulse-reasons b {
+      font-family: 'DM Mono', monospace;
+      color: #D4A843;
+      font-weight: 600;
+    }
+
+    #results #res-market-intelligence .pulse-action {
+      margin-top: 12px;
+      padding-left: 10px;
+      border-left: 2px solid #D4A843;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: #D4A843;
+    }
+
+    #results #res-market-intelligence .vitals-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    #results #res-market-intelligence .mi-card {
+      position: relative;
+      min-height: 90px;
+      max-height: 110px;
+      height: fit-content;
+      padding: 12px 14px;
+      background: #0F0F0C;
+      border: 1px solid rgba(212, 168, 67, 0.15);
+      border-left: 1px solid rgba(212, 168, 67, 0.15);
+      border-radius: 10px;
+      box-shadow: none;
+      overflow: hidden;
+    }
+
+    #results #res-market-intelligence .mi-card::before {
+      display: none;
+    }
+
+    #results #res-market-intelligence .mi-card:hover {
+      transform: none;
+      border-color: rgba(212, 168, 67, 0.22);
+      box-shadow: none;
+    }
+
+    #results #res-market-intelligence .mi-toprow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    #results #res-market-intelligence .mi-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(212, 168, 67, 0.5);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #results #res-market-intelligence .mi-main-value {
+      font-family: 'DM Mono', monospace;
+      font-size: clamp(16px, 4vw, 22px);
+      font-weight: 700;
+      line-height: 1.05;
+      margin-bottom: 6px;
+      color: #EFE7D3;
+    }
+
+    #results #res-market-intelligence .mi-bar-track {
+      height: 2px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 2px;
+      overflow: hidden;
+      margin: 6px 0;
+    }
+
+    #results #res-market-intelligence .mi-bar-fill {
+      height: 100%;
+      width: 0;
+      border-radius: 2px;
+      background: #D4A843;
+      transition: width .45s ease;
+    }
+
+    #results #res-market-intelligence .mi-desc {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11px;
+      line-height: 1.4;
+      color: rgba(255, 255, 255, 0.45);
+      margin-bottom: 5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #results #res-market-intelligence .mi-context {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      color: rgba(212, 168, 67, 0.35);
+      text-align: right;
+    }
+
+    #results #res-market-intelligence .mi-badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 4px;
+      padding: 2px 7px;
+      font-family: 'Syne', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: rgba(212, 168, 67, 0.18);
+      color: #EED696;
+      border: none;
+      white-space: nowrap;
+    }
+
+    #results #res-market-intelligence .mi-dot {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(212, 168, 67, 0.8);
+      opacity: 0;
+    }
+
+    #results #res-market-intelligence .mi-separator {
+      border-top: 1px solid rgba(212, 168, 67, 0.1);
+      margin-top: 2px;
+      padding-top: 2px;
+    }
+
+    #results #res-market-intelligence .mc-detail-toggle {
+      display: none;
+    }
+
+    @media (min-width: 769px) {
+      #results #res-market-intelligence .pulse-card.pulse-card-lux {
+        grid-template-columns: 200px 1fr;
+        align-items: center;
+        padding: 18px;
+      }
+
+      #results #res-market-intelligence .mi-card {
+        max-height: 130px;
+      }
+
+      #results #res-market-intelligence .mi-main-value {
+        font-size: 22px;
+      }
+    }
+
+    #results .trend-chart-wrap {
+      width: 100%;
+      min-height: 100px;
+      position: relative;
+      margin-bottom: 8px;
+    }
+
+    #results .chart-date-labels {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 2px;
+    }
+
+    #results .res-btn-save,
+    #results #pdf-btn {
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* SENTRA AUDIT COLOUR FIXES — do not remove this comment */
+
+    /* 1. Entry Score: green → gold (also in Entry Timing block) */
+    #results #r-ring-num {
+      color: var(--gold);
+    }
+
+    /* 2. Chart header value: green → neutral */
+    #results .chart-header-value {
+      color: var(--text);
+    }
+
+    #results .chart-header-value.pos {
+      color: var(--green);
+    }
+
+    /* 3. Season badge: green → gold */
+    #results .season-badge {
+      background: rgba(212, 168, 67, 0.1);
+      border: 1px solid rgba(212, 168, 67, 0.25);
+      color: var(--gold);
+      border-radius: var(--radius-sm);
+    }
+
+    /* 4. Season peak month chips: green tint → gold tint */
+    #results .season-month.peak {
+      background: rgba(212, 168, 67, 0.15);
+      border-color: rgba(212, 168, 67, 0.3);
+      color: var(--gold);
+    }
+
+    /* 5. Hardcoded gray — replace with design token */
+    #results .summary-item-explanation {
+      color: var(--text-faint);
+    }
+
+    /* 6. Alert status — use existing amber token */
+    #results .summary-item.si-alert {
+      border-color: var(--amber);
+      border-left-color: var(--amber);
+      color: var(--amber);
+    }
+
+    /* 7. Vitals card visual hierarchy */
+    #results .mc {
+      border-left: 2px solid var(--gold);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    #results .mc:hover {
+      border-color: var(--gold-line);
+    }
+
+    /* SENTRA AUDIT — RADIUS STANDARDIZATION (results scope only) */
+    #results .res-chart-wrap,
+    #results .season-card,
+    #results #summary-news-section,
+    #results .chart-forecast-pill,
+    #results #summary-card,
+    #results .ai-insight-card,
+    #results .pulse-card {
+      border-radius: var(--radius-md);
+    }
+
+    #results .stage-badge,
+    #results .risk-badge,
+    #results .res-btn-save,
+    #results #pdf-btn,
+    #results .res-cta-primary,
+    #results .mc-detail-toggle,
+    #results .season-badge {
+      border-radius: var(--radius-sm);
+    }
+
+    #results .r-score-bar-track,
+    #results .r-score-bar-fill,
+    #results .pulse-track,
+    #results .pulse-fill,
+    #results .metric-range-track,
+    #results .metric-range-thumb {
+      border-radius: 2px;
+    }
+
+    /* SENTRA AUDIT FONT SIZE FIXES */
+    #results .chart-axis-label,
+    #results .chartjs-axis-label {
+      font-size: 11px;
+    }
+
+    #results .chart-forecast-label {
+      font-size: 10px;
+    }
+
+    #results .summary-item-label {
+      font-size: 11px;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.15em;
+    }
+
+    #results .pulse-gauge-label {
+      font-size: 11px;
+    }
+
+    @media (max-width: 480px) {
+      /* SENTRA AUDIT — mobile-specific visibility */
+      #results .res-chips-row {
+        display: none !important;
+      }
+
+      .forecast-toggle-btn {
+        width: 100%;
+      }
+
+      #results .pulse-gauge-svg {
+        display: none !important;
+      }
+
+      #results .pulse-number-fallback {
+        display: block;
+        position: static;
+        transform: none;
+      }
+
+      #results .mc-fomo,
+      #results .mc-saturation {
+        display: block;
+      }
+
+      #results .mc-detail-toggle {
+        display: flex;
+      }
+
+      #results #trend-chart {
+        min-height: 140px;
+      }
+
+      #results .r-bar-labels {
+        display: none;
+      }
+
+      #results .r-bar-active-label {
+        display: block;
+        font-family: 'DM Mono', monospace;
+        font-size: 11px;
+      }
+
+      #results .res-result-header {
+        padding-top: 24px;
+      }
+
+      #results .res-action-row {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      #results .res-btn-save,
+      #results #pdf-btn {
+        width: 100%;
+        min-height: 48px;
+      }
+    }
+
+    /* ── DETAIL ANALYSIS PANEL ── */
+    .detail-metric-block {
+      margin-bottom: 20px;
+      padding: 16px 18px;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(212,168,67,0.1);
+      border-left: 3px solid rgba(212,168,67,0.3);
+      position: relative;
+    }
+
+    .detail-metric-block.dm-green { border-left-color: var(--green); }
+    .detail-metric-block.dm-red   { border-left-color: var(--red); }
+    .detail-metric-block.dm-amber { border-left-color: var(--amber); }
+    .detail-metric-block.dm-gold  { border-left-color: var(--gold); }
+    .detail-metric-block.dm-blue  { border-left-color: var(--blue); }
+
+    .dm-number {
+      font-size: 8px;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 2px;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      opacity: 0.7;
+    }
+
+    .dm-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+
+    .dm-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .dm-value.dv-gold  { color: var(--gold); }
+    .dm-value.dv-green { color: var(--green); }
+    .dm-value.dv-red   { color: var(--red); }
+    .dm-value.dv-amber { color: var(--amber); }
+    .dm-value.dv-text  { color: var(--text); }
+
+    .dm-sublabel {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+    }
+
+    .dm-explain {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 12px;
+      line-height: 1.7;
+      color: var(--text-dim);
+      padding-top: 10px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .dm-explain strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .dm-gauge-track {
+      height: 3px;
+      background: rgba(255,255,255,0.07);
+      margin: 8px 0 4px;
+      overflow: hidden;
+    }
+
+    .dm-gauge-fill {
+      height: 100%;
+      transition: width 0.8s ease;
+    }
+
+    .dm-section-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin: 28px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(212,168,67,0.15);
+      opacity: 0.8;
+    }
+
+    .dm-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 480px) {
+      .dm-grid-2 { grid-template-columns: 1fr; }
+
+      #detail-panel {
+        padding: 24px 20px 60px;
+      }
+    }
   </style>
 </head>
 
@@ -8613,213 +9433,370 @@
   <div class="wrap" style="position:relative; z-index:1;">
     <!-- ══════════ SINGLE RESULTS ══════════ -->
     <div id="results">
-      <!-- RESULT HEADER -->
-      <div style="display:flex; align-items:flex-end; justify-content:space-between; padding:48px 0 22px; margin-bottom:28px; border-bottom:1px solid var(--gold-line);">
-        <div id="r-kw" style="font-family:'Cormorant Garamond', serif; font-size:46px; font-weight:600; color:var(--gold); text-transform:capitalize; line-height:1;"></div>
-        <div id="r-ts" style="font-family:'DM Mono', monospace; font-size:11px; color:var(--text-dim); letter-spacing:1px; text-transform:uppercase;"></div>
-      </div>
-
-      <!-- BADGES -->
-      <div style="display:flex; align-items:center; gap:10px; margin-bottom:28px; flex-wrap:wrap;">
-        <span id="r-stage" class="stage-badge"></span>
-        <span id="r-risk" class="risk-badge"></span>
-      </div>
-
-      <!-- VERDICT HERO CARD -->
-      <div class="res-verdict-hero">
-        <!-- Entry Timing Label -->
-        <div style="font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-family:'DM Mono', monospace; margin-bottom: 12px; opacity: 0.8;">Entry Timing</div>
-        
-        <!-- Verdict Text -->
-        <div id="summary-verdict" style="font-size:15px; font-weight:700; color:#fff; line-height:1.6; margin-bottom:12px; letter-spacing:-0.01em;">—</div>
-        
-        <!-- Timing Description -->
-        <div id="r-timing-desc" style="font-size:13px; color:var(--text-dim); line-height:1.5; margin-bottom:20px;">—</div>
-        
-        <!-- Hidden timing label for JS compat -->
-        <div id="r-timing-lbl" style="display:none;">—</div>
-        
-        <!-- Score Row: Number + Bar -->
-        <div style="display:flex; align-items:flex-start; gap:20px; margin-bottom:20px;">
-          <!-- Left: Score Number -->
-          <div style="display:flex; flex-direction:column; align-items:flex-start; gap:4px;">
-            <div id="r-ring-num" style="font-family:'Cormorant Garamond', serif; font-size:56px; font-weight:700; color:var(--green); line-height:1;">—</div>
-            <div style="font-family:'DM Mono', monospace; font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-dim);">Entry Score</div>
+      <!-- SENTRA AUDIT — Result Header compact one row -->
+      <div class="res-result-header">
+        <div id="r-kw" class="res-kw"></div>
+        <div class="res-result-header-meta">
+          <div id="r-ts" class="res-ts"></div>
+          <div class="badge-row">
+            <span id="r-stage" class="stage-badge"></span>
+            <span id="r-risk" class="risk-badge"></span>
           </div>
-          
-          <!-- Right: Score Bar -->
-          <div style="flex:1; min-width:200px;">
-            <!-- Track Bar -->
-            <div style="height:6px; background:linear-gradient(90deg, #E74C3C, #F39C12, #27AE60); border-radius:99px; margin-bottom:10px; position:relative; overflow:hidden; box-shadow:inset 0 0 4px rgba(0,0,0,0.3);">
-              <div id="r-ring" style="height:100%; border-radius:99px; background:rgba(255,255,255,0.25); position:absolute; left:0; top:0; width:0%; transition:width 1.2s ease;"></div>
+        </div>
+      </div>
+
+      <!-- SENTRA AUDIT — Entry Timing focal card rebuilt -->
+      <div class="res-verdict-hero" id="res-verdict-hero">
+        <!-- Label atas -->
+        <div style="
+          font-family:'DM Mono',monospace;
+          font-size:9px;
+          letter-spacing:3px;
+          text-transform:uppercase;
+          color:var(--gold);
+          opacity:0.8;
+          margin-bottom:16px;
+        ">// Entry Timing</div>
+
+        <!-- Baris utama: score besar + verdict teks -->
+        <div style="
+          display:flex;
+          align-items:center;
+          gap:20px;
+          margin-bottom:20px;
+        ">
+
+          <!-- Score besar dengan ring warna -->
+          <div style="flex-shrink:0; display:flex; flex-direction:column; align-items:center;">
+            <div id="timing-score-ring" style="
+              width:88px;
+              height:88px;
+              border-radius:50%;
+              border:3px solid rgba(255,255,255,0.07);
+              display:flex;
+              flex-direction:column;
+              align-items:center;
+              justify-content:center;
+              position:relative;
+              background:rgba(212,168,67,0.08);
+              margin:0 auto;
+            ">
+              <div id="r-ring-num" style="
+                font-family:'DM Mono',monospace;
+                font-size:2.4rem;
+                font-weight:700;
+                color:var(--gold);
+                line-height:1;
+                text-shadow:0 0 20px rgba(212,168,67,0.5);
+              ">—</div>
+              <div style="
+                font-family:'DM Mono',monospace;
+                font-size:0.75rem;
+                letter-spacing:1px;
+                color:var(--text-faint);
+                margin-top:2px;
+                opacity:0.5;
+              ">/ 100</div>
             </div>
-            <!-- Labels -->
-            <div style="display:flex; justify-content:space-between; font-family:'DM Mono', monospace; font-size:9px; color:rgba(232, 238, 247, 0.25);">
-              <span>Hindari</span>
-              <span>Tunggu</span>
-              <span>Masuk</span>
-              <span>Puncak</span>
+            <!-- Status label di bawah ring -->
+            <div id="timing-status-badge" style="
+              margin-top:8px;
+              padding:4px 10px;
+              font-family:'DM Mono',monospace;
+              font-size:9px;
+              letter-spacing:1.5px;
+              text-transform:uppercase;
+              border:1px solid rgba(212,168,67,0.3);
+              color:var(--gold);
+              white-space:nowrap;
+            ">—</div>
+          </div>
+
+          <!-- Verdict teks di kanan -->
+          <div style="flex:1; min-width:0; padding-top:0;">
+            <div id="summary-verdict" style="
+              font-family:'Plus Jakarta Sans',sans-serif;
+              font-size:16px;
+              font-weight:700;
+              color:var(--text);
+              line-height:1.4;
+              margin-bottom:8px;
+            ">—</div>
+            <div id="r-timing-desc" style="
+              font-family:'Plus Jakarta Sans',sans-serif;
+              font-size:13px;
+              color:var(--text-dim);
+              line-height:1.6;
+            ">—</div>
+            <div id="r-timing-lbl" style="display:none;">—</div>
+          </div>
+        </div>
+
+        <!-- Score bar dengan penanda posisi -->
+        <div style="margin-bottom:6px;">
+          <!-- Track bar gradient -->
+          <div style="
+            position:relative;
+            height:8px;
+            border-radius:4px;
+            background:linear-gradient(90deg, #FF5252 0%, #FF5252 25%, #FFD740 25%, #FFD740 50%, #D4A843 50%, #D4A843 75%, #00E676 75%, #00E676 100%);
+            opacity:0.35;
+            margin-bottom:0;
+          "></div>
+          <!-- Pointer jarum posisi -->
+          <div style="position:relative; height:0; margin-top:-8px;">
+            <div id="timing-pointer" style="
+              position:absolute;
+              top:-3px;
+              left:0%;
+              transform:translateX(-50%);
+              width:14px;
+              height:14px;
+              border-radius:50%;
+              background:var(--gold);
+              border:2px solid #0A0A08;
+              box-shadow:0 0 10px rgba(212,168,67,0.6);
+              transition:left 1.2s cubic-bezier(0.4,0,0.2,1);
+              z-index:2;
+            "></div>
+            <div id="timing-pointer-score" style="
+              position:absolute;
+              top:16px;
+              left:0%;
+              transform:translateX(-50%);
+              font-family:'DM Mono',monospace;
+              font-size:0.8rem;
+              font-weight:700;
+              color:var(--gold);
+              letter-spacing:0.02em;
+              transition:left 1.2s cubic-bezier(0.4,0,0.2,1);
+              white-space:nowrap;
+            ">—</div>
+          </div>
+          <!-- Spacer untuk pointer -->
+          <div style="height:22px;"></div>
+          <!-- Label bawah -->
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            font-family:'DM Mono',monospace;
+            font-size:9px;
+            color:rgba(255,255,255,0.2);
+            letter-spacing:0.5px;
+            margin-top:4px;
+          ">
+            <span style="color:#FF5252; opacity:0.7;">Hindari</span>
+            <span style="color:#FFD740; opacity:0.7;">Tunggu</span>
+            <span style="color:#D4A843; opacity:0.7;">Masuk</span>
+            <span style="color:#00E676; opacity:0.7;">Puncak</span>
+          </div>
+        </div>
+
+        <!-- Arti skor — plain language untuk UMKM -->
+        <div id="timing-meaning" style="
+          margin-top:14px;
+          padding:12px 14px 12px 1rem;
+          background:rgba(255,255,255,0.03);
+          border-left:2px solid #D4A843;
+          font-family:'Plus Jakarta Sans',sans-serif;
+          font-size:12px;
+          line-height:1.7;
+          color:var(--text-dim);
+        ">—</div>
+
+        <!-- Hidden bridge IDs for JS compatibility -->
+        <div id="r-verdict-text" style="display:none;"></div>
+        <div id="r-ring-num-legacy" style="display:none;"></div>
+        <div id="r-score-bar-fill" style="display:none;"></div>
+        <div id="r-bar-active-label" style="display:none;"></div>
+        <div id="r-metrics-subrow" style="display:none;"></div>
+        <div id="r-score-of-100" style="display:none;"></div>
+      </div>
+
+      <!-- SENTRA AUDIT — Hidden data bridge after removing snapshot chips row -->
+      <div class="res-data-bridge" style="display:none;">
+        <div id="r-growth"></div>
+        <div id="r-mom"></div>
+        <div id="r-vol"></div>
+        <div id="r-sat"></div>
+      </div>
+
+      <!-- SENTRA AUDIT — AI Business Insight moved up and unified with trigger/loading/result -->
+      <section class="res-section" id="ai-business-insight">
+        <div class="res-section-hdr">
+          <span class="res-section-hdr-label">// AI BUSINESS INSIGHT</span>
+        </div>
+        <div id="ai-insight-section">
+          <div class="ai-card" id="ai-card-wrapper">
+            <div id="ai-trigger-state">
+              <div class="ai-trigger-row">
+                <div class="ai-trigger-left">
+                  <div class="ai-trigger-icon">✦</div>
+                  <div>
+                    <div class="ai-trigger-title">Rekomendasi Bisnis dari Sentra AI</div>
+                    <div class="ai-trigger-desc">Analisis mendalam dari Claude AI — strategi, timing, dan peluang spesifik untuk produk kamu</div>
+                  </div>
+                </div>
+                <button id="ai-trigger-btn" class="ai-trigger-btn" onclick="triggerAiInsight()">
+                  <span id="ai-btn-text">Tampilkan Insight dari AI</span>
+                  <span class="ai-btn-icon">→</span>
+                </button>
+              </div>
+            </div>
+            <div id="ai-loading-state" style="display:none;"></div>
+            <div id="ai-result-state" style="display:none;">
+              <div id="r-ai-cards" class="ai-cards-grid">
+                <div class="ai-insight-card">
+                  <div class="ai-section-label">// ANALISIS PASAR</div>
+                  <div id="r-ai-pasar" class="ai-section-body">—</div>
+                </div>
+                <div class="ai-insight-card">
+                  <div class="ai-section-label">// REKOMENDASI AKSI</div>
+                  <div id="r-ai-aksi" class="ai-section-body">—</div>
+                </div>
+                <div class="ai-insight-card">
+                  <div class="ai-section-label">// STRATEGI WAKTU</div>
+                  <div id="r-ai-waktu" class="ai-section-body">—</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        
-        <!-- CTA Button -->
-        <button style="display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:14px; background:var(--green); color:#0A0A08; font-weight:700; font-size:14px; border-radius:10px; border:none; cursor:pointer; letter-spacing:0.03em; transition:all 0.2s; box-shadow:0 4px 20px rgba(46,204,113,0.25); font-family:'Plus Jakarta Sans', sans-serif;" onclick="scrollToSection('#ai-card-wrapper')">
-          Mulai Siapkan Bisnis Sekarang
-        </button>
-      </div>
+      </section>
 
-      <!-- SNAPSHOT CHIPS -->
-      <div class="res-chips-row">
-        <div class="chip">
-          <span style="font-size:14px;">📈</span>
-          <div>
-            <div class="chip-val pos" id="r-growth">—</div>
-            <div class="chip-label">Growth 7 Hari</div>
-          </div>
+      <!-- SENTRA AUDIT — Section order: Market Intelligence before Trend -->
+      <section class="res-section" id="res-market-intelligence">
+        <div class="res-section-hdr">
+          <span class="res-section-hdr-label">// MARKET INTELLIGENCE</span>
         </div>
-        <div class="chip">
-          <span style="font-size:14px;">⚡</span>
-          <div>
-            <div class="chip-val neu" id="r-mom">—</div>
-            <div class="chip-label">Momentum</div>
-          </div>
-        </div>
-        <div class="chip">
-          <span style="font-size:14px;">🌡️</span>
-          <div>
-            <div class="chip-val neu" id="r-vol">—</div>
-            <div class="chip-label">Volatilitas</div>
-          </div>
-        </div>
-        <div class="chip">
-          <span style="font-size:14px;">🎯</span>
-          <div>
-            <div class="chip-val gld" id="r-sat">—</div>
-            <div class="chip-label">Saturasi</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SECTION HEADER: TREND -->
-      <div class="res-section-hdr">
-        <span class="res-section-dot"></span>
-        <span>Tren Permintaan</span>
-      </div>
-
-      <!-- TREND CHART -->
-      <div class="res-chart-wrap">
-        <!-- Chart Header: Label + Forecast Pill -->
-        <div class="chart-header">
-          <div class="chart-header-left">
-            <div class="chart-header-label">Trend 3 Bulan</div>
-            <div class="chart-header-value" id="r-trend-range">—</div>
-            <div class="chart-header-range" style="font-size:11px; color:var(--text-dim); margin-top:2px;"></div>
-          </div>
-          <div class="chart-forecast-pill">
-            <div class="chart-forecast-label">Prediksi 30H</div>
-            <div class="chart-forecast-value" id="r-fc-val">—</div>
-          </div>
-        </div>
-
-        <!-- Tabs (visual only, not functional) -->
-        <div class="chart-tabs">
-          <button class="chart-tab">1 Bln</button>
-          <button class="chart-tab active">3 Bln</button>
-          <button class="chart-tab">6 Bln</button>
-          <button class="chart-tab">1 Thn</button>
-        </div>
-
-        <!-- Chart -->
-        <div style="width:100%; height:100px; position:relative; margin-bottom:8px;">
-          <canvas id="single-chart" style="width:100%; height:100%;"></canvas>
-        </div>
-
-        <!-- Date Labels -->
-        <div style="display:flex; justify-content:space-between; font-size:9px; color:rgba(232, 238, 247, 0.25); font-family:'DM Mono', monospace; padding:0 2px;">
-          <span>Okt</span><span>Nov</span><span>Des</span><span>Jan</span><span>Feb→</span>
-        </div>
-
-        <!-- Hidden elements for JavaScript compatibility -->
-        <div style="display:none;">
-          <div id="r-fc-bar"></div>
-          <div id="r-fc-conf">—</div>
-        </div>
-      </div>
-
-      <!-- SECTION HEADER: MARKET INTELLIGENCE -->
-      <div class="res-section-hdr">
-        <span class="res-section-dot"></span>
-        <span>Market Intelligence</span>
-      </div>
-
-      <!-- MARKET INTELLIGENCE & VITALS -->
-      <div style="padding:0;">
-        <!-- Pulse Score -->
-        <div class="pulse-card" style="display:flex; align-items:center; gap:12px; padding:12px 14px; background:rgba(255, 255, 255, 0.03); border:1px solid rgba(212, 168, 67, 0.15); border-radius:14px; margin-bottom:16px;">
-          <div style="position:relative; width:50px; height:50px; flex-shrink:0;">
-            <svg style="width:50px; height:50px; transform:rotate(-90deg);" viewBox="0 0 50 50">
-              <circle cx="25" cy="25" r="20" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="4"/>
-              <circle cx="25" cy="25" r="20" fill="none" stroke="var(--gold)" stroke-width="4" stroke-dasharray="125.66" stroke-dashoffset="44" stroke-linecap="round" style="filter:drop-shadow(0 0 4px rgba(212,168,67,0.5))"/>
-            </svg>
-            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:'DM Mono', monospace; font-size:11px; font-weight:700; color:var(--gold);" id="r-pulse">64</div>
-          </div>
-          <div style="flex:1;">
-            <div style="font-size:10px; text-transform:uppercase; letter-spacing:0.1em; font-family:'DM Mono', monospace; color:var(--text-muted); margin-bottom:2px;">Market Pulse Score</div>
-            <div style="font-size:11px; color:var(--text-muted);">Kondisi pasar sehat untuk masuk</div>
-          </div>
-          <!-- Hidden element for renderPulse -->
-          <div style="display:none;" id="r-pulse-fill"></div>
-        </div>
-
-        <!-- Vitals Grid -->
-        <div class="g3" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-          <div class="mc">
-            <div style="position:absolute; top:14px; right:14px; width:6px; height:6px; border-radius:50%; background:var(--amber); box-shadow:0 0 6px var(--amber);" class="mc-dot"></div>
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
-              <div style="width:30px; height:30px; border-radius:8px; background:rgba(255, 184, 0, 0.12); display:flex; align-items:center; justify-content:center; font-size:15px;">⚡</div>
+        <div class="market-intelligence-wrap">
+          <div class="pulse-card pulse-card-lux">
+            <div class="pulse-ring-wrap">
+              <svg class="pulse-ring-svg" viewBox="0 0 140 140" role="img" aria-label="Market Pulse Score">
+                <defs>
+                  <linearGradient id="pulse-ring-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#FF5252"></stop>
+                    <stop offset="50%" stop-color="#FFD740"></stop>
+                    <stop offset="100%" stop-color="#D4A843"></stop>
+                  </linearGradient>
+                </defs>
+                <circle cx="70" cy="70" r="56" class="pulse-ring-track"></circle>
+                <circle id="r-pulse-fill" cx="70" cy="70" r="56" class="pulse-ring-fill"></circle>
+              </svg>
+              <div class="pulse-ring-center">
+                <div class="pulse-ring-scoreline">
+                  <span id="r-pulse" class="pulse-ring-score">0</span>
+                  <span class="pulse-ring-outof">/100</span>
+                </div>
+                <div class="pulse-ring-label">MARKET PULSE SCORE</div>
+                <div id="r-pulse-condition" class="pulse-ring-condition">Menunggu data</div>
+              </div>
             </div>
-            <div style="font-family:'DM Mono', monospace; font-size:22px; font-weight:700; color:var(--amber); margin-bottom:2px;" id="r-mom-val" class="mc-val neu">0.629</div>
-            <div style="font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); font-family:'DM Mono', monospace;">Momentum</div>
-            <div id="r-mom-interp" style="font-size:11px; color:var(--text-muted); margin-top:4px;">Sedang melemah</div>
+
+            <div class="pulse-copy">
+              <div class="pulse-gauge-label" id="pulse-gauge-label">MARKET PULSE — 0/100</div>
+              <div id="r-pulse-interp" class="pulse-copy-lead">Kondisi pasar sedang dibaca…</div>
+              <ul class="pulse-reasons">
+                <li id="r-pulse-reason-1">• Momentum pasar belum stabil.</li>
+                <li id="r-pulse-reason-2">• Volatilitas mempengaruhi kepastian demand.</li>
+                <li id="r-pulse-reason-3">• Sinyal persaingan menentukan ruang masuk.</li>
+              </ul>
+              <div id="r-pulse-action" class="pulse-action">→ Rekomendasi aksi akan muncul setelah data lengkap.</div>
+            </div>
           </div>
-          <!-- Hidden elements for JS compatibility -->
+
+          <div class="vitals-grid">
+            <div class="mc mi-card">
+              <div class="mi-toprow">
+                <div class="mi-label">MOMENTUM PASAR</div>
+                <div id="mc-mom-tag" class="mi-badge">—</div>
+              </div>
+              <div id="r-mom-val" class="mc-val mi-main-value">—</div>
+              <div class="mi-bar-track"><div id="mc-mom-bar" class="mi-bar-fill"></div></div>
+              <div id="r-mom-interp" class="mi-desc">Tren sedang dibaca…</div>
+              <div id="r-mom-context" class="mi-context">vs minggu lalu: —</div>
+              <div id="mc-mom-dot" class="mi-dot" aria-hidden="true"></div>
+            </div>
+
+            <div class="mc mi-card">
+              <div class="mi-toprow">
+                <div class="mi-label">KESTABILAN PASAR</div>
+                <div id="mc-vol-tag" class="mi-badge">—</div>
+              </div>
+              <div id="r-vol-val" class="mc-val mi-main-value">—</div>
+              <div class="mi-bar-track"><div id="mc-vol-bar" class="mi-bar-fill"></div></div>
+              <div id="r-vol-interp" class="mi-desc">Stabilitas pasar sedang dibaca…</div>
+              <div id="r-vol-context" class="mi-context">rata-rata pasar: —</div>
+              <div id="mc-vol-dot" class="mi-dot" aria-hidden="true"></div>
+            </div>
+
+            <div class="mc mi-card">
+              <div class="mi-toprow">
+                <div class="mi-label">JENIS TREN</div>
+                <div id="mc-fomo-tag" class="mi-badge">—</div>
+              </div>
+              <div id="r-fomo" class="mc-val mi-main-value">—</div>
+              <div class="mi-bar-track"><div id="mc-fomo-bar" class="mi-bar-fill"></div></div>
+              <div id="r-fomo-interp" class="mi-desc">Sedang membaca sinyal organik vs hype…</div>
+              <div id="r-fomo-context" class="mi-context">FOMO index mentah: —</div>
+              <div id="mc-fomo-dot" class="mi-dot" aria-hidden="true"></div>
+            </div>
+
+            <div class="mc mi-card">
+              <div class="mi-toprow">
+                <div class="mi-label">TINGKAT PERSAINGAN</div>
+                <div id="mc-sat-tag" class="mi-badge">—</div>
+              </div>
+              <div id="r-sat-val" class="mc-val mi-main-value">—</div>
+              <div class="mi-bar-track"><div id="mc-sat-bar" class="mi-bar-fill"></div></div>
+              <div id="r-sat-interp" class="mi-desc">Persaingan pasar sedang dipetakan…</div>
+              <div id="r-sat-context" class="mi-context">saturasi mentah: —</div>
+              <div id="mc-sat-dot" class="mi-dot" aria-hidden="true"></div>
+            </div>
+          </div>
+
+          <div class="mi-separator"></div>
           <div style="display:none;" id="r-fomo-l">—</div>
           <div style="display:none;" id="r-sat-l">—</div>
-          <div class="mc">
-            <div style="position:absolute; top:14px; right:14px; width:6px; height:6px; border-radius:50%; background:var(--amber); box-shadow:0 0 6px var(--amber);" class="mc-dot"></div>
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
-              <div style="width:30px; height:30px; border-radius:8px; background:rgba(255, 184, 0, 0.12); display:flex; align-items:center; justify-content:center; font-size:15px;">🌡️</div>
+        </div>
+      </section>
+
+      <!-- SENTRA AUDIT — Section header pattern: Trend -->
+      <section class="res-section" id="res-trend-permintaan">
+        <div class="res-section-hdr">
+          <span class="res-section-hdr-label">// TREN PERMINTAAN</span>
+        </div>
+        <div class="res-chart-wrap">
+          <div class="chart-header">
+            <div class="chart-header-left">
+              <div class="chart-header-label">Trend 1 Tahun</div>
+              <div class="chart-header-value" id="r-trend-range">—</div>
+              <div class="chart-header-range"></div>
             </div>
-            <div style="font-family:'DM Mono', monospace; font-size:22px; font-weight:700; color:var(--amber); margin-bottom:2px;" id="r-vol-val" class="mc-val neu">53.8%</div>
-            <div style="font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); font-family:'DM Mono', monospace;">Volatilitas</div>
-            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Fluktuasi sedang</div>
+            <div class="chart-forecast-pill">
+              <div class="chart-forecast-label">Prediksi 90H</div>
+              <div class="chart-forecast-value" id="r-fc-val">—</div>
+            </div>
           </div>
-          <div class="mc">
-            <div style="position:absolute; top:14px; right:14px; width:6px; height:6px; border-radius:50%; background:var(--gold); box-shadow:0 0 6px var(--gold);" class="mc-dot"></div>
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
-              <div style="width:30px; height:30px; border-radius:8px; background:rgba(212, 168, 67, 0.15); display:flex; align-items:center; justify-content:center; font-size:15px;">😰</div>
-            </div>
-            <div style="font-family:'DM Mono', monospace; font-size:22px; font-weight:700; color:var(--gold); margin-bottom:2px;" id="r-fomo" class="mc-val gld">0.13</div>
-            <div style="font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); font-family:'DM Mono', monospace;">FOMO Index</div>
-            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Tren organik</div>
+          <div class="trend-chart-wrap" id="trend-chart">
+            <canvas id="single-chart"></canvas>
           </div>
-          <div class="mc">
-            <div style="position:absolute; top:14px; right:14px; width:6px; height:6px; border-radius:50%; background:var(--green); box-shadow:0 0 6px var(--green);" class="mc-dot"></div>
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
-              <div style="width:30px; height:30px; border-radius:8px; background:rgba(0, 255, 135, 0.12); display:flex; align-items:center; justify-content:center; font-size:15px;">🏪</div>
-            </div>
-            <div style="font-family:'DM Mono', monospace; font-size:22px; font-weight:700; color:var(--green); margin-bottom:2px;" id="r-sat-val" class="mc-val pos">0.3</div>
-            <div style="font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); font-family:'DM Mono', monospace;">Saturasi</div>
-            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Pasar terbuka</div>
+          <div class="forecast-toggle-wrap">
+            <button class="forecast-toggle-btn" id="btn-toggle-forecast" onclick="toggleForecast()">
+              ◎ TAMPILKAN FORECAST 90 HARI
+            </button>
+          </div>
+          <div class="chart-axis-label chart-date-labels" id="chart-month-labels"></div>
+          <div style="display:none;">
+            <div id="r-fc-bar"></div>
+            <div id="r-fc-conf">—</div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- SECTION HEADER: SEASONALITY -->
+      <!-- SENTRA AUDIT — Section header pattern: Seasonality -->
       <div class="res-section-hdr">
-        <span class="res-section-dot"></span>
-        <span>Pola Musiman</span>
+        <span class="res-section-hdr-label">// POLA MUSIMAN</span>
       </div>
 
       <!-- SEASONALITY SECTION -->
@@ -8873,9 +9850,9 @@
           <div class="summary-divider"></div>
 
           <!-- Berita Section -->
-          <div class="summary-news-section" id="summary-news-section" style="display:none;">
+          <div class="summary-news-section" id="summary-news-section-legacy" style="display:none;">
             <div class="summary-news-label">// Berita Terkait</div>
-            <div class="summary-news-list" id="summary-news-list"></div>
+            <div class="summary-news-list" id="summary-news-list-legacy"></div>
           </div>
 
           <!-- Action Hint dengan Terminal Prefix -->
@@ -8885,16 +9862,16 @@
           </div>
 
           <!-- News Section -->
-          <div class="summary-news-section" id="summary-news-section" style="display:none;">
+          <div class="summary-news-section" id="summary-news-section-legacy-alt" style="display:none;">
             <div class="summary-news-header">
               <div class="summary-news-title">
                 <span class="summary-news-dot"></span>
                 Berita Terkini
-                <span class="summary-news-kw" id="summary-news-kw"></span>
+                <span class="summary-news-kw" id="summary-news-kw-legacy"></span>
               </div>
-              <div class="summary-news-meta" id="summary-news-meta">Memuat berita...</div>
+              <div class="summary-news-meta" id="summary-news-meta-legacy">Memuat berita...</div>
             </div>
-            <div class="summary-news-list" id="summary-news-list">
+            <div class="summary-news-list" id="summary-news-list-legacy-alt">
               <!-- Skeleton dulu -->
               <div class="news-skeleton">
                 <div class="skeleton-line" style="width:90%;height:13px;margin-bottom:6px;"></div>
@@ -8913,34 +9890,9 @@
         </div>
       </div>
 
-      <!-- AI INSIGHT -->
-      <div style="padding:16px 0;">
-        <div style="display:flex; align-items:center; gap:8px; padding:20px 0 10px; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted); font-family:'DM Mono', monospace;">
-          <div style="width:4px; height:4px; border-radius:50%; background:var(--gold);"></div>
-          AI Business Insight
-        </div>
-        <div style="background:rgba(255, 255, 255, 0.03); border:1px solid rgba(212, 168, 67, 0.15); border-radius:18px; padding:18px; position:relative; overflow:hidden;">
-          <div id="r-ai-cards" class="ai-cards-grid">
-            <div style="background:rgba(255, 255, 255, 0.03); border-radius:14px; padding:16px; margin-bottom:12px;">
-              <div style="font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold); font-family:'DM Mono', monospace; margin-bottom:12px;">🧠 Analisis Pasar</div>
-              <div id="r-ai-pasar" style="font-size:14px; line-height:1.65; color:rgba(245, 240, 224, 0.8);">—</div>
-            </div>
-            <div style="background:rgba(255, 255, 255, 0.03); border-radius:14px; padding:16px; margin-bottom:12px;">
-              <div style="font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold); font-family:'DM Mono', monospace; margin-bottom:12px;">⚡ Rekomendasi Aksi</div>
-              <div id="r-ai-aksi" style="font-size:14px; line-height:1.65; color:rgba(245, 240, 224, 0.8);">—</div>
-            </div>
-            <div style="background:rgba(255, 255, 255, 0.03); border-radius:14px; padding:16px; margin-bottom:12px;">
-              <div style="font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold); font-family:'DM Mono', monospace; margin-bottom:12px;">📅 Strategi Waktu</div>
-              <div id="r-ai-waktu" style="font-size:14px; line-height:1.65; color:rgba(245, 240, 224, 0.8);">—</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SECTION HEADER: NEWS & TRENDS -->
+      <!-- SENTRA AUDIT — Section header pattern: News -->
       <div class="res-section-hdr">
-        <span class="res-section-dot"></span>
-        <span>Berita & Validasi Tren</span>
+        <span class="res-section-hdr-label">// BERITA &amp; VALIDASI</span>
       </div>
 
       <!-- NEWS SECTION -->
@@ -8961,38 +9913,46 @@
         </div>
       </div>
 
-      <!-- SECTION HEADER: NEXT STEPS -->
+      <!-- SENTRA AUDIT — Section header pattern: Next steps -->
       <div class="res-section-hdr">
-        <span class="res-section-dot"></span>
-        <span>Langkah Selanjutnya</span>
+        <span class="res-section-hdr-label">// LANGKAH SELANJUTNYA</span>
       </div>
 
-      <!-- BOTTOM CTA -->
-      <div class="res-bottom-cta">
-        <button class="res-btn-save" onclick="downloadPdf()">
-          💾 Simpan Analisis
+      <div style="text-align:center; margin: 8px 0 4px;">
+        <button
+          id="detail-trigger-btn"
+          onclick="openDetailPanel()"
+          style="
+            background: transparent;
+            border: 1px solid rgba(212,168,67,0.4);
+            color: var(--gold);
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 10px 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+          "
+          onmouseover="this.style.background='rgba(212,168,67,0.08)'"
+          onmouseout="this.style.background='transparent'"
+        >
+          // Lihat Analisis Lengkap → 11 Metrik
+        </button>
+      </div>
+
+      <!-- SENTRA AUDIT — CTA labels/icons + action row class -->
+      <div class="res-bottom-cta res-action-row">
+        <button class="res-btn-save" onclick="shareToWhatsApp()">
+          <i class="fa-brands fa-whatsapp"></i>
+          <span>Share Analisis</span>
         </button>
         <button id="pdf-btn" onclick="downloadPdf()">
-          📊 Analisis Kompetitor
+          <i class="fa-solid fa-file-arrow-down"></i>
+          <span>Download Laporan</span>
         </button>
-      </div>
-
-      <!-- AI INSIGHT SECTION -->
-      <div class="ai-card" id="ai-card-wrapper" style="margin-top:28px;">
-        <div id="ai-trigger-state">
-          <div style="display:flex; align-items:flex-start; gap:16px; background:rgba(212, 168, 67, 0.08); border:1px solid rgba(212, 168, 67, 0.15); padding:20px; border-radius:14px;">
-            <div style="font-size:24px; flex-shrink:0;">✦</div>
-            <div style="flex:1;">
-              <div style="font-family:'Syne', sans-serif; font-size:14px; font-weight:700; color:var(--text); margin-bottom:4px;">Rekomendasi Bisnis dari Sentra AI</div>
-              <div style="font-size:12px; color:var(--text-dim); margin-bottom:12px;">Analisis mendalam dari Claude AI — strategi, timing, dan peluang spesifik untuk produk kamu</div>
-              <button id="ai-trigger-btn" onclick="triggerAiInsight()" style="padding:8px 16px; background:var(--gold); border:none; color:#0A0A08; font-size:12px; font-weight:700; border-radius:8px; cursor:pointer; font-family:'Plus Jakarta Sans', sans-serif;">
-                <span id="ai-btn-text">Tampilkan Insight dari AI</span> →
-              </button>
-            </div>
-          </div>
-        </div>
-        <div id="ai-loading-state" style="display:none;"></div>
-        <div id="ai-result-state" style="display:none;"></div>
       </div>
     </div>
 
@@ -9129,6 +10089,82 @@
       <button class="modal-cta">Upgrade Sekarang &mdash; Rp 49rb/bln</button>
       <span class="modal-later" onclick="closeUpgradeModal()">Nanti saja</span>
     </div>
+  </div>
+
+  <!-- DETAIL ANALYSIS MODAL -->
+  <div id="detail-overlay" onclick="closeDetailPanel()" style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.75);
+    z-index:9000;
+    backdrop-filter:blur(4px);
+  "></div>
+
+  <div id="detail-panel" style="
+    display:none;
+    position:fixed;
+    top:0;
+    right:0;
+    width:min(520px, 100vw);
+    height:100vh;
+    background:#0D0D0B;
+    border-left:1px solid rgba(212,168,67,0.2);
+    z-index:9001;
+    overflow-y:auto;
+    padding:32px 28px 60px;
+  ">
+    <!-- Header -->
+    <div style="
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      margin-bottom:32px;
+      padding-bottom:20px;
+      border-bottom:1px solid rgba(212,168,67,0.15);
+    ">
+      <div>
+        <div style="
+          font-family:'DM Mono',monospace;
+          font-size:9px;
+          letter-spacing:3px;
+          color:var(--gold);
+          text-transform:uppercase;
+          margin-bottom:8px;
+          opacity:0.8;
+        ">// SENTRA AI — LAPORAN TEKNIKAL</div>
+        <div style="
+          font-family:'Cormorant Garamond',serif;
+          font-size:28px;
+          font-weight:600;
+          color:var(--text);
+          line-height:1.2;
+        ">Analisis Lengkap</div>
+        <div id="detail-keyword-label" style="
+          font-family:'DM Mono',monospace;
+          font-size:13px;
+          color:var(--gold);
+          margin-top:6px;
+          text-transform:capitalize;
+        ">—</div>
+      </div>
+      <button onclick="closeDetailPanel()" style="
+        background:transparent;
+        border:1px solid rgba(255,255,255,0.1);
+        color:var(--text-dim);
+        font-size:18px;
+        width:36px;
+        height:36px;
+        cursor:pointer;
+        flex-shrink:0;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+      ">×</button>
+    </div>
+
+    <!-- Content: 11 metrik akan diisi oleh JS -->
+    <div id="detail-metrics-container"></div>
   </div>
 
   <!-- AUTH OVERLAY + MODAL -->
@@ -10007,23 +11043,58 @@
 
     function renderPulse(score) {
       const v = Math.max(0, Math.min(100, score || 0));
-      const marker = document.getElementById('r-pulse-fill');
-      if (marker) {
-        marker.style.left = v + '%';
+      const ring = document.getElementById('r-pulse-fill');
+      if (ring) {
+        const circumference = 351.86; // 2πr (r=56)
+        ring.style.strokeDashoffset = (circumference * (1 - (v / 100))).toFixed(2);
       }
+
       const el = document.getElementById('r-pulse');
       if (el) {
-        const c = v >= 65 ? 'var(--green)' : v >= 40 ? 'var(--gold)' : 'var(--red)';
-        el.textContent = v.toFixed(1) + ' / 100';
-        el.style.color = c;
+        const token = String(Date.now());
+        el.dataset.animToken = token;
+        el.style.color = '#D4A843';
+
+        const duration = 1200;
+        const start = performance.now();
+        const from = 0;
+        const to = v;
+
+        function tick(now) {
+          if (el.dataset.animToken !== token) return;
+          const t = Math.min(1, (now - start) / duration);
+          const eased = 1 - Math.pow(1 - t, 3);
+          const current = from + ((to - from) * eased);
+          el.textContent = String(Math.round(current));
+          if (t < 1) requestAnimationFrame(tick);
+        }
+
+        requestAnimationFrame(tick);
       }
+
+      const cond = document.getElementById('r-pulse-condition');
+      if (cond) {
+        cond.textContent = v >= 65 ? 'TIMING BAGUS' : v >= 40 ? 'PERLU STRATEGI' : 'TUNDA MASUK';
+      }
+
+      const pulseLabel = document.getElementById('pulse-gauge-label');
+      if (pulseLabel) pulseLabel.textContent = `MARKET PULSE — ${v.toFixed(0)}/100`; // SENTRA AUDIT — pulse label copy
     }
 
     function renderRing(score) {
       const v = Math.max(0, Math.min(100, score));
       const circ = 251.33;
-      setTimeout(() => { document.getElementById('r-ring').style.strokeDashoffset = circ - (v / 100) * circ; }, 120);
+      setTimeout(() => {
+        const ringFill = document.getElementById('r-score-bar-fill') || document.getElementById('r-ring');
+        if (ringFill) ringFill.style.width = v + '%';
+      }, 120);
       document.getElementById('r-ring-num').textContent = Math.round(v);
+      const outOfHundred = document.getElementById('r-score-of-100');
+      if (outOfHundred) outOfHundred.textContent = Math.round(v);
+      const activeLabel = document.getElementById('r-bar-active-label');
+      if (activeLabel) {
+        activeLabel.textContent = v < 30 ? 'Hindari' : v < 55 ? 'Tunggu' : v < 80 ? 'Masuk' : 'Puncak';
+      }
     }
 
     function renderForecast(val, conf) {
@@ -10039,7 +11110,7 @@
       wrap.innerHTML = '';
       for (let i = 1; i <= 12; i++) {
         const ch = document.createElement('span');
-        ch.className = 'chip' + (peaks.includes(i) ? '' : ' off');
+        ch.className = 'chip season-month' + (peaks.includes(i) ? ' peak' : ' off');
         ch.textContent = MONTHS[i - 1];
         wrap.appendChild(ch);
       }
@@ -10127,6 +11198,8 @@
     }
 
     function renderResults(d) {
+      _detailData = d;
+      lastAnalysisData = d;
       // Force reset visibility yang mungkin ter-override oleh GSAP/CSS
       const resultsEl = document.getElementById('results');
       resultsEl.style.opacity = '1';
@@ -10153,20 +11226,180 @@
       const mv = d.momentum, me = document.getElementById('r-mom');
       me.textContent = (mv >= 0 ? '▲ ' : '▼ ') + Math.abs(mv).toFixed(3);
       me.className = 'mc-val ' + (mv > 0 ? 'pos' : 'neg');
+      const momVal = document.getElementById('r-mom-val');
+      if (momVal) {
+        momVal.textContent = (mv >= 0 ? '+' : '-') + Math.abs(mv * 100).toFixed(1) + '%';
+        momVal.className = 'mc-val ' + (mv > 0 ? 'pos' : 'neg');
+      }
 
       const vv = d.volatility, ve = document.getElementById('r-vol');
       ve.textContent = (vv * 100).toFixed(1) + '%';
       ve.className = 'mc-val ' + (vv > 0.5 ? 'neg' : vv > 0.3 ? 'neu' : 'pos');
+      const volVal = document.getElementById('r-vol-val');
+      if (volVal) {
+        volVal.textContent = (vv * 100).toFixed(0) + '%';
+        volVal.className = 'mc-val ' + (vv > 0.5 ? 'neg' : vv > 0.3 ? 'neu' : 'pos');
+      }
 
       const fv = d.fomo_index, fe = document.getElementById('r-fomo');
-      fe.textContent = fv.toFixed(2);
+      fe.textContent = Math.max(0, Math.min(1, fv)).toFixed(2);
       fe.className = 'mc-val ' + (fv > 0.6 ? 'neg' : fv > 0.3 ? 'neu' : 'pos');
-      document.getElementById('r-fomo-l').textContent = fv > 0.6 ? '⚠ Waspadai hype' : fv > 0.3 ? 'Tren campuran' : '✓ Tren organik';
+      document.getElementById('r-fomo-l').textContent = fv > 0.6 ? 'Waspadai hype' : fv > 0.3 ? 'Tren campuran' : 'Tren organik';
 
       const sv = d.saturation_index, se = document.getElementById('r-sat');
       se.textContent = sv.toFixed(1);
       se.className = 'mc-val ' + (sv >= 0.7 ? 'neg' : sv >= 0.4 ? 'neu' : 'pos');
-      document.getElementById('r-sat-l').textContent = sv >= 0.7 ? 'Pasar jenuh' : sv >= 0.4 ? 'Persaingan ketat' : '✓ Pasar terbuka';
+      const satVal = document.getElementById('r-sat-val');
+      if (satVal) {
+        satVal.textContent = (sv * 100).toFixed(0) + '%';
+        satVal.className = 'mc-val ' + (sv >= 0.7 ? 'neg' : sv >= 0.4 ? 'neu' : 'pos');
+      }
+      document.getElementById('r-sat-l').textContent = sv >= 0.7 ? 'Pasar jenuh' : sv >= 0.4 ? 'Persaingan ketat' : 'Pasar terbuka';
+
+      // ── VITALS CARD: TAG + WARNA DINAMIS ──
+      (function() {
+        var mom = d.momentum || 0;
+        var vol = d.volatility || 0;
+        var fomo = d.fomo_index || 0;
+        var sat = d.saturation_index || 0;
+
+        function setTag(dotId, tagId, text, color) {
+          var dot = document.getElementById(dotId);
+          var tag = document.getElementById(tagId);
+          var softBg = color === '#00E676'
+            ? 'rgba(0,230,118,0.1)'
+            : color === '#FF5252'
+              ? 'rgba(255,82,82,0.1)'
+              : 'rgba(255,215,64,0.1)';
+
+          if (dot) dot.style.background = color;
+          if (tag) {
+            tag.textContent = text;
+            tag.style.background = softBg;
+            tag.style.border = 'none';
+            tag.style.color = color;
+          }
+        }
+
+        function setBar(barId, value, color) {
+          var bar = document.getElementById(barId);
+          if (!bar) return;
+          bar.style.width = Math.max(0, Math.min(100, value)) + '%';
+          bar.style.background = color;
+        }
+
+        function setText(id, text) {
+          var el = document.getElementById(id);
+          if (el) el.textContent = text;
+        }
+
+        function setHtml(id, html) {
+          var el = document.getElementById(id);
+          if (el) el.innerHTML = html;
+        }
+
+        // Momentum
+        var momBarColor = '#FFD740';
+        if (mom > 0.3) {
+          setTag('mc-mom-dot','mc-mom-tag','Naik Kuat','#00E676');
+          document.getElementById('r-mom-val').style.color = '#00E676';
+          setText('r-mom-interp', 'Tren sedang naik konsisten 7 hari terakhir.');
+          momBarColor = '#00E676';
+        } else if (mom > 0) {
+          setTag('mc-mom-dot','mc-mom-tag','Naik Perlahan','#FFD740');
+          document.getElementById('r-mom-val').style.color = '#FFD740';
+          setText('r-mom-interp', 'Tren naik, tapi belum kencang. Tetap pantau harian.');
+          momBarColor = '#FFD740';
+        } else if (mom > -0.3) {
+          setTag('mc-mom-dot','mc-mom-tag','Melambat','#FFD740');
+          document.getElementById('r-mom-val').style.color = '#FFD740';
+          setText('r-mom-interp', 'Tren mulai melambat. Hindari stok terlalu agresif.');
+          momBarColor = '#FFD740';
+        } else {
+          setTag('mc-mom-dot','mc-mom-tag','Turun','#FF5252');
+          document.getElementById('r-mom-val').style.color = '#FF5252';
+          setText('r-mom-interp', 'Permintaan sedang turun. Fokus habiskan stok lama dulu.');
+          momBarColor = '#FF5252';
+        }
+        setBar('mc-mom-bar', Math.min(100, Math.abs(mom) * 220), momBarColor);
+        setText('r-mom-context', `vs minggu lalu: ${(d.growth >= 0 ? '+' : '') + (d.growth * 100).toFixed(1)}%`);
+
+        // Volatilitas
+        if (vol < 0.3) {
+          setTag('mc-vol-dot','mc-vol-tag','Sangat Stabil','#00E676');
+          document.getElementById('r-vol-val').style.color = '#00E676';
+          setText('r-vol-interp', `Volatilitas ${(vol * 100).toFixed(0)}% — pasar relatif stabil untuk mulai.`);
+        } else if (vol < 0.5) {
+          setTag('mc-vol-dot','mc-vol-tag','Cukup Stabil','#FFD740');
+          document.getElementById('r-vol-val').style.color = '#FFD740';
+          setText('r-vol-interp', `Volatilitas ${(vol * 100).toFixed(0)}% — masih aman, tapi tetap batasi stok.`);
+        } else {
+          setTag('mc-vol-dot','mc-vol-tag','Tidak Stabil','#FF5252');
+          document.getElementById('r-vol-val').style.color = '#FF5252';
+          setText('r-vol-interp', `Volatilitas ${(vol * 100).toFixed(0)}% — harga & minat sangat tidak stabil.`);
+        }
+        setBar('mc-vol-bar', Math.min(100, vol * 100), vol < 0.3 ? '#00E676' : vol < 0.5 ? '#FFD740' : '#FF5252');
+        setText('r-vol-context', `rata-rata pasar: ${(vol * 100).toFixed(0)}%`);
+
+        // FOMO / Tren Organik
+        if (fomo < 0.3) {
+          setTag('mc-fomo-dot','mc-fomo-tag','Tren Nyata','#00E676');
+          document.getElementById('r-fomo').style.color = '#00E676';
+          setText('r-fomo-interp', 'Bukan sekadar viral. Minat cenderung organik dan berulang.');
+        } else if (fomo < 0.6) {
+          setTag('mc-fomo-dot','mc-fomo-tag','Perlu Dicermati','#FFD740');
+          document.getElementById('r-fomo').style.color = '#FFD740';
+          setText('r-fomo-interp', 'Sebagian dipicu hype. Masuk bertahap dengan stok terbatas.');
+        } else {
+          setTag('mc-fomo-dot','mc-fomo-tag','Kemungkinan Viral Sesaat','#FF5252');
+          document.getElementById('r-fomo').style.color = '#FF5252';
+          setText('r-fomo-interp', 'Tren sangat dipengaruhi hype. Risiko deadstock lebih tinggi.');
+        }
+        setBar('mc-fomo-bar', Math.min(100, fomo * 100), fomo < 0.3 ? '#00E676' : fomo < 0.6 ? '#FFD740' : '#FF5252');
+        setText('r-fomo-context', `FOMO index mentah: ${fomo.toFixed(2)}`);
+
+        // Saturasi
+        if (sat < 0.4) {
+          setTag('mc-sat-dot','mc-sat-tag','Pasar Terbuka','#00E676');
+          document.getElementById('r-sat-val').style.color = '#00E676';
+          setText('r-sat-interp', 'Persaingan belum ketat. Peluang masuk masih lebar.');
+        } else if (sat < 0.65) {
+          setTag('mc-sat-dot','mc-sat-tag','Mulai Ramai','#FFD740');
+          document.getElementById('r-sat-val').style.color = '#FFD740';
+          setText('r-sat-interp', 'Pemain mulai banyak. Kamu perlu pembeda produk yang jelas.');
+        } else {
+          setTag('mc-sat-dot','mc-sat-tag','Pasar Jenuh','#FF5252');
+          document.getElementById('r-sat-val').style.color = '#FF5252';
+          setText('r-sat-interp', 'Persaingan padat. Hindari perang harga tanpa keunikan.');
+        }
+        setBar('mc-sat-bar', Math.min(100, sat * 100), sat < 0.4 ? '#00E676' : sat < 0.65 ? '#FFD740' : '#FF5252');
+        setText('r-sat-context', `saturasi mentah: ${sat.toFixed(1)}`);
+
+        // Market Pulse narrative
+        var pulse = d.market_pulse_score || 0;
+        var pulseInterp = document.getElementById('r-pulse-interp');
+        if (pulseInterp) {
+          pulseInterp.textContent = pulse >= 65
+            ? 'Timing bagus. Mulai persiapan sekarang sebelum pasar makin ramai.'
+            : pulse >= 45
+            ? 'Timing menengah. Uji pasar 14 hari lalu putuskan tambah stok atau tidak.'
+            : 'Timing lemah. Tunda eksekusi dan fokus validasi demand mingguan.';
+        }
+
+        setHtml('r-pulse-reason-1', `• Momentum <b>${(mom >= 0 ? '+' : '-') + Math.abs(mom).toFixed(2)}</b> ${mom >= 0 ? 'menguat' : 'melemah'} dalam 7 hari.`);
+        setHtml('r-pulse-reason-2', `• Volatilitas <b>${(vol * 100).toFixed(0)}%</b> ${vol > 0.5 ? 'tinggi, jadi risiko naik' : 'masih terkendali untuk uji pasar'}.`);
+        setHtml('r-pulse-reason-3', `• Saturasi <b>${(sat * 100).toFixed(0)}%</b> ${sat < 0.4 ? 'pasar masih longgar' : sat < 0.65 ? 'pasar mulai ramai' : 'pasar sudah padat'}.`);
+        setText('r-pulse-action', pulse >= 65
+          ? '→ Rekomendasi aksi: masuk sekarang, targetkan validasi penjualan 30 unit pertama dalam 14 hari.'
+          : pulse >= 45
+            ? '→ Rekomendasi aksi: batasi stok awal maksimal 20 unit, lalu scale hanya jika repeat order naik.'
+            : '→ Rekomendasi aksi: tahan belanja stok, riset ulang keyword dan cek sinyal rebound tiap minggu.');
+      })();
+
+      const metricsSub = document.getElementById('r-metrics-subrow');
+      if (metricsSub) {
+        metricsSub.textContent = `${(gv >= 0 ? '+' : '') + (gv * 100).toFixed(1)}% Growth · ${Math.abs(mv).toFixed(3)} Momentum · ${(vv * 100).toFixed(1)}% Vol.`;
+      }
 
       // Reset & render analisis teknikal (selalu hidden secara default)
       setTechnicalToggleState(false);
@@ -10174,6 +11407,99 @@
 
       renderPulse(d.market_pulse_score);
       renderRing(d.entry_timing_score);
+
+      // ── ENTRY TIMING CARD: WARNA + POINTER + MEANING ──
+      (function() {
+        var score = d.entry_timing_score || 0;
+        var ring = document.getElementById('timing-score-ring');
+        var badge = document.getElementById('timing-status-badge');
+        var pointer = document.getElementById('timing-pointer');
+        var pointerScore = document.getElementById('timing-pointer-score');
+        var meaning = document.getElementById('timing-meaning');
+        var numEl = document.getElementById('r-ring-num');
+
+        var color, borderColor, badgeText, meaningText;
+
+        if (score >= 75) {
+          color = '#00E676';
+          borderColor = 'rgba(0,230,118,0.5)';
+          badgeText = 'Waktu Terbaik';
+          meaningText = '✓ Skor ' + score + '/100:<br>Ini adalah waktu yang sangat baik untuk mulai berjualan. Pasar sedang tumbuh, persaingan belum terlalu ketat, dan momentum mendukung.';
+        } else if (score >= 60) {
+          color = '#D4A843';
+          borderColor = 'rgba(212,168,67,0.5)';
+          badgeText = 'Bagus, Siap-siap';
+          meaningText = '→ Skor ' + score + '/100:<br>Kondisi pasar cukup bagus. Mulai persiapan sekarang: riset supplier, hitung modal, dan siapkan toko. Jangan menunggu terlalu lama.';
+        } else if (score >= 45) {
+          color = '#FFD740';
+          borderColor = 'rgba(255,215,64,0.5)';
+          badgeText = 'Hati-hati';
+          meaningText = '⚠ Skor ' + score + '/100:<br>Pasar ada, tapi ada risiko. Mulai dengan modal kecil dulu untuk uji pasar sebelum investasi besar.';
+        } else if (score >= 25) {
+          color = '#FF8A65';
+          borderColor = 'rgba(255,138,101,0.5)';
+          badgeText = 'Tunggu Dulu';
+          meaningText = '⏳ Skor ' + score + '/100:<br>Belum saatnya. Pantau dulu selama 2–4 minggu ke depan sebelum memutuskan masuk.';
+        } else {
+          color = '#FF5252';
+          borderColor = 'rgba(255,82,82,0.5)';
+          badgeText = 'Hindari';
+          meaningText = '✕ Skor ' + score + '/100:<br>Kondisi pasar tidak menguntungkan saat ini. Cari produk lain atau tunggu tren berubah.';
+        }
+
+        if (numEl) numEl.style.color = color;
+        if (ring) ring.style.borderColor = borderColor;
+        if (ring) ring.style.boxShadow = '0 0 20px ' + color + '22';
+        if (badge) {
+          var badgeBg = 'rgba(212,168,67,0.15)';
+          var badgeBorder = '#D4A843';
+          var badgeColor = '#D4A843';
+          var normalizedLabel = (d.entry_timing_label || badgeText || '').toLowerCase();
+
+          if (normalizedLabel.includes('waktu terbaik') || normalizedLabel.includes('positif')) {
+            badgeBg = 'rgba(0,230,118,0.15)';
+            badgeBorder = '#00E676';
+            badgeColor = '#00E676';
+          } else if (normalizedLabel.includes('perlu persiapan') || normalizedLabel.includes('bagus')) {
+            badgeBg = 'rgba(212,168,67,0.15)';
+            badgeBorder = '#D4A843';
+            badgeColor = '#D4A843';
+          } else if (normalizedLabel.includes('hati-hati') || normalizedLabel.includes('hati hati')) {
+            badgeBg = 'rgba(255,215,64,0.15)';
+            badgeBorder = '#FFD740';
+            badgeColor = '#FFD740';
+          } else if (normalizedLabel.includes('hindari')) {
+            badgeBg = 'rgba(255,82,82,0.15)';
+            badgeBorder = '#FF5252';
+            badgeColor = '#FF5252';
+          }
+
+          badge.textContent = badgeText;
+          badge.style.color = badgeColor;
+          badge.style.borderColor = badgeBorder;
+          badge.style.background = badgeBg;
+        }
+        if (meaning) {
+          meaning.innerHTML = meaningText;
+          meaning.style.borderLeftColor = color;
+        }
+
+        setTimeout(function() {
+          if (pointer) {
+            pointer.style.left = score + '%';
+            pointer.style.background = color;
+            pointer.style.boxShadow = '0 0 12px ' + color + '88';
+          }
+          if (pointerScore) {
+            pointerScore.style.left = score + '%';
+            pointerScore.textContent = Math.round(score);
+            pointerScore.style.color = '#D4A843';
+          }
+        }, 400);
+      })();
+
+      const verdictText = document.getElementById('r-verdict-text');
+      if (verdictText) verdictText.textContent = d.entry_timing_label || '—';
       document.getElementById('r-timing-lbl').textContent = d.entry_timing_label;
       document.getElementById('r-timing-desc').textContent = timingDesc(d.entry_timing_score);
       renderForecast(d.forecast_30d_avg, d.forecast_confidence);
@@ -10203,6 +11529,8 @@
 
     /* ── SINGLE TREND CHART ── */
     let singleChart = null;
+    let forecastVisible = false;
+    let lastAnalysisData = null; // simpan data terakhir untuk toggle forecast
     function renderSingleTrendChart(d) {
       const canvas = document.getElementById('single-chart');
       if (!canvas) return;
@@ -10212,21 +11540,69 @@
       if (!raw || !Array.isArray(raw.dates) || raw.dates.length === 0) {
         document.getElementById('r-trend-range').textContent = '';
         canvas.parentElement.style.display = 'none';
+        const monthLabelContainerEmpty = document.getElementById('chart-month-labels');
+        if (monthLabelContainerEmpty) monthLabelContainerEmpty.innerHTML = '';
+        const btnEmpty = document.getElementById('btn-toggle-forecast');
+        if (btnEmpty) {
+          btnEmpty.textContent = '◎ TAMPILKAN FORECAST 90 HARI';
+          btnEmpty.classList.remove('active');
+        }
+        forecastVisible = false;
         return;
       }
-      canvas.parentElement.style.display = 'block';
 
-      const labels = raw.dates.map(dt => {
+      // Filter tanggal yang masuk akal (tidak lebih dari 14 hari dari sekarang)
+      const today = new Date();
+      const maxDate = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
+      const filteredDates = raw.dates.filter(dt => new Date(dt) <= maxDate);
+      const filteredValues = raw.values.slice(0, filteredDates.length);
+
+      if (filteredDates.length === 0) {
+        document.getElementById('r-trend-range').textContent = '';
+        canvas.parentElement.style.display = 'none';
+        const monthLabelContainerEmpty = document.getElementById('chart-month-labels');
+        if (monthLabelContainerEmpty) monthLabelContainerEmpty.innerHTML = '';
+        return;
+      }
+
+      canvas.parentElement.style.display = 'block';
+      forecastVisible = false;
+      const btn = document.getElementById('btn-toggle-forecast');
+      if (btn) {
+        btn.textContent = '◎ TAMPILKAN FORECAST 90 HARI';
+        btn.classList.remove('active');
+      }
+
+      const labels = filteredDates.map(dt => {
         const d = new Date(dt);
         return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
       });
 
-      // Date range label
-      if (raw.dates.length > 0) {
-        const first = new Date(raw.dates[0]).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-        const last = new Date(raw.dates[raw.dates.length - 1]).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+      // Generate label bulan dinamis untuk sumbu bawah
+      const monthLabelContainer = document.getElementById('chart-month-labels');
+      if (monthLabelContainer && filteredDates.length > 0) {
+        const MONTHS_ID = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des'];
+        const totalPts = filteredDates.length;
+        const step = Math.max(1, Math.floor(totalPts / 5));
+        const monthLabels = [];
+        for (let i = 0; i < totalPts; i += step) {
+          const dt = new Date(filteredDates[i]);
+          monthLabels.push(MONTHS_ID[dt.getMonth()]);
+        }
+        if (monthLabels.length > 0) monthLabels[monthLabels.length - 1] += '→';
+        monthLabelContainer.innerHTML = monthLabels.map(m => `<span>${m}</span>`).join('');
+      }
+
+      // Hitung range dari data historis saja (sebelum forecast ditambahkan)
+      if (filteredDates.length > 0) {
+        const first = new Date(filteredDates[0]).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        const last = new Date(filteredDates[filteredDates.length - 1]).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
         document.getElementById('r-trend-range').textContent = `${first} – ${last}`;
       }
+
+      // Default chart: hanya data historis.
+      // Forecast baru ditambahkan saat user klik tombol toggle.
+      const histValues = [...filteredValues]; // copy agar tidak mutate source values
 
       const ctx = canvas.getContext('2d');
       const grad = ctx.createLinearGradient(0, 0, 0, 200);
@@ -10237,18 +11613,20 @@
         type: 'line',
         data: {
           labels,
-          datasets: [{
-            label: d.keyword,
-            data: raw.values,
-            borderColor: '#D4A843',
-            backgroundColor: grad,
-            borderWidth: 2,
-            pointRadius: 0,
-            pointHoverRadius: 4,
-            pointHoverBackgroundColor: '#D4A843',
-            tension: 0.4,
-            fill: true,
-          }]
+          datasets: [
+            {
+              label: d.keyword,
+              data: histValues,
+              borderColor: '#D4A843',
+              backgroundColor: grad,
+              borderWidth: 2,
+              pointRadius: 0,
+              pointHoverRadius: 4,
+              pointHoverBackgroundColor: '#D4A843',
+              tension: 0.4,
+              fill: true,
+            }
+          ]
         },
         options: {
           responsive: true,
@@ -10269,16 +11647,86 @@
           scales: {
             x: {
               grid: { color: 'rgba(74,69,53,.15)', drawBorder: false },
-              ticks: { color: '#7A7360', font: { family: "'DM Mono',monospace", size: 9 }, maxTicksLimit: 10, maxRotation: 0 }
+              ticks: { color: '#7A7360', font: { family: "'DM Mono',monospace", size: 11 }, maxTicksLimit: window.matchMedia('(max-width: 480px)').matches ? 2 : 10, maxRotation: 0 }
             },
             y: {
               grid: { color: 'rgba(74,69,53,.1)', drawBorder: false },
-              ticks: { color: '#7A7360', font: { family: "'DM Mono',monospace", size: 9 } },
+              ticks: { color: '#7A7360', font: { family: "'DM Mono',monospace", size: 11 } },
               beginAtZero: true, max: 100,
             }
           }
         }
       });
+    }
+
+    function toggleForecast() {
+      if (!lastAnalysisData || !singleChart) return;
+      forecastVisible = !forecastVisible;
+
+      const btn = document.getElementById('btn-toggle-forecast');
+
+      if (forecastVisible) {
+        const fcAvg = lastAnalysisData.forecast_30d_avg || 0;
+        const lastDate = new Date(lastAnalysisData.raw_trend.dates[
+          lastAnalysisData.raw_trend.dates.length - 1
+        ]);
+
+        const fcLabels = [];
+        const fcValues = [];
+        const existingLen = lastAnalysisData.raw_trend.values.length;
+
+        for (let i = 1; i <= 4; i++) {
+          const d = new Date(lastDate);
+          d.setDate(d.getDate() + i * 7);
+          fcLabels.push(d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }));
+          const lastVal = lastAnalysisData.raw_trend.values[existingLen - 1];
+          fcValues.push(Math.round(lastVal + (fcAvg - lastVal) * (i / 4)));
+        }
+
+        const allLabels = [...singleChart.data.labels, ...fcLabels];
+        const fcDataPadded = new Array(existingLen).fill(null).concat(fcValues);
+        const histDataPadded = [...lastAnalysisData.raw_trend.values, ...new Array(4).fill(null)];
+
+        singleChart.data.labels = allLabels;
+        singleChart.data.datasets[0].data = histDataPadded;
+
+        if (singleChart.data.datasets.length < 2) {
+          singleChart.data.datasets.push({
+            label: 'Forecast',
+            data: fcDataPadded,
+            borderColor: 'rgba(0,230,118,0.7)',
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            borderDash: [6, 4],
+            pointRadius: 3,
+            pointBackgroundColor: '#00E676',
+            tension: 0.3,
+            fill: false,
+          });
+        } else {
+          singleChart.data.datasets[1].data = fcDataPadded;
+        }
+
+        if (btn) {
+          btn.textContent = '✕ SEMBUNYIKAN FORECAST';
+          btn.classList.add('active');
+        }
+      } else {
+        singleChart.data.labels = lastAnalysisData.raw_trend.dates.map(dt =>
+          new Date(dt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
+        );
+        singleChart.data.datasets[0].data = lastAnalysisData.raw_trend.values;
+        if (singleChart.data.datasets.length > 1) {
+          singleChart.data.datasets.splice(1);
+        }
+
+        if (btn) {
+          btn.textContent = '◎ TAMPILKAN FORECAST 90 HARI';
+          btn.classList.remove('active');
+        }
+      }
+
+      singleChart.update();
     }
 
     /* ── AI INSIGHT PARSER — 3 CARD ── */
@@ -10629,6 +12077,10 @@
       document.getElementById('ai-result-state').style.display = 'none';
       const btn = document.getElementById('ai-trigger-btn');
       if (btn) { btn.disabled = false; document.getElementById('ai-btn-text').textContent = 'Tampilkan Insight dari AI'; }
+    }
+
+    function scrollToAiInsight() {
+      scrollToSection('#ai-card-wrapper'); // SENTRA AUDIT — primary CTA helper
     }
 
     async function triggerAiInsight(forceRefresh = false) {
@@ -11048,6 +12500,13 @@
       const geo = document.getElementById('geo-select')?.value || 'ID';
       if (!kw) { showErr('Masukkan keyword terlebih dahulu.'); return; }
 
+      forecastVisible = false;
+      const fBtn = document.getElementById('btn-toggle-forecast');
+      if (fBtn) {
+        fBtn.textContent = '◎ TAMPILKAN FORECAST 90 HARI';
+        fBtn.classList.remove('active');
+      }
+
       document.getElementById('err').style.display = 'none';
       setLoading(true, false);
 
@@ -11187,6 +12646,107 @@
         showErr('Koneksi gagal.');
         setLoading(false, true);
       }
+    }
+
+    function shareToWhatsApp() {
+      if (!lastAnalysisResult) {
+        alert('Jalankan analisis dulu sebelum share.');
+        return;
+      }
+
+      const d = lastAnalysisResult;
+      const keyword = d.keyword || '-';
+      const marketPulse = Math.max(0, Math.min(100, Number(d.market_pulse_score || 0))).toFixed(0);
+      const entryTimingLabel = d.entry_timing_label || '-';
+      const lifecycleStage = d.lifecycle_stage || '-';
+      const riskLevel = d.risk_level || '-';
+
+      const growth = Number(d.growth || 0);
+      const momentum = Number(d.momentum || 0);
+      const volatility = Number(d.volatility || 0);
+      const fomo = Number(d.fomo_index || 0);
+      const saturation = Number(d.saturation_index || 0);
+
+      const momentumPersen = `${growth >= 0 ? '+' : ''}${(growth * 100).toFixed(1)}`;
+      const volatilityPersen = Math.round(volatility * 100);
+      const fomoIndexDesimal = Math.max(0, Math.min(1, fomo)).toFixed(2);
+      const saturationPersen = Math.round(saturation * 100);
+
+      const momentumLabel = momentum > 1 ? 'Naik Kuat' : momentum > 0 ? 'Naik' : momentum === 0 ? 'Stabil' : 'Turun';
+      const volatilityLabel = volatility > 1.5 ? 'Sangat Tidak Stabil' : volatility > 0.8 ? 'Tidak Stabil' : volatility > 0.4 ? 'Cukup Stabil' : 'Stabil';
+      const fomoLabel = fomo >= 0.8 ? 'Hype Sesaat' : fomo >= 0.5 ? 'Ada Unsur Hype' : 'Tren Organik';
+      const saturationLabel = saturation >= 0.7 ? 'Pasar Penuh' : saturation >= 0.4 ? 'Mulai Ramai' : 'Pasar Terbuka';
+
+      const tsRaw = d.timestamp || Date.now();
+      const ts = new Date(tsRaw);
+      const DD = String(ts.getDate()).padStart(2, '0');
+      const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
+      const MMM = MONTHS[ts.getMonth()] || 'Jan';
+      const YYYY = ts.getFullYear();
+      const HH = String(ts.getHours()).padStart(2, '0');
+      const MM = String(ts.getMinutes()).padStart(2, '0');
+      const tanggalFormat = `${DD} ${MMM} ${YYYY}, ${HH}:${MM}`;
+
+      function cleanAiText(str) {
+        return String(str || '')
+          .replace(/<br\s*\/?>(\r\n|\r|\n)?/gi, '\n')
+          .replace(/<[^>]+>/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+      }
+
+      let aiSummary = '';
+      const aiAksi = cleanAiText(document.getElementById('r-ai-aksi')?.innerHTML || '');
+      const aiPasar = cleanAiText(document.getElementById('r-ai-pasar')?.innerHTML || '');
+      const aiWaktu = cleanAiText(document.getElementById('r-ai-waktu')?.innerHTML || '');
+      const aiPool = [aiAksi, aiPasar, aiWaktu].filter(Boolean);
+      const aiCombined = aiPool.join(' ').replace(/—/g, '').trim();
+
+      if (_aiInsightGenerated && aiCombined && !/insight tidak tersedia/i.test(aiCombined)) {
+        aiSummary = aiCombined;
+      } else {
+        const fallbackAction = marketPulse >= 65
+          ? 'Masuk sekarang dengan stok awal terukur dan validasi repeat order 14 hari.'
+          : marketPulse >= 45
+            ? 'Uji pasar dulu 14 hari sebelum tambah stok.'
+            : 'Tunda stok besar dan pantau sinyal pemulihan mingguan.';
+        aiSummary = `${entryTimingLabel}. ${fallbackAction}`;
+      }
+
+      aiSummary = aiSummary.slice(0, 420).trim();
+
+      const hasForecast = d.forecast_30d_avg !== null && d.forecast_30d_avg !== undefined && !Number.isNaN(Number(d.forecast_30d_avg));
+      const forecastLine = hasForecast ? `\nForecast 30 hari: ~${Math.max(0, Math.min(100, Number(d.forecast_30d_avg))).toFixed(1)}/100\n` : '\n';
+
+      const message = `ANALISIS SENTRA AI
+Keyword: ${keyword}
+${tanggalFormat}
+
+--------------------------------
+MARKET PULSE: ${marketPulse}/100
+Status: ${entryTimingLabel}
+
+Momentum      : ${momentumPersen}%  (${momentumLabel})
+Volatilitas   : ${volatilityPersen}%  (${volatilityLabel})
+FOMO Index    : ${fomoIndexDesimal}  (${fomoLabel})
+Persaingan    : ${saturationPersen}%  (${saturationLabel})
+
+Lifecycle     : ${lifecycleStage}
+Risk Level    : ${riskLevel}
+--------------------------------
+
+KESIMPULAN:
+${aiSummary}
+${forecastLine}
+Cek tren produkmu sendiri di:
+https://sentra.ai
+
+--------------------------------
+Dianalisis pakai Sentra AI
+"Karena Setiap Pedagang Berhak Tahu"`;
+
+      const encoded = encodeURIComponent(message);
+      window.open(`https://wa.me/?text=${encoded}`, '_blank');
     }
 
     /* ── PDF DOWNLOAD ── */
@@ -11929,6 +13489,211 @@
       track.addEventListener('mouseenter', stopAuto);
       track.addEventListener('mouseleave', startAuto);
     })();
+
+    // ── DETAIL ANALYSIS PANEL ──
+    let _detailData = null;
+
+    function openDetailPanel() {
+      if (!_detailData) return;
+      populateDetailPanel(_detailData);
+      document.getElementById('detail-overlay').style.display = 'block';
+      document.getElementById('detail-panel').style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDetailPanel() {
+      document.getElementById('detail-overlay').style.display = 'none';
+      document.getElementById('detail-panel').style.display = 'none';
+      document.body.style.removeProperty('overflow');
+    }
+
+    function _dmGauge(val, max, colorClass) {
+      var pct = Math.min(Math.max((val / max) * 100, 0), 100);
+      return '<div class="dm-gauge-track">' +
+        '<div class="dm-gauge-fill ' + colorClass + '" style="width:' + pct + '%; background:currentColor;"></div>' +
+        '</div>';
+    }
+
+    function _dmBlock(num, label, valueHTML, sublabel, explain, colorClass, extra) {
+      return '<div class="detail-metric-block ' + (colorClass || '') + '">' +
+        '<div class="dm-number">0' + num + '</div>' +
+        '<div class="dm-label">' + label + '</div>' +
+        '<div class="dm-value ' + (extra || 'dv-gold') + '">' + valueHTML + '</div>' +
+        '<div class="dm-sublabel">' + sublabel + '</div>' +
+        (explain ? '<div class="dm-explain">' + explain + '</div>' : '') +
+      '</div>';
+    }
+
+    function populateDetailPanel(d) {
+      var kw = d.keyword || '—';
+      document.getElementById('detail-keyword-label').textContent = kw;
+
+      var MONTHS = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des'];
+      var c = document.getElementById('detail-metrics-container');
+      if (!c) return;
+
+      var html = '';
+
+      // ── KELOMPOK 1: KEPUTUSAN ──
+      html += '<div class="dm-section-title">// Keputusan Utama</div>';
+
+      // 1. Entry Timing Score
+      var ts = d.entry_timing_score || 0;
+      var tl = d.entry_timing_label || '—';
+      var tsColor = ts >= 70 ? 'dv-green' : ts >= 50 ? 'dv-gold' : ts >= 30 ? 'dv-amber' : 'dv-red';
+      var tsClass = ts >= 70 ? 'dm-green' : ts >= 50 ? 'dm-gold' : ts >= 30 ? 'dm-amber' : 'dm-red';
+      html += _dmBlock(1, 'Entry Timing Score', ts + '<span style="font-size:16px;color:var(--text-dim)"> / 100</span>',
+        tl,
+        'Skor gabungan dari <strong>10 faktor</strong> yang menentukan apakah sekarang adalah waktu terbaik untuk mulai berjualan produk ini. Di atas 70 = waktu terbaik. 50–69 = boleh masuk dengan persiapan. Di bawah 50 = tunggu atau hindari.',
+        tsClass, tsColor);
+
+      // 2. Lifecycle Stage
+      var stage = d.lifecycle_stage || '—';
+      var stageMap = {
+        'Emerging': { color: 'dv-gold', cls: 'dm-gold', desc: 'Produk baru mulai dikenal pasar. <strong>Peluang awal yang bagus</strong> — masuk sekarang sebelum ramai.' },
+        'Rising':   { color: 'dv-green', cls: 'dm-green', desc: 'Tren sedang naik tajam. <strong>Momentum kuat</strong> — pasar sedang tumbuh aktif.' },
+        'Peak':     { color: 'dv-amber', cls: 'dm-amber', desc: 'Produk sedang di puncak popularitas. <strong>Hati-hati</strong> — persaingan tinggi, mungkin akan turun.' },
+        'Stable':   { color: 'dv-text', cls: '', desc: 'Tren relatif datar dan stabil. <strong>Pasar matang</strong> — bisa masuk tapi persaingan sudah ada.' },
+        'Declining':{ color: 'dv-red', cls: 'dm-red', desc: 'Minat pasar sedang menurun. <strong>Tidak disarankan</strong> untuk mulai berjualan saat ini.' }
+      };
+      var si = stageMap[stage] || { color: 'dv-text', cls: '', desc: '—' };
+      html += _dmBlock(2, 'Lifecycle Stage', stage, 'Fase siklus hidup produk', si.desc, si.cls, si.color);
+
+      // 3. Risk Level
+      var risk = d.risk_level || '—';
+      var riskMap = {
+        'Low Risk':    { color: 'dv-green', cls: 'dm-green', desc: 'Volatilitas rendah dan tidak ada sinyal hype berlebihan. <strong>Risiko investasi relatif kecil.</strong>' },
+        'Medium Risk': { color: 'dv-amber', cls: 'dm-amber', desc: 'Ada potensi fluktuasi yang perlu diwaspadai. <strong>Masih layak, tapi siapkan strategi cadangan.</strong>' },
+        'High Risk':   { color: 'dv-red', cls: 'dm-red', desc: 'Tren sangat tidak stabil atau terdeteksi hype sesaat. <strong>Hindari investasi besar di produk ini sekarang.</strong>' }
+      };
+      var ri = riskMap[risk] || { color: 'dv-text', cls: '', desc: '—' };
+      html += _dmBlock(3, 'Risk Level', risk, 'Berdasarkan volatilitas + FOMO index', ri.desc, ri.cls, ri.color);
+
+      // ── KELOMPOK 2: METRIK PASAR ──
+      html += '<div class="dm-section-title">// Metrik Pasar</div>';
+      html += '<div class="dm-grid-2">';
+
+      // 4. Growth 7 Hari
+      var gr = d.growth || 0;
+      var grPct = (gr * 100).toFixed(1);
+      var grColor = gr > 0 ? 'dv-green' : gr > -0.1 ? 'dv-amber' : 'dv-red';
+      var grCls = gr > 0 ? 'dm-green' : gr > -0.1 ? 'dm-amber' : 'dm-red';
+      html += _dmBlock(4, 'Growth 7 Hari',
+        (gr >= 0 ? '+' : '') + grPct + '%',
+        'Dibanding 7 hari sebelumnya',
+        'Selisih rata-rata minat <strong>7 hari terakhir</strong> vs <strong>7 hari sebelumnya</strong>.',
+        grCls, grColor);
+
+      // 5. Momentum
+      var mom = d.momentum || 0;
+      var momFmt = (mom >= 0 ? '+' : '') + mom.toFixed(3);
+      var momColor = mom > 0.2 ? 'dv-green' : mom > 0 ? 'dv-gold' : mom > -0.2 ? 'dv-amber' : 'dv-red';
+      var momCls = mom > 0.2 ? 'dm-green' : mom > 0 ? 'dm-gold' : mom > -0.2 ? 'dm-amber' : 'dm-red';
+      html += _dmBlock(5, 'Momentum',
+        momFmt,
+        mom > 0 ? 'Tren naik' : mom < 0 ? 'Tren turun' : 'Datar',
+        'Kemiringan garis tren (regresi linear). <strong>Positif = naik, negatif = turun.</strong> Makin jauh dari 0, makin kuat tren-nya.',
+        momCls, momColor);
+
+      html += '</div><div class="dm-grid-2">';
+
+      // 6. Volatilitas
+      var vol = d.volatility || 0;
+      var volPct = (vol * 100).toFixed(1);
+      var volColor = vol < 0.3 ? 'dv-green' : vol < 0.5 ? 'dv-amber' : 'dv-red';
+      var volCls = vol < 0.3 ? 'dm-green' : vol < 0.5 ? 'dm-amber' : 'dm-red';
+      html += _dmBlock(6, 'Volatilitas',
+        volPct + '%',
+        vol < 0.3 ? 'Stabil' : vol < 0.5 ? 'Fluktuasi sedang' : 'Sangat fluktuatif',
+        'Koefisien variasi minat. <strong>Makin kecil = makin stabil</strong> dan mudah diprediksi.',
+        volCls, volColor);
+
+      // 7. Market Pulse Score
+      var pulse = d.market_pulse_score || 0;
+      var pulseColor = pulse >= 65 ? 'dv-green' : pulse >= 45 ? 'dv-gold' : 'dv-red';
+      var pulseCls = pulse >= 65 ? 'dm-green' : pulse >= 45 ? 'dm-gold' : 'dm-red';
+      html += _dmBlock(7, 'Market Pulse',
+        pulse + '<span style="font-size:14px;color:var(--text-dim)"> / 100</span>',
+        'Kesehatan pasar keseluruhan',
+        'Gabungan dari growth (40%), momentum (35%), dan stabilitas (25%). <strong>Di atas 65 = kondisi pasar sehat.</strong>',
+        pulseCls, pulseColor);
+
+      html += '</div><div class="dm-grid-2">';
+
+      // 8. FOMO Index
+      var fomo = d.fomo_index || 0;
+      var fomoColor = fomo < 0.3 ? 'dv-green' : fomo < 0.6 ? 'dv-amber' : 'dv-red';
+      var fomoCls = fomo < 0.3 ? 'dm-green' : fomo < 0.6 ? 'dm-amber' : 'dm-red';
+      var fomoLabel = fomo < 0.3 ? 'Tren organik' : fomo < 0.6 ? 'Ada sinyal hype' : 'Hype tinggi — waspada';
+      html += _dmBlock(8, 'FOMO Index',
+        fomo.toFixed(3),
+        fomoLabel,
+        'Rasio minat <strong>7 hari terakhir vs rata-rata sebelumnya</strong>. Nilai tinggi (> 0.6) = kemungkinan tren sesaat yang akan cepat turun.',
+        fomoCls, fomoColor);
+
+      // 9. Saturasi
+      var sat = d.saturation_index || 0;
+      var satColor = sat < 0.4 ? 'dv-green' : sat < 0.65 ? 'dv-amber' : 'dv-red';
+      var satCls = sat < 0.4 ? 'dm-green' : sat < 0.65 ? 'dm-amber' : 'dm-red';
+      var satLabel = sat < 0.4 ? 'Pasar terbuka' : sat < 0.65 ? 'Mulai padat' : 'Pasar jenuh';
+      html += _dmBlock(9, 'Saturasi Pasar',
+        sat.toFixed(2),
+        satLabel,
+        'Estimasi kejenuhan pasar berdasarkan <strong>pertumbuhan vs momentum</strong>. Makin rendah = makin banyak ruang untuk pemain baru.',
+        satCls, satColor);
+
+      html += '</div>';
+
+      // ── KELOMPOK 3: PROYEKSI ──
+      html += '<div class="dm-section-title">// Proyeksi & Pola</div>';
+
+      // 10. Forecast 30 Hari
+      var fc = d.forecast_30d_avg || 0;
+      var fcConf = d.forecast_confidence || 0;
+      var fcConfPct = (fcConf * 100).toFixed(0);
+      var fcColor = fc > 50 ? 'dv-green' : fc > 25 ? 'dv-gold' : 'dv-amber';
+      html += _dmBlock(10, 'Forecast 30 Hari',
+        fc.toFixed(1),
+        'Proyeksi rata-rata minat',
+        'Prediksi minat 30 hari ke depan menggunakan <strong>regresi linear</strong> dari data 3 bulan terakhir. ' +
+        '<strong>Akurasi: ' + fcConfPct + '%</strong> — ' +
+        (fcConf >= 0.7 ? 'proyeksi cukup dapat diandalkan.' : fcConf >= 0.5 ? 'proyeksi moderat, ada ketidakpastian.' : 'proyeksi lemah karena data fluktuatif.'),
+        'dm-blue', fcColor);
+
+      // 11. Pola Musiman
+      var isSeas = d.is_seasonal || false;
+      var seasConf = d.seasonal_confidence || 0;
+      var seasPct = (seasConf * 100).toFixed(0);
+      var peakMonths = d.seasonal_peak_months || [];
+      var peakNames = peakMonths.map(function(m) { return MONTHS[m-1]; }).join(', ');
+      var seasValue = isSeas ? 'YA' : 'TIDAK';
+      var seasColor = isSeas ? 'dv-amber' : 'dv-text';
+      var seasCls = isSeas ? 'dm-amber' : '';
+      var seasDesc = isSeas
+        ? 'Produk ini <strong>memiliki pola musiman</strong> yang terdeteksi (keyakinan ' + seasPct + '%). ' +
+          (peakNames ? 'Bulan puncak biasanya di: <strong>' + peakNames + '</strong>. Siapkan stok sebelum bulan-bulan ini.' : 'Data bulan puncak belum tersedia.')
+        : 'Tidak terdeteksi pola musiman yang signifikan. <strong>Permintaan cenderung konsisten</strong> sepanjang tahun.';
+      html += _dmBlock(11, 'Pola Musiman',
+        seasValue,
+        isSeas ? 'Musiman terdeteksi · keyakinan ' + seasPct + '%' : 'Tidak musiman',
+        seasDesc, seasCls, seasColor);
+
+      // Footer note
+      html += '<div style="' +
+        'margin-top:32px; padding:14px 16px;' +
+        'background:rgba(212,168,67,0.04);' +
+        'border:1px dashed rgba(212,168,67,0.2);' +
+        'font-family:\'DM Mono\',monospace;' +
+        'font-size:10px; line-height:1.8;' +
+        'color:var(--text-faint); letter-spacing:0.03em;' +
+      '">' +
+        '// Data bersumber dari Google Trends via SerpApi<br>' +
+        '// Analisis dihitung oleh Sentra Engine v2.0<br>' +
+        '// Semua metrik bersifat indikatif — bukan jaminan hasil bisnis' +
+      '</div>';
+
+      c.innerHTML = html;
+    }
 
   </script>
   <div id="ip-overlay" onclick="closeIdeWizard()">

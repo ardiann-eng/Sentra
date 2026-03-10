@@ -3,6 +3,7 @@ import time
 import random
 import pandas as pd
 import numpy as np
+from datetime import datetime, date as date_type
 from sklearn.linear_model import LinearRegression
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
 from serpapi import GoogleSearch
@@ -68,7 +69,7 @@ def _fetch_inner(keyword, timeframe, geo, cat):
         "geo":        geo,
         "cat":        str(cat),
         "data_type":  "TIMESERIES",
-        "hl":         "id",
+        "hl":         "en",
         "tz":         "-420",
         "api_key":    _SERPAPI_KEY,
     }
@@ -97,7 +98,10 @@ def _fetch_inner(keyword, timeframe, geo, cat):
             # Setiap item: { "date": "Jan 5 – 11, 2025", "values": [{"query":"...","value":72,"extracted_value":72}] }
             date_str = item.get("date", "")
             val = item["values"][0]["extracted_value"]
-            rows.append({"date": dateutil_parser.parse(date_str, fuzzy=True), "interest": int(val)})
+            parsed_date = _parse_serpapi_date(date_str)
+            if not parsed_date:
+                continue
+            rows.append({"date": parsed_date, "interest": int(val)})
         except (KeyError, IndexError, ValueError):
             continue
 
@@ -106,11 +110,67 @@ def _fetch_inner(keyword, timeframe, geo, cat):
         return None
 
     df = pd.DataFrame(rows)
+    df = df.sort_values("date").reset_index(drop=True)
     if df["interest"].sum() == 0:
         print(f"[FETCH] Volume nol untuk '{keyword}'")
         return None
 
     return df
+
+
+def _parse_serpapi_date(date_str: str) -> datetime | None:
+    """
+    Parse format date range SerpApi Google Trends.
+
+    Format yang mungkin muncul:
+      "Mar 5 – 11, 2026"           -> ambil "Mar 5, 2026"
+      "Aug 29 – Sep 4, 2025"       -> ambil "Aug 29, 2025"
+      "Feb 23 – Mar 1, 2026"       -> ambil "Feb 23, 2026"
+      "Dec 29, 2024 – Jan 4, 2025" -> ambil "Dec 29, 2024"
+
+    Strategi: ambil bagian KIRI dari en-dash/em-dash saja,
+    lalu ambil tahun dari bagian kanan kalau kiri tidak punya tahun.
+    """
+    # Normalisasi berbagai jenis dash ke |
+    s = re.sub(r'\s*[–—-]\s*', '|', date_str.strip())
+    parts = s.split('|')
+    left = parts[0].strip()
+    right = parts[1].strip() if len(parts) > 1 else ''
+
+    # Cek apakah left sudah punya tahun (4 digit 20xx)
+    has_year = bool(re.search(r'\b20\d{2}\b', left))
+
+    if not has_year:
+        # Cari tahun dari right atau dari right side of original string
+        year_match = re.search(r'\b(20\d{2})\b', right + ' ' + date_str)
+        if year_match:
+            left = f"{left}, {year_match.group(1)}"
+
+    try:
+        parsed = dateutil_parser.parse(left, fuzzy=False)
+
+        # Sanity check: tanggal tidak boleh lebih dari 7 hari ke depan dari hari ini
+        today = datetime.now()
+        _today_date: date_type = today.date()
+        future_limit = datetime.combine(_today_date, datetime.min.time()) + pd.Timedelta(days=7)
+        if parsed > future_limit:
+            # Kalau masih di masa depan, coba kurangi 1 tahun
+            parsed = parsed.replace(year=parsed.year - 1)
+
+        return parsed
+    except Exception:
+        # Fallback: coba parse full string dengan fuzzy,
+        # tapi batasi hasilnya tidak lebih dari hari ini
+        try:
+            parsed = dateutil_parser.parse(date_str, fuzzy=True)
+            today = datetime.now()
+            _today_date: date_type = today.date()
+            future_limit = datetime.combine(_today_date, datetime.min.time()) + pd.Timedelta(days=7)
+            if parsed > future_limit:
+                parsed = parsed.replace(year=parsed.year - 1)
+            return parsed
+        except Exception:
+            return None
 
 
 def fetch_trend_data_long(keyword, timeframe="today 12-m", geo="ID", cat=0):
@@ -145,7 +205,7 @@ def fetch_regional_data(keyword, geo="ID"):
             "q":          keyword,
             "geo":        geo,
             "data_type":  "GEO_MAP",
-            "hl":         "id",
+            "hl":         "en",
             "api_key":    _SERPAPI_KEY,
         }
         try:
@@ -218,12 +278,61 @@ def compute_saturation(df, growth, momentum):
     return 0.2
 
 
+def forecast_next_90_days(df):
+    """
+    Forecast 90 hari ke depan menggunakan hybrid:
+    Polynomial trend + seasonal residual pattern.
+    Return: list 13 nilai float (weekly, ~91 hari)
+    """
+    vals = df["interest"].values.astype(float)
+    n = len(vals)
+
+    if n < 8:
+        avg = float(np.mean(vals[-4:]))
+        return [round(max(0.0, min(100.0, avg)), 1)] * 13
+
+    x = np.arange(n, dtype=float)
+
+    # 1. Fit polynomial trend (degree 2 jika cukup data, else 1)
+    deg = 2 if n >= 20 else 1
+    coeffs = np.polyfit(x, vals, deg)
+    trend_fn = np.poly1d(coeffs)
+
+    # 2. Hitung residual dari trend
+    trend_vals = trend_fn(x)
+    residuals = vals - trend_vals
+
+    # 3. Seasonal pattern: rata-rata residual per posisi siklus 4 minggu
+    cycle = 4
+    seasonal = np.zeros(cycle)
+    counts = np.zeros(cycle)
+    for i, r in enumerate(residuals):
+        seasonal[i % cycle] += r
+        counts[i % cycle] += 1
+    seasonal = seasonal / np.maximum(counts, 1)
+
+    # 4. Forecast 13 titik ke depan (~91 hari, weekly)
+    future_x = np.arange(n, n + 13, dtype=float)
+    future_trend = trend_fn(future_x)
+
+    # Damping: tarik forecast perlahan ke mean historis agar tidak diverge
+    hist_mean = float(np.mean(vals[-12:]))
+    damping_weights = np.linspace(0.0, 0.5, 13)
+
+    forecast_vals = []
+    for i, (ft, dw) in enumerate(zip(future_trend, damping_weights)):
+        seasonal_adj = seasonal[(n + i) % cycle]
+        raw = ft + seasonal_adj
+        damped = raw * (1 - dw) + hist_mean * dw
+        forecast_vals.append(round(max(0.0, min(100.0, damped)), 1))
+
+    return forecast_vals
+
+
 def forecast_next_30_days(df):
-    y      = df["interest"].values.astype(float)
-    x      = np.arange(len(y)).reshape(-1, 1)
-    model  = LinearRegression().fit(x, y)
-    future = np.arange(len(y), len(y) + 30).reshape(-1, 1)
-    return round(float(np.mean(model.predict(future))), 2)
+    """Legacy: return single average value untuk backward compat."""
+    vals = forecast_next_90_days(df)
+    return round(float(np.mean(vals[:4])), 2)
 
 
 # ─────────────────────────────────────────
@@ -249,7 +358,7 @@ def compute_fomo_index(df):
 
 
 def detect_seasonality(df_long):
-    if df_long is None or len(df_long) < 30:
+    if df_long is None or len(df_long) < 104:
         return {"is_seasonal": False, "confidence": 0.0, "peak_months": []}
     df_copy = df_long.copy()
     df_copy["month"] = pd.to_datetime(df_copy["date"]).dt.month
@@ -378,7 +487,17 @@ def analyze_keyword(keyword, geo="ID", cat=0):
             "error_code": "NO_DATA",
         }
 
-    df = df_full.iloc[-90:].copy().reset_index(drop=True)
+    df = df_full.copy().reset_index(drop=True)
+
+    # Safety net: buang tanggal yang melampaui masa depan (>7 hari)
+    today = pd.Timestamp.now().normalize()
+    df = df[df["date"] <= today + pd.Timedelta(days=7)].copy().reset_index(drop=True)
+
+    if df.empty:
+        return {
+            "error": f"Data untuk '{keyword}' tidak valid (tanggal error).",
+            "error_code": "DATE_ERROR"
+        }
 
     growth        = compute_growth(df)
     momentum      = compute_momentum(df)
@@ -388,6 +507,7 @@ def analyze_keyword(keyword, geo="ID", cat=0):
     is_peak       = detect_peak(df, growth, momentum)
     seasonality   = detect_seasonality(df_full)
     forecast_30   = forecast_next_30_days(df)
+    forecast_90_values = forecast_next_90_days(df)
     fc_confidence = compute_forecast_confidence(df, volatility)
     saturation    = compute_saturation(df, growth, momentum)
 
@@ -417,6 +537,7 @@ def analyze_keyword(keyword, geo="ID", cat=0):
         "saturation_index":     saturation,
         "fomo_index":           fomo_index,
         "forecast_30d_avg":     forecast_30,
+        "forecast_90d_values":   forecast_90_values,
         "forecast_confidence":  fc_confidence,
         "is_seasonal":          seasonality["is_seasonal"],
         "seasonal_confidence":  seasonality["confidence"],
