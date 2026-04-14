@@ -19,7 +19,7 @@ from functools import wraps
 from flask import Flask, request, jsonify, render_template, send_file
 from flask_cors import CORS
 
-from sentra_engine import analyze_keyword, compare_keywords, fetch_regional_data
+from sentra_engine import analyze_keyword, compare_keywords, fetch_regional_data, get_regional_interest
 from ai_recommendation import generate_ai_insight, generate_compare_insight, generate_local_insight
 
 app = Flask(__name__, template_folder='.')
@@ -717,7 +717,9 @@ def analyze_sector():
     geo = "ID"  # sectors always use national-level data
 
     # --- Tier/limit check ---
-    tier, searches_today, limit_err = check_limit(user_id)
+    # fixed: get_user_tier first, then call check_limit with correct signature (user_id, tier) -> (searches_today, error)
+    tier = get_user_tier(user_id) if user_id else "free"
+    searches_today, limit_err = check_limit(user_id, tier)
     if limit_err:
         return limit_err
 
@@ -961,7 +963,9 @@ RSS_SOURCES = {
     ],
 }
 
-SECTOR_KEYWORDS = {
+# fixed: renamed from SECTOR_KEYWORDS to SECTOR_RSS_KEYWORDS
+# (SECTOR_KEYWORDS at line 693 is a separate dict used by analyze_sector)
+SECTOR_RSS_KEYWORDS = {
     "fashion":  ["fashion", "baju", "pakaian", "batik", "tekstil", "busana",
                  "hijab", "outfit", "garmen", "apparel", "clothing"],
     "beauty":   ["skincare", "kosmetik", "kecantikan", "makeup", "perawatan",
@@ -985,7 +989,7 @@ _NEWS_CACHE_TTL = 30 * 60
 def fetch_rss_news(sector: str, max_items: int = 3) -> list:
     """
     Fetch berita real dari RSS feeds yang relevan untuk setiap sektor.
-    Filter artikel berdasarkan SECTOR_KEYWORDS.
+    Filter artikel berdasarkan SECTOR_RSS_KEYWORDS.
     Cache hasil 30 menit di _mem_cache dengan key 'rss_{sector}'.
     Return [] jika tidak ada artikel yang cocok — frontend sudah handle ini.
     """
@@ -999,7 +1003,7 @@ def fetch_rss_news(sector: str, max_items: int = 3) -> list:
         if entry and (time.time() - entry["ts"]) < _NEWS_CACHE_TTL:
             return entry["data"]
 
-    keywords = SECTOR_KEYWORDS.get(sector, [])
+    keywords = SECTOR_RSS_KEYWORDS.get(sector, [])  # fixed: use SECTOR_RSS_KEYWORDS
     feeds = RSS_SOURCES.get(sector, [])
     results = []
 
@@ -1077,16 +1081,7 @@ def fetch_rss_news(sector: str, max_items: int = 3) -> list:
 
     return final
 
-
-def _extract_domain(url: str) -> str:
-    """Extract domain name from URL."""
-    try:
-        from urllib.parse import urlparse
-        domain = urlparse(url).netloc
-        return domain.replace("www.", "").replace(".com", "").title()
-    except:
-        return "News"
-
+# cleaned: removed dead code — _extract_domain() was defined but never called
 def generate_sector_ai_signal(sector: str, static_data: dict, news_items: list) -> str:
     """
     Generate 1-sentence actionable insight (max 20 words) based on:
@@ -1207,7 +1202,12 @@ def analyze_local_route():
     # Regional data
     regional_data = fetch_regional_data(keyword, geo)
     if not regional_data:
-        return jsonify({"error": "No regional data available", "error_code": "NO_DATA"}), 404
+        return jsonify({"success": True, "regional_data": [], "local_insight": "Satelit belum menemukan data pencarian regional yang cukup untuk kata kunci ini di wilayah Indonesia.", "error_code": "NO_DATA"}), 200
+
+    # Full regional breakdown for Indonesia (Provinsi)
+    regional_breakdown = get_regional_interest(keyword, geo)
+    top_province = regional_breakdown[0]["province"] if regional_breakdown else None
+    top_3 = [r["province"] for r in regional_breakdown[:3]] if regional_breakdown else []
 
     # AI Strategi Lokal
     local_insight = generate_local_insight(keyword, regional_data)
@@ -1215,15 +1215,17 @@ def analyze_local_route():
     return jsonify({
         "keyword": keyword,
         "regional_data": regional_data,
+        "regional_breakdown": regional_breakdown,
+        "top_province": top_province,
+        "top_3": top_3,
         "local_insight": local_insight
     })
 
 
 # =========================
 # KEYWORD NEWS ENDPOINT
+# cleaned: removed dead code — duplicate _NEWS_CACHE_TTL (already defined at module level above)
 # =========================
-_NEWS_CACHE_TTL = 30 * 60  # 30 minutes
-
 @app.route("/api/keyword-news", methods=["POST"])
 def keyword_news():
     """

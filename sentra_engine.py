@@ -4,7 +4,7 @@ import random
 import pandas as pd
 import numpy as np
 from datetime import datetime, date as date_type
-from sklearn.linear_model import LinearRegression
+# cleaned: removed dead code — sklearn import comment (replaced by numpy polyfit)
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
 from serpapi import GoogleSearch
 from dateutil import parser as dateutil_parser
@@ -187,37 +187,78 @@ def fetch_trend_data_long(keyword, timeframe="today 12-m", geo="ID", cat=0):
         return None
 
 
-def fetch_trend_data(keyword, timeframe="today 3-m", geo="ID", cat=0):
-    """Ambil data 3 bulan dengan hard timeout."""
-    return fetch_trend_data_long(keyword, timeframe=timeframe, geo=geo, cat=cat)
-
-
+# cleaned: removed dead code — fetch_trend_data() legacy wrapper (never imported/called externally)
 def fetch_regional_data(keyword, geo="ID"):
     """
-    Fetch regional interest (GEO_MAP) via SerpApi.
+    Fetch regional interest (GEO_MAP) via Pytrends.
     Mengembalikan list berisi {name, value}.
     """
     def _fetch():
-        print(f"[FETCH REGIONAL] '{keyword}' | geo={geo}")
+        print(f"[FETCH REGIONAL PYTRENDS] '{keyword}' | geo={geo}")
         _jitter()
-        params = {
-            "engine":     "google_trends",
-            "q":          keyword,
-            "geo":        geo,
-            "data_type":  "GEO_MAP",
-            "hl":         "en",
-            "api_key":    _SERPAPI_KEY,
-        }
         try:
-            results = GoogleSearch(params).get_dict()
-            if "error" in results: return []
-            regions = results.get("interest_by_region", [])
-            return [
-                {"name": r["name"], "value": int(r.get("extracted_value", 0))} 
-                for r in regions if "name" in r
-            ]
+            from pytrends.request import TrendReq
+            pytrends = TrendReq(hl='id-ID', tz=420)
+            
+            # Build payload
+            kw_list = [keyword]
+            pytrends.build_payload(kw_list, cat=0, timeframe='today 12-m', geo=geo)
+            
+            # Ambil interest by region
+            df = pytrends.interest_by_region(resolution='COUNTRY', inc_low_vol=True)
+            
+            if df is None or df.empty:
+                print("[FETCH REGIONAL PYTRENDS] Data kosong.")
+                return []
+                
+            # Convert ke list of dicts: [{"name": "Jawa Barat", "value": 100}, ...]
+            results = []
+            for region_name, row in df.iterrows():
+                val = int(row[keyword]) if pd.notna(row[keyword]) else 0
+                results.append({"name": region_name, "value": val})
+                
+            return results
+            
         except Exception as e:
-            print(f"[FETCH REGIONAL ERROR] {e}")
+            print(f"[FETCH REGIONAL ERROR EXCEPTION] {e}")
+            return []
+
+    try:
+        return _run_with_timeout(_fetch, timeout=_FETCH_HARD_TIMEOUT)
+    except Exception:
+        return []
+
+
+def get_regional_interest(keyword, geo='ID'):
+    """
+    Fetch regional interest (PROVINCES) via Pytrends.
+    Returns sorted list of { province, value, rank }.
+    """
+    def _fetch():
+        print(f"[FETCH PROVINCE BREAKDOWN] '{keyword}' | geo={geo}")
+        _jitter()
+        try:
+            from pytrends.request import TrendReq
+            pt = TrendReq(hl='id-ID', tz=420)
+            pt.build_payload([keyword], geo=geo, timeframe='today 3-m')
+            df = pt.interest_by_region(resolution='REGION', inc_low_vol=True, inc_geo_code=False)
+            if df is None or df.empty: return []
+            
+            breakdown = []
+            for province, row in df.iterrows():
+                val = int(row[keyword]) if pd.notna(row[keyword]) else 0
+                breakdown.append({"province": str(province), "value": val})
+            
+            breakdown.sort(key=lambda x: x["value"], reverse=True)
+            if not breakdown: return []
+            
+            max_val = breakdown[0]["value"] if breakdown[0]["value"] > 0 else 1
+            for i, item in enumerate(breakdown):
+                item["rank"] = i + 1
+                item["value"] = int((item["value"] / max_val) * 100)
+            return breakdown
+        except Exception as e:
+            print(f"[FETCH BREAKDOWN ERROR] {e}")
             return []
 
     try:
@@ -253,8 +294,9 @@ def compute_growth(df):
 
 def compute_momentum(df):
     y = df["interest"].values.astype(float)
-    x = np.arange(len(y)).reshape(-1, 1)
-    return float(LinearRegression().fit(x, y).coef_[0])
+    x = np.arange(len(y))
+    m, c = np.polyfit(x, y, 1)
+    return float(m)
 
 
 def compute_volatility(df):
@@ -358,20 +400,36 @@ def compute_fomo_index(df):
 
 
 def detect_seasonality(df_long):
-    if df_long is None or len(df_long) < 104:
-        return {"is_seasonal": False, "confidence": 0.0, "peak_months": []}
+    # Turunkan threshold dari 40 ke 26 (6 bulan) agar data singkat pun terbaca
+    if df_long is None or len(df_long) < 26:
+        return {"is_seasonal": False, "confidence": 0.0, "peak_months": [], "active_months": []}
+    
     df_copy = df_long.copy()
     df_copy["month"] = pd.to_datetime(df_copy["date"]).dt.month
     monthly = df_copy.groupby("month")["interest"].mean()
-    if monthly.std() == 0:
-        return {"is_seasonal": False, "confidence": 0.0, "peak_months": []}
+    
+    if monthly.std() == 0 or monthly.mean() == 0:
+        return {"is_seasonal": False, "confidence": 0.0, "peak_months": [], "active_months": list(range(1, 13))}
+        
     cv         = float(monthly.std() / monthly.mean())
-    confidence = round(min(cv / 0.5, 1.0), 2)
-    threshold  = monthly.mean() + 0.5 * monthly.std()
+    confidence = round(min(cv / 0.4, 1.0), 2)  # lebih sensitif
+    
+    # Peak: di atas mean + 0.3*std (lebih longgar dari sebelumnya 0.5*std)
+    peak_threshold  = monthly.mean() + 0.3 * monthly.std()
+    peak_months = [int(m) for m in monthly[monthly >= peak_threshold].index.tolist()]
+    
+    # Active: di atas mean (selalu ada data ini untuk grid UI)
+    active_months = [int(m) for m in monthly[monthly >= monthly.mean()].index.tolist()]
+    
+    # Jika tidak ada peak sama sekali, ambil top 3 bulan
+    if not peak_months:
+        peak_months = [int(m) for m in monthly.nlargest(3).index.tolist()]
+    
     return {
-        "is_seasonal":  cv > 0.25,
-        "confidence":   confidence,
-        "peak_months":  [int(m) for m in monthly[monthly >= threshold].index.tolist()],
+        "is_seasonal":   cv > 0.18,  # lebih sensitif dari 0.25
+        "confidence":    confidence,
+        "peak_months":   sorted(peak_months),
+        "active_months": sorted(active_months),
     }
 
 
@@ -379,9 +437,10 @@ def compute_forecast_confidence(df, volatility):
     vals = df["interest"].values.astype(float)
     if len(vals) < 10:
         return 0.2
-    x      = np.arange(len(vals)).reshape(-1, 1)
-    model  = LinearRegression().fit(x, vals)
-    pred   = model.predict(x)
+    # Use np.polyfit for R2 calculation
+    x_flat = np.arange(len(vals))
+    m, c = np.polyfit(x_flat, vals, 1)
+    pred = m * x_flat + c
     ss_res = float(np.sum((vals - pred) ** 2))
     ss_tot = float(np.sum((vals - np.mean(vals)) ** 2))
     r2     = max(0.0, 1.0 - ss_res / ss_tot) if ss_tot != 0 else 0.0
@@ -510,6 +569,9 @@ def analyze_keyword(keyword, geo="ID", cat=0):
     forecast_90_values = forecast_next_90_days(df)
     fc_confidence = compute_forecast_confidence(df, volatility)
     saturation    = compute_saturation(df, growth, momentum)
+    
+    # NEW: Fetch Regional Interest for Heatmap
+    regional_interest = get_regional_interest(keyword, geo=geo)
 
     stage        = classify_lifecycle(growth, momentum, is_peak)
     risk         = compute_risk(volatility, spike, fomo_index)
@@ -539,11 +601,13 @@ def analyze_keyword(keyword, geo="ID", cat=0):
         "forecast_30d_avg":     forecast_30,
         "forecast_90d_values":   forecast_90_values,
         "forecast_confidence":  fc_confidence,
-        "is_seasonal":          seasonality["is_seasonal"],
-        "seasonal_confidence":  seasonality["confidence"],
-        "seasonal_peak_months": seasonality["peak_months"],
-        "entry_timing_score":   timing_score,
-        "entry_timing_label":   timing_lbl,
+        "is_seasonal":            seasonality["is_seasonal"],
+        "seasonal_confidence":    seasonality["confidence"],
+        "seasonal_peak_months":   seasonality["peak_months"],
+        "seasonal_active_months": seasonality.get("active_months", []),
+        "regional_interest":      regional_interest, # Added for Heatmap
+        "entry_timing_score":     timing_score,
+        "entry_timing_label":     timing_lbl,
         "raw_trend":            raw_trend,
     }
 

@@ -1,102 +1,73 @@
 """
-Sentra BI v2.0 — AI Recommendation Engine (OpenRouter)
+Sentra BI v2.0 — AI Recommendation Engine (Groq Llama 3.3)
 """
 import os
-import requests
+from groq import Groq
 
-_OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-_OPENROUTER_MODEL = "qwen/qwen3-next-80b-a3b-instruct:free"
+# Model ID sesuai instruksi USER
+_GROQ_MODEL = "llama-3.3-70b-versatile"
 
-
-def _extract_openrouter_text(resp_json: dict) -> str:
-    choices = resp_json.get("choices") or []
-    if not choices:
-        return ""
-
-    message = choices[0].get("message") or {}
-    content = message.get("content")
-
-    if isinstance(content, str):
-        return content.strip()
-
-    if isinstance(content, list):
-        parts = []
-        for item in content:
-            if isinstance(item, dict) and item.get("type") == "text":
-                parts.append(item.get("text", ""))
-        return "\n".join([p for p in parts if p]).strip()
-
-    return ""
-
-
-def _generate_via_openrouter(prompt: str) -> tuple[str, int, str]:
-    api_key = os.environ.get("OPENROUTER_API_KEY")
+def _generate_via_groq(prompt: str) -> tuple[str, int, str]:
+    api_key = os.environ.get("GROQ_API_KEY")
     if not api_key:
         return "", 0, "NO_KEY"
 
-    response = requests.post(
-        _OPENROUTER_URL,
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        },
-        json={
-            "model": _OPENROUTER_MODEL,
-            "messages": [
-                {"role": "system", "content": "You are an AI assistant for business insights."},
+    try:
+        client = Groq(api_key=api_key)
+        completion = client.chat.completions.create(
+            model=_GROQ_MODEL,
+            messages=[
+                {"role": "system", "content": "You are an AI assistant for business insights for Indonesian SMEs (UMKM)."},
                 {"role": "user", "content": prompt},
             ],
-            "max_tokens": 1024,
-            "temperature": 0.4,
-        },
-        timeout=45,
-    )
+            temperature=0.7, # Sedikit lebih kreatif untuk insight bisnis
+            max_tokens=1024,
+            top_p=1,
+            stream=False # Menggunakan mode sync sesuai arsitektur backend saat ini
+        )
+        
+        text = completion.choices[0].message.content or ""
+        return text.strip(), 200, ""
 
-    if response.status_code != 200:
-        return "", response.status_code, response.text[:300]
-
-    text = _extract_openrouter_text(response.json())
-    return text, 200, ""
+    except Exception as e:
+        return "", 500, str(e)
 
 
 def generate_ai_insight(data: dict) -> str:
-    api_key = os.environ.get("OPENROUTER_API_KEY")
+    api_key = os.environ.get("GROQ_API_KEY")
     if not api_key:
-        return "⚠ OPENROUTER_API_KEY belum dikonfigurasi."
+        return "⚠ GROQ_API_KEY belum dikonfigurasi."
 
     prompt = _build_prompt(data)
 
     try:
-        text, status_code, err_detail = _generate_via_openrouter(prompt)
+        text, status_code, err_detail = _generate_via_groq(prompt)
         if status_code != 200:
-            print(f"[AI ERROR] OpenRouter API status {status_code}: {err_detail}")
-            return f"⚠ OpenRouter AI error (HTTP {status_code}). Coba lagi nanti."
+            print(f"[AI ERROR] Groq API status {status_code}: {err_detail}")
+            return f"⚠ Groq AI error (HTTP {status_code}). Coba lagi nanti."
 
         if text:
-            print(f"[AI] Berhasil: {_OPENROUTER_MODEL}")
+            print(f"[AI] Berhasil: {_GROQ_MODEL}")
             return text
 
-        return "⚠ OpenRouter AI mengembalikan respons kosong. Coba lagi."
+        return "⚠ Groq AI mengembalikan respons kosong. Coba lagi."
 
-    except requests.exceptions.Timeout:
-        print("[AI ERROR] OpenRouter API timeout (45s)")
-        return "⚠ Gagal menghubungi OpenRouter AI (timeout). Coba lagi."
     except Exception as e:
         print(f"[AI ERROR] {type(e).__name__}: {e}")
-        return "⚠ Gagal menghubungi OpenRouter AI. Coba lagi."
+        return "⚠ Gagal menghubungi Groq AI. Coba lagi."
 
 
 def generate_compare_insight(compare_data: dict) -> str:
-    api_key = os.environ.get("OPENROUTER_API_KEY")
+    api_key = os.environ.get("GROQ_API_KEY")
     if not api_key:
         return "⚠ AI Insight tidak tersedia."
 
     prompt = _build_compare_prompt(compare_data)
 
     try:
-        text, status_code, err_detail = _generate_via_openrouter(prompt)
+        text, status_code, err_detail = _generate_via_groq(prompt)
         if status_code != 200:
-            print(f"[AI COMPARE ERROR] OpenRouter API status {status_code}: {err_detail}")
+            print(f"[AI COMPARE ERROR] Groq API status {status_code}: {err_detail}")
             return "⚠ AI Compare Insight tidak tersedia saat ini."
 
         if text:
@@ -110,7 +81,7 @@ def generate_compare_insight(compare_data: dict) -> str:
 
 
 def generate_local_insight(keyword: str, regional_data: list) -> str:
-    api_key = os.environ.get("OPENROUTER_API_KEY")
+    api_key = os.environ.get("GROQ_API_KEY")
     if not api_key:
         return "⚠ AI Local Insight tidak tersedia."
 
@@ -120,9 +91,9 @@ def generate_local_insight(keyword: str, regional_data: list) -> str:
     prompt = _build_local_prompt(keyword, regional_data)
 
     try:
-        text, status_code, err_detail = _generate_via_openrouter(prompt)
+        text, status_code, err_detail = _generate_via_groq(prompt)
         if status_code != 200:
-            print(f"[AI LOCAL ERROR] OpenRouter API status {status_code}: {err_detail}")
+            print(f"[AI LOCAL ERROR] Groq API status {status_code}: {err_detail}")
             return "Strategi lokal tidak dapat dimuat saat ini."
 
         if text:
