@@ -1,2741 +1,2741 @@
-<!DOCTYPE html>
-
-<html lang="id">
-
-
-
-<head>
-
-  <meta charset="UTF-8">
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-
-  <title>Sentra AI </title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-
-  <link
-
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap"
-
-    rel="stylesheet" />
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-
-  <link rel="icon" href="/favicon.ico" type="image/png" />
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <script>
-
-    tailwind.config = {
-
-      theme: {
-
-        extend: {
-
-          colors: {
-
-            brand: '#D4A843',
-
-            'brand-bright': '#F0C855',
-
-            'brand-dim': '#A8892E',
-
-            dark: '#0A0A08',
-
-            surface: 'rgba(24, 21, 16, 0.6)',
-
-            'surface-light': 'rgba(32, 29, 20, 0.8)',
-
-            glass: 'rgba(212, 168, 67, 0.05)',
-
-            'glass-border': 'rgba(212, 168, 67, 0.15)',
-
-          },
-
-          fontFamily: {
-
-            jakarta: ['Plus Jakarta Sans', 'sans-serif'],
-
-            syne: ['Syne', 'sans-serif'],
-
-            mono: ['DM Mono', 'monospace'],
-
-            serif: ['Cormorant Garamond', 'serif'],
-
-          }
-
-        }
-
-      }
-
-    }
-
-  </script>
-
-  <!-- cleaned: extracted CSS to static/styles.css -->
-
-  <link rel="stylesheet" href="/static/styles.css" />
-
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
-</head>
-
-
-
-<body>
-
-
-
-  <nav class="sticky-nav" id="sticky-nav" aria-label="Sticky Navigation Sentra AI">
-
-    <div class="sticky-nav-inner">
-
-      <button class="sticky-nav-logo" data-target="top">SENTRA</button>
-
-      <div class="sticky-nav-links">
-
-        <button class="sticky-nav-link" data-target="kw"><i class="fa-solid fa-magnifying-glass"></i>Analisis</button>
-
-        <button class="sticky-nav-link hide-mobile" data-target="how-to-use">Cara Kerja</button>
-
-        <button class="sticky-nav-link hide-mobile" data-target="sector-dashboard">Radar Pasar</button>
-
-        <button class="sticky-nav-link hide-mobile" data-target="whitepaper">Whitepaper</button>
-
-      </div>
-
-      <button class="sticky-nav-cta" data-target="kw">Upgrade ke Pro</button>
-
-      <div id="sticky-nav-auth"></div>
-
-    </div>
-
-  </nav>
-
-
-
-  <!-- ────────────────────────────────────────────────── AI SPLASH SCREEN ────────────────────────────────────────────────── -->
-
-  <div id="splash-screen">
-
-    <div class="splash-logo-wrap">
-
-      <div class="scan-line"></div>
-
-      <div class="splash-logo">Sentra</div>
-
-    </div>
-
-    <div class="splash-loader-text" id="splash-text">Sentra Initializing...</div>
-
-  </div>
-
-
-
-  <div class="wrap" style="position:relative; z-index:1;">
-
-    <header>
-
-      <div class="logo">
-
-        <span class="logo-word">Sentra</span>
-
-        <span class="logo-sub">Market Intelligence</span>
-
-      </div>
-
-      <div class="header-right">
-
-        <span class="ver">v2.0</span>
-
-        <div class="dot"></div>
-
-        <div id="auth-header-action"></div>
-
-      </div>
-
-    </header>
-
-
-
-    <div class="hero">
-
-      <h1 class="hero-title">Ketahui Peluang Bisnismu<br><em>Sebelum Orang Lain</em></h1>
-
-      <p class="hero-sub">Data Real-Time<span>·</span>Insight Otomatis<span>·</span>Rekomendasi Langsung</p>
-
-
-
-      <!-- MODE TOGGLE -->
-
-      <div class="mode-toggle-wrap">
-
-        <span class="mode-label active" id="lbl-single">Analisis</span>
-
-        <div class="toggle-track" id="mode-toggle" onclick="toggleCompareMode()">
-
-          <div class="toggle-knob"></div>
-
-        </div>
-
-        <span class="mode-label" id="lbl-compare">Mode Banding</span>
-
-      </div>
-
-
-
-      <!-- SINGLE KEYWORD SEARCH -->
-
-      <div class="search-wrap single-search" id="single-search">
-
-        <div class="search-box">
-
-          <div class="search-prefix">›_</div>
-
-          <input type="text" id="kw" placeholder="produk apa yang ingin kamu jual?" autocomplete="off"
-
-            spellcheck="false" />
-
-          <button id="btn" onclick="doSearch()">Analisis Sekarang</button>
-
-        </div>
-
-      </div>
-
-
-
-      <!-- STATUS BAR: quota + geo in one row -->
-
-      <div class="status-bar hidden" id="status-bar">
-
-        <div class="status-bar-left">
-
-
-
-          <span class="status-quota-text" id="quota-text">Riset tersisa hari ini: &mdash;</span>
-
-          <div class="status-dots" id="quota-dots"></div>
-
-          <button class="status-upgrade-btn" id="quota-upgrade-btn" onclick="showUpgradeModal()"
-
-            style="display:none">Upgrade →</button>
-
-        </div>
-
-        <div class="status-bar-right">
-
-          <span class="status-sep">×----</span>
-
-          <span class="status-geo-label">Lokasi</span>
-
-          <select id="geo-select" class="status-geo-sel" disabled title="Lokasi spesifik hanya untuk pengguna Pro">
-
-            <option value="ID">Indonesia (Nasional)</option>
-
-            <option value="ID-JK">DKI Jakarta</option>
-
-            <option value="ID-JB">Jawa Barat</option>
-
-            <option value="ID-JT">Jawa Tengah</option>
-
-            <option value="ID-JI">Jawa Timur</option>
-
-            <option value="ID-BT">Banten</option>
-
-            <option value="ID-BA">Bali</option>
-
-            <option value="ID-SN">Sulawesi Selatan</option>
-
-            <option value="ID-SU">Sumatera Utara</option>
-
-            <option value="ID-SS">Sumatera Selatan</option>
-
-            <option value="ID-KS">Kalimantan Selatan</option>
-
-          </select>
-
-          <span class="status-geo-lock" id="geo-lock"
-
-            title="Upgrade ke Pro untuk analisis per-Provinsi">××</span>
-
-        </div>
-
-      </div>
-
-
-
-      <div id="ip-entry" class="ip-entry">
-
-        <button class="ip-entry-btn" onclick="openIdeWizard()">
-
-          Tentukan produkmu
-
-          <span class="ip-entry-arrow">×----</span>
-
-        </button>
-
-      </div>
-
-
-
-      <!-- COMPARE INPUTS -->
-
-      <div class="compare-inputs" id="compare-inputs">
-
-        <div class="compare-row">
-
-          <div class="compare-input-box">
-
-            <div class="search-prefix">A</div>
-
-            <input type="text" id="kw-a" placeholder="keyword pertama..." autocomplete="off" spellcheck="false" />
-
-          </div>
-
-          <div class="vs-badge">VS</div>
-
-          <div class="compare-input-box">
-
-            <div class="search-prefix">B</div>
-
-            <input type="text" id="kw-b" placeholder="keyword kedua..." autocomplete="off" spellcheck="false" />
-
-          </div>
-
-        </div>
-
-        <div class="compare-btn-row">
-
-          <button id="btn-compare" onclick="doCompare()">Bandingkan Sekarang</button>
-
-        </div>
-
-      </div>
-
-
-
-      <!-- LOADING BAR (inside hero, below search block) -->
-
-      <div id="loading">
-
-        <div class="load-bar-track">
-
-          <div class="load-bar-fill"></div>
-
-        </div>
-
-        <div id="load-text" class="load-text">Menganalisis pasar...</div>
-
-        <div id="load-step" class="load-step"></div>
-
-      </div>
-
-
-
-      <div id="err"></div>
-
-    </div>
-
-  </div><!-- END .wrap (hero) -->
-
-
-
-
-
-  <div class="wrap" style="position:relative; z-index:1;">
-
-    <section class="howto-section" id="how-to-use">
-
-
-
-      <!-- Header -->
-
-      <div class="howto-header">
-
-        <div class="howto-eyebrow">Cara Kerja Sentra</div>
-
-        <h2 class="howto-title">Dari Pertanyaan ke<br><em>Keputusan Bisnis</em></h2>
-
-        <p class="howto-desc">Cukup ketik nama produk yang ingin kamu jual. Sentra akan memindai pasar, menghitung
-
-          peluang, dan memberi tahu kamu langkah terbaik berikutnya.</p>
-
-      </div>
-
-
-
-      <!-- Tab Switcher -->
-
-      <div class="howto-tabs" role="tablist">
-
-        <button class="howto-tab active" onclick="switchTab('steps')" id="tab-steps" role="tab">
-
-          ✦ Cara Pakai
-
-        </button>
-
-        <button class="howto-tab" onclick="switchTab('tips')" id="tab-tips" role="tab">
-
-          Tips Keyword
-
-        </button>
-
-        <button class="howto-tab" onclick="switchTab('metrics')" id="tab-metrics" role="tab">
-
-          Baca Hasil
-
-        </button>
-
-      </div>
-
-
-
-      <!-- ××× PANE 1: Cara Pakai ××× -->
-
-      <div class="howto-pane active" id="pane-steps">
-
-        <div class="howto-steps">
-
-
-
-          <!-- Step 1 -->
-
-          <div class="howto-card">
-
-            <i class="fa-solid fa-magnifying-glass howto-card-icon"></i>
-
-            <div class="howto-step-num"><span>1</span></div>
-
-            <div class="howto-card-title">Ketik Produk yang Ingin Kamu Jual</div>
-
-            <div class="howto-card-body">
-
-              Tulis nama produk atau kategori seperti cara pembeli mencarinya. Semakin spesifik,
-
-              semakin tajam hasil yang kamu dapat.
-
-            </div>
-
-            <div class="howto-example">
-
-              <span class="ex-label">Contoh</span>
-
-              <span>› contoh: sepatu sneakers lokal</span>
-
-            </div>
-
-          </div>
-
-
-
-          <!-- Step 2 -->
-
-          <div class="howto-card">
-
-            <i class="fa-solid fa-chart-line howto-card-icon"></i>
-
-            <div class="howto-step-num"><span>2</span></div>
-
-            <div class="howto-card-title">Sentra Memindai Pasar Untukmu</div>
-
-            <div class="howto-card-body">
-
-              Dalam hitungan detik, Sentra membaca sinyal pasar secara real-time ×---- tren minat, tingkat
-
-              persaingan,
-
-              hingga proyeksi 30 hari ke depan. Semua otomatis.
-
-            </div>
-
-            <div class="howto-example">
-
-              <span class="ex-label">Proses</span>
-
-              <span>› Scanning · Measuring · Projecting</span>
-
-            </div>
-
-          </div>
-
-
-
-          <!-- Step 3 -->
-
-          <div class="howto-card">
-
-            <i class="fa-solid fa-lightbulb howto-card-icon"></i>
-
-            <div class="howto-step-num"><span>3</span></div>
-
-            <div class="howto-card-title">Baca Hasil, Ambil Keputusan</div>
-
-            <div class="howto-card-body">
-
-              Entry Timing Score memberi tahu apakah sekarang waktu yang tepat.
-
-              Rekomendasi bisnis tersaji langsung ×---- tanpa perlu paham statistik atau data.
-
-            </div>
-
-            <div class="howto-example">
-
-              <span class="ex-label">Hasil</span>
-
-              <span>×---- Score 82/100 — Waktu Terbaik ✓ ×----</span>
-
-            </div>
-
-          </div>
-
-
-
-        </div>
-
-      </div>
-
-
-
-      <!-- ××× PANE 2: Tips Keyword ××× -->
-
-      <div class="howto-pane" id="pane-tips">
-
-        <div class="tips-grid">
-
-
-
-          <div class="tip-card">
-
-            <div class="tip-icon-wrap"><i class="fa-solid fa-check"></i></div>
-
-            <div>
-
-              <div class="tip-content-title">Gunakan Kata yang Dicari Pembeli</div>
-
-              <div class="tip-content-body">
-
-                Tulis seperti cara <strong>pembeli mengetik di Google</strong>, bukan nama katalog tokomu.
-
-                Hasil lebih akurat karena data berasal dari pencarian nyata.
-
-              </div>
-
-              <div class="kw-pills">
-
-                <span class="kw-pill good">×---- sepatu sneakers pria</span>
-
-                <span class="kw-pill good">×---- kue kering lebaran</span>
-
-                <span class="kw-pill bad">×---- footwear collection</span>
-
-                <span class="kw-pill bad">×---- produk premium kami</span>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-
-          <div class="tip-card">
-
-            <div class="tip-icon-wrap"><i class="fa-solid fa-layer-group"></i></div>
-
-            <div>
-
-              <div class="tip-content-title">Mulai dari Kategori, Lalu Spesifik</div>
-
-              <div class="tip-content-body">
-
-                Coba dulu kategori luas untuk lihat gambaran besar, lalu persempit ke produk spesifik untuk hasil yang
-
-                lebih tajam dan relevan.
-
-              </div>
-
-              <div class="kw-pills">
-
-                <span class="kw-pill">skincare</span>
-
-                <span>×----</span>
-
-                <span class="kw-pill">serum vitamin c</span>
-
-                <span>×----</span>
-
-                <span class="kw-pill">serum vitamin c lokal</span>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-
-          <div class="tip-card">
-
-            <div class="tip-icon-wrap"><i class="fa-solid fa-code-compare"></i></div>
-
-            <div>
-
-              <div class="tip-content-title">Gunakan Mode Banding untuk Keputusan</div>
-
-              <div class="tip-content-body">
-
-                Tidak yakin mau jual produk A atau B? Aktifkan <strong>Mode Banding</strong> di atas untuk membandingkan
-
-                dua keyword sekaligus dan lihat mana yang lebih menjanjikan.
-
-              </div>
-
-              <div class="kw-pills">
-
-                <span class="kw-pill">baju gamis</span>
-
-                <span style="color:var(--gold); font-size:11px;">vs</span>
-
-                <span class="kw-pill">baju tunik</span>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-
-          <div class="tip-card">
-
-            <div class="tip-icon-wrap"><i class="fa-solid fa-calendar"></i></div>
-
-            <div>
-
-              <div class="tip-content-title">Perhatikan Tren Musiman</div>
-
-              <div class="tip-content-body">
-
-                Produk tertentu punya lonjakan di bulan-bulan tertentu. Cek bagian <strong>Pola Musiman</strong> di
-
-                hasil analisis agar kamu bisa persiapkan stok dan iklan tepat waktu.
-
-              </div>
-
-              <div class="kw-pills">
-
-                <span class="kw-pill good">×---- hampers ×---- puncak Mar×----Apr</span>
-
-                <span class="kw-pill good">×---- baju renang ×---- puncak Jun×----Jul</span>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-
-        </div>
-
-      </div>
-
-
-
-      <!-- ××× PANE 3: Cara Baca Hasil ××× -->
-
-      <div class="howto-pane" id="pane-metrics">
-
-        <div class="metric-guide-grid">
-
-
-
-          <div class="metric-guide-card mg-green">
-
-            <div class="mg-name">Entry Timing Score</div>
-
-            <div class="mg-simple">Apakah sekarang waktu yang tepat untuk mulai?</div>
-
-            <div class="mg-desc">Skor 0×----100. <strong style="color:var(--green)">80+</strong> = langsung gas.
-
-              <strong style="color:var(--amber)">40×----79</strong> = boleh coba tapi siapkan strategi. <strong
-
-                style="color:var(--red)">Di bawah 40</strong> = tunggu dulu atau pilih produk lain.
-
-            </div>
-
-            <div class="mg-scale">
-
-              <div class="mg-dot" style="background:var(--red)"></div>
-
-              <div class="mg-dot" style="background:var(--amber)"></div>
-
-              <div class="mg-dot" style="background:var(--amber)"></div>
-
-              <div class="mg-dot" style="background:var(--green)"></div>
-
-              <div class="mg-dot" style="background:var(--green)"></div>
-
-            </div>
-
-          </div>
-
-
-
-          <div class="metric-guide-card mg-gold">
-
-            <div class="mg-name">Growth 7 Hari</div>
-
-            <div class="mg-simple">Tren naik atau turun minggu ini?</div>
-
-            <div class="mg-desc">Angka <strong style="color:var(--green)">positif (+%)</strong> artinya minat pembeli
-
-              sedang naik. Angka <strong style="color:var(--red)">negatif (×----%)</strong> artinya minat sedang
-
-              turun.
-
-              Idealnya cari yang di atas +10%.</div>
-
-            <div class="mg-scale">
-
-              <div class="mg-dot" style="background:var(--red)"></div>
-
-              <div class="mg-dot" style="background:var(--text-faint)"></div>
-
-              <div class="mg-dot" style="background:var(--gold)"></div>
-
-              <div class="mg-dot" style="background:var(--green)"></div>
-
-              <div class="mg-dot" style="background:var(--green)"></div>
-
-            </div>
-
-          </div>
-
-
-
-          <div class="metric-guide-card mg-blue">
-
-            <div class="mg-name">Lifecycle Stage</div>
-
-            <div class="mg-simple">Produk ini di fase apa sekarang?</div>
-
-            <div class="mg-desc">
-
-              <strong style="color:var(--blue)">Emerging</strong> = baru naik daun, peluang bagus.<br>
-
-              <strong style="color:var(--gold)">Rising</strong> = sedang tren, masih bisa masuk.<br>
-
-              <strong style="color:var(--amber)">Peak</strong> = di puncak, segera action.<br>
-
-              <strong style="color:var(--red)">Declining</strong> = mulai turun, hati-hati.
-
-            </div>
-
-          </div>
-
-
-
-          <div class="metric-guide-card mg-amber">
-
-            <div class="mg-name">Market Pulse Score</div>
-
-            <div class="mg-simple">Seberapa sehat pasar produk ini?</div>
-
-            <div class="mg-desc">Skor kesehatan pasar secara keseluruhan dari 0×----100. <strong
-
-                style="color:var(--green)">65+</strong> artinya pasar aktif dan bergairah. Di bawah 40 artinya pasar
-
-              lesu atau jenuh.</div>
-
-            <div class="mg-scale">
-
-              <div class="mg-dot" style="background:var(--red)"></div>
-
-              <div class="mg-dot" style="background:var(--amber)"></div>
-
-              <div class="mg-dot" style="background:var(--gold)"></div>
-
-              <div class="mg-dot" style="background:var(--green)"></div>
-
-              <div class="mg-dot" style="background:var(--green)"></div>
-
-            </div>
-
-          </div>
-
-
-
-          <div class="metric-guide-card mg-red">
-
-            <div class="mg-name">FOMO Index</div>
-
-            <div class="mg-simple">Ini tren asli atau sekadar hype sesaat?</div>
-
-            <div class="mg-desc">Angka <strong style="color:var(--red)">tinggi (0.7+)</strong> = banyak yang
-
-              ikut-ikutan, bisa cepat turun. Angka <strong style="color:var(--green)">rendah (0×----0.3)</strong>
-
-              =
-
-              tren
-
-              organik, lebih stabil untuk bisnis jangka panjang.</div>
-
-          </div>
-
-
-
-          <div class="metric-guide-card mg-purple">
-
-            <div class="mg-name">Saturasi Pasar</div>
-
-            <div class="mg-simple">Seberapa ramai persaingan di produk ini?</div>
-
-            <div class="mg-desc">Angka <strong style="color:var(--green)">rendah</strong> = persaingan sedikit, peluang
-
-              lebih besar. Angka <strong style="color:var(--red)">tinggi (0.7+)</strong> = pasar sudah penuh pesaing,
-
-              butuh diferensiasi yang kuat.</div>
-
-          </div>
-
-
-
-        </div>
-
-      </div>
-
-
-
-      <!-- Bottom CTA -->
-
-      <div class="howto-cta">
-
-        <div class="howto-cta-text">Cek peluang produkmu <em>sekarang juga</em></div>
-
-        <div class="howto-cta-sub">Gratis -- Tanpa daftar -- Hasil dalam 30 detik</div>
-
-        <button class="howto-cta-btn"
-
-          onclick="document.getElementById('kw').focus(); document.getElementById('kw').scrollIntoView({behavior:'smooth', block:'center'})">
-
-          <i class="fa-solid fa-magnifying-glass"></i>
-
-          Mulai Sekarang — Gratis
-
-        </button>
-
-      </div>
-
-
-
-    </section>
-
-  </div><!-- END .wrap (howto) -->
-
-
-
-  <div class="wrap" style="position:relative; z-index:1;">
-
-
-
-    <!-- ────────────────────────────────────────────────── WHITEPAPER CTA SECTION ────────────────────────────────────────────────── -->
-
-    <section class="wp-section" id="whitepaper">
-
-      <div class="wrap">
-
-        <div class="wp-inner">
-
-          <div class="howto-eyebrow" style="margin-bottom:28px;">TRANSPARANSI &amp; METODOLOGI</div>
-
-          <h2 class="wp-heading">
-
-            Kami Tunjukkan Cara Kerjanya
-
-            <br><em class="wp-sub">Sampai ke Rumusnya</em>
-
-          </h2>
-
-          <p class="wp-desc">
-
-            Sentra AI merilis whitepaper terbuka yang menjelaskan metodologi, formula kalkulasi,
-
-            validasi akurasi, dan landasan akademis di balik setiap metrik.
-
-          </p>
-
-          <div class="wp-grid">
-
-            <div class="mc wp-card">
-
-              <div class="wp-card-label">9 Metrik Dijelaskan</div>
-
-            </div>
-
-            <div class="mc wp-card">
-
-              <div class="wp-card-label">Akurasi 78×----85%</div>
-
-            </div>
-
-            <div class="mc wp-card">
-
-              <div class="wp-card-label">6 Referensi Akademis</div>
-
-            </div>
-
-          </div>
-
-          <a href="/static/Sentra_AI_Whitepaper.pdf" download class="wp-btn">
-
-            Download Whitepaper ×---- Gratis
-
-          </a>
-
-          <div class="wp-note">PDF -- 14 Halaman -- Bahasa Indonesia</div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-    <!-- ────────────────────────────────────────────────── RADAR PASAR SENTRA (REDESIGN) ────────────────────────────────────────────────── -->
-
-    <section class="radar-section-modern" id="sector-dashboard"
-
-      style="background-color: #0F0F0F; padding: 100px 0; border-top: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden;">
-
-      <div class="wrap" style="position: relative; z-index: 2;">
-
-        <!-- Header -->
-
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-14 gap-6">
-
-          <div>
-
-            <div class="flex items-center gap-3 mb-4">
-
-              <div class="w-2 h-2 rounded-full bg-[#FACC15] shadow-[0_0_12px_rgba(250,204,21,0.8)] animate-pulse"></div>
-
-              <div class="font-mono text-[10px] tracking-[4px] text-zinc-400 uppercase">Live Radar Sektor</div>
-
-            </div>
-
-            <h2 class="font-serif text-4xl md:text-5xl lg:text-7xl text-zinc-100 mb-4 tracking-tight">Radar Pasar Sentra
-
-            </h2>
-
-            <p class="text-zinc-500 font-jakarta text-lg">Pantau peta persaingan dan pelajari <strong
-
-                class="text-[#FACC15] font-bold font-syne uppercase text-xs tracking-widest px-2 ml-1 border border-[#FACC15]/30 rounded-md bg-[#FACC15]/10">Sektor
-
-                Panas</strong> minggu ini.</p>
-
-          </div>
-
-          <div
-
-            class="text-left md:text-right flex flex-col items-start md:items-end bg-zinc-900/40 p-4 border border-zinc-800 rounded-xl backdrop-blur-md">
-
-            <div class="text-[10px] font-mono text-zinc-500 uppercase tracking-[3px] mb-2">Sinkronisasi Data</div>
-
-            <div id="radar-uptime" class="text-zinc-100 font-mono font-bold text-sm tracking-wider">ON-GRID</div>
-
-            <div class="text-[9px] text-[#FACC15]/70 mt-1 font-mono uppercase tracking-widest"><i
-
-                class="fa-solid fa-satellite-dish mr-1"></i> Updated Real-time</div>
-
-          </div>
-
-        </div>
-
-
-
-        <!-- 7-Column Grid Container -->
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4 md:gap-5"
-
-          id="radar-grid-modern">
-
-          <!-- Dynamically populated by app.js -->
-
-        </div>
-
-      </div>
-
-
-
-      <!-- Ambient Glows -->
-
-      <div
-
-        class="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[#FACC15]/5 rounded-full blur-[120px] pointer-events-none transform -translate-y-1/2 translate-x-1/2">
-
-      </div>
-
-      <div
-
-        class="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-brand/5 rounded-full blur-[100px] pointer-events-none transform translate-y-1/2 -translate-x-1/2">
-
-      </div>
-
-      <!-- Subtle Grid Pattern Background -->
-
-      <div class="absolute inset-0 pointer-events-none opacity-20"
-
-        style="background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px); background-size: 40px 40px;">
-
-      </div>
-
-    </section>
-
-
-
-
-
-    <!-- ××× SECTION: TESTIMONI UMKM (CAROUSEL) ××× -->
-
-    <section id="testimoni-section">
-
-      <div class="tc-header">
-
-        <div class="tc-eyebrow">1.200+ UMKM TERBANTU -- 7 SEKTOR BISNIS -- AKURASI 95%+</div>
-
-        <h2 class="tc-title">UMKM Indonesia Sudah<br><em>Merasakan Hasilnya</em></h2>
-
-      </div>
-
-
-
-      <div class="tc-container">
-
-        <div class="tc-viewport" id="tcViewport">
-
-          <div class="tc-track" id="tcTrack">
-
-            <!-- Card 1 -->
-
-            <div class="tc-card">
-
-              <div class="tc-quote-icon"><i class="fa-solid fa-quote-left"></i></div>
-
-              <p class="tc-quote-text">"Sentra AI bantu saya stok barang pas tren naik. Penjualan naik 30% karena tidak
-
-                telat sedia barang!"</p>
-
-              <div class="tc-user">
-
-                <div class="tc-avatar">B</div>
-
-                <div class="tc-info">
-
-                  <div class="tc-name">Budi Santoso</div>
-
-                  <div class="tc-biz">Pemilik Toko Sepatu -- Bandung</div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-            <!-- Card 2 -->
-
-            <div class="tc-card">
-
-              <div class="tc-quote-icon"><i class="fa-solid fa-quote-left"></i></div>
-
-              <p class="tc-quote-text">"Dulu cuma tebak-tebak produk mana yang laku. Sekarang ada datanya, jadi gak
-
-                pernah salah pilih produk lagi."</p>
-
-              <div class="tc-user">
-
-                <div class="tc-avatar">S</div>
-
-                <div class="tc-info">
-
-                  <div class="tc-name">Siti Aminah</div>
-
-                  <div class="tc-biz">Retail Hijab Online -- Jakarta</div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-            <!-- Card 3 -->
-
-            <div class="tc-card">
-
-              <div class="tc-quote-icon"><i class="fa-solid fa-quote-left"></i></div>
-
-              <p class="tc-quote-text">"Sangat terbantu buat tahu kapan harus promosi gede-gedean. Gak boncos iklan lagi
-
-                karena tahu timing yang pas."</p>
-
-              <div class="tc-user">
-
-                <div class="tc-avatar">A</div>
-
-                <div class="tc-info">
-
-                  <div class="tc-name">Andi Wijaya</div>
-
-                  <div class="tc-biz">UMKM Kuliner -- Surabaya</div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-
-        <!-- Controls -->
-
-        <div class="tc-controls">
-
-          <button class="tc-arrow" id="tcPrev" aria-label="Previous"><i class="fa-solid fa-arrow-left"></i></button>
-
-          <div class="tc-dots" id="tcDots"></div>
-
-          <button class="tc-arrow" id="tcNext" aria-label="Next"><i class="fa-solid fa-arrow-right"></i></button>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-
-    <div class="wrap" style="position:relative; z-index:1;">
-
-      <!-- ────────────────────────────────────────────────── SECTION: MARKET SNAPSHOT ────────────────────────────────────────────────── -->
-
-      <section class="snapshot-section" id="market-snapshot">
-
-        <div class="snapshot-label">Sentra -- Live Market Scanner</div>
-
-        <div class="snapshot-grid">
-
-          <div class="snapshot-card">
-
-            <div class="snapshot-icon">// Pasar Dipindai</div>
-
-            <div class="snapshot-value" id="snap-count">0</div>
-
-            <div class="snapshot-desc">hari ini -- seluruh sektor</div>
-
-          </div>
-
-          <div class="snapshot-card">
-
-            <div class="snapshot-icon">// Peluang Tertinggi</div>
-
-            <div class="snapshot-value" style="font-size:22px; padding-top:8px;" id="snap-top">Fashion</div>
-
-            <div class="snapshot-desc" id="snap-top-val">+18.4% minggu ini</div>
-
-          </div>
-
-          <div class="snapshot-card">
-
-            <div class="snapshot-icon">// Paling Dinamis</div>
-
-            <div class="snapshot-value" style="font-size:22px; padding-top:8px;" id="snap-vol">Musiman</div>
-
-            <div class="snapshot-desc" id="snap-vol-val">fluktuasi tinggi -- 62%</div>
-
-          </div>
-
-          <div class="snapshot-card">
-
-            <div class="snapshot-icon">// Terakhir Dipindai</div>
-
-            <div class="snapshot-value" style="font-size:18px; padding-top:8px; letter-spacing:0;" id="snap-time">
-
-              ×----
-
-            </div>
-
-            <div class="snapshot-desc">diperbarui otomatis setiap 6 jam</div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-    </div>
-
-
-
-    <div class="wrap" style="position:relative; z-index:1;">
-
-      <!-- ────────────────────────────────────────────────── SINGLE RESULTS ────────────────────────────────────────────────── -->
-
-      <!-- ────────────────────────────────────────────────── MODERNIZED RESULTS SECTION ────────────────────────────────────────────────── -->
-
-      <div id="results" class="hidden mt-12 space-y-8 animate-fade-in">
-
-
-
-        <!-- 1. HEADER & ACTION BAR -->
-
-        <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-brand-dim/20 pb-6 gap-4">
-
-          <div>
-
-            <div class="font-mono text-[10px] tracking-[4px] text-brand-dim uppercase mb-2">// Hasil Analisis Sentra
-
-            </div>
-
-            <h2 id="r-kw" class="font-serif text-5xl md:text-6xl text-brand capitalize leading-none">×----</h2>
-
-
-
-            <div class="flex flex-wrap items-center gap-3 mt-4">
-
-              <span id="r-stage"
-
-                class="px-3 py-1 bg-brand/10 border border-brand/20 text-brand text-[11px] font-mono font-bold tracking-widest uppercase rounded">Fase:
-
-                ×----</span>
-
-              <span id="r-risk"
-
-                class="px-3 py-1 bg-zinc-800 border border-zinc-700 text-zinc-300 text-[11px] font-mono font-bold tracking-widest uppercase rounded">Resiko:
-
-                ×----</span>
-
-              <span class="text-zinc-400 text-[11px] font-mono uppercase tracking-widest ml-1">Trend: <span
-
-                  id="r-growth" class="text-brand">×----</span></span>
-
-            </div>
-
-
-
-            <div id="r-ts" class="font-mono text-[10px] text-zinc-500 uppercase mt-4 tracking-widest">×----</div>
-
-          </div>
-
-          <div class="flex items-center gap-3">
-
-            <button onclick="shareToWhatsApp()"
-
-              class="flex items-center gap-2 px-5 py-2.5 bg-zinc-900 border border-brand/30 text-brand text-xs font-bold uppercase tracking-wider hover:bg-brand hover:text-dark transition-all duration-300">
-
-              <i class="fa-brands fa-whatsapp text-base"></i> Bagikan
-
-            </button>
-
-            <button id="pdf-btn" onclick="downloadPdf()"
-
-              class="flex items-center gap-2 px-5 py-2.5 bg-brand text-dark text-xs font-bold uppercase tracking-wider hover:bg-brand-bright transition-all duration-300 shadow-[0_0_20px_rgba(212,168,67,0.2)]">
-
-              <i class="fa-solid fa-file-pdf text-base"></i> Simpan Laporan
-
-            </button>
-
-          </div>
-
-        </div>
-
-
-
-        <!-- 2. HERO RECOMMENDATION (ENTRY TIMING) -->
-
-        <div
-
-          class="relative overflow-hidden bg-gradient-to-br from-zinc-900/80 to-dark border border-brand/20 p-8 md:p-10 rounded-2xl">
-
-          <div class="absolute top-0 right-0 w-64 h-64 bg-brand/5 blur-[100px] pointer-events-none"></div>
-
-
-
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-
-            <!-- Ring Chart Container -->
-
-            <div class="lg:col-span-4 flex flex-col items-center justify-center relative">
-
-              <div class="relative w-48 h-48 md:w-56 md:h-56">
-
-                <!-- SVG Ring -->
-
-                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-
-                  <circle cx="50" cy="50" r="45" fill="none" class="stroke-zinc-800" stroke-width="6" />
-
-                  <circle id="timing-ring-fill" cx="50" cy="50" r="45" fill="none" class="stroke-brand" stroke-width="6"
-
-                    stroke-dasharray="283" stroke-dashoffset="283" stroke-linecap="round" />
-
-                </svg>
-
-                <!-- Score text -->
-
-                <div class="absolute inset-0 flex flex-col items-center justify-center">
-
-                  <div id="r-ring-num" class="font-mono text-5xl md:text-6xl font-bold text-brand leading-none">0</div>
-
-                  <div class="font-mono text-[10px] tracking-widest text-zinc-500 mt-1 uppercase">Skor Waktu</div>
-
-                </div>
-
-              </div>
-
-              <!-- Status Badge -->
-
-              <div id="timing-status-badge"
-
-                class="mt-6 px-6 py-2 border border-brand/50 bg-brand/10 text-brand font-syne text-[11px] font-bold tracking-[3px] uppercase">
-
-                MENUNGGU DATA
-
-              </div>
-
-            </div>
-
-
-
-            <!-- Recommendation Text -->
-
-            <div class="lg:col-span-8">
-
-              <div
-
-                class="inline-flex items-center gap-2 px-3 py-1 bg-brand/10 border border-brand/20 rounded-full mb-4">
-
-                <span class="w-1.5 h-1.5 rounded-full bg-brand animate-pulse"></span>
-
-                <span class="text-[10px] font-mono tracking-widest text-brand uppercase">Rekomendasi Utama</span>
-
-              </div>
-
-              <h3 id="summary-verdict"
-
-                class="font-jakarta text-2xl md:text-3xl font-bold text-zinc-100 leading-tight mb-4">
-
-                Menganalisis sinyal pasar untuk menentukan langkah terbaik...
-
-              </h3>
-
-              <p id="timing-meaning" class="text-zinc-400 text-sm md:text-base leading-relaxed mb-6">
-
-                Sistem kami sedang menghitung risiko dan peluang berdasarkan tren terbaru, kompetisi, dan momentum
-
-                permintaan.
-
-              </p>
-
-
-
-              <!-- Timing Bar Indikator -->
-
-              <div class="space-y-4">
-
-                <div class="flex justify-between text-[9px] font-mono tracking-widest text-zinc-500 uppercase">
-
-                  <span>Resiko Tinggi</span>
-
-                  <span>Waktu Ideal</span>
-
-                  <span>Puncak Tren</span>
-
-                </div>
-
-                <div class="relative h-2 bg-zinc-800 rounded-full overflow-hidden">
-
-                  <div id="timing-bar-gradient"
-
-                    class="absolute inset-0 bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 opacity-30"></div>
-
-                  <div id="timing-pointer"
-
-                    class="absolute top-0 w-2 h-full bg-brand shadow-[0_0_15px_rgba(212,168,67,0.8)] transition-all duration-1000"
-
-                    style="left: 0%"></div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-
-        <!-- 3. MARKET HEALTH & KPIs -->
-
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-
-          <!-- Market Pulse Score -->
-
-          <div class="lg:col-span-4 bg-zinc-900/50 border border-brand/10 p-6 rounded-xl">
-
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-
-              <div class="flex items-center gap-4">
-
-                <div class="w-12 h-12 flex items-center justify-center bg-brand/10 border border-brand/20 rounded-lg">
-
-                  <i class="fa-solid fa-heart-pulse text-xl text-brand"></i>
-
-                </div>
-
-                <div>
-
-                  <div class="font-syne text-[11px] font-bold tracking-widest text-zinc-400 uppercase">Kesehatan Pasar
-
-                  </div>
-
-                  <div id="r-pulse-condition" class="text-zinc-200 font-bold uppercase tracking-wider">Membaca denyut
-
-                    pasar...</div>
-
-                </div>
-
-              </div>
-
-              <div class="flex-1 max-w-md w-full">
-
-                <div class="flex justify-between mb-2">
-
-                  <span class="text-[10px] font-mono text-zinc-500">Skor Kesehatan</span>
-
-                  <span id="r-pulse" class="text-[10px] font-mono text-brand">0/100</span>
-
-                </div>
-
-                <div class="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
-
-                  <div id="r-pulse-fill-bar" class="h-full bg-brand transition-all duration-1000" style="width: 0%">
-
-                  </div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-
-          <!-- KPI CARDS REDESIGNED -->
-
-          <!-- Antusiasme Pasar (Green) -->
-
-          <div class="kpi-card-themed kpi-green">
-
-            <div class="kpi-icon-header">
-
-              <div class="kpi-icon-box"><i class="fa-solid fa-chart-line"></i></div>
-
-              <div id="mc-mom-tag" class="kpi-badge">×----</div>
-
-            </div>
-
-            <div class="kpi-content">
-
-              <div class="kpi-label">Antusiasme Pasar</div>
-
-              <div id="r-mom-val" class="kpi-value">×----</div>
-
-              <div id="r-mom-interp" class="kpi-desc">×----</div>
-
-            </div>
-
-          </div>
-
-
-
-          <!-- Stabilitas Tren (Blue) -->
-
-          <div class="kpi-card-themed kpi-blue">
-
-            <div class="kpi-icon-header">
-
-              <div class="kpi-icon-box"><i class="fa-solid fa-bolt"></i></div>
-
-              <div id="mc-vol-tag" class="kpi-badge">×----</div>
-
-            </div>
-
-            <div class="kpi-content">
-
-              <div class="kpi-label">Stabilitas Tren</div>
-
-              <div id="r-vol-val" class="kpi-value">×----</div>
-
-              <div id="r-vol-interp" class="kpi-desc">×----</div>
-
-            </div>
-
-          </div>
-
-
-
-          <!-- Skala Hype (Orange) -->
-
-          <div class="kpi-card-themed kpi-orange">
-
-            <div class="kpi-icon-header">
-
-              <div class="kpi-icon-box"><i class="fa-solid fa-fire"></i></div>
-
-              <div id="mc-fomo-tag" class="kpi-badge">×----</div>
-
-            </div>
-
-            <div class="kpi-content">
-
-              <div class="kpi-label">Skala Hype (FOMO)</div>
-
-              <div id="r-fomo" class="kpi-value">×----</div>
-
-              <div id="r-fomo-interp" class="kpi-desc">×----</div>
-
-            </div>
-
-          </div>
-
-
-
-          <!-- Tingkat Persaingan (Purple) -->
-
-          <div class="kpi-card-themed kpi-purple">
-
-            <div class="kpi-icon-header">
-
-              <div class="kpi-icon-box"><i class="fa-solid fa-users"></i></div>
-
-              <div id="mc-sat-tag" class="kpi-badge">×----</div>
-
-            </div>
-
-            <div class="kpi-content">
-
-              <div class="kpi-label">Tingkat Persaingan</div>
-
-              <div id="r-sat-val" class="kpi-value">×----</div>
-
-              <div id="r-sat-interp" class="kpi-desc">×----</div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-
-        <!-- 4. TREND CHART AREA -->
-
-        <div class="bg-zinc-900/50 border border-zinc-800 p-6 md:p-8 rounded-2xl">
-
-          <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-8">
-
-            <div>
-
-              <h4 class="font-jakarta font-bold text-lg text-zinc-100">Peta Pergerakan Permintaan</h4>
-
-              <div class="flex items-center gap-2 mt-1">
-
-                <span id="r-trend-range" class="text-xs text-brand/70 font-mono tracking-wider">×----</span>
-
-                <span class="text-zinc-600 px-2">--</span>
-
-                <span
-
-                  class="text-[10px] font-mono text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded tracking-widest">REAL-TIME
-
-                  DATA</span>
-
-              </div>
-
-            </div>
-
-            <div class="flex items-center gap-4">
-
-              <div class="hidden md:flex flex-col items-end">
-
-                <span class="text-[9px] font-mono tracking-widest text-zinc-600 uppercase">Prediksi AI 90H</span>
-
-                <span id="r-fc-val" class="text-brand font-mono font-bold">×----</span>
-
-              </div>
-
-              <button id="btn-toggle-forecast" onclick="toggleForecast()"
-
-                class="px-4 py-2 border border-brand/20 bg-brand/5 text-[10px] font-syne font-bold tracking-widest text-zinc-400 uppercase hover:text-brand hover:border-brand transition-all">
-
-                TAMPILKAN PREDIKSI AI
-
-              </button>
-
-            </div>
-
-          </div>
-
-
-
-          <div class="h-[300px] md:h-[400px] w-full relative">
-
-            <canvas id="single-chart"></canvas>
-
-          </div>
-
-        </div>
-
-
-
-        <!-- 5. AI STRATEGY & INSIGHTS -->
-
-        <div class="space-y-6">
-
-          <div class="flex items-center gap-4">
-
-            <div class="h-px flex-1 bg-brand-dim/20"></div>
-
-            <h4 class="font-mono text-[11px] font-bold tracking-[6px] text-brand uppercase">Bisik Strategi Sentra AI
-
-            </h4>
-
-            <div class="h-px flex-1 bg-brand-dim/20"></div>
-
-          </div>
-
-
-
-          <div id="ai-insight-section">
-
-            <!-- Trigger State -->
-
-            <div id="ai-trigger-state"
-
-              class="bg-gradient-to-r from-zinc-900/80 to-dark border border-brand/20 p-8 rounded-2xl text-center">
-
-              <div class="inline-flex text-4xl text-brand mb-4 animate-bounce">×----</div>
-
-              <h5 class="font-jakarta font-bold text-xl text-zinc-100 mb-2">Buka Strategi Bisnis Kamu Sekarang</h5>
-
-              <p class="text-zinc-500 text-sm max-w-lg mx-auto mb-8">
-
-                Claude 3.5 Sonnet akan merangkum strategi jualan, timing stok, dan teknik marketing khusus untuk produk
-
-                kamu.
-
-              </p>
-
-              <button id="ai-trigger-btn" onclick="triggerAiInsight()"
-
-                class="px-10 py-4 bg-brand text-dark font-syne font-extrabold text-xs tracking-[3px] uppercase hover:bg-brand-bright transition-all shadow-[0_0_40px_rgba(212,168,67,0.15)]">
-
-                Dapatkan Insight Bisnis AI ×----
-
-              </button>
-
-            </div>
-
-
-
-            <!-- Loading State -->
-
-            <div id="ai-loading-state"
-
-              class="hidden flex-col items-center justify-center p-12 bg-zinc-900/50 border border-zinc-800 rounded-2xl animate-pulse">
-
-              <div class="w-12 h-12 border-2 border-brand/20 border-t-brand rounded-full animate-spin mb-6"></div>
-
-              <div class="font-mono text-[10px] tracking-widest text-brand animate-pulse uppercase">Claude AI sedang
-
-                berpikir...</div>
-
-            </div>
-
-
-
-            <!-- Result State -->
-
-            <div id="ai-result-state" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
-
-              <!-- Market Logic -->
-
-              <div class="bg-zinc-900/30 border border-zinc-800 p-6 rounded-xl hover:border-blue-500/30 transition-all">
-
-                <div
-
-                  class="w-10 h-10 bg-blue-500/10 border border-blue-500/20 text-blue-500 flex items-center justify-center rounded-lg mb-4">
-
-                  <i class="fa-solid fa-eye"></i>
-
-                </div>
-
-                <h6 class="font-jakarta font-bold text-sm text-zinc-100 uppercase tracking-wide mb-3">Analisis Pasar
-
-                </h6>
-
-                <div id="r-ai-pasar" class="text-xs leading-relaxed text-zinc-400 space-y-2">×----</div>
-
-              </div>
-
-              <!-- Action Steps -->
-
-              <div
-
-                class="bg-zinc-900/30 border border-zinc-800 p-6 rounded-xl hover:border-green-500/30 transition-all">
-
-                <div
-
-                  class="w-10 h-10 bg-green-500/10 border border-green-500/20 text-green-500 flex items-center justify-center rounded-lg mb-4">
-
-                  <i class="fa-solid fa-list-check"></i>
-
-                </div>
-
-                <h6 class="font-jakarta font-bold text-sm text-zinc-100 uppercase tracking-wide mb-3">Rekomendasi Aksi
-
-                </h6>
-
-                <div id="r-ai-aksi" class="text-xs leading-relaxed text-zinc-400 space-y-2">×----</div>
-
-              </div>
-
-              <!-- Timing Strategy -->
-
-              <div class="bg-zinc-900/30 border border-zinc-800 p-6 rounded-xl hover:border-brand/30 transition-all">
-
-                <div
-
-                  class="w-10 h-10 bg-brand/10 border border-brand/20 text-brand flex items-center justify-center rounded-lg mb-4">
-
-                  <i class="fa-solid fa-clock"></i>
-
-                </div>
-
-                <h6 class="font-jakarta font-bold text-sm text-zinc-100 uppercase tracking-wide mb-3">Strategi Waktu
-
-                </h6>
-
-                <div id="r-ai-waktu" class="text-xs leading-relaxed text-zinc-400 space-y-2">×----</div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-
-
-
-        <!-- 5.5 REGIONAL ANALYSIS (HEATMAP) -->
-
-        <div id="regional-section" class="mb-12" style="display: none;">
-
-          <div class="flex items-end justify-between mb-8">
-
-            <div>
-
-              <div class="flex items-center gap-2 mb-2 text-brand font-mono text-[10px] tracking-[4px] uppercase">
-
-                <span class="w-8 h-[1px] bg-brand/30"></span>
-
-                Penyebaran Geografis
-
-              </div>
-
-              <h3 class="text-3xl md:text-4xl font-syne font-bold text-zinc-100 italic">Peta Panas Minat Pasar</h3>
-
-            </div>
-
-            <div class="hidden md:block text-right">
-
-              <div class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-1">Level Analisis</div>
-
-              <div class="text-zinc-300 font-jakarta font-bold">Nasional (Provinsi)</div>
-
-            </div>
-
-          </div>
-
-
-
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-            <!-- Main Map Card (Tile Map) -->
-
-            <div
-
-              class="lg:col-span-8 bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-8 overflow-hidden relative group">
-
-              <div id="tile-map-container" class="flex flex-col gap-2 items-center justify-center min-h-[400px]">
-
-                <!-- Tiles will be generated here by map_logic.js or placed static -->
-
-                <!-- Row 1 -->
-
-                <div class="flex gap-2">
-
-                  <div class="province-tile" id="tile-ACE" data-name="Aceh"><span>ACE</span><small>Aceh</small></div>
-
-                  <div class="province-tile" id="tile-SBR" data-name="Sumatera Barat">
-
-                    <span>SBR</span><small>Sumbar</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-RIU" data-name="Riau"><span>RIU</span><small>Riau</small></div>
-
-                  <div class="province-tile" id="tile-KPR" data-name="Kepulauan Riau">
-
-                    <span>KPR</span><small>Kepri</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-KLT" data-name="Kalimantan Utara">
-
-                    <span>KLT</span><small>Kaltara</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-KLU" data-name="Kalimantan Utara">
-
-                    <span>KLU</span><small>Kaltara</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-KTI" data-name="Kalimantan Timur">
-
-                    <span>KTI</span><small>Kaltim</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-SUU" data-name="Sulawesi Utara">
-
-                    <span>SUU</span><small>Sulut</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-MUT" data-name="Maluku Utara"><span>MUT</span><small>Malut</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-PAB" data-name="Papua Barat"><span>PAB</span><small>Pabar</small>
-
-                  </div>
-
-                </div>
-
-                <!-- Row 2 -->
-
-                <div class="flex gap-2">
-
-                  <div class="province-tile" id="tile-SBU" data-name="Sumatera Utara">
-
-                    <span>SBU</span><small>Sumut</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-JAM" data-name="Jambi"><span>JAM</span><small>Jambi</small></div>
-
-                  <div class="province-tile" id="tile-SS" data-name="Sumatera Selatan">
-
-                    <span>SS</span><small>Sumsel</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-BBL" data-name="Bangka Belitung">
-
-                    <span>BBL</span><small>Babel</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-KTB" data-name="Kalimantan Barat">
-
-                    <span>KTB</span><small>Kalbar</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-KTG" data-name="Kalimantan Tengah">
-
-                    <span>KTG</span><small>Kalteng</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-KTS" data-name="Kalimantan Selatan">
-
-                    <span>KTS</span><small>Kalsel</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-SLU" data-name="Sulawesi Tenggara">
-
-                    <span>SLU</span><small>Sultra</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-GRT" data-name="Gorontalo">
-
-                    <span>GRT</span><small>Gorontalo</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-PAP" data-name="Papua"><span>PAP</span><small>Papua</small></div>
-
-                </div>
-
-                <!-- Row 3 -->
-
-                <div class="flex gap-2">
-
-                  <div class="province-tile" id="tile-BKL" data-name="Bengkulu"><span>BKL</span><small>Bengkulu</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-LPG" data-name="Lampung"><span>LPG</span><small>Lampung</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-JKT" data-name="DKI Jakarta">
-
-                    <span>JKT</span><small>Jakarta</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-JBR" data-name="Jawa Barat"><span>JBR</span><small>Jabar</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-KSL" data-name="Kalimantan Selatan">
-
-                    <span>KSL</span><small>Kalsel</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-STG" data-name="Sulawesi Tengah">
-
-                    <span>STG</span><small>Sulteng</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-SGO" data-name="Sulawesi Selatan">
-
-                    <span>SGO</span><small>Sulsel</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-MLD" data-name="Maluku"><span>MLD</span><small>Maluku</small>
-
-                  </div>
-
-                </div>
-
-                <!-- Row 4 -->
-
-                <div class="flex gap-2">
-
-                  <div class="province-tile" id="tile-BTN" data-name="Banten"><span>BTN</span><small>Banten</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-JTG" data-name="Jawa Tengah"><span>JTG</span><small>Jateng</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-DIY" data-name="DI Yogyakarta">
-
-                    <span>DIY</span><small>Yogya</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-JTM" data-name="Jawa Timur"><span>JTM</span><small>Jatim</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-NTB" data-name="Nusa Tenggara Barat">
-
-                    <span>NTB</span><small>NTB</small>
-
-                  </div>
-
-                  <div class="province-tile" id="tile-NTT" data-name="Nusa Tenggara Timur">
-
-                    <span>NTT</span><small>NTT</small>
-
-                  </div>
-
-                </div>
-
-                <!-- Row 5 -->
-
-                <div class="flex gap-2">
-
-                  <div class="province-tile" id="tile-BLI" data-name="Bali"><span>BLI</span><small>Bali</small></div>
-
-                </div>
-
-              </div>
-
-
-
-              <!-- Heatmap Legend -->
-
-              <div class="mt-8 flex items-center justify-center gap-6 border-t border-zinc-800/50 pt-6">
-
-                <div class="flex items-center gap-2">
-
-                  <div class="w-3 h-3 rounded bg-[#1a1a1a] border border-zinc-800"></div>
-
-                  <span class="text-[10px] text-zinc-500 font-mono">Tidak ada data</span>
-
-                </div>
-
-                <div class="flex items-center gap-2">
-
-                  <div class="w-3 h-3 rounded bg-[#2a2a2a] shadow-[0_0_5px_rgba(42,42,42,0.5)]"></div>
-
-                  <span class="text-[10px] text-zinc-500 font-mono">Rendah</span>
-
-                </div>
-
-                <div class="flex items-center gap-2">
-
-                  <div class="w-3 h-3 rounded bg-[#7a5c00] shadow-[0_0_5px_rgba(122,92,0,0.5)]"></div>
-
-                  <span class="text-[10px] text-zinc-500 font-mono">Sedang</span>
-
-                </div>
-
-                <div class="flex items-center gap-2">
-
-                  <div class="w-3 h-3 rounded bg-[#d4a017] shadow-[0_0_8px_rgba(212,160,23,0.5)]"></div>
-
-                  <span class="text-[10px] text-zinc-500 font-mono">Tinggi</span>
-
-                </div>
-
-                <div class="flex items-center gap-2">
-
-                  <div class="w-3 h-3 rounded bg-[#FFD700] shadow-[0_0_12px_rgba(255,215,0,0.6)]"></div>
-
-                  <span class="text-[10px] text-zinc-500 font-mono">Tertinggi</span>
-
-                </div>
-
-              </div>
-
-
-
-              <!-- Map Map Shimmer Loader -->
-
-              <div id="map-loader"
-
-                class="absolute inset-0 z-[1001] bg-zinc-900/90 flex flex-col items-center justify-center">
-
-                <div class="w-12 h-12 border-2 border-brand/20 border-t-brand rounded-full animate-spin mb-4"></div>
-
-                <div class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest animate-pulse">Menghubungkan
-
-                  Satelit...</div>
-
-              </div>
-
-            </div>
-
-
-
-            <!-- Local AI Insight Card -->
-
-            <div class="lg:col-span-4 flex flex-col gap-6">
-
-              <div
-
-                class="flex-1 bg-zinc-900/60 border border-zinc-800/50 p-8 rounded-2xl relative overflow-hidden flex flex-col">
-
-                <div class="absolute top-0 right-0 w-32 h-32 bg-brand/5 blur-3xl rounded-full -mr-16 -mt-16"></div>
-
-
-
-                <div class="flex items-center gap-3 mb-6">
-
-                  <div
-
-                    class="w-10 h-10 rounded-xl bg-brand/10 border border-brand/20 flex items-center justify-center text-brand">
-
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-
-                        d="M13 10V3L4 14h7v7l9-11h-7z" />
-
-                    </svg>
-
-                  </div>
-
-                  <div>
-
-                    <h6 class="text-zinc-100 font-jakarta font-bold">Strategi Lokal</h6>
-
-                    <p class="text-[10px] text-zinc-500 font-mono uppercase tracking-wider">AI RECOMMENDATION</p>
-
-                  </div>
-
-                </div>
-
-
-
-                <div id="r-local-insight" class="text-zinc-400 text-sm leading-relaxed font-jakarta">
-
-                  Menganalisis data regional untuk memberikan strategi pemasaran yang tepat sasaran...
-
-                </div>
-
-
-
-                <div class="mt-auto pt-6 border-t border-zinc-800/50 flex items-center justify-between">
-
-                  <div id="top-regions-list" class="flex flex-col gap-4 mt-6">
-
-                    <!-- Rankings generated dynamically -->
-
-                    <div class="flex items-center justify-center py-10 opacity-30 italic text-[10px]">
-
-                      Menunggu Data Satelit...
-
-                    </div>
-
-                  </div>
-
-                  <div class="mt-6 pt-6 border-t border-zinc-800/50 flex items-center justify-between">
-
-                    <div class="text-[9px] font-mono text-zinc-500 uppercase tracking-widest italic">Live Geo-Ranking
-
-                    </div>
-
-                    <div class="text-[9px] font-mono text-brand uppercase tracking-widest font-bold">SENTRA ANALYTICS
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-
-
-              <div class="bg-zinc-900/30 border border-zinc-800/30 p-6 rounded-2xl">
-
-                <h6 class="text-zinc-400 text-[10px] font-mono uppercase tracking-[2px] mb-4">Tips Ekspansi</h6>
-
-                <ul class="space-y-3">
-
-                  <li class="flex items-start gap-3">
-
-                    <div class="w-1.5 h-1.5 rounded-full bg-brand mt-1.5"></div>
-
-                    <p class="text-[11px] text-zinc-500 leading-snug">Fokuskan stok pada wilayah berwarna merah (High
-
-                      Interest).</p>
-
-                  </li>
-
-                  <li class="flex items-start gap-3">
-
-                    <div class="w-1.5 h-1.5 rounded-full bg-yellow-500 mt-1.5"></div>
-
-                    <p class="text-[11px] text-zinc-500 leading-snug">Gunakan bahasa daerah dalam iklan di wilayah
-
-                      panas.</p>
-
-                  </li>
-
-                </ul>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-
-        <!-- 5.6 REGIONAL BREAKDOWN (CHART & RANK) -->
-
-        <div id="regional-breakdown-section" class="mb-12" style="display: none;">
-
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-
-
-            <!-- Chart Column -->
-
-            <div
-
-              class="lg:col-span-8 bg-zinc-900/60 border border-zinc-800/50 p-8 rounded-2xl relative overflow-hidden">
-
-              <div class="flex items-center justify-between mb-8">
-
-                <div>
-
-                  <h5 class="font-jakarta font-bold text-lg text-zinc-100 mb-1">Peta Minat Regional</h5>
-
-                  <p class="text-xs text-zinc-500">Persentase minat per provinsi berdasarkan volume pencarian (0-100)
-
-                  </p>
-
-                </div>
-
-                <div id="r-top-province-badge"
-
-                  class="px-3 py-1 bg-brand/10 border border-brand/20 text-brand text-[10px] font-mono font-bold uppercase tracking-wider rounded-lg">
-
-                  TOP: —
-
-                </div>
-
-              </div>
-
-
-
-              <!-- Chart Canvas -->
-
-              <div class="relative h-[480px]">
-
-                <canvas id="regional-bar-chart"></canvas>
-
-              </div>
-
-
-
-              <!-- Summary Sentence -->
-
-              <div class="mt-8 p-4 bg-dark/40 border-l-2 border-brand rounded-r-lg">
-
-                <p id="r-regional-summary" class="text-sm text-zinc-400 font-jakarta italic">
-
-                  Menghitung persebaran minat terjauh...
-
-                </p>
-
-              </div>
-
-            </div>
-
-
-
-            <!-- Ranking Column -->
-
-            <div class="lg:col-span-4 space-y-6">
-
-              <!-- Top 3 Medals -->
-
-              <div
-
-                class="bg-gradient-to-br from-zinc-900 to-black border border-brand/20 p-6 rounded-2xl shadow-xl flex flex-col h-full">
-
-                <h6 class="text-zinc-500 font-mono text-[9px] tracking-[3px] uppercase mb-6">Papan Peringkat (Top 3)
-
-                </h6>
-
-                <div id="r-top-3-medals" class="space-y-5">
-
-                  <!-- Shimmer -->
-
-                  <div class="flex items-center gap-4 animate-pulse">
-
-                    <div class="w-10 h-10 rounded-xl bg-zinc-800"></div>
-
-                    <div class="flex-1 space-y-2">
-
-                      <div class="h-3 bg-zinc-800 rounded w-1/2"></div>
-
-                      <div class="h-2 bg-zinc-800 rounded w-1/3"></div>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-
-
-                <div class="mt-8 pt-8 border-t border-zinc-800/50">
-
-                  <h6 class="text-zinc-500 font-mono text-[9px] tracking-[3px] uppercase mb-6">Wilayah Potensial Lainnya
-
-                  </h6>
-
-                  <div id="r-other-regions-grid" class="grid grid-cols-1 gap-y-3">
-
-                    <!-- Populated by JS -->
-
-                    <div class="flex justify-between items-center opacity-30">
-
-                      <div class="h-2 bg-zinc-800 rounded w-1/2"></div>
-
-                      <div class="h-2 bg-zinc-800 rounded w-10"></div>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-
-
-          </div>
-
-        </div>
-
-
-
-        <!-- 6. SEASONALITY & NEWS -->
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-          <!-- Seasonality -->
-
-          <div class="lg:col-span-8 bg-zinc-900/50 border border-zinc-800 p-6 rounded-2xl flex flex-col h-full">
-
-            <div class="flex justify-between items-center mb-6 shrink-0">
-
-              <h5 class="font-jakarta font-bold text-zinc-100">Bulan Paling Ramai</h5>
-
-              <div id="r-season-badge"
-
-                class="px-3 py-1 bg-brand/10 border border-brand/20 text-brand text-[8px] font-mono tracking-widest uppercase">
-
-                Puncak: —</div>
-
-            </div>
-
-            <div id="r-months" class="grid grid-cols-6 md:grid-cols-6 gap-3 mb-6 flex-1 min-h-[160px]"></div>
-
-            <div
-
-              class="flex items-center gap-6 text-[8px] font-mono tracking-widest text-zinc-600 uppercase mt-auto shrink-0 pt-2 border-t border-zinc-800/30">
-
-              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-sm bg-brand"></span> Panen</span>
-
-              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-sm bg-brand/30"></span> Normal</span>
-
-              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-sm bg-zinc-800"></span> Sepi</span>
-
-            </div>
-
-          </div>
-
-
-
-          <!-- Latest News -->
-
-          <div class="lg:col-span-4 bg-zinc-900/50 border border-zinc-800 p-6 rounded-2xl">
-
-            <h5 class="font-jakarta font-bold text-zinc-100 mb-6 flex items-center gap-2">
-
-              <i class="fa-solid fa-newspaper text-zinc-600 text-sm"></i> Berita Terkait
-
-            </h5>
-
-            <div id="summary-news-list" class="space-y-4">
-
-              <!-- populated by JS -->
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-
-      </div><!-- END RESULTS -->
-
-
-
-      <!-- TECHNICAL ANALYSIS SECTION (HIDDEN BY DEFAULT) -->
-
-      <div class="tech-toggle-card" id="tech-toggle-card" onclick="toggleTechnicalSection()" style="display:none;">
-
-        <div class="tech-toggle-left">
-
-          <div class="tech-toggle-title">Analisis Teknikal Lengkap</div>
-
-          <div class="tech-toggle-subtitle">Untuk pengguna yang ingin memahami data di balik analisis ini</div>
-
-        </div>
-
-        <button type="button" class="tech-toggle-btn" id="tech-toggle-btn" aria-expanded="false">
-
-          Lihat Analisis Teknikal Lengkap ×----
-
-        </button>
-
-      </div>
-
-
-
-      <div id="tech-section" class="tech-section" style="display:none;">
-
-
-
-      </div>
-
-
-
-      <!-- ────────────────────────────────────────────────── COMPARE RESULTS ────────────────────────────────────────────────── -->
-
-      <div id="compare-results">
-
-        <!-- Header -->
-
-        <div class="cmp-header">
-
-          <div class="cmp-vs-title">
-
-            <span class="kw-a" id="cmp-kw-a"></span>
-
-            <span class="kw-vs">vs</span>
-
-            <span class="kw-b" id="cmp-kw-b"></span>
-
-          </div>
-
-          <div class="cmp-ts" id="cmp-ts"></div>
-
-        </div>
-
-
-
-        <!-- Winner Banner -->
-
-        <div class="winner-banner">
-
-          <div class="winner-label">Pemenang Keseluruhan</div>
-
-          <div class="winner-name" id="cmp-winner"></div>
-
-          <div class="winner-score" id="cmp-winner-score"></div>
-
-        </div>
-
-
-
-        <!-- Comparison Table -->
-
-        <table class="cmp-table">
-
-          <thead>
-
-            <tr>
-
-              <th>Metrik</th>
-
-              <th id="cmp-th-a" class="col-a">Keyword A</th>
-
-              <th id="cmp-th-b" class="col-b">Keyword B</th>
-
-              <th>Unggul</th>
-
-            </tr>
-
-          </thead>
-
-          <tbody id="cmp-tbody"></tbody>
-
-        </table>
-
-
-
-        <!-- Chart -->
-
-        <div class="chart-card">
-
-          <div class="mc-lbl">Tren Minat ×---- 3 Bulan Terakhir</div>
-
-          <div class="chart-wrap">
-
-            <canvas id="cmp-chart"></canvas>
-
-          </div>
-
-        </div>
-
-
-
-        <!-- AI Insight -->
-
-        <div class="ai-card">
-
-          <div class="ai-head">
-
-            <div class="ai-icon">×----</div>
-
-            <div class="ai-title">Analisis Perbandingan oleh Sentra</div>
-
-          </div>
-
-          <div id="cmp-ai" class="ai-body"></div>
-
-        </div>
-
-      </div>
-
-    </div><!-- end .wrap (results) -->
-
-
-
-  </div><!-- /wrap -->
-
-
-
-
-
-  <!-- ────────────────────────────────────────────────── PRICING SECTION ────────────────────────────────────────────────── -->
-
-  <div class="wrap">
-
-    <section class="pricing-section" id="pricing">
-
-      <div class="pricing-head">
-
-        <div class="pricing-title">Mulai Gratis,<br>Upgrade Kalau Butuh Lebih</div>
-
-        <div class="pricing-sub">Tidak ada kartu kredit. Tidak ada komitmen.</div>
-
-      </div>
-
-      <div class="pricing-grid">
-
-
-
-        <!-- FREE -->
-
-        <div class="pricing-card">
-
-          <div class="pricing-plan">Free</div>
-
-          <div class="pricing-price">Rp 0</div>
-
-          <div class="pricing-price-sub">Selamanya gratis</div>
-
-          <ul class="pricing-features">
-
-            <li>5 riset pasar per hari</li>
-
-            <li>Cakupan seluruh Indonesia</li>
-
-            <li>Analisis tren, momentum &amp; risiko</li>
-
-            <li>Rekomendasi bisnis otomatis</li>
-
-            <li>Radar pasar 7 sektor</li>
-
-            <li class="locked">Analisis minat per-provinsi</li>
-
-            <li class="locked">Ekspor laporan bisnis PDF</li>
-
-            <li class="locked">AI Marketing Kit</li>
-
-          </ul>
-
-          <button class="pricing-cta" disabled>Paket Aktif</button>
-
-        </div>
-
-
-
-        <!-- PRO -->
-
-        <div class="pricing-card pro-card">
-
-          <div class="pricing-plan">Pro</div>
-
-          <div class="pricing-price">Rp 49rb</div>
-
-          <div class="pricing-price-sub">per bulan</div>
-
-          <ul class="pricing-features">
-
-            <li>Analisis tak terbatas</li>
-
-            <li>Lokasi per-Provinsi (10 provinsi)</li>
-
-            <li>Semua metrik + Forecast 30 Hari</li>
-
-            <li>AI Insight Premium (3 Card)</li>
-
-            <li>Sektor Dashboard</li>
-
-            <li>Analisis Lokasi Provinsi</li>
-
-            <li>Download Laporan PDF</li>
-
-            <li>AI Marketing Kit <em style="font-size:10px;color:var(--gold-dim)">(segera)</em></li>
-
-          </ul>
-
-          <button class="pricing-cta gold-cta" onclick="showUpgradeModal()">Aktifkan Akses Penuh</button>
-
-        </div>
-
-
-
-      </div>
-
-    </section>
-
-  </div>
-
-
-
-  <footer>Sentra v2.0 &mdash; Market Intelligence untuk UMKM Indonesia</footer>
-
-
-
-  <!-- ────────────────────────────────────────────────── UPGRADE MODAL ────────────────────────────────────────────────── -->
-
-  <div class="modal-overlay" id="upgrade-modal" onclick="handleModalOverlayClick(event)">
-
-    <div class="modal-box">
-
-      <button class="modal-close" onclick="closeUpgradeModal()">×</button>
-
-      <div class="modal-icon">&#9670;</div>
-
-      <div class="modal-title" id="modal-title">Buka Akses Penuh Sentra</div>
-
-      <div class="modal-desc" id="modal-desc">
-
-        Kamu sudah menggunakan 5 riset hari ini.<br>
-
-        Upgrade ke <strong>Pro</strong> untuk riset tanpa batas, analisis per-provinsi, dan ekspor laporan bisnis.
-
-      </div>
-
-      <button class="modal-cta">Upgrade Sekarang &mdash; Rp 49rb/bln</button>
-
-      <span class="modal-later" onclick="closeUpgradeModal()">Nanti saja</span>
-
-    </div>
-
-  </div>
-
-
-
-  <!-- DETAIL ANALYSIS MODAL -->
-
-  <div id="detail-overlay" onclick="closeDetailPanel()" style="
-
-    display:none;
-
-    position:fixed;
-
-    inset:0;
-
-    background:rgba(0,0,0,0.75);
-
-    z-index:9000;
-
-    backdrop-filter:blur(4px);
-
-  "></div>
-
-
-
-  <!-- DETAIL PANEL -->
-  <div id="detail-panel" style="
-    display:none;
-    position:fixed;
-    top:0;
-    right:0;
-    width:min(520px, 100vw);
-    height:100vh;
-    background:#0D0D0B;
-    border-left:1px solid rgba(212,168,67,0.2);
-    z-index:9001;
-    overflow-y:auto;
-    padding:32px 28px 60px;
-  ">
-    <div style="
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      margin-bottom:32px;
-      padding-bottom:20px;
-      border-bottom:1px solid rgba(212,168,67,0.15);
-    ">
-      <div>
-        <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:8px;">Market Intelligence</div>
-        <h2 id="detail-title" style="font-size:24px;color:#fff;font-weight:700;letter-spacing:-0.5px;margin:0;">Keyword</h2>
-      </div>
-      <button onclick="closeDetailPanel()" style="background:none;border:none;color:#555;cursor:pointer;font-size:24px;">×</button>
-    </div>
-    <div id="detail-metrics-container"></div>
-  </div>
-
-  <div id="auth-overlay" onclick="closeAuthModal()"></div>
-  <div id="auth-modal" onclick="event.stopPropagation()">
-    <div id="auth-modal-inner"></div>
-  </div>
-
-  <div id="profile-dropdown" class="profile-dropdown">
-    <div id="profile-dropdown-inner"></div>
-  </div>
-
-  <script src="/static/map_logic.js"></script>
-  <script src="/static/app.js?v=7"></script>
-
-  <div id="ip-overlay" onclick="closeIdeWizard()">
-    <div id="ip-modal" onclick="event.stopPropagation()"><div id="ip-modal-inner"></div></div>
-  </div>
-  <div id="radar-overlay" onclick="closeRadarPanel()"></div>
-  <div id="radar-float-panel"></div>
-
-  <button id="scrollTopBtn" class="scroll-to-top" type="button"><i class="fa-solid fa-arrow-up"></i></button>
-
-</body>
-</html>
+<!DOCTYPE html>
+
+<html lang="id">
+
+
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <title>Sentra AI </title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+  <link
+
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap"
+
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <link rel="icon" href="/favicon.ico" type="image/png" />
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+
+    tailwind.config = {
+
+      theme: {
+
+        extend: {
+
+          colors: {
+
+            brand: '#D4A843',
+
+            'brand-bright': '#F0C855',
+
+            'brand-dim': '#A8892E',
+
+            dark: '#0A0A08',
+
+            surface: 'rgba(24, 21, 16, 0.6)',
+
+            'surface-light': 'rgba(32, 29, 20, 0.8)',
+
+            glass: 'rgba(212, 168, 67, 0.05)',
+
+            'glass-border': 'rgba(212, 168, 67, 0.15)',
+
+          },
+
+          fontFamily: {
+
+            jakarta: ['Plus Jakarta Sans', 'sans-serif'],
+
+            syne: ['Syne', 'sans-serif'],
+
+            mono: ['DM Mono', 'monospace'],
+
+            serif: ['Cormorant Garamond', 'serif'],
+
+          }
+
+        }
+
+      }
+
+    }
+
+  </script>
+
+  <!-- cleaned: extracted CSS to static/styles.css -->
+
+  <link rel="stylesheet" href="/static/styles.css" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+</head>
+
+
+
+<body>
+
+
+
+  <nav class="sticky-nav" id="sticky-nav" aria-label="Sticky Navigation Sentra AI">
+
+    <div class="sticky-nav-inner">
+
+      <button class="sticky-nav-logo" data-target="top">SENTRA</button>
+
+      <div class="sticky-nav-links">
+
+        <button class="sticky-nav-link" data-target="kw"><i class="fa-solid fa-magnifying-glass"></i>Analisis</button>
+
+        <button class="sticky-nav-link hide-mobile" data-target="how-to-use">Cara Kerja</button>
+
+        <button class="sticky-nav-link hide-mobile" data-target="sector-dashboard">Radar Pasar</button>
+
+        <button class="sticky-nav-link hide-mobile" data-target="whitepaper">Whitepaper</button>
+
+      </div>
+
+      <button class="sticky-nav-cta" data-target="kw">Upgrade ke Pro</button>
+
+      <div id="sticky-nav-auth"></div>
+
+    </div>
+
+  </nav>
+
+
+
+  <!-- ────────────────────────────────────────────────── AI SPLASH SCREEN ────────────────────────────────────────────────── -->
+
+  <div id="splash-screen">
+
+    <div class="splash-logo-wrap">
+
+      <div class="scan-line"></div>
+
+      <div class="splash-logo">Sentra</div>
+
+    </div>
+
+    <div class="splash-loader-text" id="splash-text">Sentra Initializing...</div>
+
+  </div>
+
+
+
+  <div class="wrap" style="position:relative; z-index:1;">
+
+    <header>
+
+      <div class="logo">
+
+        <span class="logo-word">Sentra</span>
+
+        <span class="logo-sub">Market Intelligence</span>
+
+      </div>
+
+      <div class="header-right">
+
+        <span class="ver">v2.0</span>
+
+        <div class="dot"></div>
+
+        <div id="auth-header-action"></div>
+
+      </div>
+
+    </header>
+
+
+
+    <div class="hero">
+
+      <h1 class="hero-title">Ketahui Peluang Bisnismu<br><em>Sebelum Orang Lain</em></h1>
+
+      <p class="hero-sub">Data Real-Time<span>·</span>Insight Otomatis<span>·</span>Rekomendasi Langsung</p>
+
+
+
+      <!-- MODE TOGGLE -->
+
+      <div class="mode-toggle-wrap">
+
+        <span class="mode-label active" id="lbl-single">Analisis</span>
+
+        <div class="toggle-track" id="mode-toggle" onclick="toggleCompareMode()">
+
+          <div class="toggle-knob"></div>
+
+        </div>
+
+        <span class="mode-label" id="lbl-compare">Mode Banding</span>
+
+      </div>
+
+
+
+      <!-- SINGLE KEYWORD SEARCH -->
+
+      <div class="search-wrap single-search" id="single-search">
+
+        <div class="search-box">
+
+          <div class="search-prefix">›_</div>
+
+          <input type="text" id="kw" placeholder="produk apa yang ingin kamu jual?" autocomplete="off"
+
+            spellcheck="false" />
+
+          <button id="btn" onclick="doSearch()">Analisis Sekarang</button>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- STATUS BAR: quota + geo in one row -->
+
+      <div class="status-bar hidden" id="status-bar">
+
+        <div class="status-bar-left">
+
+
+
+          <span class="status-quota-text" id="quota-text">Riset tersisa hari ini: &mdash;</span>
+
+          <div class="status-dots" id="quota-dots"></div>
+
+          <button class="status-upgrade-btn" id="quota-upgrade-btn" onclick="showUpgradeModal()"
+
+            style="display:none">Upgrade →</button>
+
+        </div>
+
+        <div class="status-bar-right">
+
+          <span class="status-sep">×</span>
+
+          <span class="status-geo-label">Lokasi</span>
+
+          <select id="geo-select" class="status-geo-sel" disabled title="Lokasi spesifik hanya untuk pengguna Pro">
+
+            <option value="ID">Indonesia (Nasional)</option>
+
+            <option value="ID-JK">DKI Jakarta</option>
+
+            <option value="ID-JB">Jawa Barat</option>
+
+            <option value="ID-JT">Jawa Tengah</option>
+
+            <option value="ID-JI">Jawa Timur</option>
+
+            <option value="ID-BT">Banten</option>
+
+            <option value="ID-BA">Bali</option>
+
+            <option value="ID-SN">Sulawesi Selatan</option>
+
+            <option value="ID-SU">Sumatera Utara</option>
+
+            <option value="ID-SS">Sumatera Selatan</option>
+
+            <option value="ID-KS">Kalimantan Selatan</option>
+
+          </select>
+
+          <span class="status-geo-lock" id="geo-lock"
+
+            title="Upgrade ke Pro untuk analisis per-Provinsi">××</span>
+
+        </div>
+
+      </div>
+
+
+
+      <div id="ip-entry" class="ip-entry">
+
+        <button class="ip-entry-btn" onclick="openIdeWizard()">
+
+          Tentukan produkmu
+
+          <span class="ip-entry-arrow">×</span>
+
+        </button>
+
+      </div>
+
+
+
+      <!-- COMPARE INPUTS -->
+
+      <div class="compare-inputs" id="compare-inputs">
+
+        <div class="compare-row">
+
+          <div class="compare-input-box">
+
+            <div class="search-prefix">A</div>
+
+            <input type="text" id="kw-a" placeholder="keyword pertama..." autocomplete="off" spellcheck="false" />
+
+          </div>
+
+          <div class="vs-badge">VS</div>
+
+          <div class="compare-input-box">
+
+            <div class="search-prefix">B</div>
+
+            <input type="text" id="kw-b" placeholder="keyword kedua..." autocomplete="off" spellcheck="false" />
+
+          </div>
+
+        </div>
+
+        <div class="compare-btn-row">
+
+          <button id="btn-compare" onclick="doCompare()">Bandingkan Sekarang</button>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- LOADING BAR (inside hero, below search block) -->
+
+      <div id="loading">
+
+        <div class="load-bar-track">
+
+          <div class="load-bar-fill"></div>
+
+        </div>
+
+        <div id="load-text" class="load-text">Menganalisis pasar...</div>
+
+        <div id="load-step" class="load-step"></div>
+
+      </div>
+
+
+
+      <div id="err"></div>
+
+    </div>
+
+  </div><!-- END .wrap (hero) -->
+
+
+
+
+
+  <div class="wrap" style="position:relative; z-index:1;">
+
+    <section class="howto-section" id="how-to-use">
+
+
+
+      <!-- Header -->
+
+      <div class="howto-header">
+
+        <div class="howto-eyebrow">Cara Kerja Sentra</div>
+
+        <h2 class="howto-title">Dari Pertanyaan ke<br><em>Keputusan Bisnis</em></h2>
+
+        <p class="howto-desc">Cukup ketik nama produk yang ingin kamu jual. Sentra akan memindai pasar, menghitung
+
+          peluang, dan memberi tahu kamu langkah terbaik berikutnya.</p>
+
+      </div>
+
+
+
+      <!-- Tab Switcher -->
+
+      <div class="howto-tabs" role="tablist">
+
+        <button class="howto-tab active" onclick="switchTab('steps')" id="tab-steps" role="tab">
+
+          ✦ Cara Pakai
+
+        </button>
+
+        <button class="howto-tab" onclick="switchTab('tips')" id="tab-tips" role="tab">
+
+          Tips Keyword
+
+        </button>
+
+        <button class="howto-tab" onclick="switchTab('metrics')" id="tab-metrics" role="tab">
+
+          Baca Hasil
+
+        </button>
+
+      </div>
+
+
+
+      <!-- ××× PANE 1: Cara Pakai ××× -->
+
+      <div class="howto-pane active" id="pane-steps">
+
+        <div class="howto-steps">
+
+
+
+          <!-- Step 1 -->
+
+          <div class="howto-card">
+
+            <i class="fa-solid fa-magnifying-glass howto-card-icon"></i>
+
+            <div class="howto-step-num"><span>1</span></div>
+
+            <div class="howto-card-title">Ketik Produk yang Ingin Kamu Jual</div>
+
+            <div class="howto-card-body">
+
+              Tulis nama produk atau kategori seperti cara pembeli mencarinya. Semakin spesifik,
+
+              semakin tajam hasil yang kamu dapat.
+
+            </div>
+
+            <div class="howto-example">
+
+              <span class="ex-label">Contoh</span>
+
+              <span>› contoh: sepatu sneakers lokal</span>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- Step 2 -->
+
+          <div class="howto-card">
+
+            <i class="fa-solid fa-chart-line howto-card-icon"></i>
+
+            <div class="howto-step-num"><span>2</span></div>
+
+            <div class="howto-card-title">Sentra Memindai Pasar Untukmu</div>
+
+            <div class="howto-card-body">
+
+              Dalam hitungan detik, Sentra membaca sinyal pasar secara real-time × tren minat, tingkat
+
+              persaingan,
+
+              hingga proyeksi 30 hari ke depan. Semua otomatis.
+
+            </div>
+
+            <div class="howto-example">
+
+              <span class="ex-label">Proses</span>
+
+              <span>› Scanning · Measuring · Projecting</span>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- Step 3 -->
+
+          <div class="howto-card">
+
+            <i class="fa-solid fa-lightbulb howto-card-icon"></i>
+
+            <div class="howto-step-num"><span>3</span></div>
+
+            <div class="howto-card-title">Baca Hasil, Ambil Keputusan</div>
+
+            <div class="howto-card-body">
+
+              Entry Timing Score memberi tahu apakah sekarang waktu yang tepat.
+
+              Rekomendasi bisnis tersaji langsung × tanpa perlu paham statistik atau data.
+
+            </div>
+
+            <div class="howto-example">
+
+              <span class="ex-label">Hasil</span>
+
+              <span>× Score 82/100 — Waktu Terbaik ✓ ×</span>
+
+            </div>
+
+          </div>
+
+
+
+        </div>
+
+      </div>
+
+
+
+      <!-- ××× PANE 2: Tips Keyword ××× -->
+
+      <div class="howto-pane" id="pane-tips">
+
+        <div class="tips-grid">
+
+
+
+          <div class="tip-card">
+
+            <div class="tip-icon-wrap"><i class="fa-solid fa-check"></i></div>
+
+            <div>
+
+              <div class="tip-content-title">Gunakan Kata yang Dicari Pembeli</div>
+
+              <div class="tip-content-body">
+
+                Tulis seperti cara <strong>pembeli mengetik di Google</strong>, bukan nama katalog tokomu.
+
+                Hasil lebih akurat karena data berasal dari pencarian nyata.
+
+              </div>
+
+              <div class="kw-pills">
+
+                <span class="kw-pill good">× sepatu sneakers pria</span>
+
+                <span class="kw-pill good">× kue kering lebaran</span>
+
+                <span class="kw-pill bad">× footwear collection</span>
+
+                <span class="kw-pill bad">× produk premium kami</span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+
+          <div class="tip-card">
+
+            <div class="tip-icon-wrap"><i class="fa-solid fa-layer-group"></i></div>
+
+            <div>
+
+              <div class="tip-content-title">Mulai dari Kategori, Lalu Spesifik</div>
+
+              <div class="tip-content-body">
+
+                Coba dulu kategori luas untuk lihat gambaran besar, lalu persempit ke produk spesifik untuk hasil yang
+
+                lebih tajam dan relevan.
+
+              </div>
+
+              <div class="kw-pills">
+
+                <span class="kw-pill">skincare</span>
+
+                <span>×</span>
+
+                <span class="kw-pill">serum vitamin c</span>
+
+                <span>×</span>
+
+                <span class="kw-pill">serum vitamin c lokal</span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+
+          <div class="tip-card">
+
+            <div class="tip-icon-wrap"><i class="fa-solid fa-code-compare"></i></div>
+
+            <div>
+
+              <div class="tip-content-title">Gunakan Mode Banding untuk Keputusan</div>
+
+              <div class="tip-content-body">
+
+                Tidak yakin mau jual produk A atau B? Aktifkan <strong>Mode Banding</strong> di atas untuk membandingkan
+
+                dua keyword sekaligus dan lihat mana yang lebih menjanjikan.
+
+              </div>
+
+              <div class="kw-pills">
+
+                <span class="kw-pill">baju gamis</span>
+
+                <span style="color:var(--gold); font-size:11px;">vs</span>
+
+                <span class="kw-pill">baju tunik</span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+
+          <div class="tip-card">
+
+            <div class="tip-icon-wrap"><i class="fa-solid fa-calendar"></i></div>
+
+            <div>
+
+              <div class="tip-content-title">Perhatikan Tren Musiman</div>
+
+              <div class="tip-content-body">
+
+                Produk tertentu punya lonjakan di bulan-bulan tertentu. Cek bagian <strong>Pola Musiman</strong> di
+
+                hasil analisis agar kamu bisa persiapkan stok dan iklan tepat waktu.
+
+              </div>
+
+              <div class="kw-pills">
+
+                <span class="kw-pill good">× hampers × puncak Mar×Apr</span>
+
+                <span class="kw-pill good">× baju renang × puncak Jun×Jul</span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+
+        </div>
+
+      </div>
+
+
+
+      <!-- ××× PANE 3: Cara Baca Hasil ××× -->
+
+      <div class="howto-pane" id="pane-metrics">
+
+        <div class="metric-guide-grid">
+
+
+
+          <div class="metric-guide-card mg-green">
+
+            <div class="mg-name">Entry Timing Score</div>
+
+            <div class="mg-simple">Apakah sekarang waktu yang tepat untuk mulai?</div>
+
+            <div class="mg-desc">Skor 0×100. <strong style="color:var(--green)">80+</strong> = langsung gas.
+
+              <strong style="color:var(--amber)">40×79</strong> = boleh coba tapi siapkan strategi. <strong
+
+                style="color:var(--red)">Di bawah 40</strong> = tunggu dulu atau pilih produk lain.
+
+            </div>
+
+            <div class="mg-scale">
+
+              <div class="mg-dot" style="background:var(--red)"></div>
+
+              <div class="mg-dot" style="background:var(--amber)"></div>
+
+              <div class="mg-dot" style="background:var(--amber)"></div>
+
+              <div class="mg-dot" style="background:var(--green)"></div>
+
+              <div class="mg-dot" style="background:var(--green)"></div>
+
+            </div>
+
+          </div>
+
+
+
+          <div class="metric-guide-card mg-gold">
+
+            <div class="mg-name">Growth 7 Hari</div>
+
+            <div class="mg-simple">Tren naik atau turun minggu ini?</div>
+
+            <div class="mg-desc">Angka <strong style="color:var(--green)">positif (+%)</strong> artinya minat pembeli
+
+              sedang naik. Angka <strong style="color:var(--red)">negatif (×%)</strong> artinya minat sedang
+
+              turun.
+
+              Idealnya cari yang di atas +10%.</div>
+
+            <div class="mg-scale">
+
+              <div class="mg-dot" style="background:var(--red)"></div>
+
+              <div class="mg-dot" style="background:var(--text-faint)"></div>
+
+              <div class="mg-dot" style="background:var(--gold)"></div>
+
+              <div class="mg-dot" style="background:var(--green)"></div>
+
+              <div class="mg-dot" style="background:var(--green)"></div>
+
+            </div>
+
+          </div>
+
+
+
+          <div class="metric-guide-card mg-blue">
+
+            <div class="mg-name">Lifecycle Stage</div>
+
+            <div class="mg-simple">Produk ini di fase apa sekarang?</div>
+
+            <div class="mg-desc">
+
+              <strong style="color:var(--blue)">Emerging</strong> = baru naik daun, peluang bagus.<br>
+
+              <strong style="color:var(--gold)">Rising</strong> = sedang tren, masih bisa masuk.<br>
+
+              <strong style="color:var(--amber)">Peak</strong> = di puncak, segera action.<br>
+
+              <strong style="color:var(--red)">Declining</strong> = mulai turun, hati-hati.
+
+            </div>
+
+          </div>
+
+
+
+          <div class="metric-guide-card mg-amber">
+
+            <div class="mg-name">Market Pulse Score</div>
+
+            <div class="mg-simple">Seberapa sehat pasar produk ini?</div>
+
+            <div class="mg-desc">Skor kesehatan pasar secara keseluruhan dari 0×100. <strong
+
+                style="color:var(--green)">65+</strong> artinya pasar aktif dan bergairah. Di bawah 40 artinya pasar
+
+              lesu atau jenuh.</div>
+
+            <div class="mg-scale">
+
+              <div class="mg-dot" style="background:var(--red)"></div>
+
+              <div class="mg-dot" style="background:var(--amber)"></div>
+
+              <div class="mg-dot" style="background:var(--gold)"></div>
+
+              <div class="mg-dot" style="background:var(--green)"></div>
+
+              <div class="mg-dot" style="background:var(--green)"></div>
+
+            </div>
+
+          </div>
+
+
+
+          <div class="metric-guide-card mg-red">
+
+            <div class="mg-name">FOMO Index</div>
+
+            <div class="mg-simple">Ini tren asli atau sekadar hype sesaat?</div>
+
+            <div class="mg-desc">Angka <strong style="color:var(--red)">tinggi (0.7+)</strong> = banyak yang
+
+              ikut-ikutan, bisa cepat turun. Angka <strong style="color:var(--green)">rendah (0×0.3)</strong>
+
+              =
+
+              tren
+
+              organik, lebih stabil untuk bisnis jangka panjang.</div>
+
+          </div>
+
+
+
+          <div class="metric-guide-card mg-purple">
+
+            <div class="mg-name">Saturasi Pasar</div>
+
+            <div class="mg-simple">Seberapa ramai persaingan di produk ini?</div>
+
+            <div class="mg-desc">Angka <strong style="color:var(--green)">rendah</strong> = persaingan sedikit, peluang
+
+              lebih besar. Angka <strong style="color:var(--red)">tinggi (0.7+)</strong> = pasar sudah penuh pesaing,
+
+              butuh diferensiasi yang kuat.</div>
+
+          </div>
+
+
+
+        </div>
+
+      </div>
+
+
+
+      <!-- Bottom CTA -->
+
+      <div class="howto-cta">
+
+        <div class="howto-cta-text">Cek peluang produkmu <em>sekarang juga</em></div>
+
+        <div class="howto-cta-sub">Gratis -- Tanpa daftar -- Hasil dalam 30 detik</div>
+
+        <button class="howto-cta-btn"
+
+          onclick="document.getElementById('kw').focus(); document.getElementById('kw').scrollIntoView({behavior:'smooth', block:'center'})">
+
+          <i class="fa-solid fa-magnifying-glass"></i>
+
+          Mulai Sekarang — Gratis
+
+        </button>
+
+      </div>
+
+
+
+    </section>
+
+  </div><!-- END .wrap (howto) -->
+
+
+
+  <div class="wrap" style="position:relative; z-index:1;">
+
+
+
+    <!-- ────────────────────────────────────────────────── WHITEPAPER CTA SECTION ────────────────────────────────────────────────── -->
+
+    <section class="wp-section" id="whitepaper">
+
+      <div class="wrap">
+
+        <div class="wp-inner">
+
+          <div class="howto-eyebrow" style="margin-bottom:28px;">TRANSPARANSI &amp; METODOLOGI</div>
+
+          <h2 class="wp-heading">
+
+            Kami Tunjukkan Cara Kerjanya
+
+            <br><em class="wp-sub">Sampai ke Rumusnya</em>
+
+          </h2>
+
+          <p class="wp-desc">
+
+            Sentra AI merilis whitepaper terbuka yang menjelaskan metodologi, formula kalkulasi,
+
+            validasi akurasi, dan landasan akademis di balik setiap metrik.
+
+          </p>
+
+          <div class="wp-grid">
+
+            <div class="mc wp-card">
+
+              <div class="wp-card-label">9 Metrik Dijelaskan</div>
+
+            </div>
+
+            <div class="mc wp-card">
+
+              <div class="wp-card-label">Akurasi 78×85%</div>
+
+            </div>
+
+            <div class="mc wp-card">
+
+              <div class="wp-card-label">6 Referensi Akademis</div>
+
+            </div>
+
+          </div>
+
+          <a href="/static/Sentra_AI_Whitepaper.pdf" download class="wp-btn">
+
+            Download Whitepaper × Gratis
+
+          </a>
+
+          <div class="wp-note">PDF -- 14 Halaman -- Bahasa Indonesia</div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ────────────────────────────────────────────────── RADAR PASAR SENTRA (REDESIGN) ────────────────────────────────────────────────── -->
+
+    <section class="radar-section-modern" id="sector-dashboard"
+
+      style="background-color: #0F0F0F; padding: 100px 0; border-top: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden;">
+
+      <div class="wrap" style="position: relative; z-index: 2;">
+
+        <!-- Header -->
+
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-14 gap-6">
+
+          <div>
+
+            <div class="flex items-center gap-3 mb-4">
+
+              <div class="w-2 h-2 rounded-full bg-[#FACC15] shadow-[0_0_12px_rgba(250,204,21,0.8)] animate-pulse"></div>
+
+              <div class="font-mono text-[10px] tracking-[4px] text-zinc-400 uppercase">Live Radar Sektor</div>
+
+            </div>
+
+            <h2 class="font-serif text-4xl md:text-5xl lg:text-7xl text-zinc-100 mb-4 tracking-tight">Radar Pasar Sentra
+
+            </h2>
+
+            <p class="text-zinc-500 font-jakarta text-lg">Pantau peta persaingan dan pelajari <strong
+
+                class="text-[#FACC15] font-bold font-syne uppercase text-xs tracking-widest px-2 ml-1 border border-[#FACC15]/30 rounded-md bg-[#FACC15]/10">Sektor
+
+                Panas</strong> minggu ini.</p>
+
+          </div>
+
+          <div
+
+            class="text-left md:text-right flex flex-col items-start md:items-end bg-zinc-900/40 p-4 border border-zinc-800 rounded-xl backdrop-blur-md">
+
+            <div class="text-[10px] font-mono text-zinc-500 uppercase tracking-[3px] mb-2">Sinkronisasi Data</div>
+
+            <div id="radar-uptime" class="text-zinc-100 font-mono font-bold text-sm tracking-wider">ON-GRID</div>
+
+            <div class="text-[9px] text-[#FACC15]/70 mt-1 font-mono uppercase tracking-widest"><i
+
+                class="fa-solid fa-satellite-dish mr-1"></i> Updated Real-time</div>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- 7-Column Grid Container -->
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4 md:gap-5"
+
+          id="radar-grid-modern">
+
+          <!-- Dynamically populated by app.js -->
+
+        </div>
+
+      </div>
+
+
+
+      <!-- Ambient Glows -->
+
+      <div
+
+        class="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[#FACC15]/5 rounded-full blur-[120px] pointer-events-none transform -translate-y-1/2 translate-x-1/2">
+
+      </div>
+
+      <div
+
+        class="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-brand/5 rounded-full blur-[100px] pointer-events-none transform translate-y-1/2 -translate-x-1/2">
+
+      </div>
+
+      <!-- Subtle Grid Pattern Background -->
+
+      <div class="absolute inset-0 pointer-events-none opacity-20"
+
+        style="background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px); background-size: 40px 40px;">
+
+      </div>
+
+    </section>
+
+
+
+
+
+    <!-- ××× SECTION: TESTIMONI UMKM (CAROUSEL) ××× -->
+
+    <section id="testimoni-section">
+
+      <div class="tc-header">
+
+        <div class="tc-eyebrow">1.200+ UMKM TERBANTU -- 7 SEKTOR BISNIS -- AKURASI 95%+</div>
+
+        <h2 class="tc-title">UMKM Indonesia Sudah<br><em>Merasakan Hasilnya</em></h2>
+
+      </div>
+
+
+
+      <div class="tc-container">
+
+        <div class="tc-viewport" id="tcViewport">
+
+          <div class="tc-track" id="tcTrack">
+
+            <!-- Card 1 -->
+
+            <div class="tc-card">
+
+              <div class="tc-quote-icon"><i class="fa-solid fa-quote-left"></i></div>
+
+              <p class="tc-quote-text">"Sentra AI bantu saya stok barang pas tren naik. Penjualan naik 30% karena tidak
+
+                telat sedia barang!"</p>
+
+              <div class="tc-user">
+
+                <div class="tc-avatar">B</div>
+
+                <div class="tc-info">
+
+                  <div class="tc-name">Budi Santoso</div>
+
+                  <div class="tc-biz">Pemilik Toko Sepatu -- Bandung</div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- Card 2 -->
+
+            <div class="tc-card">
+
+              <div class="tc-quote-icon"><i class="fa-solid fa-quote-left"></i></div>
+
+              <p class="tc-quote-text">"Dulu cuma tebak-tebak produk mana yang laku. Sekarang ada datanya, jadi gak
+
+                pernah salah pilih produk lagi."</p>
+
+              <div class="tc-user">
+
+                <div class="tc-avatar">S</div>
+
+                <div class="tc-info">
+
+                  <div class="tc-name">Siti Aminah</div>
+
+                  <div class="tc-biz">Retail Hijab Online -- Jakarta</div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- Card 3 -->
+
+            <div class="tc-card">
+
+              <div class="tc-quote-icon"><i class="fa-solid fa-quote-left"></i></div>
+
+              <p class="tc-quote-text">"Sangat terbantu buat tahu kapan harus promosi gede-gedean. Gak boncos iklan lagi
+
+                karena tahu timing yang pas."</p>
+
+              <div class="tc-user">
+
+                <div class="tc-avatar">A</div>
+
+                <div class="tc-info">
+
+                  <div class="tc-name">Andi Wijaya</div>
+
+                  <div class="tc-biz">UMKM Kuliner -- Surabaya</div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- Controls -->
+
+        <div class="tc-controls">
+
+          <button class="tc-arrow" id="tcPrev" aria-label="Previous"><i class="fa-solid fa-arrow-left"></i></button>
+
+          <div class="tc-dots" id="tcDots"></div>
+
+          <button class="tc-arrow" id="tcNext" aria-label="Next"><i class="fa-solid fa-arrow-right"></i></button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <div class="wrap" style="position:relative; z-index:1;">
+
+      <!-- ────────────────────────────────────────────────── SECTION: MARKET SNAPSHOT ────────────────────────────────────────────────── -->
+
+      <section class="snapshot-section" id="market-snapshot">
+
+        <div class="snapshot-label">Sentra -- Live Market Scanner</div>
+
+        <div class="snapshot-grid">
+
+          <div class="snapshot-card">
+
+            <div class="snapshot-icon">// Pasar Dipindai</div>
+
+            <div class="snapshot-value" id="snap-count">0</div>
+
+            <div class="snapshot-desc">hari ini -- seluruh sektor</div>
+
+          </div>
+
+          <div class="snapshot-card">
+
+            <div class="snapshot-icon">// Peluang Tertinggi</div>
+
+            <div class="snapshot-value" style="font-size:22px; padding-top:8px;" id="snap-top">Fashion</div>
+
+            <div class="snapshot-desc" id="snap-top-val">+18.4% minggu ini</div>
+
+          </div>
+
+          <div class="snapshot-card">
+
+            <div class="snapshot-icon">// Paling Dinamis</div>
+
+            <div class="snapshot-value" style="font-size:22px; padding-top:8px;" id="snap-vol">Musiman</div>
+
+            <div class="snapshot-desc" id="snap-vol-val">fluktuasi tinggi -- 62%</div>
+
+          </div>
+
+          <div class="snapshot-card">
+
+            <div class="snapshot-icon">// Terakhir Dipindai</div>
+
+            <div class="snapshot-value" style="font-size:18px; padding-top:8px; letter-spacing:0;" id="snap-time">
+
+              ×
+
+            </div>
+
+            <div class="snapshot-desc">diperbarui otomatis setiap 6 jam</div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+
+
+    <div class="wrap" style="position:relative; z-index:1;">
+
+      <!-- ────────────────────────────────────────────────── SINGLE RESULTS ────────────────────────────────────────────────── -->
+
+      <!-- ────────────────────────────────────────────────── MODERNIZED RESULTS SECTION ────────────────────────────────────────────────── -->
+
+      <div id="results" class="hidden mt-12 space-y-8 animate-fade-in">
+
+
+
+        <!-- 1. HEADER & ACTION BAR -->
+
+        <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-brand-dim/20 pb-6 gap-4">
+
+          <div>
+
+            <div class="font-mono text-[10px] tracking-[4px] text-brand-dim uppercase mb-2">// Hasil Analisis Sentra
+
+            </div>
+
+            <h2 id="r-kw" class="font-serif text-5xl md:text-6xl text-brand capitalize leading-none">×</h2>
+
+
+
+            <div class="flex flex-wrap items-center gap-3 mt-4">
+
+              <span id="r-stage"
+
+                class="px-3 py-1 bg-brand/10 border border-brand/20 text-brand text-[11px] font-mono font-bold tracking-widest uppercase rounded">Fase:
+
+                ×</span>
+
+              <span id="r-risk"
+
+                class="px-3 py-1 bg-zinc-800 border border-zinc-700 text-zinc-300 text-[11px] font-mono font-bold tracking-widest uppercase rounded">Resiko:
+
+                ×</span>
+
+              <span class="text-zinc-400 text-[11px] font-mono uppercase tracking-widest ml-1">Trend: <span
+
+                  id="r-growth" class="text-brand">×</span></span>
+
+            </div>
+
+
+
+            <div id="r-ts" class="font-mono text-[10px] text-zinc-500 uppercase mt-4 tracking-widest">×</div>
+
+          </div>
+
+          <div class="flex items-center gap-3">
+
+            <button onclick="shareToWhatsApp()"
+
+              class="flex items-center gap-2 px-5 py-2.5 bg-zinc-900 border border-brand/30 text-brand text-xs font-bold uppercase tracking-wider hover:bg-brand hover:text-dark transition-all duration-300">
+
+              <i class="fa-brands fa-whatsapp text-base"></i> Bagikan
+
+            </button>
+
+            <button id="pdf-btn" onclick="downloadPdf()"
+
+              class="flex items-center gap-2 px-5 py-2.5 bg-brand text-dark text-xs font-bold uppercase tracking-wider hover:bg-brand-bright transition-all duration-300 shadow-[0_0_20px_rgba(212,168,67,0.2)]">
+
+              <i class="fa-solid fa-file-pdf text-base"></i> Simpan Laporan
+
+            </button>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- 2. HERO RECOMMENDATION (ENTRY TIMING) -->
+
+        <div
+
+          class="relative overflow-hidden bg-gradient-to-br from-zinc-900/80 to-dark border border-brand/20 p-8 md:p-10 rounded-2xl">
+
+          <div class="absolute top-0 right-0 w-64 h-64 bg-brand/5 blur-[100px] pointer-events-none"></div>
+
+
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+
+            <!-- Ring Chart Container -->
+
+            <div class="lg:col-span-4 flex flex-col items-center justify-center relative">
+
+              <div class="relative w-48 h-48 md:w-56 md:h-56">
+
+                <!-- SVG Ring -->
+
+                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+
+                  <circle cx="50" cy="50" r="45" fill="none" class="stroke-zinc-800" stroke-width="6" />
+
+                  <circle id="timing-ring-fill" cx="50" cy="50" r="45" fill="none" class="stroke-brand" stroke-width="6"
+
+                    stroke-dasharray="283" stroke-dashoffset="283" stroke-linecap="round" />
+
+                </svg>
+
+                <!-- Score text -->
+
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+
+                  <div id="r-ring-num" class="font-mono text-5xl md:text-6xl font-bold text-brand leading-none">0</div>
+
+                  <div class="font-mono text-[10px] tracking-widest text-zinc-500 mt-1 uppercase">Skor Waktu</div>
+
+                </div>
+
+              </div>
+
+              <!-- Status Badge -->
+
+              <div id="timing-status-badge"
+
+                class="mt-6 px-6 py-2 border border-brand/50 bg-brand/10 text-brand font-syne text-[11px] font-bold tracking-[3px] uppercase">
+
+                MENUNGGU DATA
+
+              </div>
+
+            </div>
+
+
+
+            <!-- Recommendation Text -->
+
+            <div class="lg:col-span-8">
+
+              <div
+
+                class="inline-flex items-center gap-2 px-3 py-1 bg-brand/10 border border-brand/20 rounded-full mb-4">
+
+                <span class="w-1.5 h-1.5 rounded-full bg-brand animate-pulse"></span>
+
+                <span class="text-[10px] font-mono tracking-widest text-brand uppercase">Rekomendasi Utama</span>
+
+              </div>
+
+              <h3 id="summary-verdict"
+
+                class="font-jakarta text-2xl md:text-3xl font-bold text-zinc-100 leading-tight mb-4">
+
+                Menganalisis sinyal pasar untuk menentukan langkah terbaik...
+
+              </h3>
+
+              <p id="timing-meaning" class="text-zinc-400 text-sm md:text-base leading-relaxed mb-6">
+
+                Sistem kami sedang menghitung risiko dan peluang berdasarkan tren terbaru, kompetisi, dan momentum
+
+                permintaan.
+
+              </p>
+
+
+
+              <!-- Timing Bar Indikator -->
+
+              <div class="space-y-4">
+
+                <div class="flex justify-between text-[9px] font-mono tracking-widest text-zinc-500 uppercase">
+
+                  <span>Resiko Tinggi</span>
+
+                  <span>Waktu Ideal</span>
+
+                  <span>Puncak Tren</span>
+
+                </div>
+
+                <div class="relative h-2 bg-zinc-800 rounded-full overflow-hidden">
+
+                  <div id="timing-bar-gradient"
+
+                    class="absolute inset-0 bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 opacity-30"></div>
+
+                  <div id="timing-pointer"
+
+                    class="absolute top-0 w-2 h-full bg-brand shadow-[0_0_15px_rgba(212,168,67,0.8)] transition-all duration-1000"
+
+                    style="left: 0%"></div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- 3. MARKET HEALTH & KPIs -->
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+          <!-- Market Pulse Score -->
+
+          <div class="lg:col-span-4 bg-zinc-900/50 border border-brand/10 p-6 rounded-xl">
+
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+
+              <div class="flex items-center gap-4">
+
+                <div class="w-12 h-12 flex items-center justify-center bg-brand/10 border border-brand/20 rounded-lg">
+
+                  <i class="fa-solid fa-heart-pulse text-xl text-brand"></i>
+
+                </div>
+
+                <div>
+
+                  <div class="font-syne text-[11px] font-bold tracking-widest text-zinc-400 uppercase">Kesehatan Pasar
+
+                  </div>
+
+                  <div id="r-pulse-condition" class="text-zinc-200 font-bold uppercase tracking-wider">Membaca denyut
+
+                    pasar...</div>
+
+                </div>
+
+              </div>
+
+              <div class="flex-1 max-w-md w-full">
+
+                <div class="flex justify-between mb-2">
+
+                  <span class="text-[10px] font-mono text-zinc-500">Skor Kesehatan</span>
+
+                  <span id="r-pulse" class="text-[10px] font-mono text-brand">0/100</span>
+
+                </div>
+
+                <div class="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+
+                  <div id="r-pulse-fill-bar" class="h-full bg-brand transition-all duration-1000" style="width: 0%">
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- KPI CARDS REDESIGNED -->
+
+          <!-- Antusiasme Pasar (Green) -->
+
+          <div class="kpi-card-themed kpi-green">
+
+            <div class="kpi-icon-header">
+
+              <div class="kpi-icon-box"><i class="fa-solid fa-chart-line"></i></div>
+
+              <div id="mc-mom-tag" class="kpi-badge">×</div>
+
+            </div>
+
+            <div class="kpi-content">
+
+              <div class="kpi-label">Antusiasme Pasar</div>
+
+              <div id="r-mom-val" class="kpi-value">×</div>
+
+              <div id="r-mom-interp" class="kpi-desc">×</div>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- Stabilitas Tren (Blue) -->
+
+          <div class="kpi-card-themed kpi-blue">
+
+            <div class="kpi-icon-header">
+
+              <div class="kpi-icon-box"><i class="fa-solid fa-bolt"></i></div>
+
+              <div id="mc-vol-tag" class="kpi-badge">×</div>
+
+            </div>
+
+            <div class="kpi-content">
+
+              <div class="kpi-label">Stabilitas Tren</div>
+
+              <div id="r-vol-val" class="kpi-value">×</div>
+
+              <div id="r-vol-interp" class="kpi-desc">×</div>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- Skala Hype (Orange) -->
+
+          <div class="kpi-card-themed kpi-orange">
+
+            <div class="kpi-icon-header">
+
+              <div class="kpi-icon-box"><i class="fa-solid fa-fire"></i></div>
+
+              <div id="mc-fomo-tag" class="kpi-badge">×</div>
+
+            </div>
+
+            <div class="kpi-content">
+
+              <div class="kpi-label">Skala Hype (FOMO)</div>
+
+              <div id="r-fomo" class="kpi-value">×</div>
+
+              <div id="r-fomo-interp" class="kpi-desc">×</div>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- Tingkat Persaingan (Purple) -->
+
+          <div class="kpi-card-themed kpi-purple">
+
+            <div class="kpi-icon-header">
+
+              <div class="kpi-icon-box"><i class="fa-solid fa-users"></i></div>
+
+              <div id="mc-sat-tag" class="kpi-badge">×</div>
+
+            </div>
+
+            <div class="kpi-content">
+
+              <div class="kpi-label">Tingkat Persaingan</div>
+
+              <div id="r-sat-val" class="kpi-value">×</div>
+
+              <div id="r-sat-interp" class="kpi-desc">×</div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- 4. TREND CHART AREA -->
+
+        <div class="bg-zinc-900/50 border border-zinc-800 p-6 md:p-8 rounded-2xl">
+
+          <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-8">
+
+            <div>
+
+              <h4 class="font-jakarta font-bold text-lg text-zinc-100">Peta Pergerakan Permintaan</h4>
+
+              <div class="flex items-center gap-2 mt-1">
+
+                <span id="r-trend-range" class="text-xs text-brand/70 font-mono tracking-wider">×</span>
+
+                <span class="text-zinc-600 px-2">--</span>
+
+                <span
+
+                  class="text-[10px] font-mono text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded tracking-widest">REAL-TIME
+
+                  DATA</span>
+
+              </div>
+
+            </div>
+
+            <div class="flex items-center gap-4">
+
+              <div class="hidden md:flex flex-col items-end">
+
+                <span class="text-[9px] font-mono tracking-widest text-zinc-600 uppercase">Prediksi AI 90H</span>
+
+                <span id="r-fc-val" class="text-brand font-mono font-bold">×</span>
+
+              </div>
+
+              <button id="btn-toggle-forecast" onclick="toggleForecast()"
+
+                class="px-4 py-2 border border-brand/20 bg-brand/5 text-[10px] font-syne font-bold tracking-widest text-zinc-400 uppercase hover:text-brand hover:border-brand transition-all">
+
+                TAMPILKAN PREDIKSI AI
+
+              </button>
+
+            </div>
+
+          </div>
+
+
+
+          <div class="h-[300px] md:h-[400px] w-full relative">
+
+            <canvas id="single-chart"></canvas>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- 5. AI STRATEGY & INSIGHTS -->
+
+        <div class="space-y-6">
+
+          <div class="flex items-center gap-4">
+
+            <div class="h-px flex-1 bg-brand-dim/20"></div>
+
+            <h4 class="font-mono text-[11px] font-bold tracking-[6px] text-brand uppercase">Bisik Strategi Sentra AI
+
+            </h4>
+
+            <div class="h-px flex-1 bg-brand-dim/20"></div>
+
+          </div>
+
+
+
+          <div id="ai-insight-section">
+
+            <!-- Trigger State -->
+
+            <div id="ai-trigger-state"
+
+              class="bg-gradient-to-r from-zinc-900/80 to-dark border border-brand/20 p-8 rounded-2xl text-center">
+
+              <div class="inline-flex text-4xl text-brand mb-4 animate-bounce">×</div>
+
+              <h5 class="font-jakarta font-bold text-xl text-zinc-100 mb-2">Buka Strategi Bisnis Kamu Sekarang</h5>
+
+              <p class="text-zinc-500 text-sm max-w-lg mx-auto mb-8">
+
+                Claude 3.5 Sonnet akan merangkum strategi jualan, timing stok, dan teknik marketing khusus untuk produk
+
+                kamu.
+
+              </p>
+
+              <button id="ai-trigger-btn" onclick="triggerAiInsight()"
+
+                class="px-10 py-4 bg-brand text-dark font-syne font-extrabold text-xs tracking-[3px] uppercase hover:bg-brand-bright transition-all shadow-[0_0_40px_rgba(212,168,67,0.15)]">
+
+                Dapatkan Insight Bisnis AI ×
+
+              </button>
+
+            </div>
+
+
+
+            <!-- Loading State -->
+
+            <div id="ai-loading-state"
+
+              class="hidden flex-col items-center justify-center p-12 bg-zinc-900/50 border border-zinc-800 rounded-2xl animate-pulse">
+
+              <div class="w-12 h-12 border-2 border-brand/20 border-t-brand rounded-full animate-spin mb-6"></div>
+
+              <div class="font-mono text-[10px] tracking-widest text-brand animate-pulse uppercase">Claude AI sedang
+
+                berpikir...</div>
+
+            </div>
+
+
+
+            <!-- Result State -->
+
+            <div id="ai-result-state" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+
+              <!-- Market Logic -->
+
+              <div class="bg-zinc-900/30 border border-zinc-800 p-6 rounded-xl hover:border-blue-500/30 transition-all">
+
+                <div
+
+                  class="w-10 h-10 bg-blue-500/10 border border-blue-500/20 text-blue-500 flex items-center justify-center rounded-lg mb-4">
+
+                  <i class="fa-solid fa-eye"></i>
+
+                </div>
+
+                <h6 class="font-jakarta font-bold text-sm text-zinc-100 uppercase tracking-wide mb-3">Analisis Pasar
+
+                </h6>
+
+                <div id="r-ai-pasar" class="text-xs leading-relaxed text-zinc-400 space-y-2">×</div>
+
+              </div>
+
+              <!-- Action Steps -->
+
+              <div
+
+                class="bg-zinc-900/30 border border-zinc-800 p-6 rounded-xl hover:border-green-500/30 transition-all">
+
+                <div
+
+                  class="w-10 h-10 bg-green-500/10 border border-green-500/20 text-green-500 flex items-center justify-center rounded-lg mb-4">
+
+                  <i class="fa-solid fa-list-check"></i>
+
+                </div>
+
+                <h6 class="font-jakarta font-bold text-sm text-zinc-100 uppercase tracking-wide mb-3">Rekomendasi Aksi
+
+                </h6>
+
+                <div id="r-ai-aksi" class="text-xs leading-relaxed text-zinc-400 space-y-2">×</div>
+
+              </div>
+
+              <!-- Timing Strategy -->
+
+              <div class="bg-zinc-900/30 border border-zinc-800 p-6 rounded-xl hover:border-brand/30 transition-all">
+
+                <div
+
+                  class="w-10 h-10 bg-brand/10 border border-brand/20 text-brand flex items-center justify-center rounded-lg mb-4">
+
+                  <i class="fa-solid fa-clock"></i>
+
+                </div>
+
+                <h6 class="font-jakarta font-bold text-sm text-zinc-100 uppercase tracking-wide mb-3">Strategi Waktu
+
+                </h6>
+
+                <div id="r-ai-waktu" class="text-xs leading-relaxed text-zinc-400 space-y-2">×</div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+
+
+        <!-- 5.5 REGIONAL ANALYSIS (HEATMAP) -->
+
+        <div id="regional-section" class="mb-12" style="display: none;">
+
+          <div class="flex items-end justify-between mb-8">
+
+            <div>
+
+              <div class="flex items-center gap-2 mb-2 text-brand font-mono text-[10px] tracking-[4px] uppercase">
+
+                <span class="w-8 h-[1px] bg-brand/30"></span>
+
+                Penyebaran Geografis
+
+              </div>
+
+              <h3 class="text-3xl md:text-4xl font-syne font-bold text-zinc-100 italic">Peta Panas Minat Pasar</h3>
+
+            </div>
+
+            <div class="hidden md:block text-right">
+
+              <div class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-1">Level Analisis</div>
+
+              <div class="text-zinc-300 font-jakarta font-bold">Nasional (Provinsi)</div>
+
+            </div>
+
+          </div>
+
+
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- Main Map Card (Tile Map) -->
+
+            <div
+
+              class="lg:col-span-8 bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-8 overflow-hidden relative group">
+
+              <div id="tile-map-container" class="flex flex-col gap-2 items-center justify-center min-h-[400px]">
+
+                <!-- Tiles will be generated here by map_logic.js or placed static -->
+
+                <!-- Row 1 -->
+
+                <div class="flex gap-2">
+
+                  <div class="province-tile" id="tile-ACE" data-name="Aceh"><span>ACE</span><small>Aceh</small></div>
+
+                  <div class="province-tile" id="tile-SBR" data-name="Sumatera Barat">
+
+                    <span>SBR</span><small>Sumbar</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-RIU" data-name="Riau"><span>RIU</span><small>Riau</small></div>
+
+                  <div class="province-tile" id="tile-KPR" data-name="Kepulauan Riau">
+
+                    <span>KPR</span><small>Kepri</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-KLT" data-name="Kalimantan Utara">
+
+                    <span>KLT</span><small>Kaltara</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-KLU" data-name="Kalimantan Utara">
+
+                    <span>KLU</span><small>Kaltara</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-KTI" data-name="Kalimantan Timur">
+
+                    <span>KTI</span><small>Kaltim</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-SUU" data-name="Sulawesi Utara">
+
+                    <span>SUU</span><small>Sulut</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-MUT" data-name="Maluku Utara"><span>MUT</span><small>Malut</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-PAB" data-name="Papua Barat"><span>PAB</span><small>Pabar</small>
+
+                  </div>
+
+                </div>
+
+                <!-- Row 2 -->
+
+                <div class="flex gap-2">
+
+                  <div class="province-tile" id="tile-SBU" data-name="Sumatera Utara">
+
+                    <span>SBU</span><small>Sumut</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-JAM" data-name="Jambi"><span>JAM</span><small>Jambi</small></div>
+
+                  <div class="province-tile" id="tile-SS" data-name="Sumatera Selatan">
+
+                    <span>SS</span><small>Sumsel</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-BBL" data-name="Bangka Belitung">
+
+                    <span>BBL</span><small>Babel</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-KTB" data-name="Kalimantan Barat">
+
+                    <span>KTB</span><small>Kalbar</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-KTG" data-name="Kalimantan Tengah">
+
+                    <span>KTG</span><small>Kalteng</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-KTS" data-name="Kalimantan Selatan">
+
+                    <span>KTS</span><small>Kalsel</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-SLU" data-name="Sulawesi Tenggara">
+
+                    <span>SLU</span><small>Sultra</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-GRT" data-name="Gorontalo">
+
+                    <span>GRT</span><small>Gorontalo</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-PAP" data-name="Papua"><span>PAP</span><small>Papua</small></div>
+
+                </div>
+
+                <!-- Row 3 -->
+
+                <div class="flex gap-2">
+
+                  <div class="province-tile" id="tile-BKL" data-name="Bengkulu"><span>BKL</span><small>Bengkulu</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-LPG" data-name="Lampung"><span>LPG</span><small>Lampung</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-JKT" data-name="DKI Jakarta">
+
+                    <span>JKT</span><small>Jakarta</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-JBR" data-name="Jawa Barat"><span>JBR</span><small>Jabar</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-KSL" data-name="Kalimantan Selatan">
+
+                    <span>KSL</span><small>Kalsel</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-STG" data-name="Sulawesi Tengah">
+
+                    <span>STG</span><small>Sulteng</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-SGO" data-name="Sulawesi Selatan">
+
+                    <span>SGO</span><small>Sulsel</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-MLD" data-name="Maluku"><span>MLD</span><small>Maluku</small>
+
+                  </div>
+
+                </div>
+
+                <!-- Row 4 -->
+
+                <div class="flex gap-2">
+
+                  <div class="province-tile" id="tile-BTN" data-name="Banten"><span>BTN</span><small>Banten</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-JTG" data-name="Jawa Tengah"><span>JTG</span><small>Jateng</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-DIY" data-name="DI Yogyakarta">
+
+                    <span>DIY</span><small>Yogya</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-JTM" data-name="Jawa Timur"><span>JTM</span><small>Jatim</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-NTB" data-name="Nusa Tenggara Barat">
+
+                    <span>NTB</span><small>NTB</small>
+
+                  </div>
+
+                  <div class="province-tile" id="tile-NTT" data-name="Nusa Tenggara Timur">
+
+                    <span>NTT</span><small>NTT</small>
+
+                  </div>
+
+                </div>
+
+                <!-- Row 5 -->
+
+                <div class="flex gap-2">
+
+                  <div class="province-tile" id="tile-BLI" data-name="Bali"><span>BLI</span><small>Bali</small></div>
+
+                </div>
+
+              </div>
+
+
+
+              <!-- Heatmap Legend -->
+
+              <div class="mt-8 flex items-center justify-center gap-6 border-t border-zinc-800/50 pt-6">
+
+                <div class="flex items-center gap-2">
+
+                  <div class="w-3 h-3 rounded bg-[#1a1a1a] border border-zinc-800"></div>
+
+                  <span class="text-[10px] text-zinc-500 font-mono">Tidak ada data</span>
+
+                </div>
+
+                <div class="flex items-center gap-2">
+
+                  <div class="w-3 h-3 rounded bg-[#2a2a2a] shadow-[0_0_5px_rgba(42,42,42,0.5)]"></div>
+
+                  <span class="text-[10px] text-zinc-500 font-mono">Rendah</span>
+
+                </div>
+
+                <div class="flex items-center gap-2">
+
+                  <div class="w-3 h-3 rounded bg-[#7a5c00] shadow-[0_0_5px_rgba(122,92,0,0.5)]"></div>
+
+                  <span class="text-[10px] text-zinc-500 font-mono">Sedang</span>
+
+                </div>
+
+                <div class="flex items-center gap-2">
+
+                  <div class="w-3 h-3 rounded bg-[#d4a017] shadow-[0_0_8px_rgba(212,160,23,0.5)]"></div>
+
+                  <span class="text-[10px] text-zinc-500 font-mono">Tinggi</span>
+
+                </div>
+
+                <div class="flex items-center gap-2">
+
+                  <div class="w-3 h-3 rounded bg-[#FFD700] shadow-[0_0_12px_rgba(255,215,0,0.6)]"></div>
+
+                  <span class="text-[10px] text-zinc-500 font-mono">Tertinggi</span>
+
+                </div>
+
+              </div>
+
+
+
+              <!-- Map Map Shimmer Loader -->
+
+              <div id="map-loader"
+
+                class="absolute inset-0 z-[1001] bg-zinc-900/90 flex flex-col items-center justify-center">
+
+                <div class="w-12 h-12 border-2 border-brand/20 border-t-brand rounded-full animate-spin mb-4"></div>
+
+                <div class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest animate-pulse">Menghubungkan
+
+                  Satelit...</div>
+
+              </div>
+
+            </div>
+
+
+
+            <!-- Local AI Insight Card -->
+
+            <div class="lg:col-span-4 flex flex-col gap-6">
+
+              <div
+
+                class="flex-1 bg-zinc-900/60 border border-zinc-800/50 p-8 rounded-2xl relative overflow-hidden flex flex-col">
+
+                <div class="absolute top-0 right-0 w-32 h-32 bg-brand/5 blur-3xl rounded-full -mr-16 -mt-16"></div>
+
+
+
+                <div class="flex items-center gap-3 mb-6">
+
+                  <div
+
+                    class="w-10 h-10 rounded-xl bg-brand/10 border border-brand/20 flex items-center justify-center text-brand">
+
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+
+                        d="M13 10V3L4 14h7v7l9-11h-7z" />
+
+                    </svg>
+
+                  </div>
+
+                  <div>
+
+                    <h6 class="text-zinc-100 font-jakarta font-bold">Strategi Lokal</h6>
+
+                    <p class="text-[10px] text-zinc-500 font-mono uppercase tracking-wider">AI RECOMMENDATION</p>
+
+                  </div>
+
+                </div>
+
+
+
+                <div id="r-local-insight" class="text-zinc-400 text-sm leading-relaxed font-jakarta">
+
+                  Menganalisis data regional untuk memberikan strategi pemasaran yang tepat sasaran...
+
+                </div>
+
+
+
+                <div class="mt-auto pt-6 border-t border-zinc-800/50 flex items-center justify-between">
+
+                  <div id="top-regions-list" class="flex flex-col gap-4 mt-6">
+
+                    <!-- Rankings generated dynamically -->
+
+                    <div class="flex items-center justify-center py-10 opacity-30 italic text-[10px]">
+
+                      Menunggu Data Satelit...
+
+                    </div>
+
+                  </div>
+
+                  <div class="mt-6 pt-6 border-t border-zinc-800/50 flex items-center justify-between">
+
+                    <div class="text-[9px] font-mono text-zinc-500 uppercase tracking-widest italic">Live Geo-Ranking
+
+                    </div>
+
+                    <div class="text-[9px] font-mono text-brand uppercase tracking-widest font-bold">SENTRA ANALYTICS
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+
+              <div class="bg-zinc-900/30 border border-zinc-800/30 p-6 rounded-2xl">
+
+                <h6 class="text-zinc-400 text-[10px] font-mono uppercase tracking-[2px] mb-4">Tips Ekspansi</h6>
+
+                <ul class="space-y-3">
+
+                  <li class="flex items-start gap-3">
+
+                    <div class="w-1.5 h-1.5 rounded-full bg-brand mt-1.5"></div>
+
+                    <p class="text-[11px] text-zinc-500 leading-snug">Fokuskan stok pada wilayah berwarna merah (High
+
+                      Interest).</p>
+
+                  </li>
+
+                  <li class="flex items-start gap-3">
+
+                    <div class="w-1.5 h-1.5 rounded-full bg-yellow-500 mt-1.5"></div>
+
+                    <p class="text-[11px] text-zinc-500 leading-snug">Gunakan bahasa daerah dalam iklan di wilayah
+
+                      panas.</p>
+
+                  </li>
+
+                </ul>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- 5.6 REGIONAL BREAKDOWN (CHART & RANK) -->
+
+        <div id="regional-breakdown-section" class="mb-12" style="display: none;">
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+
+
+            <!-- Chart Column -->
+
+            <div
+
+              class="lg:col-span-8 bg-zinc-900/60 border border-zinc-800/50 p-8 rounded-2xl relative overflow-hidden">
+
+              <div class="flex items-center justify-between mb-8">
+
+                <div>
+
+                  <h5 class="font-jakarta font-bold text-lg text-zinc-100 mb-1">Peta Minat Regional</h5>
+
+                  <p class="text-xs text-zinc-500">Persentase minat per provinsi berdasarkan volume pencarian (0-100)
+
+                  </p>
+
+                </div>
+
+                <div id="r-top-province-badge"
+
+                  class="px-3 py-1 bg-brand/10 border border-brand/20 text-brand text-[10px] font-mono font-bold uppercase tracking-wider rounded-lg">
+
+                  TOP: —
+
+                </div>
+
+              </div>
+
+
+
+              <!-- Chart Canvas -->
+
+              <div class="relative h-[480px]">
+
+                <canvas id="regional-bar-chart"></canvas>
+
+              </div>
+
+
+
+              <!-- Summary Sentence -->
+
+              <div class="mt-8 p-4 bg-dark/40 border-l-2 border-brand rounded-r-lg">
+
+                <p id="r-regional-summary" class="text-sm text-zinc-400 font-jakarta italic">
+
+                  Menghitung persebaran minat terjauh...
+
+                </p>
+
+              </div>
+
+            </div>
+
+
+
+            <!-- Ranking Column -->
+
+            <div class="lg:col-span-4 space-y-6">
+
+              <!-- Top 3 Medals -->
+
+              <div
+
+                class="bg-gradient-to-br from-zinc-900 to-black border border-brand/20 p-6 rounded-2xl shadow-xl flex flex-col h-full">
+
+                <h6 class="text-zinc-500 font-mono text-[9px] tracking-[3px] uppercase mb-6">Papan Peringkat (Top 3)
+
+                </h6>
+
+                <div id="r-top-3-medals" class="space-y-5">
+
+                  <!-- Shimmer -->
+
+                  <div class="flex items-center gap-4 animate-pulse">
+
+                    <div class="w-10 h-10 rounded-xl bg-zinc-800"></div>
+
+                    <div class="flex-1 space-y-2">
+
+                      <div class="h-3 bg-zinc-800 rounded w-1/2"></div>
+
+                      <div class="h-2 bg-zinc-800 rounded w-1/3"></div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+
+                <div class="mt-8 pt-8 border-t border-zinc-800/50">
+
+                  <h6 class="text-zinc-500 font-mono text-[9px] tracking-[3px] uppercase mb-6">Wilayah Potensial Lainnya
+
+                  </h6>
+
+                  <div id="r-other-regions-grid" class="grid grid-cols-1 gap-y-3">
+
+                    <!-- Populated by JS -->
+
+                    <div class="flex justify-between items-center opacity-30">
+
+                      <div class="h-2 bg-zinc-800 rounded w-1/2"></div>
+
+                      <div class="h-2 bg-zinc-800 rounded w-10"></div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+
+          </div>
+
+        </div>
+
+
+
+        <!-- 6. SEASONALITY & NEWS -->
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+          <!-- Seasonality -->
+
+          <div class="lg:col-span-8 bg-zinc-900/50 border border-zinc-800 p-6 rounded-2xl flex flex-col h-full">
+
+            <div class="flex justify-between items-center mb-6 shrink-0">
+
+              <h5 class="font-jakarta font-bold text-zinc-100">Bulan Paling Ramai</h5>
+
+              <div id="r-season-badge"
+
+                class="px-3 py-1 bg-brand/10 border border-brand/20 text-brand text-[8px] font-mono tracking-widest uppercase">
+
+                Puncak: —</div>
+
+            </div>
+
+            <div id="r-months" class="grid grid-cols-6 md:grid-cols-6 gap-3 mb-6 flex-1 min-h-[160px]"></div>
+
+            <div
+
+              class="flex items-center gap-6 text-[8px] font-mono tracking-widest text-zinc-600 uppercase mt-auto shrink-0 pt-2 border-t border-zinc-800/30">
+
+              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-sm bg-brand"></span> Panen</span>
+
+              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-sm bg-brand/30"></span> Normal</span>
+
+              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-sm bg-zinc-800"></span> Sepi</span>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- Latest News -->
+
+          <div class="lg:col-span-4 bg-zinc-900/50 border border-zinc-800 p-6 rounded-2xl">
+
+            <h5 class="font-jakarta font-bold text-zinc-100 mb-6 flex items-center gap-2">
+
+              <i class="fa-solid fa-newspaper text-zinc-600 text-sm"></i> Berita Terkait
+
+            </h5>
+
+            <div id="summary-news-list" class="space-y-4">
+
+              <!-- populated by JS -->
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+      </div><!-- END RESULTS -->
+
+
+
+      <!-- TECHNICAL ANALYSIS SECTION (HIDDEN BY DEFAULT) -->
+
+      <div class="tech-toggle-card" id="tech-toggle-card" onclick="toggleTechnicalSection()" style="display:none;">
+
+        <div class="tech-toggle-left">
+
+          <div class="tech-toggle-title">Analisis Teknikal Lengkap</div>
+
+          <div class="tech-toggle-subtitle">Untuk pengguna yang ingin memahami data di balik analisis ini</div>
+
+        </div>
+
+        <button type="button" class="tech-toggle-btn" id="tech-toggle-btn" aria-expanded="false">
+
+          Lihat Analisis Teknikal Lengkap ×
+
+        </button>
+
+      </div>
+
+
+
+      <div id="tech-section" class="tech-section" style="display:none;">
+
+
+
+      </div>
+
+
+
+      <!-- ────────────────────────────────────────────────── COMPARE RESULTS ────────────────────────────────────────────────── -->
+
+      <div id="compare-results">
+
+        <!-- Header -->
+
+        <div class="cmp-header">
+
+          <div class="cmp-vs-title">
+
+            <span class="kw-a" id="cmp-kw-a"></span>
+
+            <span class="kw-vs">vs</span>
+
+            <span class="kw-b" id="cmp-kw-b"></span>
+
+          </div>
+
+          <div class="cmp-ts" id="cmp-ts"></div>
+
+        </div>
+
+
+
+        <!-- Winner Banner -->
+
+        <div class="winner-banner">
+
+          <div class="winner-label">Pemenang Keseluruhan</div>
+
+          <div class="winner-name" id="cmp-winner"></div>
+
+          <div class="winner-score" id="cmp-winner-score"></div>
+
+        </div>
+
+
+
+        <!-- Comparison Table -->
+
+        <table class="cmp-table">
+
+          <thead>
+
+            <tr>
+
+              <th>Metrik</th>
+
+              <th id="cmp-th-a" class="col-a">Keyword A</th>
+
+              <th id="cmp-th-b" class="col-b">Keyword B</th>
+
+              <th>Unggul</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody id="cmp-tbody"></tbody>
+
+        </table>
+
+
+
+        <!-- Chart -->
+
+        <div class="chart-card">
+
+          <div class="mc-lbl">Tren Minat × 3 Bulan Terakhir</div>
+
+          <div class="chart-wrap">
+
+            <canvas id="cmp-chart"></canvas>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- AI Insight -->
+
+        <div class="ai-card">
+
+          <div class="ai-head">
+
+            <div class="ai-icon">×</div>
+
+            <div class="ai-title">Analisis Perbandingan oleh Sentra</div>
+
+          </div>
+
+          <div id="cmp-ai" class="ai-body"></div>
+
+        </div>
+
+      </div>
+
+    </div><!-- end .wrap (results) -->
+
+
+
+  </div><!-- /wrap -->
+
+
+
+
+
+  <!-- ────────────────────────────────────────────────── PRICING SECTION ────────────────────────────────────────────────── -->
+
+  <div class="wrap">
+
+    <section class="pricing-section" id="pricing">
+
+      <div class="pricing-head">
+
+        <div class="pricing-title">Mulai Gratis,<br>Upgrade Kalau Butuh Lebih</div>
+
+        <div class="pricing-sub">Tidak ada kartu kredit. Tidak ada komitmen.</div>
+
+      </div>
+
+      <div class="pricing-grid">
+
+
+
+        <!-- FREE -->
+
+        <div class="pricing-card">
+
+          <div class="pricing-plan">Free</div>
+
+          <div class="pricing-price">Rp 0</div>
+
+          <div class="pricing-price-sub">Selamanya gratis</div>
+
+          <ul class="pricing-features">
+
+            <li>5 riset pasar per hari</li>
+
+            <li>Cakupan seluruh Indonesia</li>
+
+            <li>Analisis tren, momentum &amp; risiko</li>
+
+            <li>Rekomendasi bisnis otomatis</li>
+
+            <li>Radar pasar 7 sektor</li>
+
+            <li class="locked">Analisis minat per-provinsi</li>
+
+            <li class="locked">Ekspor laporan bisnis PDF</li>
+
+            <li class="locked">AI Marketing Kit</li>
+
+          </ul>
+
+          <button class="pricing-cta" disabled>Paket Aktif</button>
+
+        </div>
+
+
+
+        <!-- PRO -->
+
+        <div class="pricing-card pro-card">
+
+          <div class="pricing-plan">Pro</div>
+
+          <div class="pricing-price">Rp 49rb</div>
+
+          <div class="pricing-price-sub">per bulan</div>
+
+          <ul class="pricing-features">
+
+            <li>Analisis tak terbatas</li>
+
+            <li>Lokasi per-Provinsi (10 provinsi)</li>
+
+            <li>Semua metrik + Forecast 30 Hari</li>
+
+            <li>AI Insight Premium (3 Card)</li>
+
+            <li>Sektor Dashboard</li>
+
+            <li>Analisis Lokasi Provinsi</li>
+
+            <li>Download Laporan PDF</li>
+
+            <li>AI Marketing Kit <em style="font-size:10px;color:var(--gold-dim)">(segera)</em></li>
+
+          </ul>
+
+          <button class="pricing-cta gold-cta" onclick="showUpgradeModal()">Aktifkan Akses Penuh</button>
+
+        </div>
+
+
+
+      </div>
+
+    </section>
+
+  </div>
+
+
+
+  <footer>Sentra v2.0 &mdash; Market Intelligence untuk UMKM Indonesia</footer>
+
+
+
+  <!-- ────────────────────────────────────────────────── UPGRADE MODAL ────────────────────────────────────────────────── -->
+
+  <div class="modal-overlay" id="upgrade-modal" onclick="handleModalOverlayClick(event)">
+
+    <div class="modal-box">
+
+      <button class="modal-close" onclick="closeUpgradeModal()">×</button>
+
+      <div class="modal-icon">&#9670;</div>
+
+      <div class="modal-title" id="modal-title">Buka Akses Penuh Sentra</div>
+
+      <div class="modal-desc" id="modal-desc">
+
+        Kamu sudah menggunakan 5 riset hari ini.<br>
+
+        Upgrade ke <strong>Pro</strong> untuk riset tanpa batas, analisis per-provinsi, dan ekspor laporan bisnis.
+
+      </div>
+
+      <button class="modal-cta">Upgrade Sekarang &mdash; Rp 49rb/bln</button>
+
+      <span class="modal-later" onclick="closeUpgradeModal()">Nanti saja</span>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- DETAIL ANALYSIS MODAL -->
+
+  <div id="detail-overlay" onclick="closeDetailPanel()" style="
+
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,0.75);
+
+    z-index:9000;
+
+    backdrop-filter:blur(4px);
+
+  "></div>
+
+
+
+  <!-- DETAIL PANEL -->
+  <div id="detail-panel" style="
+    display:none;
+    position:fixed;
+    top:0;
+    right:0;
+    width:min(520px, 100vw);
+    height:100vh;
+    background:#0D0D0B;
+    border-left:1px solid rgba(212,168,67,0.2);
+    z-index:9001;
+    overflow-y:auto;
+    padding:32px 28px 60px;
+  ">
+    <div style="
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      margin-bottom:32px;
+      padding-bottom:20px;
+      border-bottom:1px solid rgba(212,168,67,0.15);
+    ">
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:8px;">Market Intelligence</div>
+        <h2 id="detail-title" style="font-size:24px;color:#fff;font-weight:700;letter-spacing:-0.5px;margin:0;">Keyword</h2>
+      </div>
+      <button onclick="closeDetailPanel()" style="background:none;border:none;color:#555;cursor:pointer;font-size:24px;">×</button>
+    </div>
+    <div id="detail-metrics-container"></div>
+  </div>
+
+  <div id="auth-overlay" onclick="closeAuthModal()"></div>
+  <div id="auth-modal" onclick="event.stopPropagation()">
+    <div id="auth-modal-inner"></div>
+  </div>
+
+  <div id="profile-dropdown" class="profile-dropdown">
+    <div id="profile-dropdown-inner"></div>
+  </div>
+
+  <script src="/static/map_logic.js"></script>
+  <script src="/static/app.js?v=7"></script>
+
+  <div id="ip-overlay" onclick="closeIdeWizard()">
+    <div id="ip-modal" onclick="event.stopPropagation()"><div id="ip-modal-inner"></div></div>
+  </div>
+  <div id="radar-overlay" onclick="closeRadarPanel()"></div>
+  <div id="radar-float-panel"></div>
+
+  <button id="scrollTopBtn" class="scroll-to-top" type="button"><i class="fa-solid fa-arrow-up"></i></button>
+
+</body>
+</html>
