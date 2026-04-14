@@ -14,7 +14,7 @@ setTimeout(() => {
       el.style.visibility = 'visible';
     });
   }
-}, 3000);
+}, 6000);
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
 const STEPS = [
@@ -103,6 +103,7 @@ function startSplashScreen() {
 
   setTimeout(() => {
     clearInterval(textInterval);
+
     const tl = gsap.timeline({
       onComplete: () => {
         const splashEl = document.getElementById('splash-screen');
@@ -125,7 +126,7 @@ function startSplashScreen() {
 
     tl.to('#splash-screen', { duration: 0.8, opacity: 0, ease: 'power2.inOut' });
     tl.to(SPLASH_TARGETS, { duration: 0.8, opacity: 1, y: 0, stagger: 0.1, ease: 'power2.out' }, "-=0.5");
-  }, 2500);
+  }, 1200);
 }
 
 startSplashScreen();
