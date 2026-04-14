@@ -1,4 +1,22 @@
-// Sentra AI -------------------------------- Main Application Script
+// Sentra AI - Main Application Script
+// --- EMERGENCY VISIBILITY FALLBACK (3s) ---
+// If splash-screen or animations get stuck on Vercel/Production
+setTimeout(() => {
+  const splash = document.getElementById('splash-screen');
+  if (splash && splash.style.opacity !== '0' && splash.style.display !== 'none') {
+    console.warn("[SENTRA] Emergency reveal triggered: Splash screen was stuck.");
+    splash.style.transition = 'opacity 0.5s ease';
+    splash.style.opacity = '0';
+    setTimeout(() => splash.style.display = 'none', 500);
+    document.body.style.overflow = 'auto';
+    // Force reveal hidden sections
+    document.querySelectorAll('.animate-fade-in, section, #sector-dashboard, .radar-section-modern').forEach(el => {
+      el.style.opacity = '1';
+      el.style.visibility = 'visible';
+    });
+  }
+}, 3000);
+
 // cleaned: extracted from index.html inline <script> block
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sep", "Okt", "Nov", "Des"];
