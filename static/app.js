@@ -9,9 +9,21 @@ setTimeout(() => {
     splash.style.opacity = '0';
     setTimeout(() => splash.style.display = 'none', 500);
     document.body.style.overflow = 'auto';
-    document.querySelectorAll('.animate-fade-in, section, #sector-dashboard, .radar-section-modern').forEach(el => {
+    // Force reveal hidden sections and all possible GSAP targets
+    const selectors = [
+      '.animate-fade-in', 'section', 'header', '.hero', 
+      '.howto-section', '.radar-section', '.wp-section', 
+      '.social-proof-section', '#market-snapshot', '.pricing-section',
+      '#results', '#compare-results', '.sector-card-modern', 
+      '.radar-card-premium', '.ai-insight-card', '.pulse-card',
+      '.snapshot-grid', '.sp-grid', '.radar-grid'
+    ].join(', ');
+    
+    document.querySelectorAll(selectors).forEach(el => {
       el.style.opacity = '1';
       el.style.visibility = 'visible';
+      el.style.transform = 'none';
+      el.style.filter = 'none';
     });
   }
 }, 6000);
