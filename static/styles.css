@@ -1997,12 +1997,7 @@
     }
 
     /* Seasonality Grid */
-    #r-months {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 4px;
-      margin-bottom: 12px;
-    }
+    /* Sector grid override removed */
 
     #r-months .chip {
       aspect-ratio: 1;
@@ -9019,9 +9014,18 @@
       max-width: 100% !important;
       margin: 40px auto !important;
       display: grid !important;
-      grid-template-columns: repeat(7, 1fr);
       opacity: 1 !important;
       visibility: visible !important;
+    }
+
+    /* Dynamic Hover Glow using --accent variable from JS */
+    .radar-card-premium:hover {
+      border-color: var(--accent) !important;
+      box-shadow: 0 10px 40px -10px var(--accent) !important;
+      background: rgba(0, 0, 0, 0.8) !important;
+    }
+    .radar-card-premium:hover h3 {
+      color: var(--accent) !important;
     }
 
     /* Reset side-by-side header if any */

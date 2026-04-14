@@ -1,4 +1,4 @@
-// Sentra AI â€” Main Application Script
+// Sentra AI -------------------------------- Main Application Script
 // cleaned: extracted from index.html inline <script> block
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sep", "Okt", "Nov", "Des"];
@@ -33,13 +33,13 @@ function unlockScroll() {
 let trendChart = null;
 let regionalChart = null;
 
-// â”€ AUTO-GENERATE GUEST ID â”€
+// -------------------------------- AUTO-GENERATE GUEST ID --------------------------------
 if (!localStorage.getItem('sentra_uid')) {
   const guestId = 'guest_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
   localStorage.setItem('sentra_uid', guestId);
 }
 
-// â”€ Monetization state â”€
+// -------------------------------- Monetization state --------------------------------
 const userState = {
   userId: localStorage.getItem('sentra_uid'),
   token: null,
@@ -56,7 +56,7 @@ let selectedModalTier = null;
 let lastAnalysisResult = null; // for PDF download
 let _aiInsightGenerated = false; // flag: sudah di-generate untuk keyword ini?
 
-/* â”€â”€ AUTH HELPERS â”€â”€ */
+/* ---------------------------------------------------------------- AUTH HELPERS ---------------------------------------------------------------- */
 function getAuthHeaders() {
   const headers = { 'Content-Type': 'application/json' };
   if (userState.token) {
@@ -65,7 +65,7 @@ function getAuthHeaders() {
   return headers;
 }
 
-/* â”€â”€ SPLASH SCREEN LOGIC â”€â”€ */
+/* ---------------------------------------------------------------- SPLASH SCREEN LOGIC ---------------------------------------------------------------- */
 
 const loadingTexts = [
   "Sentra Initializing...",
@@ -81,7 +81,7 @@ const loadingTexts = [
 // agar tidak terjebak opacity:0 jika GSAP gagal animate
 const SPLASH_TARGETS = 'header, .hero, .howto-section, .pricing-section';
 
-// Set initial hidden state â€” hanya untuk above-fold elements
+// Set initial hidden state -------------------------------- hanya untuk above-fold elements
 gsap.set(SPLASH_TARGETS, { opacity: 0, y: 30 });
 
 function startSplashScreen() {
@@ -141,7 +141,7 @@ function startSplashScreen() {
 
 startSplashScreen();
 
-/* â”€â”€ USER STATUS / QUOTA â”€â”€ */
+/* ---------------------------------------------------------------- USER STATUS / QUOTA ---------------------------------------------------------------- */
 async function fetchUserStatus() {
   try {
     const res = await fetch('/api/user-status', {
@@ -167,7 +167,7 @@ function updateQuotaUI(meta) {
 
   const isPro = userState.tier === 'pro';
 
-  // Status bar â€” show for both tiers but hide quota details for Pro
+  // Status bar -------------------------------- show for both tiers but hide quota details for Pro
   const statusBar = document.getElementById('status-bar');
   const text = document.getElementById('quota-text');
   const dots = document.getElementById('quota-dots');
@@ -188,28 +188,28 @@ function updateQuotaUI(meta) {
     }
     if (upgradeBtn) upgradeBtn.style.display = '';
   } else if (isPro && text) {
-    text.textContent = 'Pro — Akses Penuh';
+    text.textContent = 'Pro ------------ Akses Penuh';
     dots.innerHTML = '';
     if (upgradeBtn) upgradeBtn.style.display = 'none';
   }
 
-  // Geo dropdown â€” unlock for Pro
+  // Geo dropdown -------------------------------- unlock for Pro
   const geoSelect = document.getElementById('geo-select');
   const geoLock = document.getElementById('geo-lock');
   if (geoSelect) geoSelect.disabled = !isPro;
   if (geoLock) geoLock.style.display = isPro ? 'none' : '';
 
-  // PDF button â€” unlock for Pro
+  // PDF button -------------------------------- unlock for Pro
   const pdfBtn = document.getElementById('pdf-btn');
   if (pdfBtn) {
     pdfBtn.disabled = !isPro;
     pdfBtn.innerHTML = isPro
       ? 'Download Laporan PDF'
-      : '<span class="lock-icon">🔒</span>Download Laporan PDF';
+      : '<span class="lock-icon">----------------</span>Download Laporan PDF';
   }
 }
 
-/* ── SUPABASE AUTH CORE ── */
+/* ------------------------ SUPABASE AUTH CORE ------------------------ */
 async function initSupabase() {
   try {
     const res = await fetch('/api/config');
@@ -291,7 +291,7 @@ function _getInitial() {
   return '?';
 }
 
-/* â”€â”€ AUTH MODAL RENDERING â”€â”€ */
+/* ---------------------------------------------------------------- AUTH MODAL RENDERING ---------------------------------------------------------------- */
 function openAuthModal(tab) {
   tab = tab || 'login';
   authMode = tab;
@@ -443,7 +443,7 @@ async function handleRegister() {
   }
 }
 
-/* â”€â”€ PROFILE SETUP (after first register) â”€â”€ */
+/* ---------------------------------------------------------------- PROFILE SETUP (after first register) ---------------------------------------------------------------- */
 function openProfileSetup() {
   var inner = document.getElementById('auth-modal-inner');
   inner.innerHTML =
@@ -472,7 +472,7 @@ async function saveProfileName() {
   setTimeout(function () { openProfilePanel(); }, 300);
 }
 
-/* â”€â”€ PROFILE DROPDOWN â”€â”€ */
+/* ---------------------------------------------------------------- PROFILE DROPDOWN ---------------------------------------------------------------- */
 function openProfileDropdown() {
   renderProfileDropdown();
   document.getElementById('profile-dropdown').classList.add('open');
@@ -500,7 +500,7 @@ function renderProfileDropdown() {
       '<div class="profile-usaha-nama">' + currentProfile.usaha_nama + '</div>' +
       '<div class="profile-usaha-detail">' +
       (currentProfile.usaha_kategori || '') +
-      (currentProfile.usaha_deskripsi ? ' â€” ' + currentProfile.usaha_deskripsi : '') +
+      (currentProfile.usaha_deskripsi ? ' -------------------------------- ' + currentProfile.usaha_deskripsi : '') +
       '</div>' +
       '<button class="profile-usaha-edit" onclick="openUsahaSetup()">Ubah</button>' +
       '</div>';
@@ -540,7 +540,7 @@ document.addEventListener('click', function (e) {
   }
 });
 
-/* â”€â”€ USAHA SETUP MODAL â”€â”€ */
+/* ---------------------------------------------------------------- USAHA SETUP MODAL ---------------------------------------------------------------- */
 let selectedUsahaKategori = null;
 
 function openUsahaSetup() {
@@ -569,7 +569,7 @@ function openUsahaSetup() {
     '<div style="margin-bottom: 32px;">' +
     '<label style="font-family:\'DM Mono\',monospace; font-size:9px; letter-spacing:3px; color:var(--text-faint); display:block; margin-bottom:8px; text-transform:uppercase;">NAMA USAHA</label>' +
     '<div class="usaha-input-wrapper" id="usaha-nama-wrapper">' +
-    '<span style="font-family:\'DM Mono\',monospace; font-size:14px; color:var(--gold); margin-right:10px; flex-shrink:0;">â€º_</span>' +
+    '<span style="font-family:\'DM Mono\',monospace; font-size:14px; color:var(--gold); margin-right:10px; flex-shrink:0;">----------------------------_</span>' +
     '<input type="text" id="usaha-nama-input" placeholder="ketik nama usahamu..." value="' + existingNama.replace(/"/g, '&quot;') + '" autocomplete="off" />' +
     '</div>' +
     '</div>' +
@@ -655,16 +655,16 @@ async function saveUsaha_internal(nama, kategori, deskripsi) {
   openProfileDropdown();
 }
 
-// Initialize on load â€” show login button immediately
+// Initialize on load -------------------------------- show login button immediately
 document.addEventListener('DOMContentLoaded', () => {
   initAuth();
   updateNavAuth();
   initSupabase();
 });
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   SECTION 1 â€” Market Snapshot: Counter Animation
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   SECTION 1 -------------------------------- Market Snapshot: Counter Animation
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- */
 function animateCounter(el, from, to, duration = 1800, suffix = '') {
   let start = null;
   const step = (timestamp) => {
@@ -693,13 +693,13 @@ function initMarketSnapshot() {
   const panelTs = document.getElementById('ai-panel-ts');
   if (panelTs) {
     const now = new Date();
-    panelTs.textContent = `Generated ${now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })} Â· ${now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB`;
+    panelTs.textContent = `Generated ${now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })} ---------- ${now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB`;
   }
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   SECTION 2 â€” Live Market Intelligence Preview Chart
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   SECTION 2 -------------------------------- Live Market Intelligence Preview Chart
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- */
 let intelChartInstance = null;
 
 function initHomepageSections() {
@@ -710,7 +710,7 @@ function initHomepageSections() {
 setTimeout(initHomepageSections, 2600);
 
 
-// â”€â”€ STICKY NAVBAR LOGIC â”€â”€
+// ---------------------------------------------------------------- STICKY NAVBAR LOGIC ----------------------------------------------------------------
 const STICKY_SCROLL_SHOW = 320;
 const STICKY_OFFSET = 80;
 const stickyNav = document.getElementById('sticky-nav');
@@ -779,7 +779,7 @@ document.getElementById('kw').addEventListener('keydown', e => { if (e.key === '
 document.getElementById('kw-a').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('kw-b').focus(); });
 document.getElementById('kw-b').addEventListener('keydown', e => { if (e.key === 'Enter') doCompare(); });
 
-/* â”€â”€ MODE TOGGLE â”€â”€ */
+/* ---------------------------------------------------------------- MODE TOGGLE ---------------------------------------------------------------- */
 function toggleCompareMode() {
   compareMode = !compareMode;
   const toggle = document.getElementById('mode-toggle');
@@ -799,7 +799,7 @@ function toggleCompareMode() {
   document.getElementById('compare-results').style.display = 'none';
 }
 
-/* â”€â”€ LOADING â”€â”€ */
+/* ---------------------------------------------------------------- LOADING ---------------------------------------------------------------- */
 function startSteps(steps) {
   let i = 0;
   const loadText = document.getElementById('load-text');
@@ -824,7 +824,7 @@ function stopSteps() {
 
 function showErr(msg) {
   const el = document.getElementById('err');
-  el.textContent = 'âš  ' + msg; el.style.display = 'block';
+  el.textContent = '------------------------ ' + msg; el.style.display = 'block';
   setTimeout(() => el.style.display = 'none', 7000);
 }
 
@@ -855,7 +855,7 @@ function setLoading(on, isCompare = false) {
   }
 }
 
-/* â”€â”€ SINGLE KEYWORD HELPERS â”€â”€ */
+/* ---------------------------------------------------------------- SINGLE KEYWORD HELPERS ---------------------------------------------------------------- */
 function timingDesc(s) {
   if (s >= 80) return 'Kondisi pasar sangat mendukung. Ini momen ideal untuk memulai atau memperluas bisnis di segmen ini.';
   if (s >= 60) return 'Timing cukup bagus. Mulai persiapan sekarang agar siap saat tren mencapai puncaknya.';
@@ -900,7 +900,7 @@ function renderRing(score) {
   const pointer = document.getElementById('timing-pointer');
 
   if (ringFill) {
-    const circumference = 283; // 2Ï€r (r=45)
+    const circumference = 283; // 2--------------------r (r=45)
     const offset = circumference - (v / 100) * circumference;
     gsap.to(ringFill, { strokeDashoffset: offset, duration: 2, ease: 'elastic.out(1, 0.5)' });
   }
@@ -969,7 +969,7 @@ function renderResults(d) {
   const resultsEl = document.getElementById('results');
   if (!resultsEl) return;
 
-  // Force Reset visibility â€” display MUST be set to block here
+  // Force Reset visibility -------------------------------- display MUST be set to block here
   // because setLoading(true) sets inline style.display = 'none'
   resultsEl.style.display = 'block';
   resultsEl.style.opacity = '1';
@@ -1052,8 +1052,15 @@ function renderResults(d) {
   setT('r-sat-interp', d.saturation_index < 0.4 ? 'Belum banyak saingan di toko sebelah.' : 'Saingan sudah banyak, siapin promo menarik!');
 
   // 4. Recommendation & Verdict
-  setT('summary-verdict', d.entry_timing_label + (d.entry_timing_score >= 70 ? ' â€” Waktu terbaik untuk jualan!' : ''));
-  setT('timing-meaning', d.risk_level + '. ' + (d.entry_timing_score >= 70 ? 'Manfaatkan momentum ini sebelum pasar jenuh.' : 'Pertimbangkan resiko sebelum berinvestasi besar.'));
+  let verdictSuffix = '';
+  if (d.entry_timing_score >= 80) {
+    verdictSuffix = ' ------------ Waktu terbaik untuk jualan!';
+  } else if (d.entry_timing_score >= 60) {
+    verdictSuffix = ' ------------ Siapkan stok sekarang!';
+  }
+  
+  setT('summary-verdict', d.entry_timing_label + verdictSuffix);
+  setT('timing-meaning', d.risk_level + '. ' + (d.entry_timing_score >= 60 ? 'Manfaatkan momentum ini sebelum pasar jenuh.' : 'Pertimbangkan resiko sebelum berinvestasi besar.'));
   setT('timing-status-badge', d.entry_timing_label);
 
   // Score animator
@@ -1098,29 +1105,21 @@ function renderResults(d) {
     monthsEl.innerHTML = '';
     const months = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
     const peaks = d.seasonal_peak_months || [];
-    const actives = d.seasonal_active_months || peaks; // fallback ke peaks jika tidak ada active_months
+    const actives = d.seasonal_active_months || peaks;
     months.forEach((m, idx) => {
       const monthNum = idx + 1;
       const isPeak = peaks.includes(monthNum);
       const isActive = actives.includes(monthNum);
       const div = document.createElement('div');
       
-      let cls, title;
-      if (isPeak) {
-        // Bulan paling ramai — emas terang
-        cls = 'w-full h-full min-h-[60px] text-[11px] font-mono font-bold border transition-all duration-300 bg-brand/25 border-brand text-brand shadow-[0_0_12px_rgba(212,168,67,0.25)] flex items-center justify-center rounded-lg cursor-default';
-        title = 'Bulan puncak';
-      } else if (isActive) {
-        // Di atas rata-rata — emas redup
-        cls = 'w-full h-full min-h-[60px] text-[11px] font-mono font-bold border transition-all duration-300 bg-brand/8 border-brand/30 text-brand/60 flex items-center justify-center rounded-lg cursor-default';
-        title = 'Aktivitas di atas rata-rata';
-      } else {
-        // Sepi — gelap
-        cls = 'w-full h-full min-h-[60px] text-[11px] font-mono font-bold border transition-all duration-300 bg-zinc-800/20 border-zinc-800/50 text-zinc-600 flex items-center justify-center rounded-lg cursor-default';
-        title = 'Aktivitas rendah';
-      }
-      div.className = cls;
-      div.title = title;
+      div.style.cssText = isPeak
+        ? 'background:rgba(212,168,67,0.25);border:1px solid #D4A843;color:#D4A843;box-shadow:0 0 12px rgba(212,168,67,0.25);'
+        : isActive
+        ? 'background:rgba(212,168,67,0.08);border:1px solid rgba(212,168,67,0.3);color:rgba(212,168,67,0.6);'
+        : 'background:rgba(39,39,42,0.2);border:1px solid rgba(39,39,42,0.5);color:#52525b;';
+      
+      div.className = 'flex items-center justify-center rounded-lg font-mono text-xs font-bold cursor-default min-h-[60px]';
+      div.title = isPeak ? 'Bulan puncak' : isActive ? 'Aktivitas di atas rata-rata' : 'Aktivitas rendah';
       div.textContent = m;
       monthsEl.appendChild(div);
     });
@@ -1143,9 +1142,9 @@ function renderResults(d) {
 
 
   setT('r-trend-range', d.raw_trend ? (d.raw_trend.dates.length + ' Hari Terakhir') : '12 Bulan');
-  setT('r-fc-val', d.forecast_30d_avg ? d.forecast_30d_avg.toFixed(1) : 'â€”');
+  setT('r-fc-val', d.forecast_30d_avg ? d.forecast_30d_avg.toFixed(1) : '--------------------------------');
 
-  // Initialize chart â€” fixed: was calling renderSingleChart (undefined), correct name is renderSingleTrendChart
+  // Initialize chart -------------------------------- fixed: was calling renderSingleChart (undefined), correct name is renderSingleTrendChart
   if (typeof renderSingleTrendChart === 'function') {
     renderSingleTrendChart(d);
   }
@@ -1208,7 +1207,7 @@ function renderResults(d) {
   setTimeout(() => resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
 }
 
-// â”€â”€ ANALISIS TEKNIKAL: TOGGLE & DETAIL â”€â”€
+// ---------------------------------------------------------------- ANALISIS TEKNIKAL: TOGGLE & DETAIL ----------------------------------------------------------------
 let _techSectionOpen = false;
 
 function setTechnicalToggleState(isOpen) {
@@ -1226,8 +1225,8 @@ function setTechnicalToggleState(isOpen) {
 
   if (btn) {
     btn.textContent = isOpen
-      ? 'ðŸ“Š Sembunyikan Analisis Teknikal â†‘'
-      : 'ðŸ“Š Lihat Analisis Teknikal Lengkap â†“';
+      ? '---------------------------------- Sembunyikan Analisis Teknikal --------------------------------'
+      : '---------------------------------- Lihat Analisis Teknikal Lengkap --------------------------------';
     btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
   }
 }
@@ -1281,7 +1280,7 @@ function renderTechnicalDetails(d) {
 }
 
 
-/* â”€â”€ SINGLE TREND CHART â”€â”€ */
+/* ---------------------------------------------------------------- SINGLE TREND CHART ---------------------------------------------------------------- */
 let singleChart = null;
 let forecastVisible = false;
 let lastAnalysisData = null; // simpan data terakhir untuk toggle forecast
@@ -1298,7 +1297,7 @@ function renderSingleTrendChart(d) {
     if (monthLabelContainerEmpty) monthLabelContainerEmpty.innerHTML = '';
     const btnEmpty = document.getElementById('btn-toggle-forecast');
     if (btnEmpty) {
-      btnEmpty.textContent = 'â—Ž TAMPILKAN FORECAST 90 HARI';
+      btnEmpty.textContent = '---------------------------- TAMPILKAN FORECAST 90 HARI';
       btnEmpty.classList.remove('active');
     }
     forecastVisible = false;
@@ -1323,7 +1322,7 @@ function renderSingleTrendChart(d) {
   forecastVisible = false;
   const btn = document.getElementById('btn-toggle-forecast');
   if (btn) {
-    btn.textContent = 'â—Ž TAMPILKAN FORECAST 90 HARI';
+    btn.textContent = '---------------------------- TAMPILKAN FORECAST 90 HARI';
     btn.classList.remove('active');
   }
 
@@ -1343,7 +1342,7 @@ function renderSingleTrendChart(d) {
       const dt = new Date(filteredDates[i]);
       monthLabels.push(MONTHS_ID[dt.getMonth()]);
     }
-    if (monthLabels.length > 0) monthLabels[monthLabels.length - 1] += 'â†’';
+    if (monthLabels.length > 0) monthLabels[monthLabels.length - 1] += '--------------------------------';
     monthLabelContainer.innerHTML = monthLabels.map(m => `<span>${m}</span>`).join('');
   }
 
@@ -1351,7 +1350,7 @@ function renderSingleTrendChart(d) {
   if (filteredDates.length > 0) {
     const first = new Date(filteredDates[0]).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
     const last = new Date(filteredDates[filteredDates.length - 1]).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-    document.getElementById('r-trend-range').textContent = `${first} â€“ ${last}`;
+    document.getElementById('r-trend-range').textContent = `${first} -------------------------------- ${last}`;
   }
 
   // Default chart: hanya data historis.
@@ -1428,7 +1427,7 @@ function toggleForecast() {
 
   const btn = document.getElementById('btn-toggle-forecast');
   if (btn) {
-    btn.textContent = forecastVisible ? '✕ SEMBUNYIKAN FORECAST' : '◎ TAMPILKAN FORECAST 90 HARI';
+    btn.textContent = forecastVisible ? '------------ SEMBUNYIKAN FORECAST' : '------------ TAMPILKAN FORECAST 90 HARI';
     btn.classList.toggle('active', forecastVisible);
   }
 
@@ -1473,7 +1472,7 @@ function toggleForecast() {
 }
 
 
-/* ── REGIONAL BAR CHART ── */
+/* ------------------------ REGIONAL BAR CHART ------------------------ */
 let regionalBarChart = null;
 function renderRegionalBarChart(data) {
   const canvas = document.getElementById('regional-bar-chart');
@@ -1526,131 +1525,9 @@ function renderRegionalBarChart(data) {
     });
   }
 }
-function renderSingleTrendChart(d) {
-  const canvas = document.getElementById('single-chart');
-  if (!canvas) return;
-  if (singleChart) { singleChart.destroy(); singleChart = null; }
-
-  const raw = d.raw_trend || null;
-  if (!raw || !Array.isArray(raw.dates) || raw.dates.length === 0) {
-    document.getElementById('r-trend-range').textContent = '';
-    canvas.parentElement.style.display = 'none';
-    const monthLabelContainerEmpty = document.getElementById('chart-month-labels');
-    if (monthLabelContainerEmpty) monthLabelContainerEmpty.innerHTML = '';
-    const btnEmpty = document.getElementById('btn-toggle-forecast');
-    if (btnEmpty) {
-      btnEmpty.textContent = 'TAMPILKAN FORECAST 90 HARI';
-      btnEmpty.classList.remove('active');
-    }
-    forecastVisible = false;
-    return;
-  }
-
-  // Filter tanggal yang masuk akal (tidak lebih dari 14 hari dari sekarang)
-  const today = new Date();
-  const maxDate = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
-  const filteredDates = raw.dates.filter(dt => new Date(dt) <= maxDate);
-  const filteredValues = raw.values.slice(0, filteredDates.length);
-
-  if (filteredDates.length === 0) {
-    document.getElementById('r-trend-range').textContent = '';
-    canvas.parentElement.style.display = 'none';
-    const monthLabelContainerEmpty = document.getElementById('chart-month-labels');
-    if (monthLabelContainerEmpty) monthLabelContainerEmpty.innerHTML = '';
-    return;
-  }
-
-  canvas.parentElement.style.display = 'block';
-  forecastVisible = false;
-  const btn = document.getElementById('btn-toggle-forecast');
-  if (btn) {
-    btn.textContent = 'TAMPILKAN FORECAST 90 HARI';
-    btn.classList.remove('active');
-  }
-
-  const labels = filteredDates.map(dt => {
-    const d = new Date(dt);
-    return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-  });
-
-  // Generate label bulan dinamis untuk sumbu bawah
-  const monthLabelContainer = document.getElementById('chart-month-labels');
-  if (monthLabelContainer && filteredDates.length > 0) {
-    const MONTHS_ID = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
-    const totalPts = filteredDates.length;
-    const step = Math.max(1, Math.floor(totalPts / 5));
-    const monthLabels = [];
-    for (let i = 0; i < totalPts; i += step) {
-      const dt = new Date(filteredDates[i]);
-      monthLabels.push(MONTHS_ID[dt.getMonth()]);
-    }
-    if (monthLabels.length > 0) monthLabels[monthLabels.length - 1] += 'â†’';
-    monthLabelContainer.innerHTML = monthLabels.map(m => `<span>${m}</span>`).join('');
-  }
-
-  // Hitung range dari data historis saja (sebelum forecast ditambahkan)
-  if (filteredDates.length > 0) {
-    const first = new Date(filteredDates[0]).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-    const last = new Date(filteredDates[filteredDates.length - 1]).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-    document.getElementById('r-trend-range').textContent = `${first} â€“ ${last}`;
-  }
-
-  // Default chart: hanya data historis.
-  // Forecast baru ditambahkan saat user klik tombol toggle.
-  const histValues = [...filteredValues]; // copy agar tidak mutate source values
 
 
-  const ctx = canvas.getContext('2d');
-  const grad = ctx.createLinearGradient(0, 0, 0, 400);
-  grad.addColorStop(0, 'rgba(212,168,67,0.15)');
-  grad.addColorStop(1, 'rgba(212,168,67,0)');
-
-  singleChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        label: d.keyword,
-        data: histValues,
-        borderColor: '#D4A843',
-        backgroundColor: grad,
-        borderWidth: 3,
-        pointRadius: 0,
-        pointHoverRadius: 6,
-        pointHoverBackgroundColor: '#0A0A08',
-        pointHoverBorderColor: '#F0C855',
-        pointHoverBorderWidth: 3,
-        tension: 0.4,
-        fill: true
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: 'rgba(10,10,8,0.95)',
-          titleColor: '#D4A843',
-          bodyColor: '#fff',
-          borderColor: 'rgba(212,168,67,0.3)',
-          borderWidth: 1,
-          padding: 12,
-          cornerRadius: 8,
-          displayColors: false,
-          callbacks: { label: c => `Minat: ${c.parsed.y}` }
-        }
-      },
-      scales: {
-        x: { grid: { display: false }, ticks: { color: '#444', font: { family: 'DM Mono', size: 10 }, maxRotation: 0 } },
-        y: { grid: { color: 'rgba(212,168,67,0.05)' }, ticks: { display: false }, beginAtZero: true, max: 110 }
-      }
-    }
-  });
-}
-
-/* ── REGIONAL BREAKDOWN ── */
+/* ------------------------ REGIONAL BREAKDOWN ------------------------ */
 function renderRegionalBreakdown(data) {
   const canvas = document.getElementById('regional-chart');
   if (!canvas || !data.regional_breakdown) return;
@@ -1701,7 +1578,7 @@ function renderRegionalBreakdown(data) {
   // Top 3 Medals
   const medalContainer = document.getElementById('r-top-3-medals');
   if (medalContainer) {
-    const medals = ['🥇', '🥈', '🥉'];
+    const medals = ['----------------', '----------------', '----------------'];
     const medalStyles = [
       'from-brand/20 to-brand/5 border-brand/40',
       'from-zinc-400/20 to-zinc-400/5 border-zinc-400/30',
@@ -1749,7 +1626,7 @@ function renderRegionalBreakdown(data) {
 
 
 
-/* â”€â”€ AI INSIGHT PARSER â€” 3 CARD â”€â”€ */
+/* ---------------------------------------------------------------- AI INSIGHT PARSER -------------------------------- 3 CARD ---------------------------------------------------------------- */
 function parseAiSections(text) {
   // Try to split by numbered sections: "1.", "2.", "3."
   const sectionRegex = /(?:^|\n)\s*\d+\.\s*[^\n]*/g;
@@ -1838,7 +1715,7 @@ function renderSummaryCard(d) {
         `;
   }
 
-  // â”€â”€ METRICS HELPER â”€â”€
+  // ---------------------------------------------------------------- METRICS HELPER ----------------------------------------------------------------
   const getValue = (metricName, value) => {
     switch (metricName) {
       case 'growth': {
@@ -1864,15 +1741,15 @@ function renderSummaryCard(d) {
         let status, label;
         if (m > 0.3) {
           status = 'good';
-          label = 'Tren sedang menguat â†‘';
+          label = 'Tren sedang menguat --------------------------------';
         } else if (m >= -0.3) {
           status = 'warn';
-          label = 'Tren bergerak sideways â†’';
+          label = 'Tren bergerak sideways --------------------------------';
         } else {
           status = 'bad';
-          label = 'Tren sedang melemah â†“';
+          label = 'Tren sedang melemah --------------------------------';
         }
-        const text = (m >= 0 ? 'â–² ' : 'â–¼ ') + Math.abs(m).toFixed(3);
+        const text = (m >= 0 ? '---------------------- ' : '---------------------------- ') + Math.abs(m).toFixed(3);
         return { status, text, label, gauge };
       }
       case 'volatility': {
@@ -1948,11 +1825,11 @@ function renderSummaryCard(d) {
         return { status, text, label, gauge };
       }
       default:
-        return { status: 'neutral', text: 'â€”', label: '', gauge: 0 };
+        return { status: 'neutral', text: '--------------------------------', label: '', gauge: 0 };
     }
   };
 
-  // â”€â”€ BADGE SYSTEM (4 STATES) â”€â”€
+  // ---------------------------------------------------------------- BADGE SYSTEM (4 STATES) ----------------------------------------------------------------
   const badgeEl = document.getElementById('summary-badge');
   const score = d.entry_timing_score || 0;
   let badgeClass = '', badgeText = '';
@@ -1962,7 +1839,7 @@ function renderSummaryCard(d) {
   else { badgeClass = 'bad'; badgeText = 'Tidak Disarankan'; }
   badgeEl.innerHTML = `<div class="summary-badge-item ${badgeClass}">${badgeText}</div>`;
 
-  // â”€â”€ VERDICT TEXT â”€â”€
+  // ---------------------------------------------------------------- VERDICT TEXT ----------------------------------------------------------------
   const verdictEl = document.getElementById('summary-verdict');
   const keyword = d.keyword || '(keyword)';
   let verdictText = '';
@@ -1972,7 +1849,7 @@ function renderSummaryCard(d) {
   else verdictText = `Saat ini <em>bukan waktu terbaik</em> untuk <strong>${keyword}</strong>. Tren sedang turun atau pasar sudah terlalu penuh.`;
   verdictEl.innerHTML = `<p>${verdictText}</p>`;
 
-  // â”€â”€ 6-ITEM METRIC GRID (3-COLUMN) â”€â”€
+  // ---------------------------------------------------------------- 6-ITEM METRIC GRID (3-COLUMN) ----------------------------------------------------------------
   const gridEl = document.getElementById('summary-grid');
   gridEl.innerHTML = '';
 
@@ -2048,7 +1925,7 @@ function renderSummaryCard(d) {
     });
   });
 
-  // â”€â”€ NEWS SECTION (if data exists) â”€â”€
+  // ---------------------------------------------------------------- NEWS SECTION (if data exists) ----------------------------------------------------------------
   if (d.news && Array.isArray(d.news) && d.news.length > 0) {
     const newsSection = document.getElementById('summary-news-section');
     const newsList = document.getElementById('summary-news-list');
@@ -2074,7 +1951,7 @@ function renderSummaryCard(d) {
     document.getElementById('summary-news-section').style.display = 'none';
   }
 
-  // â”€â”€ ACTION HINT (REKOMENDASI) â”€â”€
+  // ---------------------------------------------------------------- ACTION HINT (REKOMENDASI) ----------------------------------------------------------------
   const hintEl = document.getElementById('summary-action-hint');
   let hint = '';
   if (score >= 80) {
@@ -2082,7 +1959,7 @@ function renderSummaryCard(d) {
   } else if (score >= 60) {
     hint = `Mulai persiapkan bisnis sekarang. <strong>Riset kompetitor</strong>, tentukan harga, dan siapkan modal. Jangan tunggu momentum hilang.`;
   } else if (score >= 40) {
-    hint = `Boleh coba dengan modal minimal. <strong>Uji dulu pasar</strong> dengan jumlah kecil sebelum investasi besar. Pantau 2â€“3 minggu ke depan.`;
+    hint = `Boleh coba dengan modal minimal. <strong>Uji dulu pasar</strong> dengan jumlah kecil sebelum investasi besar. Pantau 2--------------------------------3 minggu ke depan.`;
   } else {
     hint = `Sebaiknya <strong>tahan dulu</strong> dan cari peluang lain. Gunakan Mode Banding untuk mencari produk yang lebih menjanjikan.`;
   }
@@ -2100,7 +1977,7 @@ function showAiTriggerState() {
 }
 
 function scrollToAiInsight() {
-  scrollToSection('#ai-card-wrapper'); // SENTRA AUDIT â€” primary CTA helper
+  scrollToSection('#ai-card-wrapper'); // SENTRA AUDIT -------------------------------- primary CTA helper
 }
 
 async function triggerAiInsight() {
@@ -2149,7 +2026,7 @@ async function triggerAiInsight() {
   }
 }
 
-/* â”€â”€ KEYWORD NEWS (Google News RSS via backend) â”€â”€ */
+/* ---------------------------------------------------------------- KEYWORD NEWS (Google News RSS via backend) ---------------------------------------------------------------- */
 async function fetchKeywordNews(keyword) {
   const list = document.getElementById('summary-news-list');
   if (!list) return;
@@ -2175,7 +2052,7 @@ async function fetchKeywordNews(keyword) {
             <div class="absolute left-[-5px] top-0 w-2.5 h-2.5 bg-zinc-800 border border-zinc-700 rounded-full group-hover:bg-brand transition-colors"></div>
             <a href="${item.url}" target="_blank" class="block">
               <div class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-1 group-hover:text-brand transition-colors">
-                ${item.source || 'News'} Â· ${item.time_ago || 'Baru'}
+                ${item.source || 'News'} ---------- ${item.time_ago || 'Baru'}
               </div>
               <div class="text-xs text-zinc-300 line-clamp-2 leading-relaxed group-hover:text-white transition-colors">
                 ${item.title}
@@ -2192,7 +2069,7 @@ async function fetchKeywordNews(keyword) {
   }
 }
 
-/* â”€â”€ SECTOR CATEGORY â”€â”€ */
+/* ---------------------------------------------------------------- SECTOR CATEGORY ---------------------------------------------------------------- */
 const CATEGORY_KEYWORDS = {
   fashion: 'baju wanita',
   beauty: 'skincare',
@@ -2213,7 +2090,7 @@ function analyzeCategory(type) {
   // Fill in search input
   document.getElementById('kw').value = kw;
 
-  // Visual feedback â€” mark card as active
+  // Visual feedback -------------------------------- mark card as active
   document.querySelectorAll('.sector-card').forEach(c => c.classList.remove('loading-sector'));
   const card = document.getElementById('sc-' + type);
   if (card) card.classList.add('loading-sector');
@@ -2226,7 +2103,7 @@ function analyzeCategory(type) {
   }, 400);
 }
 
-/* â”€â”€ COMPARE RENDERING â”€â”€ */
+/* ---------------------------------------------------------------- COMPARE RENDERING ---------------------------------------------------------------- */
 function renderCompareResults(d) {
   // Force reset visibility
   const cmpEl = document.getElementById('compare-results');
@@ -2252,7 +2129,7 @@ function renderCompareResults(d) {
   // Winner banner
   document.getElementById('cmp-winner').textContent = c.winner_overall;
   document.getElementById('cmp-winner-score').textContent =
-    `Skor Gabungan â€” ${a.keyword}: ${c.score_a} Â· ${b.keyword}: ${c.score_b}`;
+    `Skor Gabungan -------------------------------- ${a.keyword}: ${c.score_a} ---------- ${b.keyword}: ${c.score_b}`;
 
   // Build table rows
   const metrics = [
@@ -2263,8 +2140,8 @@ function renderCompareResults(d) {
     { label: 'Entry Timing', va: a.entry_timing_score.toFixed(1), vb: b.entry_timing_score.toFixed(1), winner: c.winner_timing },
     { label: 'FOMO Index', va: a.fomo_index.toFixed(2), vb: b.fomo_index.toFixed(2), winner: c.winner_fomo },
     { label: 'Saturasi', va: a.saturation_index.toFixed(1), vb: b.saturation_index.toFixed(1), winner: c.winner_saturation },
-    { label: 'Fase Lifecycle', va: a.lifecycle_stage, vb: b.lifecycle_stage, winner: 'â€”' },
-    { label: 'Risk Level', va: a.risk_level, vb: b.risk_level, winner: 'â€”' },
+    { label: 'Fase Lifecycle', va: a.lifecycle_stage, vb: b.lifecycle_stage, winner: '--------------------------------' },
+    { label: 'Risk Level', va: a.risk_level, vb: b.risk_level, winner: '--------------------------------' },
   ];
 
   const tbody = document.getElementById('cmp-tbody');
@@ -2289,7 +2166,7 @@ function renderCompareResults(d) {
   const aiEl = document.getElementById('cmp-ai');
   const cleaned = (d.ai_insight || 'Insight tidak tersedia.').replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
   typeWriter(aiEl, cleaned, 6);
-  // cleaned: removed dead code â€” duplicate switchTab() nested inside compare handler (correct global definition exists below)
+  // cleaned: removed dead code -------------------------------- duplicate switchTab() nested inside compare handler (correct global definition exists below)
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -2418,193 +2295,17 @@ function renderTrendChart(trendData, labelA, labelB) {
   });
 }
 
-async function doSearch() {
-  const kw = document.getElementById('kw').value.trim();
-  const geo = document.getElementById('geo-select')?.value || 'ID';
-  if (!kw) { showErr('Masukkan keyword terlebih dahulu.'); return; }
 
-  forecastVisible = false;
-  const fBtn = document.getElementById('btn-toggle-forecast');
-  if (fBtn) {
-    fBtn.textContent = 'â—Ž TAMPILKAN FORECAST 90 HARI';
-    fBtn.classList.remove('active');
-  }
-
-  document.getElementById('err').style.display = 'none';
-  setLoading(true, false);
-
-  // Reset & Hide Regional Section
-  const regionalSec = document.getElementById('regional-section');
-  if (regionalSec) regionalSec.style.display = 'none';
-  document.getElementById('cmp-kw-b').textContent = b.keyword;
-  document.getElementById('cmp-ts').textContent =
-    new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
-
-  // Table headers
-  document.getElementById('cmp-th-a').textContent = a.keyword;
-  document.getElementById('cmp-th-b').textContent = b.keyword;
-
-  // Winner banner
-  document.getElementById('cmp-winner').textContent = c.winner_overall;
-  document.getElementById('cmp-winner-score').textContent =
-    `Skor Gabungan — ${a.keyword}: ${c.score_a} · ${b.keyword}: ${c.score_b}`;
-
-  // Build table rows
-  const metrics = [
-    { label: 'Growth 7 Hari', va: (a.growth * 100).toFixed(1) + '%', vb: (b.growth * 100).toFixed(1) + '%', winner: c.winner_growth },
-    { label: 'Momentum', va: a.momentum.toFixed(3), vb: b.momentum.toFixed(3), winner: c.winner_momentum },
-    { label: 'Volatilitas', va: (a.volatility * 100).toFixed(1) + '%', vb: (b.volatility * 100).toFixed(1) + '%', winner: c.winner_stability },
-    { label: 'Market Pulse', va: a.market_pulse_score.toFixed(1), vb: b.market_pulse_score.toFixed(1), winner: c.winner_pulse },
-    { label: 'Entry Timing', va: a.entry_timing_score.toFixed(1), vb: b.entry_timing_score.toFixed(1), winner: c.winner_timing },
-    { label: 'FOMO Index', va: a.fomo_index.toFixed(2), vb: b.fomo_index.toFixed(2), winner: c.winner_fomo },
-    { label: 'Saturasi', va: a.saturation_index.toFixed(1), vb: b.saturation_index.toFixed(1), winner: c.winner_saturation },
-    { label: 'Fase Lifecycle', va: a.lifecycle_stage, vb: b.lifecycle_stage, winner: '—' },
-    { label: 'Risk Level', va: a.risk_level, vb: b.risk_level, winner: '—' },
-  ];
-
-  const tbody = document.getElementById('cmp-tbody');
-  tbody.innerHTML = '';
-  metrics.forEach(m => {
-    const tr = document.createElement('tr');
-    const isWinA = m.winner === a.keyword;
-    const isWinB = m.winner === b.keyword;
-    tr.innerHTML = `
-      <td>${m.label}</td>
-      <td class="col-a ${isWinA ? 'val-winner' : 'val-loser'}">${m.va}</td>
-      <td class="col-b ${isWinB ? 'val-winner' : 'val-loser'}">${m.vb}</td>
-      <td class="winner-cell">${m.winner}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-
-  // Chart.js
-  renderTrendChart(t, a.keyword, b.keyword);
-
-  // AI Insight
-  const aiEl = document.getElementById('cmp-ai');
-  const rawAi = d.ai_insight || 'Insight tidak tersedia.';
-  const cleaned = sanitizeText(rawAi.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1'));
-  typeWriter(aiEl, cleaned, 6);
-
-  // Animation Observer
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.style.animationPlayState = 'running';
-      }
-    });
-  }, { threshold: 0.1 });
-
-  document.querySelectorAll('.howto-card, .tip-card, .metric-guide-card').forEach(el => {
-    el.style.animationPlayState = 'paused';
-    observer.observe(el);
-  });
-
-  // Show
-  document.getElementById('compare-results').style.display = 'block';
-  setTimeout(() => document.getElementById('compare-results').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-}
-
-function renderTrendChart(trendData, labelA, labelB) {
-  const canvas = document.getElementById('cmp-chart');
-  if (trendChart) { trendChart.destroy(); trendChart = null; }
-
-  if (!trendData || !trendData.dates) {
-    if (canvas && canvas.parentElement) {
-      canvas.parentElement.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-dim)">Data tren tidak tersedia</div>';
-    }
-    return;
-  }
-
-  const labels = trendData.dates.map(d => {
-    const dt = new Date(d);
-    return dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-  });
-
-  const ctx = canvas.getContext('2d');
-  trendChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [
-        {
-          label: labelA,
-          data: trendData.values_a,
-          borderColor: '#D4A843',
-          backgroundColor: 'rgba(212,168,67,.1)',
-          borderWidth: 2.5,
-          pointRadius: 0,
-          pointHoverRadius: 5,
-          pointHoverBackgroundColor: '#D4A843',
-          tension: 0.35,
-          fill: true,
-        },
-        {
-          label: labelB,
-          data: trendData.values_b,
-          borderColor: '#3498DB',
-          backgroundColor: 'rgba(52,152,219,.1)',
-          borderWidth: 2.5,
-          pointRadius: 0,
-          pointHoverRadius: 5,
-          pointHoverBackgroundColor: '#3498DB',
-          tension: 0.35,
-          fill: true,
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: {
-          display: true,
-          position: 'top',
-          align: 'end',
-          labels: {
-            color: '#B0A888',
-            font: { family: "'Syne',sans-serif", size: 11, weight: '600' },
-            boxWidth: 14, padding: 16,
-          }
-        },
-        tooltip: {
-          backgroundColor: '#181510',
-          titleColor: '#F2ECD8',
-          bodyColor: '#B0A888',
-          borderColor: 'rgba(212,168,67,.3)',
-          borderWidth: 1,
-          padding: 12,
-          titleFont: { family: "'Syne',sans-serif", size: 11, weight: '700' },
-          bodyFont: { family: "'DM Mono',monospace", size: 12 },
-          callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y}` }
-        }
-      },
-      scales: {
-        x: {
-          grid: { color: 'rgba(74,69,53,.2)', drawBorder: false },
-          ticks: { color: '#4A4535', font: { family: "'DM Mono',monospace", size: 10 }, maxTicksLimit: 12 }
-        },
-        y: {
-          grid: { color: 'rgba(74,69,53,.15)', drawBorder: false },
-          ticks: { color: '#4A4535', font: { family: "'DM Mono',monospace", size: 10 } },
-          beginAtZero: true, max: 100
-        }
-      }
-    }
-  });
-}
-
-/* ── TEXT SANITIZATION ── */
+/* ------------------------ TEXT SANITIZATION ------------------------ */
 function sanitizeText(str) {
   if (!str) return '';
   return String(str)
-    .replace(/â€”/g, '—')
-    .replace(/â€“/g, '–')
-    .replace(/ðŸ”’/g, '🔒')
-    .replace(/ÐŸ’/g, '🔒')
-    .replace(/Â·/g, '·')
-    .replace(/â€¢/g, '•')
+    .replace(/--------------------------------/g, '------------')
+    .replace(/--------------------------------/g, '------------')
+    .replace(/--------------------------------------/g, '----------------')
+    .replace(/----------------------------/g, '----------------')
+    .replace(/----------/g, '--')
+    .replace(/----------------------------/g, '------------')
     .trim();
 }
 
@@ -2625,8 +2326,15 @@ async function doSearch() {
 
     const [res, resLocal] = await Promise.all([
       fetch('/api/analyze', { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(apiParams), signal: controller.signal }),
-      fetch('/api/analyze-local', { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(apiParams), signal: controller.signal }).catch(() => null)
+      fetch('/api/analyze-local', { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(apiParams), signal: controller.signal }).catch(e => {
+        console.error("[doSearch] /api/analyze-local CRASHED:", e);
+        return null;
+      })
     ]);
+
+    console.log("[DEBUG] Main API Status:", res.status);
+    console.log("[DEBUG] Local API Response:", resLocal);
+    if (resLocal) console.log("[DEBUG] Local API Status:", resLocal.status);
 
     clearTimeout(timeout);
     const data = await res.json();
@@ -2638,23 +2346,44 @@ async function doSearch() {
       showErr(data.error || 'Terjadi kesalahan.'); setLoading(false, false); return;
     }
 
+    // --- Merge Local/Regional Data BEFORE rendering ---
+    if (resLocal && resLocal.ok) {
+      try {
+        const localData = await resLocal.json();
+        if (localData) {
+          data.regional_interest = localData.regional_data || [];
+          data.regional_breakdown = localData.regional_breakdown || [];
+          data.local_insight = localData.local_insight || "";
+        }
+      } catch (e) {
+        console.warn('[doSearch] Gagal parse localData', e);
+      }
+    }
+
     // Sanitize news
     if (data.news) data.news = data.news.map(n => ({ ...n, title: sanitizeText(n.title) }));
 
     lastAnalysisResult = data;
     renderResults(data);
 
-    // Handle Regional Data
-    if (regionalSec && resLocal && resLocal.ok) {
-      const localData = await resLocal.json();
-      if (localData && localData.regional_data && localData.regional_data.length > 0) {
-        regionalSec.style.display = 'block';
-        document.getElementById('map-loader').style.display = 'none';
-        if (window.MapLogic) window.MapLogic.update(localData.regional_data);
-        if (localData.local_insight) {
-          typeWriter(document.getElementById('r-local-insight'), sanitizeText(localData.local_insight), 5);
-        }
-        if (localData.regional_breakdown) renderRegionalBreakdown(localData);
+    // Handle UI visibility & triggers for merged regional data
+    if (regionalSec && data.regional_interest && data.regional_interest.length > 0) {
+      regionalSec.style.display = 'block';
+      const loader = document.getElementById('map-loader');
+      if (loader) loader.style.display = 'none';
+
+      // Update map specifically
+      if (window.MapLogic) window.MapLogic.update(data.regional_interest);
+
+      // Trigger insight typing
+      if (data.local_insight) {
+        const insightEl = document.getElementById('r-local-insight');
+        if (insightEl) typeWriter(insightEl, sanitizeText(data.local_insight), 5);
+      }
+
+      // Render breakdown list
+      if (data.regional_breakdown && data.regional_breakdown.length > 0) {
+        renderRegionalBreakdown(data.regional_breakdown);
       }
     }
 
@@ -2693,7 +2422,7 @@ async function doSearch() {
     if (e.target === document.getElementById('upgrade-modal')) closeUpgradeModal();
   }
 
-  /* â”€â”€ IDE PRODUK WIZARD â”€â”€ */
+  /* ---------------------------------------------------------------- IDE PRODUK WIZARD ---------------------------------------------------------------- */
   const IP_KATEGORI = [
     { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h2v11M7 2v20M15 2c0 0-2 2-2 5s2 5 2 5v10M19 2v5h-4"/></svg>', nama: 'Makanan', value: 'Makanan' },
     { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M5 3h14l-2 16H7L5 3z"/><path d="M3 3h18M10 7l4 4"/></svg>', nama: 'Minuman', value: 'Minuman' },
@@ -2708,7 +2437,7 @@ async function doSearch() {
   ];
   const IP_MODAL = [
     { label: 'Modal Kecil', ket: 'Di bawah Rp 10 juta', kode: 'KCL', tier: 'Kecil' },
-    { label: 'Modal Menengah', ket: 'Rp 10 â€“ 50 juta', kode: 'MNG', tier: 'Menengah' },
+    { label: 'Modal Menengah', ket: 'Rp 10 -------------------------------- 50 juta', kode: 'MNG', tier: 'Menengah' },
     { label: 'Modal Besar', ket: 'Di atas Rp 50 juta', kode: 'BSR', tier: 'Besar' }
   ];
 
@@ -2732,7 +2461,7 @@ async function doSearch() {
   }
 
   function ipHeaderHtml() {
-    return '<div class="ip-header"><span class="ip-header-label">SENTRA Â· IDE PRODUK</span><button type="button" class="ip-header-close" onclick="closeIdeWizard()">&times;</button></div><hr class="ip-divider">';
+    return '<div class="ip-header"><span class="ip-header-label">SENTRA ---------- IDE PRODUK</span><button type="button" class="ip-header-close" onclick="closeIdeWizard()">&times;</button></div><hr class="ip-divider">';
   }
 
   function renderIdeState(step, data) {
@@ -2757,7 +2486,7 @@ async function doSearch() {
       const list = data && data.length ? data : [];
       const catLabel = selectedKategori || '';
       const tierLabel = selectedModalTier || '';
-      body = '<div class="ip-result-header"><span class="ip-chip">' + catLabel + '</span><span class="ip-chip">' + tierLabel + '</span><span class="ip-result-count">Â· ' + list.length + ' ide ditemukan</span></div>';
+      body = '<div class="ip-result-header"><span class="ip-chip">' + catLabel + '</span><span class="ip-chip">' + tierLabel + '</span><span class="ip-result-count">---------- ' + list.length + ' ide ditemukan</span></div>';
       if (list.length === 0) {
         body += '<div class="ip-empty"><p class="ip-empty-title">Belum ada data untuk kombinasi ini.</p><p class="ip-empty-sub">Coba kategori atau modal yang berbeda.</p><button type="button" class="ip-reset-btn" onclick="resetIdeWizard()">Cari dengan kriteria lain</button></div>';
       } else {
@@ -2768,7 +2497,7 @@ async function doSearch() {
           const recClass = rec ? 'ip-badge-rec-' + rec : '';
           const skor = Number(row.skor_peluang) || 0;
           const fillColor = skor > 75 ? '#22c55e' : skor > 50 ? 'var(--gold)' : '#ef4444';
-          return '<div class="ip-card" style="--i: ' + i + '"><div class="ip-badge-row"><span class="ip-badge ' + statusClass + '">' + (row.status_pasar || 'â€”') + '</span><span class="ip-badge ' + recClass + '">' + (row.rekomendasi || 'â€”') + '</span></div><div class="ip-name">' + (row.nama_produk || 'â€”') + '</div><div class="ip-highlight">' + (row.highlight || 'â€”') + '</div><div class="ip-stats-grid"><div><span class="ip-stat-label">Tren</span><span class="ip-stat-value">' + (row.tren_persen != null ? row.tren_persen + '%' : 'â€”') + '</span></div><div><span class="ip-stat-label">Margin</span><span class="ip-stat-value">' + (row.margin_persen != null ? row.margin_persen + '%' : 'â€”') + '</span></div><div><span class="ip-stat-label">Kompetisi</span><span class="ip-stat-value">' + (row.kompetisi || 'â€”') + '</span></div><div><span class="ip-stat-label">Target</span><span class="ip-stat-value">' + (row.target || 'â€”') + '</span></div></div><div class="ip-skor-row"><span class="ip-skor-label">Skor peluang</span><span class="ip-skor-value">' + skor + '</span></div><div class="ip-skor-track"><div class="ip-skor-fill" id="ip-skor-fill-' + i + '" style="width:0;background:' + fillColor + '"></div></div><div class="ip-card-footer">Rp ' + (row.modal_min_juta != null ? row.modal_min_juta : 'â€”') + ' â€“ ' + (row.modal_max_juta != null ? row.modal_max_juta : 'â€”') + ' juta  Â·  ' + (row.puncak_penjualan || 'â€”') + '</div></div>';
+          return '<div class="ip-card" style="--i: ' + i + '"><div class="ip-badge-row"><span class="ip-badge ' + statusClass + '">' + (row.status_pasar || '--------------------------------') + '</span><span class="ip-badge ' + recClass + '">' + (row.rekomendasi || '--------------------------------') + '</span></div><div class="ip-name">' + (row.nama_produk || '--------------------------------') + '</div><div class="ip-highlight">' + (row.highlight || '--------------------------------') + '</div><div class="ip-stats-grid"><div><span class="ip-stat-label">Tren</span><span class="ip-stat-value">' + (row.tren_persen != null ? row.tren_persen + '%' : '--------------------------------') + '</span></div><div><span class="ip-stat-label">Margin</span><span class="ip-stat-value">' + (row.margin_persen != null ? row.margin_persen + '%' : '--------------------------------') + '</span></div><div><span class="ip-stat-label">Kompetisi</span><span class="ip-stat-value">' + (row.kompetisi || '--------------------------------') + '</span></div><div><span class="ip-stat-label">Target</span><span class="ip-stat-value">' + (row.target || '--------------------------------') + '</span></div></div><div class="ip-skor-row"><span class="ip-skor-label">Skor peluang</span><span class="ip-skor-value">' + skor + '</span></div><div class="ip-skor-track"><div class="ip-skor-fill" id="ip-skor-fill-' + i + '" style="width:0;background:' + fillColor + '"></div></div><div class="ip-card-footer">Rp ' + (row.modal_min_juta != null ? row.modal_min_juta : '--------------------------------') + ' -------------------------------- ' + (row.modal_max_juta != null ? row.modal_max_juta : '--------------------------------') + ' juta  ----------  ' + (row.puncak_penjualan || '--------------------------------') + '</div></div>';
         }).join('') + '</div><button type="button" class="ip-reset-btn" onclick="resetIdeWizard()">Cari dengan kriteria lain</button>';
       }
     }
@@ -2843,7 +2572,7 @@ async function doSearch() {
     const remaining = Math.max(0, 2000 - elapsed);
     setTimeout(() => {
       if (err && inner) {
-        const msg = (err && err.length > 300) ? err.slice(0, 300) + 'â€¦' : (err || 'Gagal memuat data. Coba lagi.');
+        const msg = (err && err.length > 300) ? err.slice(0, 300) + '----------------------------' : (err || 'Gagal memuat data. Coba lagi.');
         inner.innerHTML = ipHeaderHtml() + '<p class="ip-empty-title" style="padding:24px 0; max-width:520px; margin:0 auto;">' + msg + '</p><button type="button" class="ip-reset-btn" onclick="resetIdeWizard()">Cari dengan kriteria lain</button>';
       } else {
         renderIdeState(4, data);
@@ -2851,7 +2580,7 @@ async function doSearch() {
     }, remaining);
   }
 
-  // Close modal on Escape key â€” unified handler
+  // Close modal on Escape key -------------------------------- unified handler
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
     var authModal = document.getElementById('auth-modal');
@@ -2877,7 +2606,7 @@ async function doSearch() {
     }
   });
 
-  /* ── TAB SWITCHER (How To Use) ── */
+  /* ------------------------ TAB SWITCHER (How To Use) ------------------------ */
   function switchTab(tab) {
     document.querySelectorAll('.howto-tab').forEach(btn => btn.classList.remove('active'));
     const activeTab = document.getElementById('tab-' + tab);
@@ -2899,9 +2628,9 @@ async function doSearch() {
     }
   }
 
-  /* ── RADAR PELUANG SEKTOR ── */
+  /* ------------------------ RADAR PELUANG SEKTOR ------------------------ */
 
-  // Data cache â€” pre-seeded by initRadarHeadlines
+  // Data cache -------------------------------- pre-seeded by initRadarHeadlines
   const radarDataCache = {};
 
   const SECTOR_NAMES = {
@@ -2951,7 +2680,7 @@ async function doSearch() {
               <div class="panel-news-item-title">${n.title || 'Berita'}</div>
               <div class="panel-news-item-meta">
                 <span>${n.source || 'Sumber'}</span>
-                <span>Â·</span>
+                <span>----------</span>
                 <span>${n.time_ago || 'baru saja'}</span>
               </div>
             </div>`).join('')
@@ -2959,7 +2688,7 @@ async function doSearch() {
 
     const aiHTML = aiSignal
       ? `<div class="panel-ai-signal">
-             <span class="panel-ai-label">âœ¦ AI SIGNAL</span>
+             <span class="panel-ai-label">------------------------ AI SIGNAL</span>
              <div class="panel-ai-text">${aiSignal}</div>
            </div>`
       : '';
@@ -2975,7 +2704,7 @@ async function doSearch() {
         <div class="panel-stats-row">
           <div class="panel-stat">
             <div class="panel-stat-label">Nilai Pasar</div>
-            <div class="panel-stat-value">${s.market_size_label || 'â€”'}</div>
+            <div class="panel-stat-value">${s.market_size_label || '--------------------------------'}</div>
           </div>
           <div class="panel-stat">
             <div class="panel-stat-label">Growth YoY</div>
@@ -2998,7 +2727,7 @@ async function doSearch() {
         ${aiHTML}
 
         <button class="panel-analyze-btn" onclick="closeRadarPanel(); analyzeCategory('${sector}')">
-          Cek Peluang Lebih Dalam â†’
+          Cek Peluang Lebih Dalam --------------------------------
         </button>
       `;
   }
@@ -3018,7 +2747,7 @@ async function doSearch() {
     unlockScroll();
   }
 
-  // ══════════ MODERN RADAR PASAR SENTRA ══════════
+  // ------------------------------------------------------------------------------------------------------------------------ MODERN RADAR PASAR SENTRA ------------------------------------------------------------------------------------------------------------------------
   const SECTOR_CONFIG = {
     fashion: { name: "Fashion & Apparel", code: "FSH", color: "#EC4899" }, // Pink
     beauty:  { name: "Beauty & Care", code: "BTY", color: "#A855F7" }, // Purple
@@ -3121,7 +2850,7 @@ async function doSearch() {
     renderPremiumSparklines();
     
     // Trigger GSAP
-    triggerModernAnimations();
+    initRadarAnimations();
   }
   
   function renderPremiumSparklines() {
@@ -3165,44 +2894,6 @@ async function doSearch() {
     });
   }
   
-  function triggerModernAnimations() {
-    if (typeof gsap === 'undefined') return;
-    
-    // Fix GSAP ScrollTrigger if it doesn't initialize properly on dynamic inserts
-    setTimeout(() => {
-      gsap.fromTo(".radar-card-premium", 
-        { y: 50, opacity: 0 },
-        {
-          scrollTrigger: {
-            trigger: "#sector-dashboard",
-            start: "top 75%",
-          },
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          stagger: 0.1,
-          ease: "power3.out"
-        }
-      );
-
-      document.querySelectorAll('.sector-growth-counter').forEach(el => {
-        const targetValue = parseFloat(el.getAttribute('data-target')) || 0;
-        const obj = { val: 0 };
-        gsap.to(obj, {
-          scrollTrigger: {
-            trigger: el, // trigger on the element itself since grid might be tall
-            start: "top 90%",
-          },
-          val: targetValue,
-          duration: 2,
-          ease: "power3.out",
-          onUpdate: () => {
-            el.textContent = (obj.val >= 0 ? '+' : '') + obj.val.toFixed(1) + '%';
-          }
-        });
-      });
-    }, 100);
-  }
 
   function initRadarModern() {
     renderModernGrid();
@@ -3288,7 +2979,7 @@ async function doSearch() {
     if (el && headline) el.textContent = headline;
   }
 
-  /* ── SPARKLINE ENGINE ── */
+  /* ------------------------ SPARKLINE ENGINE ------------------------ */
   const SPARKLINE_COLORS = {
     fashion: '#D4A843',
     beauty: '#FF5252',
@@ -3312,7 +3003,7 @@ async function doSearch() {
     return base[sector] || [50, 52, 48, 55, 53, 58, 56, 60];
   }
 
-  /* ── RADAR PELUANG SEKTOR (MODERN) ── */
+  /* ------------------------ RADAR PELUANG SEKTOR (MODERN) ------------------------ */
   function initSparklines() {
     const SECTOR_COLORS = {
       fashion: '#EF4444', beauty: '#A855F7', fnb: '#F97316',
@@ -3360,35 +3051,49 @@ async function doSearch() {
 
   function initRadarAnimations() {
     if (typeof gsap === 'undefined') return;
-    // 1. Stagger Reveal for cards
-    gsap.from(".sector-card-modern", {
-      scrollTrigger: {
-        trigger: ".radar-grid-modern",
-        start: "top 80%",
-      },
-      y: 40,
-      opacity: 0,
-      duration: 0.8,
-      stagger: 0.1,
-      ease: "power3.out"
-    });
+    
+    // Global registration
+    if (typeof ScrollTrigger !== 'undefined') {
+      gsap.registerPlugin(ScrollTrigger);
+    }
 
-    // 2. CountUp for Growth numbers
-    document.querySelectorAll('.sector-growth').forEach(el => {
-      const textValue = el.textContent.replace(/[^-0-9.]/g, '');
+    // 1. Reveal Cards
+    gsap.fromTo(".sector-card-modern, .radar-card-premium", 
+      { y: 50, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: "power3.out",
+        ...(typeof ScrollTrigger !== 'undefined' ? {
+          scrollTrigger: {
+            trigger: ".radar-grid-modern, #sector-dashboard",
+            start: "top 80%",
+          }
+        } : {})
+      }
+    );
+
+    // 2. Animate Counter Numbers (supports both .sector-growth and .sector-growth-counter)
+    document.querySelectorAll('.sector-growth, .sector-growth-counter').forEach(el => {
+      const textValue = (el.getAttribute('data-target') || el.textContent).replace(/[^-0-9.]/g, '');
       const targetValue = parseFloat(textValue) || 0;
       const obj = { val: 0 };
+      
       gsap.to(obj, {
-        scrollTrigger: {
-          trigger: el,
-          start: "top 90%",
-        },
         val: targetValue,
         duration: 2,
         ease: "power3.out",
         onUpdate: () => {
           el.textContent = (obj.val >= 0 ? '+' : '') + obj.val.toFixed(1) + '%';
-        }
+        },
+        ...(typeof ScrollTrigger !== 'undefined' ? {
+          scrollTrigger: {
+            trigger: el,
+            start: "top 90%",
+          }
+        } : {})
       });
     });
   }
@@ -3405,7 +3110,32 @@ async function doSearch() {
     initRadarAnimations();
   }
 
-  // â”€â”€ ANIMATED TYPING PLACEHOLDER â”€â”€
+  // ---------------------------------------------------------------- ANIMATED TYPING PLACEHOLDER ----------------------------------------------------------------
+  /* ------------------------ SHARING & EXPORT ------------------------ */
+  function shareToWhatsApp() {
+    if (typeof lastAnalysisResult === 'undefined' || !lastAnalysisResult) {
+      showErr("Lakukan analisis terlebih dahulu untuk membagikan hasil.");
+      return;
+    }
+    const d = lastAnalysisResult;
+    const kw = d.keyword || "Produk";
+    const score = d.market_pulse_score || 0;
+    const timing = d.entry_timing_label || "Fase Tidak Diketahui";
+    
+    const text = encodeURIComponent(
+      `---------------- *Sentra AI ------------ Hasil Analisis Pasar*\n\n` +
+      `---------------- *Produk:* ${kw.toUpperCase()}\n` +
+      `---------------- *Skor Kesehatan:* ${score}/100\n` +
+      `---------------- *Fase Strategis:* ${timing}\n\n` +
+      `Analisis mendalam lainnya bisa dicek di: ${window.location.origin}`
+    );
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+  }
+
+  function downloadPdf() {
+    window.print();
+  }
+
   function initTypingPlaceholder() {
     const input = document.getElementById('kw');
     if (!input) return;
@@ -3426,7 +3156,7 @@ async function doSearch() {
     const PAUSE_FULL = 2200; // jeda setelah teks penuh sebelum dihapus
     const PAUSE_EMPTY = 400;  // jeda setelah teks terhapus sebelum teks berikutnya
 
-    // Semua state disimpan dalam closure â€” tidak ada variabel global
+    // Semua state disimpan dalam closure -------------------------------- tidak ada variabel global
     let currentIndex = 0;
     let charIndex = 0;
     let isDeleting = false;
@@ -3444,7 +3174,7 @@ async function doSearch() {
         input.placeholder = phrase.slice(0, charIndex);
 
         if (charIndex === phrase.length) {
-          // Teks penuh â€” jeda sebelum mulai menghapus
+          // Teks penuh -------------------------------- jeda sebelum mulai menghapus
           isDeleting = true;
           timeoutId = setTimeout(tick, PAUSE_FULL);
         } else {
@@ -3456,7 +3186,7 @@ async function doSearch() {
         input.placeholder = phrase.slice(0, charIndex);
 
         if (charIndex === 0) {
-          // Teks habis â€” pindah ke item berikutnya lalu jeda
+          // Teks habis -------------------------------- pindah ke item berikutnya lalu jeda
           isDeleting = false;
           currentIndex = (currentIndex + 1) % phrases.length;
           timeoutId = setTimeout(tick, PAUSE_EMPTY);
@@ -3504,7 +3234,7 @@ async function doSearch() {
     });
   }
 
-  // â”€â”€ TESTIMONIAL CAROUSEL â”€â”€
+  // ---------------------------------------------------------------- TESTIMONIAL CAROUSEL ----------------------------------------------------------------
   (function () {
     const track = document.getElementById('testiTrack');
     const dotsWrap = document.getElementById('testiDots');
@@ -3589,7 +3319,7 @@ async function doSearch() {
     track.addEventListener('mouseleave', startAuto);
   })();
 
-  // â”€â”€ DETAIL ANALYSIS PANEL â”€â”€
+  // ---------------------------------------------------------------- DETAIL ANALYSIS PANEL ----------------------------------------------------------------
   let _detailData = null;
 
   function openDetailPanel() {
@@ -3624,7 +3354,7 @@ async function doSearch() {
   }
 
   function populateDetailPanel(d) {
-    var kw = d.keyword || 'â€”';
+    var kw = d.keyword || '--------------------------------';
     document.getElementById('detail-keyword-label').textContent = kw;
 
     var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
@@ -3633,42 +3363,42 @@ async function doSearch() {
 
     var html = '';
 
-    // â”€â”€ KELOMPOK 1: KEPUTUSAN â”€â”€
+    // ---------------------------------------------------------------- KELOMPOK 1: KEPUTUSAN ----------------------------------------------------------------
     html += '<div class="dm-section-title">// Keputusan Utama</div>';
 
     // 1. Entry Timing Score
     var ts = d.entry_timing_score || 0;
-    var tl = d.entry_timing_label || 'â€”';
+    var tl = d.entry_timing_label || '-';
     var tsColor = ts >= 70 ? 'dv-green' : ts >= 50 ? 'dv-gold' : ts >= 30 ? 'dv-amber' : 'dv-red';
     var tsClass = ts >= 70 ? 'dm-green' : ts >= 50 ? 'dm-gold' : ts >= 30 ? 'dm-amber' : 'dm-red';
     html += _dmBlock(1, 'Entry Timing Score', ts + '<span style="font-size:16px;color:var(--text-dim)"> / 100</span>',
       tl,
-      'Skor gabungan dari <strong>10 faktor</strong> yang menentukan apakah sekarang adalah waktu terbaik untuk mulai berjualan produk ini. Di atas 70 = waktu terbaik. 50â€“69 = boleh masuk dengan persiapan. Di bawah 50 = tunggu atau hindari.',
+      'Skor gabungan dari <strong>10 faktor</strong> yang menentukan apakah sekarang adalah waktu terbaik untuk mulai berjualan produk ini. Di atas 70 = waktu terbaik. 50-69 = boleh masuk dengan persiapan. Di bawah 50 = tunggu atau hindari.',
       tsClass, tsColor);
 
     // 2. Lifecycle Stage
-    var stage = d.lifecycle_stage || 'â€”';
+    var stage = d.lifecycle_stage || '-';
     var stageMap = {
-      'Emerging': { color: 'dv-gold', cls: 'dm-gold', desc: 'Produk baru mulai dikenal pasar. <strong>Peluang awal yang bagus</strong> â€” masuk sekarang sebelum ramai.' },
-      'Rising': { color: 'dv-green', cls: 'dm-green', desc: 'Tren sedang naik tajam. <strong>Momentum kuat</strong> â€” pasar sedang tumbuh aktif.' },
-      'Peak': { color: 'dv-amber', cls: 'dm-amber', desc: 'Produk sedang di puncak popularitas. <strong>Hati-hati</strong> â€” persaingan tinggi, mungkin akan turun.' },
-      'Stable': { color: 'dv-text', cls: '', desc: 'Tren relatif datar dan stabil. <strong>Pasar matang</strong> â€” bisa masuk tapi persaingan sudah ada.' },
+      'Emerging': { color: 'dv-gold', cls: 'dm-gold', desc: 'Produk baru mulai dikenal pasar. <strong>Peluang awal yang bagus</strong> -------------------------------- masuk sekarang sebelum ramai.' },
+      'Rising': { color: 'dv-green', cls: 'dm-green', desc: 'Tren sedang naik tajam. <strong>Momentum kuat</strong> -------------------------------- pasar sedang tumbuh aktif.' },
+      'Peak': { color: 'dv-amber', cls: 'dm-amber', desc: 'Produk sedang di puncak popularitas. <strong>Hati-hati</strong> -------------------------------- persaingan tinggi, mungkin akan turun.' },
+      'Stable': { color: 'dv-text', cls: '', desc: 'Tren relatif datar dan stabil. <strong>Pasar matang</strong> -------------------------------- bisa masuk tapi persaingan sudah ada.' },
       'Declining': { color: 'dv-red', cls: 'dm-red', desc: 'Minat pasar sedang menurun. <strong>Tidak disarankan</strong> untuk mulai berjualan saat ini.' }
     };
-    var si = stageMap[stage] || { color: 'dv-text', cls: '', desc: 'â€”' };
+    var si = stageMap[stage] || { color: 'dv-text', cls: '', desc: '--------------------------------' };
     html += _dmBlock(2, 'Lifecycle Stage', stage, 'Fase siklus hidup produk', si.desc, si.cls, si.color);
 
     // 3. Risk Level
-    var risk = d.risk_level || 'â€”';
+    var risk = d.risk_level || '--------------------------------';
     var riskMap = {
       'Low Risk': { color: 'dv-green', cls: 'dm-green', desc: 'Volatilitas rendah dan tidak ada sinyal hype berlebihan. <strong>Risiko investasi relatif kecil.</strong>' },
       'Medium Risk': { color: 'dv-amber', cls: 'dm-amber', desc: 'Ada potensi fluktuasi yang perlu diwaspadai. <strong>Masih layak, tapi siapkan strategi cadangan.</strong>' },
       'High Risk': { color: 'dv-red', cls: 'dm-red', desc: 'Tren sangat tidak stabil atau terdeteksi hype sesaat. <strong>Hindari investasi besar di produk ini sekarang.</strong>' }
     };
-    var ri = riskMap[risk] || { color: 'dv-text', cls: '', desc: 'â€”' };
+    var ri = riskMap[risk] || { color: 'dv-text', cls: '', desc: '--------------------------------' };
     html += _dmBlock(3, 'Risk Level', risk, 'Berdasarkan volatilitas + FOMO index', ri.desc, ri.cls, ri.color);
 
-    // â”€â”€ KELOMPOK 2: METRIK PASAR â”€â”€
+    // ---------------------------------------------------------------- KELOMPOK 2: METRIK PASAR ----------------------------------------------------------------
     html += '<div class="dm-section-title">// Metrik Pasar</div>';
     html += '<div class="dm-grid-2">';
 
@@ -3723,7 +3453,7 @@ async function doSearch() {
     var fomo = d.fomo_index || 0;
     var fomoColor = fomo < 0.3 ? 'dv-green' : fomo < 0.6 ? 'dv-amber' : 'dv-red';
     var fomoCls = fomo < 0.3 ? 'dm-green' : fomo < 0.6 ? 'dm-amber' : 'dm-red';
-    var fomoLabel = fomo < 0.3 ? 'Tren organik' : fomo < 0.6 ? 'Ada sinyal hype' : 'Hype tinggi â€” waspada';
+    var fomoLabel = fomo < 0.3 ? 'Tren organik' : fomo < 0.6 ? 'Ada sinyal hype' : 'Hype tinggi -------------------------------- waspada';
     html += _dmBlock(8, 'FOMO Index',
       fomo.toFixed(3),
       fomoLabel,
@@ -3743,7 +3473,7 @@ async function doSearch() {
 
     html += '</div>';
 
-    // â”€â”€ KELOMPOK 3: PROYEKSI â”€â”€
+    // ---------------------------------------------------------------- KELOMPOK 3: PROYEKSI ----------------------------------------------------------------
     html += '<div class="dm-section-title">// Proyeksi & Pola</div>';
 
     // 10. Forecast 30 Hari
@@ -3755,7 +3485,7 @@ async function doSearch() {
       fc.toFixed(1),
       'Proyeksi rata-rata minat',
       'Prediksi minat 30 hari ke depan menggunakan <strong>regresi linear</strong> dari data 3 bulan terakhir. ' +
-      '<strong>Akurasi: ' + fcConfPct + '%</strong> â€” ' +
+      '<strong>Akurasi: ' + fcConfPct + '%</strong> -------------------------------- ' +
       (fcConf >= 0.7 ? 'proyeksi cukup dapat diandalkan.' : fcConf >= 0.5 ? 'proyeksi moderat, ada ketidakpastian.' : 'proyeksi lemah karena data fluktuatif.'),
       'dm-blue', fcColor);
 
@@ -3774,7 +3504,7 @@ async function doSearch() {
       : 'Tidak terdeteksi pola musiman yang signifikan. <strong>Permintaan cenderung konsisten</strong> sepanjang tahun.';
     html += _dmBlock(11, 'Pola Musiman',
       seasValue,
-      isSeas ? 'Musiman terdeteksi Â· keyakinan ' + seasPct + '%' : 'Tidak musiman',
+      isSeas ? 'Musiman terdeteksi ---------- keyakinan ' + seasPct + '%' : 'Tidak musiman',
       seasDesc, seasCls, seasColor);
 
     // Footer note
@@ -3788,7 +3518,7 @@ async function doSearch() {
       '">' +
       '// Data bersumber dari Google Trends via SerpApi<br>' +
       '// Analisis dihitung oleh Sentra Engine v2.0<br>' +
-      '// Semua metrik bersifat indikatif â€” bukan jaminan hasil bisnis' +
+      '// Semua metrik bersifat indikatif -------------------------------- bukan jaminan hasil bisnis' +
       '</div>';
 
     c.innerHTML = html;
@@ -3796,7 +3526,7 @@ async function doSearch() {
 
 
   /* --------------------------------------------------
-     SECTION — TESTIMONI CAROUSEL (GSAP)
+     SECTION ------------ TESTIMONI CAROUSEL (GSAP)
   -------------------------------------------------- */
   function initTestimonialCarousel() {
     const track = document.getElementById('tcTrack');

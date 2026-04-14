@@ -1,11 +1,19 @@
-"""
-Sentra BI v2.0 — Flask Web Server untuk Railway
-"""
+import os
+import re
+import math
+import io
+import time
+import threading
+import logging
+from datetime import date, datetime, timedelta
+from functools import wraps
 
-# Gevent monkey-patch HARUS di paling atas sebelum import lain
-# agar semua operasi blocking (socket, threading, dll) jadi non-blocking
-from gevent import monkey
-monkey.patch_all()
+# Configure logging for Vercel/Production
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+)
+logger = logging.getLogger("sentra_bi")
 
 import os
 import re
@@ -1191,7 +1199,9 @@ def sector_radar():
     return jsonify(response)
 
 @app.route("/api/analyze-local", methods=["POST"])
+@app.route("/api/analyze-local/", methods=["POST"])
 def analyze_local_route():
+    print(f"[DEBUG] /api/analyze-local hit by {request.remote_addr}")
     data = request.json or {}
     keyword = data.get("keyword", "").strip()
     geo = data.get("geo", "ID")
@@ -1328,7 +1338,20 @@ def clear_cache():
         _mem_cache.clear()
     return jsonify({"cleared": count, "message": "L1 cache cleared"})
 
+@app.errorhandler(Exception)
+def handle_exception(e):
+    logger.error(f"Global error caught: {str(e)}", exc_info=True)
+    return jsonify({
+        "error": "Internal Server Error",
+        "message": str(e),
+        "type": type(e).__name__
+    }), 500
+
+print("\n" + "="*50)
+print("[SYSTEM] Sentra BI is starting...")
+print("[SYSTEM] Registration: /api/analyze-local is READY.")
+print("="*50 + "\n")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="0.0.0.0", port=port, debug=True)
