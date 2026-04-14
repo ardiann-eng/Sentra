@@ -7122,7 +7122,9 @@
     .radar-section,
     .social-proof-section,
     #market-snapshot,
-    .snapshot-section {
+    .snapshot-section,
+    #results,
+    #compare-results {
       display: block !important;
     }
 
