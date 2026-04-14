@@ -51,13 +51,13 @@ function unlockScroll() {
 let trendChart = null;
 let regionalChart = null;
 
-// -------------------------------- AUTO-GENERATE GUEST ID --------------------------------
+// ──-------------------- AUTO-GENERATE GUEST ID --------------------------------
 if (!localStorage.getItem('sentra_uid')) {
   const guestId = 'guest_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
   localStorage.setItem('sentra_uid', guestId);
 }
 
-// -------------------------------- Monetization state --------------------------------
+// ──-------------------- Monetization state --------------------------------
 const userState = {
   userId: localStorage.getItem('sentra_uid'),
   token: null,
@@ -728,7 +728,7 @@ function initHomepageSections() {
 setTimeout(initHomepageSections, 2600);
 
 
-// ---------------------------------------------------------------- STICKY NAVBAR LOGIC ----------------------------------------------------------------
+// ──---------------------------------------------------- STICKY NAVBAR LOGIC ----------------------------------------------------------------
 const STICKY_SCROLL_SHOW = 320;
 const STICKY_OFFSET = 80;
 const stickyNav = document.getElementById('sticky-nav');
@@ -1160,7 +1160,7 @@ function renderResults(d) {
 
 
   setT('r-trend-range', d.raw_trend ? (d.raw_trend.dates.length + ' Hari Terakhir') : '12 Bulan');
-  setT('r-fc-val', d.forecast_30d_avg ? d.forecast_30d_avg.toFixed(1) : '--------------------------------');
+  setT('r-fc-val', d.forecast_30d_avg ? d.forecast_30d_avg.toFixed(1) : '—');
 
   // Initialize chart -------------------------------- fixed: was calling renderSingleChart (undefined), correct name is renderSingleTrendChart
   if (typeof renderSingleTrendChart === 'function') {
@@ -1225,7 +1225,7 @@ function renderResults(d) {
   setTimeout(() => resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
 }
 
-// ---------------------------------------------------------------- ANALISIS TEKNIKAL: TOGGLE & DETAIL ----------------------------------------------------------------
+// ──---------------------------------------------------- ANALISIS TEKNIKAL: TOGGLE & DETAIL ----------------------------------------------------------------
 let _techSectionOpen = false;
 
 function setTechnicalToggleState(isOpen) {
@@ -1360,7 +1360,7 @@ function renderSingleTrendChart(d) {
       const dt = new Date(filteredDates[i]);
       monthLabels.push(MONTHS_ID[dt.getMonth()]);
     }
-    if (monthLabels.length > 0) monthLabels[monthLabels.length - 1] += '--------------------------------';
+    if (monthLabels.length > 0) monthLabels[monthLabels.length - 1] += '—';
     monthLabelContainer.innerHTML = monthLabels.map(m => `<span>${m}</span>`).join('');
   }
 
@@ -1733,7 +1733,7 @@ function renderSummaryCard(d) {
         `;
   }
 
-  // ---------------------------------------------------------------- METRICS HELPER ----------------------------------------------------------------
+  // ──---------------------------------------------------- METRICS HELPER ----------------------------------------------------------------
   const getValue = (metricName, value) => {
     switch (metricName) {
       case 'growth': {
@@ -1843,11 +1843,11 @@ function renderSummaryCard(d) {
         return { status, text, label, gauge };
       }
       default:
-        return { status: 'neutral', text: '--------------------------------', label: '', gauge: 0 };
+        return { status: 'neutral', text: '—', label: '', gauge: 0 };
     }
   };
 
-  // ---------------------------------------------------------------- BADGE SYSTEM (4 STATES) ----------------------------------------------------------------
+  // ──---------------------------------------------------- BADGE SYSTEM (4 STATES) ----------------------------------------------------------------
   const badgeEl = document.getElementById('summary-badge');
   const score = d.entry_timing_score || 0;
   let badgeClass = '', badgeText = '';
@@ -1857,7 +1857,7 @@ function renderSummaryCard(d) {
   else { badgeClass = 'bad'; badgeText = 'Tidak Disarankan'; }
   badgeEl.innerHTML = `<div class="summary-badge-item ${badgeClass}">${badgeText}</div>`;
 
-  // ---------------------------------------------------------------- VERDICT TEXT ----------------------------------------------------------------
+  // ──---------------------------------------------------- VERDICT TEXT ----------------------------------------------------------------
   const verdictEl = document.getElementById('summary-verdict');
   const keyword = d.keyword || '(keyword)';
   let verdictText = '';
@@ -1867,7 +1867,7 @@ function renderSummaryCard(d) {
   else verdictText = `Saat ini <em>bukan waktu terbaik</em> untuk <strong>${keyword}</strong>. Tren sedang turun atau pasar sudah terlalu penuh.`;
   verdictEl.innerHTML = `<p>${verdictText}</p>`;
 
-  // ---------------------------------------------------------------- 6-ITEM METRIC GRID (3-COLUMN) ----------------------------------------------------------------
+  // ──---------------------------------------------------- 6-ITEM METRIC GRID (3-COLUMN) ----------------------------------------------------------------
   const gridEl = document.getElementById('summary-grid');
   gridEl.innerHTML = '';
 
@@ -1943,7 +1943,7 @@ function renderSummaryCard(d) {
     });
   });
 
-  // ---------------------------------------------------------------- NEWS SECTION (if data exists) ----------------------------------------------------------------
+  // ──---------------------------------------------------- NEWS SECTION (if data exists) ----------------------------------------------------------------
   if (d.news && Array.isArray(d.news) && d.news.length > 0) {
     const newsSection = document.getElementById('summary-news-section');
     const newsList = document.getElementById('summary-news-list');
@@ -1969,7 +1969,7 @@ function renderSummaryCard(d) {
     document.getElementById('summary-news-section').style.display = 'none';
   }
 
-  // ---------------------------------------------------------------- ACTION HINT (REKOMENDASI) ----------------------------------------------------------------
+  // ──---------------------------------------------------- ACTION HINT (REKOMENDASI) ----------------------------------------------------------------
   const hintEl = document.getElementById('summary-action-hint');
   let hint = '';
   if (score >= 80) {
@@ -2158,8 +2158,8 @@ function renderCompareResults(d) {
     { label: 'Entry Timing', va: a.entry_timing_score.toFixed(1), vb: b.entry_timing_score.toFixed(1), winner: c.winner_timing },
     { label: 'FOMO Index', va: a.fomo_index.toFixed(2), vb: b.fomo_index.toFixed(2), winner: c.winner_fomo },
     { label: 'Saturasi', va: a.saturation_index.toFixed(1), vb: b.saturation_index.toFixed(1), winner: c.winner_saturation },
-    { label: 'Fase Lifecycle', va: a.lifecycle_stage, vb: b.lifecycle_stage, winner: '--------------------------------' },
-    { label: 'Risk Level', va: a.risk_level, vb: b.risk_level, winner: '--------------------------------' },
+    { label: 'Fase Lifecycle', va: a.lifecycle_stage, vb: b.lifecycle_stage, winner: '—' },
+    { label: 'Risk Level', va: a.risk_level, vb: b.risk_level, winner: '—' },
   ];
 
   const tbody = document.getElementById('cmp-tbody');
@@ -2515,7 +2515,7 @@ async function doSearch() {
           const recClass = rec ? 'ip-badge-rec-' + rec : '';
           const skor = Number(row.skor_peluang) || 0;
           const fillColor = skor > 75 ? '#22c55e' : skor > 50 ? 'var(--gold)' : '#ef4444';
-          return '<div class="ip-card" style="--i: ' + i + '"><div class="ip-badge-row"><span class="ip-badge ' + statusClass + '">' + (row.status_pasar || '--------------------------------') + '</span><span class="ip-badge ' + recClass + '">' + (row.rekomendasi || '--------------------------------') + '</span></div><div class="ip-name">' + (row.nama_produk || '--------------------------------') + '</div><div class="ip-highlight">' + (row.highlight || '--------------------------------') + '</div><div class="ip-stats-grid"><div><span class="ip-stat-label">Tren</span><span class="ip-stat-value">' + (row.tren_persen != null ? row.tren_persen + '%' : '--------------------------------') + '</span></div><div><span class="ip-stat-label">Margin</span><span class="ip-stat-value">' + (row.margin_persen != null ? row.margin_persen + '%' : '--------------------------------') + '</span></div><div><span class="ip-stat-label">Kompetisi</span><span class="ip-stat-value">' + (row.kompetisi || '--------------------------------') + '</span></div><div><span class="ip-stat-label">Target</span><span class="ip-stat-value">' + (row.target || '--------------------------------') + '</span></div></div><div class="ip-skor-row"><span class="ip-skor-label">Skor peluang</span><span class="ip-skor-value">' + skor + '</span></div><div class="ip-skor-track"><div class="ip-skor-fill" id="ip-skor-fill-' + i + '" style="width:0;background:' + fillColor + '"></div></div><div class="ip-card-footer">Rp ' + (row.modal_min_juta != null ? row.modal_min_juta : '--------------------------------') + ' -------------------------------- ' + (row.modal_max_juta != null ? row.modal_max_juta : '--------------------------------') + ' juta  ----------  ' + (row.puncak_penjualan || '--------------------------------') + '</div></div>';
+          return '<div class="ip-card" style="--i: ' + i + '"><div class="ip-badge-row"><span class="ip-badge ' + statusClass + '">' + (row.status_pasar || '—') + '</span><span class="ip-badge ' + recClass + '">' + (row.rekomendasi || '—') + '</span></div><div class="ip-name">' + (row.nama_produk || '—') + '</div><div class="ip-highlight">' + (row.highlight || '—') + '</div><div class="ip-stats-grid"><div><span class="ip-stat-label">Tren</span><span class="ip-stat-value">' + (row.tren_persen != null ? row.tren_persen + '%' : '—') + '</span></div><div><span class="ip-stat-label">Margin</span><span class="ip-stat-value">' + (row.margin_persen != null ? row.margin_persen + '%' : '—') + '</span></div><div><span class="ip-stat-label">Kompetisi</span><span class="ip-stat-value">' + (row.kompetisi || '—') + '</span></div><div><span class="ip-stat-label">Target</span><span class="ip-stat-value">' + (row.target || '—') + '</span></div></div><div class="ip-skor-row"><span class="ip-skor-label">Skor peluang</span><span class="ip-skor-value">' + skor + '</span></div><div class="ip-skor-track"><div class="ip-skor-fill" id="ip-skor-fill-' + i + '" style="width:0;background:' + fillColor + '"></div></div><div class="ip-card-footer">Rp ' + (row.modal_min_juta != null ? row.modal_min_juta : '—') + ' -------------------------------- ' + (row.modal_max_juta != null ? row.modal_max_juta : '—') + ' juta  ----------  ' + (row.puncak_penjualan || '—') + '</div></div>';
         }).join('') + '</div><button type="button" class="ip-reset-btn" onclick="resetIdeWizard()">Cari dengan kriteria lain</button>';
       }
     }
@@ -2722,7 +2722,7 @@ async function doSearch() {
         <div class="panel-stats-row">
           <div class="panel-stat">
             <div class="panel-stat-label">Nilai Pasar</div>
-            <div class="panel-stat-value">${s.market_size_label || '--------------------------------'}</div>
+            <div class="panel-stat-value">${s.market_size_label || '—'}</div>
           </div>
           <div class="panel-stat">
             <div class="panel-stat-label">Growth YoY</div>
@@ -2765,7 +2765,7 @@ async function doSearch() {
     unlockScroll();
   }
 
-  // ------------------------------------------------------------------------------------------------------------------------ MODERN RADAR PASAR SENTRA ------------------------------------------------------------------------------------------------------------------------
+  // ──------------------------------------------------------------------------------------------------------------ MODERN RADAR PASAR SENTRA ------------------------------------------------------------------------------------------------------------------------
   const SECTOR_CONFIG = {
     fashion: { name: "Fashion & Apparel", code: "FSH", color: "#EC4899" }, // Pink
     beauty:  { name: "Beauty & Care", code: "BTY", color: "#A855F7" }, // Purple
@@ -3128,7 +3128,7 @@ async function doSearch() {
     initRadarAnimations();
   }
 
-  // ---------------------------------------------------------------- ANIMATED TYPING PLACEHOLDER ----------------------------------------------------------------
+  // ──---------------------------------------------------- ANIMATED TYPING PLACEHOLDER ----------------------------------------------------------------
   /* ------------------------ SHARING & EXPORT ------------------------ */
   function shareToWhatsApp() {
     if (typeof lastAnalysisResult === 'undefined' || !lastAnalysisResult) {
@@ -3252,7 +3252,7 @@ async function doSearch() {
     });
   }
 
-  // ---------------------------------------------------------------- TESTIMONIAL CAROUSEL ----------------------------------------------------------------
+  // ──---------------------------------------------------- TESTIMONIAL CAROUSEL ----------------------------------------------------------------
   (function () {
     const track = document.getElementById('testiTrack');
     const dotsWrap = document.getElementById('testiDots');
@@ -3337,7 +3337,7 @@ async function doSearch() {
     track.addEventListener('mouseleave', startAuto);
   })();
 
-  // ---------------------------------------------------------------- DETAIL ANALYSIS PANEL ----------------------------------------------------------------
+  // ──---------------------------------------------------- DETAIL ANALYSIS PANEL ----------------------------------------------------------------
   let _detailData = null;
 
   function openDetailPanel() {
@@ -3372,7 +3372,7 @@ async function doSearch() {
   }
 
   function populateDetailPanel(d) {
-    var kw = d.keyword || '--------------------------------';
+    var kw = d.keyword || '—';
     document.getElementById('detail-keyword-label').textContent = kw;
 
     var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
@@ -3381,7 +3381,7 @@ async function doSearch() {
 
     var html = '';
 
-    // ---------------------------------------------------------------- KELOMPOK 1: KEPUTUSAN ----------------------------------------------------------------
+    // ──---------------------------------------------------- KELOMPOK 1: KEPUTUSAN ----------------------------------------------------------------
     html += '<div class="dm-section-title">// Keputusan Utama</div>';
 
     // 1. Entry Timing Score
@@ -3403,20 +3403,20 @@ async function doSearch() {
       'Stable': { color: 'dv-text', cls: '', desc: 'Tren relatif datar dan stabil. <strong>Pasar matang</strong> -------------------------------- bisa masuk tapi persaingan sudah ada.' },
       'Declining': { color: 'dv-red', cls: 'dm-red', desc: 'Minat pasar sedang menurun. <strong>Tidak disarankan</strong> untuk mulai berjualan saat ini.' }
     };
-    var si = stageMap[stage] || { color: 'dv-text', cls: '', desc: '--------------------------------' };
+    var si = stageMap[stage] || { color: 'dv-text', cls: '', desc: '—' };
     html += _dmBlock(2, 'Lifecycle Stage', stage, 'Fase siklus hidup produk', si.desc, si.cls, si.color);
 
     // 3. Risk Level
-    var risk = d.risk_level || '--------------------------------';
+    var risk = d.risk_level || '—';
     var riskMap = {
       'Low Risk': { color: 'dv-green', cls: 'dm-green', desc: 'Volatilitas rendah dan tidak ada sinyal hype berlebihan. <strong>Risiko investasi relatif kecil.</strong>' },
       'Medium Risk': { color: 'dv-amber', cls: 'dm-amber', desc: 'Ada potensi fluktuasi yang perlu diwaspadai. <strong>Masih layak, tapi siapkan strategi cadangan.</strong>' },
       'High Risk': { color: 'dv-red', cls: 'dm-red', desc: 'Tren sangat tidak stabil atau terdeteksi hype sesaat. <strong>Hindari investasi besar di produk ini sekarang.</strong>' }
     };
-    var ri = riskMap[risk] || { color: 'dv-text', cls: '', desc: '--------------------------------' };
+    var ri = riskMap[risk] || { color: 'dv-text', cls: '', desc: '—' };
     html += _dmBlock(3, 'Risk Level', risk, 'Berdasarkan volatilitas + FOMO index', ri.desc, ri.cls, ri.color);
 
-    // ---------------------------------------------------------------- KELOMPOK 2: METRIK PASAR ----------------------------------------------------------------
+    // ──---------------------------------------------------- KELOMPOK 2: METRIK PASAR ----------------------------------------------------------------
     html += '<div class="dm-section-title">// Metrik Pasar</div>';
     html += '<div class="dm-grid-2">';
 
@@ -3491,7 +3491,7 @@ async function doSearch() {
 
     html += '</div>';
 
-    // ---------------------------------------------------------------- KELOMPOK 3: PROYEKSI ----------------------------------------------------------------
+    // ──---------------------------------------------------- KELOMPOK 3: PROYEKSI ----------------------------------------------------------------
     html += '<div class="dm-section-title">// Proyeksi & Pola</div>';
 
     // 10. Forecast 30 Hari
