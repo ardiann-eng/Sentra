@@ -1962,6 +1962,21 @@ function renderResults(d) {
 
   setTimeout(() => resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
 
+  // AI Autopilot OFF: Reset trigger state for new results
+  _aiInsightGenerated = false;
+  const aiTrigger = document.getElementById('ai-trigger-state');
+  const aiResult = document.getElementById('ai-result-state');
+  const aiLoading = document.getElementById('ai-loading-state');
+
+  if (d.ai_insight && d.ai_insight.trim() !== "") {
+    if (aiTrigger) aiTrigger.classList.add('hidden');
+    if (aiLoading) aiLoading.classList.add('hidden');
+    if (aiResult) aiResult.classList.remove('hidden');
+    renderAiCards(d.ai_insight);
+    _aiInsightGenerated = true;
+  } else {
+    showAiTriggerState();
+  }
 }
 
 let _techSectionOpen = false;
