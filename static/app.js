@@ -3,30 +3,36 @@
 // If splash-screen or animations get stuck on Vercel/Production
 setTimeout(() => {
   const splash = document.getElementById('splash-screen');
-  if (splash && splash.style.opacity !== '0' && splash.style.display !== 'none') {
-    console.warn('[SENTRA] Emergency reveal triggered: Splash screen was stuck.');
-    splash.style.transition = 'opacity 0.5s ease';
-    splash.style.opacity = '0';
-    setTimeout(() => splash.style.display = 'none', 500);
+  const isSplashVisible = splash && 
+    splash.style.display !== 'none' && 
+    !splash.classList.contains('hidden') &&
+    parseFloat(getComputedStyle(splash).opacity) > 0;
+    
+  if (isSplashVisible || true) {
+    if (splash) {
+      splash.style.transition = 'opacity 0.5s ease';
+      splash.style.opacity = '0';
+      setTimeout(() => { splash.style.display = 'none'; }, 500);
+    }
     document.body.style.overflow = 'auto';
-    // Force reveal hidden sections and all possible GSAP targets
-    const selectors = [
-      '.animate-fade-in', 'section', 'header', '.hero', 
-      '.howto-section', '.radar-section', '.wp-section', 
-      '.social-proof-section', '#market-snapshot', '.pricing-section',
-      '#results', '#compare-results', '.sector-card-modern', 
-      '.radar-card-premium', '.ai-insight-card', '.pulse-card',
-      '.snapshot-grid', '.sp-grid', '.radar-grid'
+    
+    const allTargets = [
+      'section', 'header', '.hero', '.howto-section',
+      '.radar-section', '.radar-section-modern', '.wp-section',
+      '#market-snapshot', '.snapshot-section', '.pricing-section',
+      '#testimoni-section', '#sector-dashboard',
+      '#results', '#compare-results',
+      '#radar-grid-modern', '.radar-card-premium'
     ].join(', ');
     
-    document.querySelectorAll(selectors).forEach(el => {
+    document.querySelectorAll(allTargets).forEach(el => {
       el.style.opacity = '1';
       el.style.visibility = 'visible';
       el.style.transform = 'none';
       el.style.filter = 'none';
     });
   }
-}, 6000);
+}, 4000);
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
 const STEPS = [
@@ -100,7 +106,7 @@ const loadingTexts = [
   "System Ready..."
 ];
 
-const SPLASH_TARGETS = 'header, .hero, .howto-section, .pricing-section';
+const SPLASH_TARGETS = 'header, .hero';
 gsap.set(SPLASH_TARGETS, { opacity: 0, y: 30 });
 
 function startSplashScreen() {
@@ -123,15 +129,22 @@ function startSplashScreen() {
         document.body.style.overflowY = 'auto';
         gsap.set(SPLASH_TARGETS, { clearProps: 'all' });
         document.querySelectorAll(
-          'header, .hero, .howto-section, .radar-section, .wp-section, ' +
-          '.social-proof-section, #market-snapshot, .pricing-section, ' +
-          '#results, #compare-results'
+          'header, .hero, .howto-section, .radar-section, .radar-section-modern, ' +
+          '.wp-section, .social-proof-section, #market-snapshot, .snapshot-section, ' +
+          '.pricing-section, #results, #compare-results, #sector-dashboard, ' +
+          '#testimoni-section'
         ).forEach(el => {
           el.style.opacity = '1';
           el.style.transform = 'none';
           el.style.visibility = 'visible';
           el.style.filter = 'none';
           el.style.willChange = 'auto';
+        });
+
+        document.querySelectorAll('#radar-grid-modern, .radar-card-premium').forEach(el => {
+          el.style.opacity = '1';
+          el.style.transform = 'none';
+          el.style.visibility = 'visible';
         });
       }
     });

@@ -778,9 +778,7 @@
 
     /* Stagger reveal initial state */
     header,
-    .hero,
-    .wrap>section,
-    .wrap>div {
+    .hero {
       opacity: 0;
       transform: translateY(20px);
     }
@@ -9163,5 +9161,35 @@
  . r a d a r - g r i d ,   . s p - g r i d ,   . s n a p s h o t - g r i d   { 
          d i s p l a y :   g r i d   ! i m p o r t a n t ; 
  } 
-  
  
+ 
+ 
+/* SENTRA — Nuclear Visibility Fallback */
+section,
+header,
+.hero,
+.howto-section,
+.radar-section,
+.radar-section-modern,
+.wp-section,
+#market-snapshot,
+.snapshot-section,
+.pricing-section,
+#testimoni-section,
+#sector-dashboard,
+#results,
+#compare-results {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+  pointer-events: auto !important;
+}
+
+.radar-grid,
+.radar-grid-modern,
+.snapshot-grid,
+#radar-grid-modern {
+  display: grid !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
