@@ -1353,16 +1353,16 @@ def umkm_promo():
 @app.route("/api/umkm/competitors", methods=["POST"])
 def umkm_competitors():
     """
-    Find competitors via Google Places Text Search API (server-side).
-    Requires env GOOGLE_MAPS_API_KEY.
+    Find competitors via SerpAPI Google Maps engine.
+    Reuses the SERPAPI_KEY already configured for Google Trends.
     """
     user_id, _, _ = get_auth_session()
     if not user_id:
         return jsonify({"error": "Unauthorized"}), 401
 
-    key = (os.environ.get("GOOGLE_MAPS_API_KEY") or "").strip()
-    if not key:
-        return jsonify({"error": "GOOGLE_MAPS_API_KEY belum dikonfigurasi"}), 503
+    from sentra_engine import _SERPAPI_KEY
+    if not _SERPAPI_KEY:
+        return jsonify({"error": "SERPAPI_KEY belum dikonfigurasi"}), 503
 
     data = request.get_json(silent=True) or {}
     query = (data.get("query") or "").strip()
@@ -1380,19 +1380,31 @@ def umkm_competitors():
             location_hint = ""
 
     full_query = f"{query} {location_hint}".strip()
+
     try:
-        import requests
-        url = "https://maps.googleapis.com/maps/api/place/textsearch/json"
-        resp = requests.get(url, params={"query": full_query, "key": key}, timeout=25)
-        j = resp.json() if resp is not None else {}
+        import serpapi
+        client = serpapi.Client(api_key=_SERPAPI_KEY)
+        search_params = {
+            "engine": "google_maps",
+            "q": full_query,
+            "type": "search",
+            "hl": "id",
+            "gl": "id",
+        }
+        search_result = client.search(search_params)
+        local_results = search_result.get("local_results") or []
+
         results = []
-        for r in (j.get("results") or [])[:8]:
+        for r in local_results[:8]:
             results.append({
-                "name": r.get("name"),
-                "address": r.get("formatted_address"),
+                "name": r.get("title"),
+                "address": r.get("address"),
                 "rating": r.get("rating"),
-                "user_ratings_total": r.get("user_ratings_total"),
+                "user_ratings_total": r.get("reviews"),
+                "type": r.get("type"),
+                "hours": r.get("hours"),
             })
+
         return jsonify({"results": results})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
