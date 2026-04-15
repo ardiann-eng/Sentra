@@ -51,18 +51,25 @@ def _generate_via_groq(prompt: str) -> tuple[str, int, str, str]:
     return "", 500, f"Semua AI sedang sibuk (Rate Limit). Coba lagi nanti. Detail: {last_err[:100]}...", ""
 
 
+def _format_friendly_error(err_detail: str) -> str:
+    err_lower = err_detail.lower()
+    if "429" in err_lower or "rate_limit" in err_lower:
+        return "Aduh, otaknya Sentra AI lagi agak sibuk menangani banyak permintaan nih. Coba klik lagi tombolnya dalam 1-2 menit ya, Kak!"
+    if "api_key" in err_lower or "auth" in err_lower:
+        return "Satelit Sentra kehilangan koneksi kunci rahasia. Hubungi tim teknis ya!"
+    return f"Ada sedikit gangguan teknis: {err_detail[:60]}... Coba lagi ya!"
+
 def generate_ai_insight(data: dict) -> str:
     api_key = os.environ.get("GROQ_API_KEY")
     if not api_key:
-        return "⚠ GROQ_API_KEY belum dikonfigurasi."
+        return "⚠ Konfigurasi AI belum lengkap. Hubungi Admin."
 
     prompt = _build_prompt(data)
 
     try:
         text, status_code, err_detail, used_model = _generate_via_groq(prompt)
         if status_code != 200:
-            print(f"[AI ERROR] Groq API status {status_code}: {err_detail}")
-            return f"⚠ Groq AI error: {err_detail}"
+            return _format_friendly_error(err_detail)
 
         if text:
             print(f"[AI] Berhasil: {used_model}")
@@ -85,8 +92,7 @@ def generate_compare_insight(compare_data: dict) -> str:
     try:
         text, status_code, err_detail, used_model = _generate_via_groq(prompt)
         if status_code != 200:
-            print(f"[AI COMPARE ERROR] Groq API status {status_code}: {err_detail}")
-            return "⚠ AI Compare Insight tidak tersedia saat ini."
+            return "⚠ Maaf, analisis pembanding belum bisa dimuat karena server sedang padat. Coba beberapa saat lagi."
 
         if text:
             return text
@@ -111,8 +117,7 @@ def generate_local_insight(keyword: str, regional_data: list) -> str:
     try:
         text, status_code, err_detail, used_model = _generate_via_groq(prompt)
         if status_code != 200:
-            print(f"[AI LOCAL ERROR] Groq API status {status_code}: {err_detail}")
-            return "Strategi lokal tidak dapat dimuat saat ini."
+            return "Strategi lokal lagi istirahat sebentar. Coba klik lagi nanti ya."
 
         if text:
             return text
