@@ -3,11 +3,11 @@
 // If splash-screen or animations get stuck on Vercel/Production
 setTimeout(() => {
   const splash = document.getElementById('splash-screen');
-  const isSplashVisible = splash && 
-    splash.style.display !== 'none' && 
+  const isSplashVisible = splash &&
+    splash.style.display !== 'none' &&
     !splash.classList.contains('hidden') &&
     parseFloat(getComputedStyle(splash).opacity) > 0;
-    
+
   if (isSplashVisible || true) {
     if (splash) {
       splash.style.transition = 'opacity 0.5s ease';
@@ -15,7 +15,7 @@ setTimeout(() => {
       setTimeout(() => { splash.style.display = 'none'; }, 500);
     }
     document.body.style.overflow = 'auto';
-    
+
     const allTargets = [
       'section', 'header', '.hero', '.howto-section',
       '.radar-section', '.radar-section-modern', '.wp-section',
@@ -24,7 +24,7 @@ setTimeout(() => {
       '#results', '#compare-results',
       '#radar-grid-modern', '.radar-card-premium'
     ].join(', ');
-    
+
     document.querySelectorAll(allTargets).forEach(el => {
       el.style.opacity = '1';
       el.style.visibility = 'visible';
@@ -76,7 +76,7 @@ if (!localStorage.getItem('sentra_uid')) {
 const userState = {
   userId: localStorage.getItem('sentra_uid'),
   token: null,
-  tier: 'free', 
+  tier: 'free',
   searchesToday: 0,
   remaining: 5,
 };
@@ -1722,7 +1722,7 @@ function renderResults(d) {
 
   }
 
-  
+
 
   setT('summary-verdict', d.entry_timing_label + verdictSuffix);
 
@@ -1812,7 +1812,7 @@ function renderResults(d) {
 
       const div = document.createElement('div');
 
-      
+
 
       div.style.cssText = isPeak
 
@@ -1820,11 +1820,11 @@ function renderResults(d) {
 
         : isActive
 
-        ? 'background:rgba(212,168,67,0.08);border:1px solid rgba(212,168,67,0.3);color:rgba(212,168,67,0.6);'
+          ? 'background:rgba(212,168,67,0.08);border:1px solid rgba(212,168,67,0.3);color:rgba(212,168,67,0.6);'
 
-        : 'background:rgba(39,39,42,0.2);border:1px solid rgba(39,39,42,0.5);color:#52525b;';
+          : 'background:rgba(39,39,42,0.2);border:1px solid rgba(39,39,42,0.5);color:#52525b;';
 
-      
+
 
       div.className = 'flex items-center justify-center rounded-lg font-mono text-xs font-bold cursor-default min-h-[60px]';
 
@@ -1884,45 +1884,45 @@ function renderResults(d) {
 
   const regBreakdownSec = document.getElementById('regional-breakdown-section');
 
-  
+
 
   if (d.regional_interest && d.regional_interest.length > 0) {
 
-      if (regSec) regSec.style.display = 'block';
+    if (regSec) regSec.style.display = 'block';
 
-      if (regBreakdownSec) regBreakdownSec.style.display = 'block';
+    if (regBreakdownSec) regBreakdownSec.style.display = 'block';
 
-      // Update the MapLogic (Indonesia Tile Map)
+    // Update the MapLogic (Indonesia Tile Map)
 
-      if (window.MapLogic && typeof window.MapLogic.update === 'function') {
+    if (window.MapLogic && typeof window.MapLogic.update === 'function') {
 
-          // Normalize formatting if needed: {name, value} or {province, value}
+      // Normalize formatting if needed: {name, value} or {province, value}
 
-          const mapData = d.regional_interest.map(item => ({
+      const mapData = d.regional_interest.map(item => ({
 
-              name: item.province || item.name,
+        name: item.province || item.name,
 
-              value: item.value
+        value: item.value
 
-          }));
+      }));
 
-          window.MapLogic.update(mapData);
+      window.MapLogic.update(mapData);
 
-      }
+    }
 
-      // Update Top Regions List
+    // Update Top Regions List
 
-      const topList = document.getElementById('top-regions-list');
+    const topList = document.getElementById('top-regions-list');
 
-      if (topList) {
+    if (topList) {
 
-          topList.innerHTML = d.regional_interest.slice(0, 5).map((item, i) => `
+      topList.innerHTML = d.regional_interest.slice(0, 5).map((item, i) => `
 
               <div class="flex items-center justify-between p-3 bg-zinc-900/60 border border-zinc-800 rounded-xl">
 
                   <div class="flex items-center gap-3">
 
-                      <div class="w-6 h-6 rounded-full bg-brand/10 text-brand text-[10px] font-mono flex items-center justify-center border border-brand/20">${i+1}</div>
+                      <div class="w-6 h-6 rounded-full bg-brand/10 text-brand text-[10px] font-mono flex items-center justify-center border border-brand/20">${i + 1}</div>
 
                       <div class="text-zinc-100 text-sm font-jakarta font-medium">${item.province || item.name}</div>
 
@@ -1934,31 +1934,31 @@ function renderResults(d) {
 
           `).join('');
 
-      }
+    }
 
-      const regSumm = document.getElementById('r-regional-summary');
+    const regSumm = document.getElementById('r-regional-summary');
 
-      if (regSumm && d.regional_interest[0]) {
+    if (regSumm && d.regional_interest[0]) {
 
-          regSumm.textContent = `Minat tertinggi berasal dari ${d.regional_interest[0].province || d.regional_interest[0].name} dengan indeks pencarian mencapai ${d.regional_interest[0].value}%.`;
+      regSumm.textContent = `Minat tertinggi berasal dari ${d.regional_interest[0].province || d.regional_interest[0].name} dengan indeks pencarian mencapai ${d.regional_interest[0].value}%.`;
 
-      }
+    }
 
-      
 
-      // Update Regional Bar Chart if exists
 
-      if (typeof renderRegionalBarChart === 'function') {
+    // Update Regional Bar Chart if exists
 
-          renderRegionalBarChart(d.regional_interest);
+    if (typeof renderRegionalBarChart === 'function') {
 
-      }
+      renderRegionalBarChart(d.regional_interest);
+
+    }
 
   } else {
 
-      if (regSec) regSec.style.display = 'none';
+    if (regSec) regSec.style.display = 'none';
 
-      if (regBreakdownSec) regBreakdownSec.style.display = 'none';
+    if (regBreakdownSec) regBreakdownSec.style.display = 'none';
 
   }
 
@@ -4092,457 +4092,457 @@ async function doSearch() {
 
 /* -- UPGRADE MODAL -- */
 
-    function showUpgradeModal(reason) {
+function showUpgradeModal(reason) {
 
-    const title = document.getElementById('modal-title');
+  const title = document.getElementById('modal-title');
 
-    const desc = document.getElementById('modal-desc');
+  const desc = document.getElementById('modal-desc');
 
-    if (reason === 'pdf') {
+  if (reason === 'pdf') {
 
-      if (title) title.textContent = 'Fitur Khusus Pro';
+    if (title) title.textContent = 'Fitur Khusus Pro';
 
-      if (desc) desc.innerHTML = 'Download PDF hanya tersedia untuk pengguna <strong>Pro</strong>.<br>Upgrade sekarang untuk akses penuh ke semua fitur premium.';
+    if (desc) desc.innerHTML = 'Download PDF hanya tersedia untuk pengguna <strong>Pro</strong>.<br>Upgrade sekarang untuk akses penuh ke semua fitur premium.';
+
+  } else {
+
+    if (title) title.textContent = 'Buka Akses Penuh Sentra';
+
+    if (desc) desc.innerHTML = 'Kamu sudah menggunakan 5 riset hari ini.<br>Upgrade ke <strong>Pro</strong> untuk riset tanpa batas, analisis per-provinsi, dan ekspor laporan bisnis.';
+
+  }
+
+  document.getElementById('upgrade-modal').classList.add('open');
+
+  document.body.style.overflow = 'hidden';
+
+}
+
+function closeUpgradeModal() {
+
+  document.getElementById('upgrade-modal').classList.remove('open');
+
+  unlockScroll();
+
+}
+
+function handleModalOverlayClick(e) {
+
+  if (e.target === document.getElementById('upgrade-modal')) closeUpgradeModal();
+
+}
+
+/*  IDE PRODUK WIZARD  */
+
+const IP_KATEGORI = [
+
+  { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h2v11M7 2v20M15 2c0 0-2 2-2 5s2 5 2 5v10M19 2v5h-4"/></svg>', nama: 'Makanan', value: 'Makanan' },
+
+  { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M5 3h14l-2 16H7L5 3z"/><path d="M3 3h18M10 7l4 4"/></svg>', nama: 'Minuman', value: 'Minuman' },
+
+  { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M12 3a2 2 0 0 1 2 2c0 .74-.4 1.38-1 1.73V8l8 6H3l8-6V6.73A2 2 0 0 1 10 5a2 2 0 0 1 2-2z"/><path d="M3 14v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"/></svg>', nama: 'Fashion', value: 'Fashion' },
+
+  { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><rect x="7" y="8" width="10" height="13" rx="2"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/><path d="M12 12v4M10 14h4"/></svg>', nama: 'Kecantikan', value: 'Produk Kecantikan' },
+
+  { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/><path d="M9 8l-2 3h10l-2-3H9zM7 11l5 7 5-7"/></svg>', nama: 'Aksesoris', value: 'Aksesoris' },
+
+  { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M3.5 20.5l10-10M8 3c0 0 1 4-1 6s-4 2-4 2"/><path d="M20.5 3.5c0 0-6 1-8 6s0 10 0 10"/><path d="M15 6l3-3 3 3-3 3-3-3z"/></svg>', nama: 'Handmade', value: 'Handmade' },
+
+  { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 18h20M10 11l2-3 2 3-2 1-2-1z"/></svg>', nama: 'Digital', value: 'Produk Digital' },
+
+  { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M3 12L12 3l9 9"/><path d="M9 21V12h6v9"/><path d="M3 12v9h18v-9"/></svg>', nama: 'Rumah Tangga', value: 'Produk Rumah Tangga' },
+
+  { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M12 19c-1.5 0-3-1-3-3 0-2 2-3 2-5"/><circle cx="12" cy="5" r="2"/><path d="M8 19h8"/><path d="M15 8c1.5 1 3 2.5 3 5a6 6 0 0 1-12 0c0-2.5 1.5-4 3-5"/></svg>', nama: 'Hobi & Kreatif', value: 'Hobi & Kreatif' },
+
+  { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>', nama: 'Produk Anak', value: 'Produk Anak' }
+
+];
+
+const IP_MODAL = [
+
+  { label: 'Modal Kecil', ket: 'Di bawah Rp 10 juta', kode: 'KCL', tier: 'Kecil' },
+
+  { label: 'Modal Menengah', ket: 'Rp 10 — 50 juta', kode: 'MNG', tier: 'Menengah' },
+
+  { label: 'Modal Besar', ket: 'Di atas Rp 50 juta', kode: 'BSR', tier: 'Besar' }
+
+];
+
+function openIdeWizard() {
+
+  document.getElementById('ip-overlay').classList.add('open');
+
+  document.getElementById('ip-modal').classList.add('open');
+
+  document.body.style.overflow = 'hidden';
+
+  renderIdeState(1);
+
+}
+
+function closeIdeWizard() {
+
+  document.getElementById('ip-overlay').classList.remove('open');
+
+  document.getElementById('ip-modal').classList.remove('open');
+
+  document.body.style.removeProperty('overflow');
+
+}
+
+function resetIdeWizard() {
+
+  selectedKategori = null;
+
+  selectedModalTier = null;
+
+  renderIdeState(1);
+
+}
+
+function ipHeaderHtml() {
+
+  return '<div class="ip-header"><span class="ip-header-label">SENTRA — IDE PRODUK</span><button type="button" class="ip-header-close" onclick="closeIdeWizard()">&times;</button></div><hr class="ip-divider">';
+
+}
+
+function renderIdeState(step, data) {
+
+  const inner = document.getElementById('ip-modal-inner');
+
+  if (!inner) return;
+
+  let body = '';
+
+  if (step === 1) {
+
+    body = '<div class="ip-step-indicator">01 / 02</div><h2 class="ip-title">Kategori mana yang ingin kamu masuki?</h2><div class="ip-cat-grid">' +
+
+      IP_KATEGORI.map(k => '<div class="ip-cat-card' + (selectedKategori === k.value ? ' selected' : '') + '" onclick="handleKategoriSelect(\'' + k.value.replace(/'/g, "\\'") + '\')">' + k.svg + '<span class="ip-cat-name">' + k.nama + '</span></div>').join('') +
+
+      '</div>';
+
+  } else if (step === 2) {
+
+    body = '<div class="ip-step-indicator">02 / 02</div><h2 class="ip-title">Berapa modal yang siap kamu alokasikan?</h2><div class="ip-modal-grid">' +
+
+      IP_MODAL.map((m, i) => '<div class="ip-modal-card' + (selectedModalTier === m.tier ? ' selected' : '') + '" data-index="' + (i + 1) + '" onclick="handleModalSelect(\'' + m.tier + '\')"><span class="ip-modal-label">' + m.label + '</span><span class="ip-modal-ket">' + m.ket + '</span><span class="ip-modal-code">' + m.kode + '</span></div>').join('') +
+
+      '</div>';
+
+  } else if (step === 3) {
+
+    body = '<div class="ai-gen-header"><div class="ai-gen-icon-pulse">&#10022;</div><div class="ai-gen-title">Sentra memindai database...</div></div><div class="ai-gen-steps">' +
+
+      '<div class="ai-gen-step" id="ip-gen-step-1"><span class="step-dot active"></span><span class="step-text">Memfilter berdasarkan kategori & modal...</span></div>' +
+
+      '<div class="ai-gen-step" id="ip-gen-step-2"><span class="step-dot"></span><span class="step-text">Menghitung skor peluang...</span></div>' +
+
+      '<div class="ai-gen-step" id="ip-gen-step-3"><span class="step-dot"></span><span class="step-text">Menyiapkan rekomendasi terbaik...</span></div></div>' +
+
+      '<div class="ai-gen-bar-track"><div class="ai-gen-bar-fill" id="ip-gen-bar"></div></div>';
+
+  } else if (step === 4) {
+
+    const list = data && data.length ? data : [];
+
+    const catLabel = selectedKategori || '';
+
+    const tierLabel = selectedModalTier || '';
+
+    body = '<div class="ip-result-header"><span class="ip-chip">' + catLabel + '</span><span class="ip-chip">' + tierLabel + '</span><span class="ip-result-count">-- ' + list.length + ' ide ditemukan</span></div>';
+
+    if (list.length === 0) {
+
+      body += '<div class="ip-empty"><p class="ip-empty-title">Belum ada data untuk kombinasi ini.</p><p class="ip-empty-sub">Coba kategori atau modal yang berbeda.</p><button type="button" class="ip-reset-btn" onclick="resetIdeWizard()">Cari dengan kriteria lain</button></div>';
 
     } else {
 
-      if (title) title.textContent = 'Buka Akses Penuh Sentra';
+      body += '<div class="ip-card-grid">' + list.map((row, i) => {
 
-      if (desc) desc.innerHTML = 'Kamu sudah menggunakan 5 riset hari ini.<br>Upgrade ke <strong>Pro</strong> untuk riset tanpa batas, analisis per-provinsi, dan ekspor laporan bisnis.';
+        const status = (row.status_pasar || '').toLowerCase().replace(/\s/g, '-');
 
-    }
+        const rec = (row.rekomendasi || '').toLowerCase().replace(/\s/g, '-');
 
-    document.getElementById('upgrade-modal').classList.add('open');
+        const statusClass = status ? 'ip-badge-status-' + status : '';
 
-    document.body.style.overflow = 'hidden';
+        const recClass = rec ? 'ip-badge-rec-' + rec : '';
 
-  }
+        const skor = Number(row.skor_peluang) || 0;
 
-  function closeUpgradeModal() {
+        const fillColor = skor > 75 ? '#22c55e' : skor > 50 ? 'var(--gold)' : '#ef4444';
 
-    document.getElementById('upgrade-modal').classList.remove('open');
+        return '<div class="ip-card" style="--i: ' + i + '"><div class="ip-badge-row"><span class="ip-badge ' + statusClass + '">' + (row.status_pasar || '—') + '</span><span class="ip-badge ' + recClass + '">' + (row.rekomendasi || '—') + '</span></div><div class="ip-name">' + (row.nama_produk || '—') + '</div><div class="ip-highlight">' + (row.highlight || '—') + '</div><div class="ip-stats-grid"><div><span class="ip-stat-label">Tren</span><span class="ip-stat-value">' + (row.tren_persen != null ? row.tren_persen + '%' : '—') + '</span></div><div><span class="ip-stat-label">Margin</span><span class="ip-stat-value">' + (row.margin_persen != null ? row.margin_persen + '%' : '—') + '</span></div><div><span class="ip-stat-label">Kompetisi</span><span class="ip-stat-value">' + (row.kompetisi || '—') + '</span></div><div><span class="ip-stat-label">Target</span><span class="ip-stat-value">' + (row.target || '—') + '</span></div></div><div class="ip-skor-row"><span class="ip-skor-label">Skor peluang</span><span class="ip-skor-value">' + skor + '</span></div><div class="ip-skor-track"><div class="ip-skor-fill" id="ip-skor-fill-' + i + '" style="width:0;background:' + fillColor + '"></div></div><div class="ip-card-footer">Rp ' + (row.modal_min_juta != null ? row.modal_min_juta : '—') + '  ' + (row.modal_max_juta != null ? row.modal_max_juta : '—') + ' juta  --  ' + (row.puncak_penjualan || '—') + '</div></div>';
 
-    unlockScroll();
-
-  }
-
-  function handleModalOverlayClick(e) {
-
-    if (e.target === document.getElementById('upgrade-modal')) closeUpgradeModal();
-
-  }
-
-  /*  IDE PRODUK WIZARD  */
-
-  const IP_KATEGORI = [
-
-    { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h2v11M7 2v20M15 2c0 0-2 2-2 5s2 5 2 5v10M19 2v5h-4"/></svg>', nama: 'Makanan', value: 'Makanan' },
-
-    { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M5 3h14l-2 16H7L5 3z"/><path d="M3 3h18M10 7l4 4"/></svg>', nama: 'Minuman', value: 'Minuman' },
-
-    { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M12 3a2 2 0 0 1 2 2c0 .74-.4 1.38-1 1.73V8l8 6H3l8-6V6.73A2 2 0 0 1 10 5a2 2 0 0 1 2-2z"/><path d="M3 14v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"/></svg>', nama: 'Fashion', value: 'Fashion' },
-
-    { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><rect x="7" y="8" width="10" height="13" rx="2"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/><path d="M12 12v4M10 14h4"/></svg>', nama: 'Kecantikan', value: 'Produk Kecantikan' },
-
-    { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/><path d="M9 8l-2 3h10l-2-3H9zM7 11l5 7 5-7"/></svg>', nama: 'Aksesoris', value: 'Aksesoris' },
-
-    { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M3.5 20.5l10-10M8 3c0 0 1 4-1 6s-4 2-4 2"/><path d="M20.5 3.5c0 0-6 1-8 6s0 10 0 10"/><path d="M15 6l3-3 3 3-3 3-3-3z"/></svg>', nama: 'Handmade', value: 'Handmade' },
-
-    { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 18h20M10 11l2-3 2 3-2 1-2-1z"/></svg>', nama: 'Digital', value: 'Produk Digital' },
-
-    { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M3 12L12 3l9 9"/><path d="M9 21V12h6v9"/><path d="M3 12v9h18v-9"/></svg>', nama: 'Rumah Tangga', value: 'Produk Rumah Tangga' },
-
-    { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M12 19c-1.5 0-3-1-3-3 0-2 2-3 2-5"/><circle cx="12" cy="5" r="2"/><path d="M8 19h8"/><path d="M15 8c1.5 1 3 2.5 3 5a6 6 0 0 1-12 0c0-2.5 1.5-4 3-5"/></svg>', nama: 'Hobi & Kreatif', value: 'Hobi & Kreatif' },
-
-    { svg: '<svg width="28" height="28" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>', nama: 'Produk Anak', value: 'Produk Anak' }
-
-  ];
-
-  const IP_MODAL = [
-
-    { label: 'Modal Kecil', ket: 'Di bawah Rp 10 juta', kode: 'KCL', tier: 'Kecil' },
-
-    { label: 'Modal Menengah', ket: 'Rp 10 — 50 juta', kode: 'MNG', tier: 'Menengah' },
-
-    { label: 'Modal Besar', ket: 'Di atas Rp 50 juta', kode: 'BSR', tier: 'Besar' }
-
-  ];
-
-  function openIdeWizard() {
-
-    document.getElementById('ip-overlay').classList.add('open');
-
-    document.getElementById('ip-modal').classList.add('open');
-
-    document.body.style.overflow = 'hidden';
-
-    renderIdeState(1);
-
-  }
-
-  function closeIdeWizard() {
-
-    document.getElementById('ip-overlay').classList.remove('open');
-
-    document.getElementById('ip-modal').classList.remove('open');
-
-    document.body.style.removeProperty('overflow');
-
-  }
-
-  function resetIdeWizard() {
-
-    selectedKategori = null;
-
-    selectedModalTier = null;
-
-    renderIdeState(1);
-
-  }
-
-  function ipHeaderHtml() {
-
-    return '<div class="ip-header"><span class="ip-header-label">SENTRA — IDE PRODUK</span><button type="button" class="ip-header-close" onclick="closeIdeWizard()">&times;</button></div><hr class="ip-divider">';
-
-  }
-
-  function renderIdeState(step, data) {
-
-    const inner = document.getElementById('ip-modal-inner');
-
-    if (!inner) return;
-
-    let body = '';
-
-    if (step === 1) {
-
-      body = '<div class="ip-step-indicator">01 / 02</div><h2 class="ip-title">Kategori mana yang ingin kamu masuki?</h2><div class="ip-cat-grid">' +
-
-        IP_KATEGORI.map(k => '<div class="ip-cat-card' + (selectedKategori === k.value ? ' selected' : '') + '" onclick="handleKategoriSelect(\'' + k.value.replace(/'/g, "\\'") + '\')">' + k.svg + '<span class="ip-cat-name">' + k.nama + '</span></div>').join('') +
-
-        '</div>';
-
-    } else if (step === 2) {
-
-      body = '<div class="ip-step-indicator">02 / 02</div><h2 class="ip-title">Berapa modal yang siap kamu alokasikan?</h2><div class="ip-modal-grid">' +
-
-        IP_MODAL.map((m, i) => '<div class="ip-modal-card' + (selectedModalTier === m.tier ? ' selected' : '') + '" data-index="' + (i + 1) + '" onclick="handleModalSelect(\'' + m.tier + '\')"><span class="ip-modal-label">' + m.label + '</span><span class="ip-modal-ket">' + m.ket + '</span><span class="ip-modal-code">' + m.kode + '</span></div>').join('') +
-
-        '</div>';
-
-    } else if (step === 3) {
-
-      body = '<div class="ai-gen-header"><div class="ai-gen-icon-pulse">&#10022;</div><div class="ai-gen-title">Sentra memindai database...</div></div><div class="ai-gen-steps">' +
-
-        '<div class="ai-gen-step" id="ip-gen-step-1"><span class="step-dot active"></span><span class="step-text">Memfilter berdasarkan kategori & modal...</span></div>' +
-
-        '<div class="ai-gen-step" id="ip-gen-step-2"><span class="step-dot"></span><span class="step-text">Menghitung skor peluang...</span></div>' +
-
-        '<div class="ai-gen-step" id="ip-gen-step-3"><span class="step-dot"></span><span class="step-text">Menyiapkan rekomendasi terbaik...</span></div></div>' +
-
-        '<div class="ai-gen-bar-track"><div class="ai-gen-bar-fill" id="ip-gen-bar"></div></div>';
-
-    } else if (step === 4) {
-
-      const list = data && data.length ? data : [];
-
-      const catLabel = selectedKategori || '';
-
-      const tierLabel = selectedModalTier || '';
-
-      body = '<div class="ip-result-header"><span class="ip-chip">' + catLabel + '</span><span class="ip-chip">' + tierLabel + '</span><span class="ip-result-count">-- ' + list.length + ' ide ditemukan</span></div>';
-
-      if (list.length === 0) {
-
-        body += '<div class="ip-empty"><p class="ip-empty-title">Belum ada data untuk kombinasi ini.</p><p class="ip-empty-sub">Coba kategori atau modal yang berbeda.</p><button type="button" class="ip-reset-btn" onclick="resetIdeWizard()">Cari dengan kriteria lain</button></div>';
-
-      } else {
-
-        body += '<div class="ip-card-grid">' + list.map((row, i) => {
-
-          const status = (row.status_pasar || '').toLowerCase().replace(/\s/g, '-');
-
-          const rec = (row.rekomendasi || '').toLowerCase().replace(/\s/g, '-');
-
-          const statusClass = status ? 'ip-badge-status-' + status : '';
-
-          const recClass = rec ? 'ip-badge-rec-' + rec : '';
-
-          const skor = Number(row.skor_peluang) || 0;
-
-          const fillColor = skor > 75 ? '#22c55e' : skor > 50 ? 'var(--gold)' : '#ef4444';
-
-          return '<div class="ip-card" style="--i: ' + i + '"><div class="ip-badge-row"><span class="ip-badge ' + statusClass + '">' + (row.status_pasar || '—') + '</span><span class="ip-badge ' + recClass + '">' + (row.rekomendasi || '—') + '</span></div><div class="ip-name">' + (row.nama_produk || '—') + '</div><div class="ip-highlight">' + (row.highlight || '—') + '</div><div class="ip-stats-grid"><div><span class="ip-stat-label">Tren</span><span class="ip-stat-value">' + (row.tren_persen != null ? row.tren_persen + '%' : '—') + '</span></div><div><span class="ip-stat-label">Margin</span><span class="ip-stat-value">' + (row.margin_persen != null ? row.margin_persen + '%' : '—') + '</span></div><div><span class="ip-stat-label">Kompetisi</span><span class="ip-stat-value">' + (row.kompetisi || '—') + '</span></div><div><span class="ip-stat-label">Target</span><span class="ip-stat-value">' + (row.target || '—') + '</span></div></div><div class="ip-skor-row"><span class="ip-skor-label">Skor peluang</span><span class="ip-skor-value">' + skor + '</span></div><div class="ip-skor-track"><div class="ip-skor-fill" id="ip-skor-fill-' + i + '" style="width:0;background:' + fillColor + '"></div></div><div class="ip-card-footer">Rp ' + (row.modal_min_juta != null ? row.modal_min_juta : '—') + '  ' + (row.modal_max_juta != null ? row.modal_max_juta : '—') + ' juta  --  ' + (row.puncak_penjualan || '—') + '</div></div>';
-
-        }).join('') + '</div><button type="button" class="ip-reset-btn" onclick="resetIdeWizard()">Cari dengan kriteria lain</button>';
-
-      }
-
-    }
-
-    inner.innerHTML = ipHeaderHtml() + body;
-
-    if (step === 3) startIdeLoadingAnim();
-
-    if (step === 4 && data && data.length) {
-
-      requestAnimationFrame(() => {
-
-        data.forEach((row, i) => {
-
-          const el = document.getElementById('ip-skor-fill-' + i);
-
-          if (el) {
-
-            const skor = Math.min(100, Math.max(0, Number(row.skor_peluang) || 0));
-
-            el.style.width = skor + '%';
-
-          }
-
-        });
-
-      });
+      }).join('') + '</div><button type="button" class="ip-reset-btn" onclick="resetIdeWizard()">Cari dengan kriteria lain</button>';
 
     }
 
   }
 
-  function startIdeLoadingAnim() {
+  inner.innerHTML = ipHeaderHtml() + body;
 
-    const bar = document.getElementById('ip-gen-bar');
+  if (step === 3) startIdeLoadingAnim();
 
-    const steps = [
+  if (step === 4 && data && data.length) {
 
-      { id: 'ip-gen-step-1', delay: 0, progress: 30 },
+    requestAnimationFrame(() => {
 
-      { id: 'ip-gen-step-2', delay: 700, progress: 65 },
+      data.forEach((row, i) => {
 
-      { id: 'ip-gen-step-3', delay: 1400, progress: 85 }
+        const el = document.getElementById('ip-skor-fill-' + i);
 
-    ];
+        if (el) {
 
-    steps.forEach((s, i) => {
+          const skor = Math.min(100, Math.max(0, Number(row.skor_peluang) || 0));
 
-      setTimeout(() => {
-
-        if (i > 0) {
-
-          const prev = document.getElementById(steps[i - 1].id);
-
-          if (prev) { prev.classList.add('done'); const dot = prev.querySelector('.step-dot'); if (dot) { dot.classList.remove('active'); dot.classList.add('done'); } }
+          el.style.width = skor + '%';
 
         }
 
-        const cur = document.getElementById(s.id);
-
-        if (cur) { const dot = cur.querySelector('.step-dot'); if (dot) dot.classList.add('active'); }
-
-        if (bar) bar.style.width = s.progress + '%';
-
-      }, s.delay);
+      });
 
     });
 
-    setTimeout(() => {
-
-      steps.forEach(s => {
-
-        const el = document.getElementById(s.id);
-
-        if (el) { el.classList.add('done'); const dot = el.querySelector('.step-dot'); if (dot) { dot.classList.remove('active'); dot.classList.add('done'); } }
-
-      });
-
-      if (bar) bar.style.width = '100%';
-
-    }, 2100);
-
   }
 
-  function handleKategoriSelect(supabaseValue) {
+}
 
-    selectedKategori = supabaseValue;
+function startIdeLoadingAnim() {
 
-    setTimeout(() => renderIdeState(2), 350);
+  const bar = document.getElementById('ip-gen-bar');
 
-  }
+  const steps = [
 
-  function handleModalSelect(tier) {
+    { id: 'ip-gen-step-1', delay: 0, progress: 30 },
 
-    selectedModalTier = tier;
+    { id: 'ip-gen-step-2', delay: 700, progress: 65 },
 
-    renderIdeState(3);
+    { id: 'ip-gen-step-3', delay: 1400, progress: 85 }
 
-    fetchIdeProduk();
+  ];
 
-  }
-
-  async function fetchIdeProduk() {
-
-    const inner = document.getElementById('ip-modal-inner');
-
-    const start = Date.now();
-
-    let data = [];
-
-    let err = null;
-
-    try {
-
-      const url = '/api/ide-produk?kategori=' + encodeURIComponent(selectedKategori || '') + '&modal_tier=' + encodeURIComponent(selectedModalTier || '');
-
-      const res = await fetch(url);
-
-      const json = await res.json();
-
-      data = json.data || [];
-
-      if (!res.ok) err = json.error || res.statusText;
-
-    } catch (e) {
-
-      err = e.message || 'Gagal memuat data';
-
-    }
-
-    const elapsed = Date.now() - start;
-
-    const remaining = Math.max(0, 2000 - elapsed);
+  steps.forEach((s, i) => {
 
     setTimeout(() => {
 
-      if (err && inner) {
+      if (i > 0) {
 
-        const msg = (err && err.length > 300) ? err.slice(0, 300) + '' : (err || 'Gagal memuat data. Coba lagi.');
+        const prev = document.getElementById(steps[i - 1].id);
 
-        inner.innerHTML = ipHeaderHtml() + '<p class="ip-empty-title" style="padding:24px 0; max-width:520px; margin:0 auto;">' + msg + '</p><button type="button" class="ip-reset-btn" onclick="resetIdeWizard()">Cari dengan kriteria lain</button>';
-
-      } else {
-
-        renderIdeState(4, data);
+        if (prev) { prev.classList.add('done'); const dot = prev.querySelector('.step-dot'); if (dot) { dot.classList.remove('active'); dot.classList.add('done'); } }
 
       }
 
-    }, remaining);
+      const cur = document.getElementById(s.id);
 
-  }
+      if (cur) { const dot = cur.querySelector('.step-dot'); if (dot) dot.classList.add('active'); }
 
-  // Close modal on Escape key — unified handler
+      if (bar) bar.style.width = s.progress + '%';
 
-  document.addEventListener('keydown', e => {
-
-    if (e.key !== 'Escape') return;
-
-    var authModal = document.getElementById('auth-modal');
-
-    if (authModal && authModal.classList.contains('open')) {
-
-      closeAuthModal();
-
-      return;
-
-    }
-
-    var profilePanel = document.getElementById('profile-panel');
-
-    if (profilePanel && profilePanel.classList.contains('open')) {
-
-      closeProfilePanel();
-
-      return;
-
-    }
-
-    var ipModal = document.getElementById('ip-modal');
-
-    if (ipModal && ipModal.classList.contains('open')) {
-
-      closeIdeWizard();
-
-      return;
-
-    }
-
-    var radarPanel = document.getElementById('radar-float-panel');
-
-    if (radarPanel && radarPanel.classList.contains('open')) {
-
-      closeRadarPanel();
-
-    } else {
-
-      closeUpgradeModal();
-
-    }
+    }, s.delay);
 
   });
 
-  /*  TAB SWITCHER (How To Use)  */
+  setTimeout(() => {
 
-  function switchTab(tab) {
+    steps.forEach(s => {
 
-    document.querySelectorAll('.howto-tab').forEach(btn => btn.classList.remove('active'));
+      const el = document.getElementById(s.id);
 
-    const activeTab = document.getElementById('tab-' + tab);
-
-    if (activeTab) activeTab.classList.add('active');
-
-    document.querySelectorAll('.howto-pane').forEach(pane => {
-
-      pane.classList.remove('active');
+      if (el) { el.classList.add('done'); const dot = el.querySelector('.step-dot'); if (dot) { dot.classList.remove('active'); dot.classList.add('done'); } }
 
     });
 
-    const targetPane = document.getElementById('pane-' + tab);
+    if (bar) bar.style.width = '100%';
 
-    if (targetPane) {
+  }, 2100);
 
-      targetPane.classList.add('active');
+}
 
-      const cards = targetPane.querySelectorAll('.howto-card, .tip-card, .metric-guide-card');
+function handleKategoriSelect(supabaseValue) {
 
-      cards.forEach((card, i) => {
+  selectedKategori = supabaseValue;
 
-        card.style.animation = 'none';
+  setTimeout(() => renderIdeState(2), 350);
 
-        card.offsetHeight; // reflow
+}
 
-        card.style.animation = `fadeUp .4s ease ${i * 0.08}s both`;
+function handleModalSelect(tier) {
 
-      });
+  selectedModalTier = tier;
 
-    }
+  renderIdeState(3);
+
+  fetchIdeProduk();
+
+}
+
+async function fetchIdeProduk() {
+
+  const inner = document.getElementById('ip-modal-inner');
+
+  const start = Date.now();
+
+  let data = [];
+
+  let err = null;
+
+  try {
+
+    const url = '/api/ide-produk?kategori=' + encodeURIComponent(selectedKategori || '') + '&modal_tier=' + encodeURIComponent(selectedModalTier || '');
+
+    const res = await fetch(url);
+
+    const json = await res.json();
+
+    data = json.data || [];
+
+    if (!res.ok) err = json.error || res.statusText;
+
+  } catch (e) {
+
+    err = e.message || 'Gagal memuat data';
 
   }
 
-  /*  RADAR PELUANG SEKTOR  */
+  const elapsed = Date.now() - start;
 
-  // Data cache — pre-seeded by initRadarHeadlines
+  const remaining = Math.max(0, 2000 - elapsed);
 
-  const radarDataCache = {};
+  setTimeout(() => {
 
-  const SECTOR_NAMES = {
+    if (err && inner) {
 
-    fashion: 'Fashion', beauty: 'Beauty & Perawatan',
+      const msg = (err && err.length > 300) ? err.slice(0, 300) + '' : (err || 'Gagal memuat data. Coba lagi.');
 
-    fnb: 'Makanan & Minuman', gadget: 'Gadget & Elektronik',
+      inner.innerHTML = ipHeaderHtml() + '<p class="ip-empty-title" style="padding:24px 0; max-width:520px; margin:0 auto;">' + msg + '</p><button type="button" class="ip-reset-btn" onclick="resetIdeWizard()">Cari dengan kriteria lain</button>';
 
-    home: 'Home & Living', hobi: 'Hobi & Lifestyle', musiman: 'Tren Musiman'
+    } else {
 
-  };
+      renderIdeState(4, data);
 
-  const SECTOR_BADGES = {
+    }
 
-    fashion: 'FSH', beauty: 'BTY', fnb: 'FNB', gadget: 'GDG',
+  }, remaining);
 
-    home: 'HME', hobi: 'HBI', musiman: 'MSM'
+}
 
-  };
+// Close modal on Escape key — unified handler
 
-  function renderRadarSkeleton() {
+document.addEventListener('keydown', e => {
 
-    return `
+  if (e.key !== 'Escape') return;
+
+  var authModal = document.getElementById('auth-modal');
+
+  if (authModal && authModal.classList.contains('open')) {
+
+    closeAuthModal();
+
+    return;
+
+  }
+
+  var profilePanel = document.getElementById('profile-panel');
+
+  if (profilePanel && profilePanel.classList.contains('open')) {
+
+    closeProfilePanel();
+
+    return;
+
+  }
+
+  var ipModal = document.getElementById('ip-modal');
+
+  if (ipModal && ipModal.classList.contains('open')) {
+
+    closeIdeWizard();
+
+    return;
+
+  }
+
+  var radarPanel = document.getElementById('radar-float-panel');
+
+  if (radarPanel && radarPanel.classList.contains('open')) {
+
+    closeRadarPanel();
+
+  } else {
+
+    closeUpgradeModal();
+
+  }
+
+});
+
+/*  TAB SWITCHER (How To Use)  */
+
+function switchTab(tab) {
+
+  document.querySelectorAll('.howto-tab').forEach(btn => btn.classList.remove('active'));
+
+  const activeTab = document.getElementById('tab-' + tab);
+
+  if (activeTab) activeTab.classList.add('active');
+
+  document.querySelectorAll('.howto-pane').forEach(pane => {
+
+    pane.classList.remove('active');
+
+  });
+
+  const targetPane = document.getElementById('pane-' + tab);
+
+  if (targetPane) {
+
+    targetPane.classList.add('active');
+
+    const cards = targetPane.querySelectorAll('.howto-card, .tip-card, .metric-guide-card');
+
+    cards.forEach((card, i) => {
+
+      card.style.animation = 'none';
+
+      card.offsetHeight; // reflow
+
+      card.style.animation = `fadeUp .4s ease ${i * 0.08}s both`;
+
+    });
+
+  }
+
+}
+
+/*  RADAR PELUANG SEKTOR  */
+
+// Data cache — pre-seeded by initRadarHeadlines
+
+const radarDataCache = {};
+
+const SECTOR_NAMES = {
+
+  fashion: 'Fashion', beauty: 'Beauty & Perawatan',
+
+  fnb: 'Makanan & Minuman', gadget: 'Gadget & Elektronik',
+
+  home: 'Home & Living', hobi: 'Hobi & Lifestyle', musiman: 'Tren Musiman'
+
+};
+
+const SECTOR_BADGES = {
+
+  fashion: 'FSH', beauty: 'BTY', fnb: 'FNB', gadget: 'GDG',
+
+  home: 'HME', hobi: 'HBI', musiman: 'MSM'
+
+};
+
+function renderRadarSkeleton() {
+
+  return `
 
         <button class="panel-close-btn" onclick="closeRadarPanel()">&#215;</button>
 
@@ -4574,29 +4574,29 @@ async function doSearch() {
 
       `;
 
-  }
+}
 
-  function renderRadarExpand(sector, data) {
+function renderRadarExpand(sector, data) {
 
-    const s = data.static || {};
+  const s = data.static || {};
 
-    const news = data.news || [];
+  const news = data.news || [];
 
-    const aiSignal = data.ai_signal || '';
+  const aiSignal = data.ai_signal || '';
 
-    const badge = SECTOR_BADGES[sector] || 'SEC';
+  const badge = SECTOR_BADGES[sector] || 'SEC';
 
-    const name = SECTOR_NAMES[sector] || sector;
+  const name = SECTOR_NAMES[sector] || sector;
 
-    const pillsHTML = (s.top_subsectors || [])
+  const pillsHTML = (s.top_subsectors || [])
 
-      .map(sub => `<span class="radar-subsector-pill">${sub}</span>`)
+    .map(sub => `<span class="radar-subsector-pill">${sub}</span>`)
 
-      .join('');
+    .join('');
 
-    const newsHTML = news.length > 0
+  const newsHTML = news.length > 0
 
-      ? news.slice(0, 3).map(n => `
+    ? news.slice(0, 3).map(n => `
 
             <div class="panel-news-item">
 
@@ -4614,11 +4614,11 @@ async function doSearch() {
 
             </div>`).join('')
 
-      : `<div style="color:rgba(245,240,224,.25);font-size:12px;padding:16px 0;font-family:'DM Mono',monospace">Tidak ada berita terkini</div>`;
+    : `<div style="color:rgba(245,240,224,.25);font-size:12px;padding:16px 0;font-family:'DM Mono',monospace">Tidak ada berita terkini</div>`;
 
-    const aiHTML = aiSignal
+  const aiHTML = aiSignal
 
-      ? `<div class="panel-ai-signal">
+    ? `<div class="panel-ai-signal">
 
              <span class="panel-ai-label"> AI SIGNAL</span>
 
@@ -4626,9 +4626,9 @@ async function doSearch() {
 
            </div>`
 
-      : '';
+    : '';
 
-    return `
+  return `
 
         <button class="panel-close-btn" onclick="closeRadarPanel()">&#215;</button>
 
@@ -4688,127 +4688,127 @@ async function doSearch() {
 
       `;
 
-  }
+}
 
-  function closeRadarPanel() {
+function closeRadarPanel() {
 
-    const panel = document.getElementById('radar-float-panel');
+  const panel = document.getElementById('radar-float-panel');
 
-    const overlay = document.getElementById('radar-overlay');
+  const overlay = document.getElementById('radar-overlay');
 
-    if (!panel || !overlay) return;
+  if (!panel || !overlay) return;
 
-    panel.classList.remove('open');
+  panel.classList.remove('open');
 
-    overlay.classList.remove('open');
+  overlay.classList.remove('open');
 
-    document.querySelectorAll('.radar-card').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.radar-card').forEach(c => c.classList.remove('active'));
 
-    panel.style.pointerEvents = 'none';
+  panel.style.pointerEvents = 'none';
 
-    overlay.style.pointerEvents = 'none';
+  overlay.style.pointerEvents = 'none';
 
-    unlockScroll();
+  unlockScroll();
 
-  }
+}
 
-  const SECTOR_CONFIG = {
+const SECTOR_CONFIG = {
 
-    fashion: { name: "Fashion & Apparel", code: "FSH", color: "#EC4899" }, // Pink
+  fashion: { name: "Fashion & Apparel", code: "FSH", color: "#EC4899" }, // Pink
 
-    beauty:  { name: "Beauty & Care", code: "BTY", color: "#A855F7" }, // Purple
+  beauty: { name: "Beauty & Care", code: "BTY", color: "#A855F7" }, // Purple
 
-    fnb:     { name: "Food & Beverage", code: "FNB", color: "#F97316" }, // Orange
+  fnb: { name: "Food & Beverage", code: "FNB", color: "#F97316" }, // Orange
 
-    gadget:  { name: "Gadget & Elec", code: "GDT", color: "#3B82F6" }, // Blue
+  gadget: { name: "Gadget & Elec", code: "GDT", color: "#3B82F6" }, // Blue
 
-    home:    { name: "Home & Living", code: "HME", color: "#14B8A6" }, // Teal
+  home: { name: "Home & Living", code: "HME", color: "#14B8A6" }, // Teal
 
-    hobi:    { name: "Hobby & Lifestyle", code: "HBY", color: "#EF4444" }, // Red
+  hobi: { name: "Hobby & Lifestyle", code: "HBY", color: "#EF4444" }, // Red
 
-    musiman: { name: "Tren Musiman", code: "SSN", color: "#EAB308" }  // Gold
+  musiman: { name: "Tren Musiman", code: "SSN", color: "#EAB308" }  // Gold
 
-  };
+};
 
-  const hardcodedData = {
+const hardcodedData = {
 
-    fashion: { yoy: 12.5, share: 15, spark: [50, 55, 60, 58, 65, 70, 75, 80] },
+  fashion: { yoy: 12.5, share: 15, spark: [50, 55, 60, 58, 65, 70, 75, 80] },
 
-    beauty:  { yoy: 28.4, share: 22, spark: [40, 48, 55, 60, 65, 75, 85, 95] },
+  beauty: { yoy: 28.4, share: 22, spark: [40, 48, 55, 60, 65, 75, 85, 95] },
 
-    fnb:     { yoy: 18.2, share: 25, spark: [80, 82, 85, 84, 88, 90, 89, 95] },
+  fnb: { yoy: 18.2, share: 25, spark: [80, 82, 85, 84, 88, 90, 89, 95] },
 
-    gadget:  { yoy: 8.4,  share: 8,  spark: [30, 32, 30, 35, 38, 40, 42, 45] },
+  gadget: { yoy: 8.4, share: 8, spark: [30, 32, 30, 35, 38, 40, 42, 45] },
 
-    home:    { yoy: 14.1, share: 12, spark: [45, 48, 50, 55, 52, 58, 60, 65] },
+  home: { yoy: 14.1, share: 12, spark: [45, 48, 50, 55, 52, 58, 60, 65] },
 
-    hobi:    { yoy: -2.3, share: 5,  spark: [35, 32, 30, 28, 25, 26, 22, 20] },
+  hobi: { yoy: -2.3, share: 5, spark: [35, 32, 30, 28, 25, 26, 22, 20] },
 
-    musiman: { yoy: 45.0, share: 18, spark: [10, 15, 20, 40, 80, 95, 85, 40] }
+  musiman: { yoy: 45.0, share: 18, spark: [10, 15, 20, 40, 80, 95, 85, 40] }
 
-  };
+};
 
-  function getCompetitionBadge(share) {
+function getCompetitionBadge(share) {
 
-    if (share > 20) return '<span class="px-2 py-0.5 rounded text-[8px] font-mono tracking-widest bg-red-500/20 text-red-400 border border-red-500/30">Tinggi</span>';
+  if (share > 20) return '<span class="px-2 py-0.5 rounded text-[8px] font-mono tracking-widest bg-red-500/20 text-red-400 border border-red-500/30">Tinggi</span>';
 
-    if (share > 10) return '<span class="px-2 py-0.5 rounded text-[8px] font-mono tracking-widest bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">Sedang</span>';
+  if (share > 10) return '<span class="px-2 py-0.5 rounded text-[8px] font-mono tracking-widest bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">Sedang</span>';
 
-    return '<span class="px-2 py-0.5 rounded text-[8px] font-mono tracking-widest bg-green-500/20 text-green-400 border border-green-500/30">Rendah</span>';
+  return '<span class="px-2 py-0.5 rounded text-[8px] font-mono tracking-widest bg-green-500/20 text-green-400 border border-green-500/30">Rendah</span>';
 
-  }
+}
 
-  function renderModernGrid() {
+function renderModernGrid() {
 
-    const container = document.getElementById('radar-grid-modern');
+  const container = document.getElementById('radar-grid-modern');
 
-    if (!container) return;
+  if (!container) return;
 
-    
 
-    // Find the sector with the highest YoY to mark as "hottest"
 
-    let hottestSector = 'musiman';
+  // Find the sector with the highest YoY to mark as "hottest"
 
-    let maxGrowth = -999;
+  let hottestSector = 'musiman';
 
-    
+  let maxGrowth = -999;
 
-    Object.keys(hardcodedData).forEach(sector => {
 
-        if (hardcodedData[sector].yoy > maxGrowth) {
 
-            maxGrowth = hardcodedData[sector].yoy;
+  Object.keys(hardcodedData).forEach(sector => {
 
-            hottestSector = sector;
+    if (hardcodedData[sector].yoy > maxGrowth) {
 
-        }
+      maxGrowth = hardcodedData[sector].yoy;
 
-    });
+      hottestSector = sector;
 
-    container.innerHTML = '';
+    }
 
-    
+  });
 
-    Object.keys(SECTOR_CONFIG).forEach(sector => {
+  container.innerHTML = '';
 
-        const conf = SECTOR_CONFIG[sector];
 
-        const data = hardcodedData[sector];
 
-        
+  Object.keys(SECTOR_CONFIG).forEach(sector => {
 
-        const growth = data.yoy;
+    const conf = SECTOR_CONFIG[sector];
 
-        const colorClass = growth >= 0 ? 'text-green-400' : 'text-red-400';
+    const data = hardcodedData[sector];
 
-        
 
-        const isHottest = (sector === hottestSector);
 
-        const flameHtml = isHottest ? `<i class="fa-solid fa-fire text-[#FACC15] animate-pulse drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]" title="Paling Panas Minggu Ini"></i>` : '';
+    const growth = data.yoy;
 
-        const cardHtml = `
+    const colorClass = growth >= 0 ? 'text-green-400' : 'text-red-400';
+
+
+
+    const isHottest = (sector === hottestSector);
+
+    const flameHtml = isHottest ? `<i class="fa-solid fa-fire text-[#FACC15] animate-pulse drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]" title="Paling Panas Minggu Ini"></i>` : '';
+
+    const cardHtml = `
 
           <div class="radar-card-premium group relative bg-zinc-900/50 border border-zinc-800 rounded-2xl p-5 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-500 hover:-translate-y-2 hover:bg-zinc-900" style="--accent: ${conf.color};">
 
@@ -4880,151 +4880,219 @@ async function doSearch() {
 
         `;
 
-        
 
-        container.innerHTML += cardHtml;
+
+    container.innerHTML += cardHtml;
+
+  });
+
+
+
+  // Auto-update timestamp
+
+  const now = new Date();
+
+  const timeString = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+
+  if (document.getElementById('radar-uptime')) document.getElementById('radar-uptime').textContent = "SYNC " + timeString;
+
+
+
+  // Render the charts
+
+  renderPremiumSparklines();
+
+
+
+  // Trigger GSAP
+
+  initRadarAnimations();
+
+}
+
+
+
+function renderPremiumSparklines() {
+
+  if (typeof Chart === 'undefined') return;
+
+  Object.keys(SECTOR_CONFIG).forEach(sector => {
+
+    const conf = SECTOR_CONFIG[sector];
+
+    const canvas = document.getElementById('spark-modern-' + sector);
+
+    if (!canvas) return;
+
+    const values = hardcodedData[sector].spark;
+
+    new Chart(canvas, {
+
+      type: 'line',
+
+      data: {
+
+        labels: values.map((_, i) => i),
+
+        datasets: [{
+
+          data: values,
+
+          borderColor: conf.color,
+
+          borderWidth: 2,
+
+          tension: 0.4,
+
+          pointRadius: 0,
+
+          fill: true,
+
+          backgroundColor: ctx => {
+
+            const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 60);
+
+            gradient.addColorStop(0, conf.color + '40');
+
+            gradient.addColorStop(1, 'transparent');
+
+            return gradient;
+
+          }
+
+        }]
+
+      },
+
+      options: {
+
+        events: [],
+
+        responsive: true,
+
+        maintainAspectRatio: false,
+
+        plugins: { legend: { display: false }, tooltip: { enabled: false } },
+
+        scales: { x: { display: false }, y: { display: false, min: Math.min(...values) - 5 } },
+
+        animation: { duration: 1500, easing: 'easeOutQuart' }
+
+      }
 
     });
 
-    
+  });
 
-    // Auto-update timestamp
+}
 
-    const now = new Date();
 
-    const timeString = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
 
-    if(document.getElementById('radar-uptime')) document.getElementById('radar-uptime').textContent = "SYNC " + timeString;
+function initRadarModern() {
 
-    
+  renderModernGrid();
 
-    // Render the charts
+}
 
-    renderPremiumSparklines();
+if (document.readyState === 'loading') {
 
-    
+  document.addEventListener('DOMContentLoaded', initRadarModern);
 
-    // Trigger GSAP
+} else {
 
-    initRadarAnimations();
+  initRadarModern();
+
+};
+
+function toggleRadarCard(sector, element) {
+
+  const panel = document.getElementById('radar-float-panel');
+
+  const overlay = document.getElementById('radar-overlay');
+
+  document.querySelectorAll('.radar-card').forEach(c => c.classList.remove('active'));
+
+  element.classList.add('active');
+
+  panel.innerHTML = renderRadarSkeleton();
+
+  panel.classList.add('open');
+
+  overlay.classList.add('open');
+
+  document.body.style.overflow = 'hidden';
+
+  if (radarDataCache[sector]) {
+
+    panel.innerHTML = renderRadarExpand(sector, radarDataCache[sector]);
+
+    return;
 
   }
 
-  
+  fetch('/api/sector-radar', {
 
-  function renderPremiumSparklines() {
+    method: 'POST',
 
-    if (typeof Chart === 'undefined') return;
+    headers: { 'Content-Type': 'application/json' },
 
-    Object.keys(SECTOR_CONFIG).forEach(sector => {
+    body: JSON.stringify({ sector })
 
-      const conf = SECTOR_CONFIG[sector];
+  })
 
-      const canvas = document.getElementById('spark-modern-' + sector);
+    .then(r => r.json())
 
-      if (!canvas) return;
+    .then(data => {
 
-      const values = hardcodedData[sector].spark;
+      if (data && !data.error) {
 
-      new Chart(canvas, {
+        radarDataCache[sector] = data;
 
-        type: 'line',
+        if (panel.classList.contains('open')) {
 
-        data: {
-
-          labels: values.map((_, i) => i),
-
-          datasets: [{
-
-            data: values,
-
-            borderColor: conf.color,
-
-            borderWidth: 2,
-
-            tension: 0.4,
-
-            pointRadius: 0,
-
-            fill: true,
-
-            backgroundColor: ctx => {
-
-              const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 60);
-
-              gradient.addColorStop(0, conf.color + '40');
-
-              gradient.addColorStop(1, 'transparent');
-
-              return gradient;
-
-            }
-
-          }]
-
-        },
-
-        options: {
-
-          events: [], 
-
-          responsive: true,
-
-          maintainAspectRatio: false,
-
-          plugins: { legend: { display: false }, tooltip: { enabled: false } },
-
-          scales: { x: { display: false }, y: { display: false, min: Math.min(...values) - 5 } },
-
-          animation: { duration: 1500, easing: 'easeOutQuart' }
+          panel.innerHTML = renderRadarExpand(sector, data);
 
         }
 
-      });
+      } else {
+
+        panel.innerHTML = `<button class="panel-close-btn" onclick="closeRadarPanel()">&#215;</button>
+
+              <div style="padding:60px 0;text-align:center;color:rgba(245,240,224,.4);font-family:'DM Mono',monospace;font-size:12px">
+
+                Gagal memuat data sektor
+
+              </div>`;
+
+      }
+
+    })
+
+    .catch(() => {
+
+      panel.innerHTML = `<button class="panel-close-btn" onclick="closeRadarPanel()">&#215;</button>
+
+            <div style="padding:60px 0;text-align:center;color:rgba(245,240,224,.4);font-family:'DM Mono',monospace;font-size:12px">
+
+              Koneksi gagal
+
+            </div>`;
 
     });
 
-  }
+}
 
-  
+// Initialize card headline teasers async after DOM ready
 
-  function initRadarModern() {
+function initRadarHeadlines() {
 
-    renderModernGrid();
+  const sectors = ['fashion', 'beauty', 'fnb', 'gadget', 'home', 'hobi', 'musiman'];
 
-  }
-
-  if (document.readyState === 'loading') {
-
-    document.addEventListener('DOMContentLoaded', initRadarModern);
-
-  } else {
-
-    initRadarModern();
-
-  };
-
-  function toggleRadarCard(sector, element) {
-
-    const panel = document.getElementById('radar-float-panel');
-
-    const overlay = document.getElementById('radar-overlay');
-
-    document.querySelectorAll('.radar-card').forEach(c => c.classList.remove('active'));
-
-    element.classList.add('active');
-
-    panel.innerHTML = renderRadarSkeleton();
-
-    panel.classList.add('open');
-
-    overlay.classList.add('open');
-
-    document.body.style.overflow = 'hidden';
+  sectors.forEach(sector => {
 
     if (radarDataCache[sector]) {
 
-      panel.innerHTML = renderRadarExpand(sector, radarDataCache[sector]);
+      _applyHeadline(sector, radarDataCache[sector]);
 
       return;
 
@@ -5048,329 +5116,251 @@ async function doSearch() {
 
           radarDataCache[sector] = data;
 
-          if (panel.classList.contains('open')) {
-
-            panel.innerHTML = renderRadarExpand(sector, data);
-
-          }
-
-        } else {
-
-          panel.innerHTML = `<button class="panel-close-btn" onclick="closeRadarPanel()">&#215;</button>
-
-              <div style="padding:60px 0;text-align:center;color:rgba(245,240,224,.4);font-family:'DM Mono',monospace;font-size:12px">
-
-                Gagal memuat data sektor
-
-              </div>`;
+          _applyHeadline(sector, data);
 
         }
 
       })
 
-      .catch(() => {
+      .catch(e => console.warn(`Radar headline ${sector}:`, e));
 
-        panel.innerHTML = `<button class="panel-close-btn" onclick="closeRadarPanel()">&#215;</button>
+  });
 
-            <div style="padding:60px 0;text-align:center;color:rgba(245,240,224,.4);font-family:'DM Mono',monospace;font-size:12px">
+}
 
-              Koneksi gagal
+function _applyHeadline(sector, data) {
 
-            </div>`;
+  const headline = (data.news && data.news[0] && data.news[0].title) || '';
 
-      });
+  const el = document.getElementById('hl-' + sector);
 
-  }
+  if (el && headline) el.textContent = headline;
 
-  // Initialize card headline teasers async after DOM ready
+}
 
-  function initRadarHeadlines() {
+/*  SPARKLINE ENGINE  */
 
-    const sectors = ['fashion', 'beauty', 'fnb', 'gadget', 'home', 'hobi', 'musiman'];
+const SPARKLINE_COLORS = {
 
-    sectors.forEach(sector => {
+  fashion: '#D4A843',
 
-      if (radarDataCache[sector]) {
+  beauty: '#FF5252',
 
-        _applyHeadline(sector, radarDataCache[sector]);
+  fnb: '#D4A843',
 
-        return;
+  gadget: '#448AFF',
 
-      }
+  home: '#D4A843',
 
-      fetch('/api/sector-radar', {
+  hobi: '#00E676',
 
-        method: 'POST',
+  musiman: '#FF5252',
 
-        headers: { 'Content-Type': 'application/json' },
+};
 
-        body: JSON.stringify({ sector })
+function generateMockSparkline(sector) {
 
-      })
+  const base = {
 
-        .then(r => r.json())
+    fashion: [45, 48, 44, 50, 52, 49, 55, 53, 58, 56, 60, 58, 62, 59, 64],
 
-        .then(data => {
+    beauty: [55, 58, 62, 65, 60, 68, 72, 70, 75, 73, 78, 76, 80, 82, 85],
 
-          if (data && !data.error) {
+    fnb: [50, 52, 48, 55, 53, 58, 56, 60, 58, 62, 65, 63, 67, 65, 70],
 
-            radarDataCache[sector] = data;
+    gadget: [40, 42, 38, 41, 44, 40, 43, 45, 42, 46, 44, 47, 45, 48, 46],
 
-            _applyHeadline(sector, data);
+    home: [42, 45, 43, 47, 44, 48, 46, 50, 48, 52, 50, 54, 52, 56, 54],
 
-          }
+    hobi: [48, 52, 50, 55, 53, 58, 56, 60, 62, 58, 64, 62, 66, 64, 68],
 
-        })
-
-        .catch(e => console.warn(`Radar headline ${sector}:`, e));
-
-    });
-
-  }
-
-  function _applyHeadline(sector, data) {
-
-    const headline = (data.news && data.news[0] && data.news[0].title) || '';
-
-    const el = document.getElementById('hl-' + sector);
-
-    if (el && headline) el.textContent = headline;
-
-  }
-
-  /*  SPARKLINE ENGINE  */
-
-  const SPARKLINE_COLORS = {
-
-    fashion: '#D4A843',
-
-    beauty: '#FF5252',
-
-    fnb: '#D4A843',
-
-    gadget: '#448AFF',
-
-    home: '#D4A843',
-
-    hobi: '#00E676',
-
-    musiman: '#FF5252',
+    musiman: [35, 38, 42, 48, 55, 65, 75, 82, 88, 92, 95, 90, 85, 88, 92],
 
   };
 
-  function generateMockSparkline(sector) {
+  return base[sector] || [50, 52, 48, 55, 53, 58, 56, 60];
 
-    const base = {
+}
 
-      fashion: [45, 48, 44, 50, 52, 49, 55, 53, 58, 56, 60, 58, 62, 59, 64],
+/*  RADAR PELUANG SEKTOR (MODERN)  */
 
-      beauty: [55, 58, 62, 65, 60, 68, 72, 70, 75, 73, 78, 76, 80, 82, 85],
+function initSparklines() {
 
-      fnb: [50, 52, 48, 55, 53, 58, 56, 60, 58, 62, 65, 63, 67, 65, 70],
+  const SECTOR_COLORS = {
 
-      gadget: [40, 42, 38, 41, 44, 40, 43, 45, 42, 46, 44, 47, 45, 48, 46],
+    fashion: '#EF4444', beauty: '#A855F7', fnb: '#F97316',
 
-      home: [42, 45, 43, 47, 44, 48, 46, 50, 48, 52, 50, 54, 52, 56, 54],
+    gadget: '#3B82F6', home: '#6366F1', hobi: '#10B981', musiman: '#FACC15'
 
-      hobi: [48, 52, 50, 55, 53, 58, 56, 60, 62, 58, 64, 62, 66, 64, 68],
+  };
 
-      musiman: [35, 38, 42, 48, 55, 65, 75, 82, 88, 92, 95, 90, 85, 88, 92],
+  Object.keys(SECTOR_COLORS).forEach(sector => {
 
-    };
+    const canvas = document.getElementById('spark-' + sector);
 
-    return base[sector] || [50, 52, 48, 55, 53, 58, 56, 60];
+    if (!canvas) return;
 
-  }
+    const values = generateMockSparkline(sector);
 
-  /*  RADAR PELUANG SEKTOR (MODERN)  */
+    const color = SECTOR_COLORS[sector];
 
-  function initSparklines() {
+    if (typeof Chart !== 'undefined') {
 
-    const SECTOR_COLORS = {
+      new Chart(canvas, {
 
-      fashion: '#EF4444', beauty: '#A855F7', fnb: '#F97316',
+        type: 'line',
 
-      gadget: '#3B82F6', home: '#6366F1', hobi: '#10B981', musiman: '#FACC15'
+        data: {
 
-    };
+          labels: values.map((_, i) => i),
 
-    Object.keys(SECTOR_COLORS).forEach(sector => {
+          datasets: [{
 
-      const canvas = document.getElementById('spark-' + sector);
+            data: values,
 
-      if (!canvas) return;
+            borderColor: color,
 
-      const values = generateMockSparkline(sector);
+            borderWidth: 2,
 
-      const color = SECTOR_COLORS[sector];
+            tension: 0.4,
 
-      if (typeof Chart !== 'undefined') {
+            pointRadius: 0,
 
-        new Chart(canvas, {
+            fill: true,
 
-          type: 'line',
+            backgroundColor: ctx => {
 
-          data: {
+              const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 60);
 
-            labels: values.map((_, i) => i),
+              gradient.addColorStop(0, color + '22');
 
-            datasets: [{
+              gradient.addColorStop(1, 'transparent');
 
-              data: values,
+              return gradient;
 
-              borderColor: color,
+            }
 
-              borderWidth: 2,
-
-              tension: 0.4,
-
-              pointRadius: 0,
-
-              fill: true,
-
-              backgroundColor: ctx => {
-
-                const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 60);
-
-                gradient.addColorStop(0, color + '22');
-
-                gradient.addColorStop(1, 'transparent');
-
-                return gradient;
-
-              }
-
-            }]
-
-          },
-
-          options: {
-
-            responsive: true,
-
-            maintainAspectRatio: false,
-
-            plugins: { legend: { display: false }, tooltip: { enabled: false } },
-
-            scales: { x: { display: false }, y: { display: false, min: Math.min(...values) - 10 } },
-
-            animation: { duration: 2000, easing: 'easeOutQuart' }
-
-          }
-
-        });
-
-      }
-
-    });
-
-  }
-
-  function initRadarAnimations() {
-
-    if (typeof gsap === 'undefined') return;
-
-    
-
-    // Global registration
-
-    if (typeof ScrollTrigger !== 'undefined') {
-
-      gsap.registerPlugin(ScrollTrigger);
-
-    }
-
-    // 1. Reveal Cards
-
-    gsap.fromTo(".sector-card-modern, .radar-card-premium", 
-
-      { y: 50, opacity: 0 },
-
-      {
-
-        y: 0,
-
-        opacity: 1,
-
-        duration: 0.8,
-
-        stagger: 0.1,
-
-        ease: "power3.out",
-
-        ...(typeof ScrollTrigger !== 'undefined' ? {
-
-          scrollTrigger: {
-
-            trigger: ".radar-grid-modern, #sector-dashboard",
-
-            start: "top 80%",
-
-          }
-
-        } : {})
-
-      }
-
-    );
-
-    // 2. Animate Counter Numbers (supports both .sector-growth and .sector-growth-counter)
-
-    document.querySelectorAll('.sector-growth, .sector-growth-counter').forEach(el => {
-
-      const textValue = (el.getAttribute('data-target') || el.textContent).replace(/[^-0-9.]/g, '');
-
-      const targetValue = parseFloat(textValue) || 0;
-
-      const obj = { val: 0 };
-
-      
-
-      gsap.to(obj, {
-
-        val: targetValue,
-
-        duration: 2,
-
-        ease: "power3.out",
-
-        onUpdate: () => {
-
-          el.textContent = (obj.val >= 0 ? '+' : '') + obj.val.toFixed(1) + '%';
+          }]
 
         },
 
-        ...(typeof ScrollTrigger !== 'undefined' ? {
+        options: {
 
-          scrollTrigger: {
+          responsive: true,
 
-            trigger: el,
+          maintainAspectRatio: false,
 
-            start: "top 90%",
+          plugins: { legend: { display: false }, tooltip: { enabled: false } },
 
-          }
+          scales: { x: { display: false }, y: { display: false, min: Math.min(...values) - 10 } },
 
-        } : {})
+          animation: { duration: 2000, easing: 'easeOutQuart' }
+
+        }
 
       });
 
-    });
+    }
+
+  });
+
+}
+
+function initRadarAnimations() {
+
+  if (typeof gsap === 'undefined') return;
+
+
+
+  // Global registration
+
+  if (typeof ScrollTrigger !== 'undefined') {
+
+    gsap.registerPlugin(ScrollTrigger);
 
   }
 
-  if (document.readyState === 'loading') {
+  // 1. Reveal Cards
 
-    document.addEventListener('DOMContentLoaded', () => {
+  gsap.fromTo(".sector-card-modern, .radar-card-premium",
 
-      initRadarHeadlines();
+    { y: 50, opacity: 0 },
 
-      initSparklines();
+    {
 
-      initRadarAnimations();
+      y: 0,
+
+      opacity: 1,
+
+      duration: 0.8,
+
+      stagger: 0.1,
+
+      ease: "power3.out",
+
+      ...(typeof ScrollTrigger !== 'undefined' ? {
+
+        scrollTrigger: {
+
+          trigger: ".radar-grid-modern, #sector-dashboard",
+
+          start: "top 80%",
+
+        }
+
+      } : {})
+
+    }
+
+  );
+
+  // 2. Animate Counter Numbers (supports both .sector-growth and .sector-growth-counter)
+
+  document.querySelectorAll('.sector-growth, .sector-growth-counter').forEach(el => {
+
+    const textValue = (el.getAttribute('data-target') || el.textContent).replace(/[^-0-9.]/g, '');
+
+    const targetValue = parseFloat(textValue) || 0;
+
+    const obj = { val: 0 };
+
+
+
+    gsap.to(obj, {
+
+      val: targetValue,
+
+      duration: 2,
+
+      ease: "power3.out",
+
+      onUpdate: () => {
+
+        el.textContent = (obj.val >= 0 ? '+' : '') + obj.val.toFixed(1) + '%';
+
+      },
+
+      ...(typeof ScrollTrigger !== 'undefined' ? {
+
+        scrollTrigger: {
+
+          trigger: el,
+
+          start: "top 90%",
+
+        }
+
+      } : {})
 
     });
 
-  } else {
+  });
+
+}
+
+if (document.readyState === 'loading') {
+
+  document.addEventListener('DOMContentLoaded', () => {
 
     initRadarHeadlines();
 
@@ -5378,917 +5368,927 @@ async function doSearch() {
 
     initRadarAnimations();
 
-  }
+  });
 
-  // ── ANIMATED TYPING PLACEHOLDER 
+} else {
 
-  /*  SHARING & EXPORT  */
+  initRadarHeadlines();
 
-  function shareToWhatsApp() {
+  initSparklines();
 
-    if (typeof lastAnalysisResult === 'undefined' || !lastAnalysisResult) {
+  initRadarAnimations();
 
-      showErr("Lakukan analisis terlebih dahulu untuk membagikan hasil.");
+}
 
-      return;
+// ── ANIMATED TYPING PLACEHOLDER 
 
-    }
+/*  SHARING & EXPORT  */
 
-    const d = lastAnalysisResult;
+function shareToWhatsApp() {
 
-    const kw = d.keyword || "Produk";
+  if (typeof lastAnalysisResult === 'undefined' || !lastAnalysisResult) {
 
-    const score = d.market_pulse_score || 0;
+    showErr("Lakukan analisis terlebih dahulu untuk membagikan hasil.");
 
-    const timing = d.entry_timing_label || "Fase Tidak Diketahui";
-
-    
-
-    const text = encodeURIComponent(
-
-      ` *Sentra AI — Hasil Analisis Pasar*\n\n` +
-
-      ` *Produk:* ${kw.toUpperCase()}\n` +
-
-      ` *Skor Kesehatan:* ${score}/100\n` +
-
-      ` *Fase Strategis:* ${timing}\n\n` +
-
-      `Analisis mendalam lainnya bisa dicek di: ${window.location.origin}`
-
-    );
-
-    window.open(`https://wa.me/?text=${text}`, '_blank');
+    return;
 
   }
 
-  function downloadPdf() {
+  const d = lastAnalysisResult;
 
-    window.print();
+  const kw = d.keyword || "Produk";
 
-  }
+  const score = d.market_pulse_score || 0;
 
-  function initTypingPlaceholder() {
+  const timing = d.entry_timing_label || "Fase Tidak Diketahui";
 
-    const input = document.getElementById('kw');
 
-    if (!input) return;
 
-    const phrases = [
+  const text = encodeURIComponent(
 
-      "coba: sepatu sneakers lokal",
+    ` *Sentra AI — Hasil Analisis Pasar*\n\n` +
 
-      "coba: kue kering lebaran",
+    ` *Produk:* ${kw.toUpperCase()}\n` +
 
-      "coba: skincare vitamin c",
+    ` *Skor Kesehatan:* ${score}/100\n` +
 
-      "coba: tas rajut handmade",
+    ` *Fase Strategis:* ${timing}\n\n` +
 
-      "coba: kopi arabika kemasan",
+    `Analisis mendalam lainnya bisa dicek di: ${window.location.origin}`
 
-      "coba: baju gamis modern",
+  );
 
-      "coba: lilin aromaterapi",
+  window.open(`https://wa.me/?text=${text}`, '_blank');
 
-      "coba: camilan sehat anak"
+}
 
-    ];
+function downloadPdf() {
 
-    const TYPING_SPEED = 55;   // ms per karakter saat mengetik
+  window.print();
 
-    const DELETING_SPEED = 28;   // ms per karakter saat menghapus
+}
 
-    const PAUSE_FULL = 2200; // jeda setelah teks penuh sebelum dihapus
+function initTypingPlaceholder() {
 
-    const PAUSE_EMPTY = 400;  // jeda setelah teks terhapus sebelum teks berikutnya
+  const input = document.getElementById('kw');
 
-    // Semua state disimpan dalam closure — tidak ada variabel global
+  if (!input) return;
 
-    let currentIndex = 0;
+  const phrases = [
 
-    let charIndex = 0;
+    "coba: sepatu sneakers lokal",
 
-    let isDeleting = false;
+    "coba: kue kering lebaran",
 
-    let isPaused = false;
+    "coba: skincare vitamin c",
 
-    let timeoutId = null;
+    "coba: tas rajut handmade",
 
-    function tick() {
+    "coba: kopi arabika kemasan",
 
-      if (isPaused) return;
+    "coba: baju gamis modern",
 
-      const phrase = phrases[currentIndex];
+    "coba: lilin aromaterapi",
 
-      if (!isDeleting) {
+    "coba: camilan sehat anak"
 
-        // Fase mengetik: tambah satu karakter
+  ];
 
-        charIndex++;
+  const TYPING_SPEED = 55;   // ms per karakter saat mengetik
 
-        input.placeholder = phrase.slice(0, charIndex);
+  const DELETING_SPEED = 28;   // ms per karakter saat menghapus
 
-        if (charIndex === phrase.length) {
+  const PAUSE_FULL = 2200; // jeda setelah teks penuh sebelum dihapus
 
-          // Teks penuh — jeda sebelum mulai menghapus
+  const PAUSE_EMPTY = 400;  // jeda setelah teks terhapus sebelum teks berikutnya
 
-          isDeleting = true;
+  // Semua state disimpan dalam closure — tidak ada variabel global
 
-          timeoutId = setTimeout(tick, PAUSE_FULL);
+  let currentIndex = 0;
 
-        } else {
+  let charIndex = 0;
 
-          timeoutId = setTimeout(tick, TYPING_SPEED);
+  let isDeleting = false;
 
-        }
+  let isPaused = false;
+
+  let timeoutId = null;
+
+  function tick() {
+
+    if (isPaused) return;
+
+    const phrase = phrases[currentIndex];
+
+    if (!isDeleting) {
+
+      // Fase mengetik: tambah satu karakter
+
+      charIndex++;
+
+      input.placeholder = phrase.slice(0, charIndex);
+
+      if (charIndex === phrase.length) {
+
+        // Teks penuh — jeda sebelum mulai menghapus
+
+        isDeleting = true;
+
+        timeoutId = setTimeout(tick, PAUSE_FULL);
 
       } else {
 
-        // Fase menghapus: kurangi satu karakter
-
-        charIndex--;
-
-        input.placeholder = phrase.slice(0, charIndex);
-
-        if (charIndex === 0) {
-
-          // Teks habis — pindah ke item berikutnya lalu jeda
-
-          isDeleting = false;
-
-          currentIndex = (currentIndex + 1) % phrases.length;
-
-          timeoutId = setTimeout(tick, PAUSE_EMPTY);
-
-        } else {
-
-          timeoutId = setTimeout(tick, DELETING_SPEED);
-
-        }
+        timeoutId = setTimeout(tick, TYPING_SPEED);
 
       }
 
-    }
+    } else {
 
-    // Berhenti total saat input mendapat fokus
+      // Fase menghapus: kurangi satu karakter
 
-    input.addEventListener('focus', function () {
+      charIndex--;
 
-      isPaused = true;
+      input.placeholder = phrase.slice(0, charIndex);
 
-      clearTimeout(timeoutId);
+      if (charIndex === 0) {
 
-      input.placeholder = '';
-
-    });
-
-    input.addEventListener('blur', function () {
-
-      if (input.value === '') {
-
-        isPaused = false;
-
-        currentIndex = (currentIndex + 1) % phrases.length;
-
-        charIndex = 0;
+        // Teks habis — pindah ke item berikutnya lalu jeda
 
         isDeleting = false;
 
+        currentIndex = (currentIndex + 1) % phrases.length;
+
         timeoutId = setTimeout(tick, PAUSE_EMPTY);
-
-      }
-
-    });
-
-    timeoutId = setTimeout(tick, PAUSE_EMPTY);
-
-  }
-
-  initTypingPlaceholder();
-
-  // Scroll-to-top behavior (muncul setelah scroll > 400px)
-
-  const scrollTopBtn = document.getElementById('scrollTopBtn');
-
-  if (scrollTopBtn) {
-
-    window.addEventListener('scroll', function () {
-
-      if (window.scrollY > 400) {
-
-        scrollTopBtn.classList.add('is-visible');
 
       } else {
 
-        scrollTopBtn.classList.remove('is-visible');
+        timeoutId = setTimeout(tick, DELETING_SPEED);
 
       }
 
-    });
+    }
 
-    scrollTopBtn.addEventListener('click', function () {
+  }
 
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Berhenti total saat input mendapat fokus
+
+  input.addEventListener('focus', function () {
+
+    isPaused = true;
+
+    clearTimeout(timeoutId);
+
+    input.placeholder = '';
+
+  });
+
+  input.addEventListener('blur', function () {
+
+    if (input.value === '') {
+
+      isPaused = false;
+
+      currentIndex = (currentIndex + 1) % phrases.length;
+
+      charIndex = 0;
+
+      isDeleting = false;
+
+      timeoutId = setTimeout(tick, PAUSE_EMPTY);
+
+    }
+
+  });
+
+  timeoutId = setTimeout(tick, PAUSE_EMPTY);
+
+}
+
+initTypingPlaceholder();
+
+// Scroll-to-top behavior (muncul setelah scroll > 400px)
+
+const scrollTopBtn = document.getElementById('scrollTopBtn');
+
+if (scrollTopBtn) {
+
+  window.addEventListener('scroll', function () {
+
+    if (window.scrollY > 400) {
+
+      scrollTopBtn.classList.add('is-visible');
+
+    } else {
+
+      scrollTopBtn.classList.remove('is-visible');
+
+    }
+
+  });
+
+  scrollTopBtn.addEventListener('click', function () {
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  });
+
+}
+
+// ── TESTIMONIAL CAROUSEL 
+
+(function () {
+
+  const track = document.getElementById('testiTrack');
+
+  const dotsWrap = document.getElementById('testiDots');
+
+  if (!track) return;
+
+  const slides = track.querySelectorAll('.testi-slide');
+
+  const total = slides.length;
+
+  let current = 0;
+
+  let autoTimer = null;
+
+  // Buat dots
+
+  slides.forEach((_, i) => {
+
+    const d = document.createElement('div');
+
+    d.className = 'testi-dot' + (i === 0 ? ' active' : '');
+
+    d.onclick = () => goTo(i);
+
+    dotsWrap.appendChild(d);
+
+  });
+
+  function goTo(idx) {
+
+    current = (idx + total) % total;
+
+    const slideWidth = slides[0].offsetWidth + 16;
+
+    track.style.transform = `translateX(-${current * slideWidth}px)`;
+
+    dotsWrap.querySelectorAll('.testi-dot').forEach((d, i) => {
+
+      d.classList.toggle('active', i === current);
 
     });
 
   }
 
-  // ── TESTIMONIAL CAROUSEL 
+  // Auto-scroll setiap 3.5 detik
 
-  (function () {
+  function startAuto() {
 
-    const track = document.getElementById('testiTrack');
+    autoTimer = setInterval(() => goTo(current + 1), 3500);
 
-    const dotsWrap = document.getElementById('testiDots');
+  }
 
-    if (!track) return;
+  function stopAuto() {
 
-    const slides = track.querySelectorAll('.testi-slide');
+    clearInterval(autoTimer);
 
-    const total = slides.length;
+  }
 
-    let current = 0;
+  startAuto();
 
-    let autoTimer = null;
+  // Touch / mouse drag
 
-    // Buat dots
+  let startX = 0, isDragging = false, dragDelta = 0;
 
-    slides.forEach((_, i) => {
+  track.addEventListener('mousedown', e => {
 
-      const d = document.createElement('div');
+    isDragging = true;
 
-      d.className = 'testi-dot' + (i === 0 ? ' active' : '');
+    startX = e.clientX;
 
-      d.onclick = () => goTo(i);
+    track.classList.add('dragging');
 
-      dotsWrap.appendChild(d);
+    stopAuto();
 
-    });
+  });
 
-    function goTo(idx) {
+  track.addEventListener('touchstart', e => {
 
-      current = (idx + total) % total;
+    startX = e.touches[0].clientX;
 
-      const slideWidth = slides[0].offsetWidth + 16;
+    stopAuto();
 
-      track.style.transform = `translateX(-${current * slideWidth}px)`;
+  }, { passive: true });
 
-      dotsWrap.querySelectorAll('.testi-dot').forEach((d, i) => {
+  track.addEventListener('mousemove', e => {
 
-        d.classList.toggle('active', i === current);
+    if (!isDragging) return;
 
-      });
+    dragDelta = e.clientX - startX;
+
+  });
+
+  track.addEventListener('touchmove', e => {
+
+    dragDelta = e.touches[0].clientX - startX;
+
+  }, { passive: true });
+
+  function endDrag() {
+
+    if (Math.abs(dragDelta) > 50) {
+
+      goTo(dragDelta < 0 ? current + 1 : current - 1);
+
+    } else {
+
+      goTo(current);
 
     }
 
-    // Auto-scroll setiap 3.5 detik
+    isDragging = false;
 
-    function startAuto() {
+    dragDelta = 0;
 
-      autoTimer = setInterval(() => goTo(current + 1), 3500);
-
-    }
-
-    function stopAuto() {
-
-      clearInterval(autoTimer);
-
-    }
+    track.classList.remove('dragging');
 
     startAuto();
 
-    // Touch / mouse drag
+  }
 
-    let startX = 0, isDragging = false, dragDelta = 0;
+  track.addEventListener('mouseup', endDrag);
 
-    track.addEventListener('mousedown', e => {
+  track.addEventListener('mouseleave', () => {
 
-      isDragging = true;
+    if (isDragging) endDrag();
 
-      startX = e.clientX;
+  });
 
-      track.classList.add('dragging');
+  track.addEventListener('touchend', endDrag);
 
-      stopAuto();
+  // Pause saat hover
+
+  track.addEventListener('mouseenter', stopAuto);
+
+  track.addEventListener('mouseleave', startAuto);
+
+})();
+
+let _detailData = null;
+
+function openDetailPanel() {
+
+  if (!_detailData) return;
+
+  populateDetailPanel(_detailData);
+
+  document.getElementById('detail-overlay').style.display = 'block';
+
+  document.getElementById('detail-panel').style.display = 'block';
+
+  document.body.style.overflow = 'hidden';
+
+}
+
+function closeDetailPanel() {
+
+  document.getElementById('detail-overlay').style.display = 'none';
+
+  document.getElementById('detail-panel').style.display = 'none';
+
+  document.body.style.removeProperty('overflow');
+
+}
+
+function _dmGauge(val, max, colorClass) {
+
+  var pct = Math.min(Math.max((val / max) * 100, 0), 100);
+
+  return '<div class="dm-gauge-track">' +
+
+    '<div class="dm-gauge-fill ' + colorClass + '" style="width:' + pct + '%; background:currentColor;"></div>' +
+
+    '</div>';
+
+}
+
+function _dmBlock(num, label, valueHTML, sublabel, explain, colorClass, extra) {
+
+  return '<div class="detail-metric-block ' + (colorClass || '') + '">' +
+
+    '<div class="dm-number">0' + num + '</div>' +
+
+    '<div class="dm-label">' + label + '</div>' +
+
+    '<div class="dm-value ' + (extra || 'dv-gold') + '">' + valueHTML + '</div>' +
+
+    '<div class="dm-sublabel">' + sublabel + '</div>' +
+
+    (explain ? '<div class="dm-explain">' + explain + '</div>' : '') +
+
+    '</div>';
+
+}
+
+function populateDetailPanel(d) {
+
+  var kw = d.keyword || '—';
+
+  document.getElementById('detail-keyword-label').textContent = kw;
+
+  var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
+
+  var c = document.getElementById('detail-metrics-container');
+
+  if (!c) return;
+
+  var html = '';
+
+  // ── KELOMPOK 1: KEPUTUSAN — html += '<div class="dm-section-title">// Keputusan Utama</div>';
+
+  // 1. Entry Timing Score
+
+  var ts = d.entry_timing_score || 0;
+
+  var tl = d.entry_timing_label || '-';
+
+  var tsColor = ts >= 70 ? 'dv-green' : ts >= 50 ? 'dv-gold' : ts >= 30 ? 'dv-amber' : 'dv-red';
+
+  var tsClass = ts >= 70 ? 'dm-green' : ts >= 50 ? 'dm-gold' : ts >= 30 ? 'dm-amber' : 'dm-red';
+
+  html += _dmBlock(1, 'Entry Timing Score', ts + '<span style="font-size:16px;color:var(--text-dim)"> / 100</span>',
+
+    tl,
+
+    'Skor gabungan dari <strong>10 faktor</strong> yang menentukan apakah sekarang adalah waktu terbaik untuk mulai berjualan produk ini. Di atas 70 = waktu terbaik. 50-69 = boleh masuk dengan persiapan. Di bawah 50 = tunggu atau hindari.',
+
+    tsClass, tsColor);
+
+  // 2. Lifecycle Stage
+
+  var stage = d.lifecycle_stage || '-';
+
+  var stageMap = {
+
+    'Emerging': { color: 'dv-gold', cls: 'dm-gold', desc: 'Produk baru mulai dikenal pasar. <strong>Peluang awal yang bagus</strong>  masuk sekarang sebelum ramai.' },
+
+    'Rising': { color: 'dv-green', cls: 'dm-green', desc: 'Tren sedang naik tajam. <strong>Momentum kuat</strong>  pasar sedang tumbuh aktif.' },
+
+    'Peak': { color: 'dv-amber', cls: 'dm-amber', desc: 'Produk sedang di puncak popularitas. <strong>Hati-hati</strong>  persaingan tinggi, mungkin akan turun.' },
+
+    'Stable': { color: 'dv-text', cls: '', desc: 'Tren relatif datar dan stabil. <strong>Pasar matang</strong>  bisa masuk tapi persaingan sudah ada.' },
+
+    'Declining': { color: 'dv-red', cls: 'dm-red', desc: 'Minat pasar sedang menurun. <strong>Tidak disarankan</strong> untuk mulai berjualan saat ini.' }
+
+  };
+
+  var si = stageMap[stage] || { color: 'dv-text', cls: '', desc: '—' };
+
+  html += _dmBlock(2, 'Lifecycle Stage', stage, 'Fase siklus hidup produk', si.desc, si.cls, si.color);
+
+  // 3. Risk Level
+
+  var risk = d.risk_level || '—';
+
+  var riskMap = {
+
+    'Low Risk': { color: 'dv-green', cls: 'dm-green', desc: 'Volatilitas rendah dan tidak ada sinyal hype berlebihan. <strong>Risiko investasi relatif kecil.</strong>' },
+
+    'Medium Risk': { color: 'dv-amber', cls: 'dm-amber', desc: 'Ada potensi fluktuasi yang perlu diwaspadai. <strong>Masih layak, tapi siapkan strategi cadangan.</strong>' },
+
+    'High Risk': { color: 'dv-red', cls: 'dm-red', desc: 'Tren sangat tidak stabil atau terdeteksi hype sesaat. <strong>Hindari investasi besar di produk ini sekarang.</strong>' }
+
+  };
+
+  var ri = riskMap[risk] || { color: 'dv-text', cls: '', desc: '—' };
+
+  html += _dmBlock(3, 'Risk Level', risk, 'Berdasarkan volatilitas + FOMO index', ri.desc, ri.cls, ri.color);
+
+  // ── KELOMPOK 2: METRIK PASAR — html += '<div class="dm-section-title">// Metrik Pasar</div>';
+
+  html += '<div class="dm-grid-2">';
+
+  // 4. Growth 7 Hari
+
+  var gr = d.growth || 0;
+
+  var grPct = (gr * 100).toFixed(1);
+
+  var grColor = gr > 0 ? 'dv-green' : gr > -0.1 ? 'dv-amber' : 'dv-red';
+
+  var grCls = gr > 0 ? 'dm-green' : gr > -0.1 ? 'dm-amber' : 'dm-red';
+
+  html += _dmBlock(4, 'Growth 7 Hari',
+
+    (gr >= 0 ? '+' : '') + grPct + '%',
+
+    'Dibanding 7 hari sebelumnya',
+
+    'Selisih rata-rata minat <strong>7 hari terakhir</strong> vs <strong>7 hari sebelumnya</strong>.',
+
+    grCls, grColor);
+
+  // 5. Momentum
+
+  var mom = d.momentum || 0;
+
+  var momFmt = (mom >= 0 ? '+' : '') + mom.toFixed(3);
+
+  var momColor = mom > 0.2 ? 'dv-green' : mom > 0 ? 'dv-gold' : mom > -0.2 ? 'dv-amber' : 'dv-red';
+
+  var momCls = mom > 0.2 ? 'dm-green' : mom > 0 ? 'dm-gold' : mom > -0.2 ? 'dm-amber' : 'dm-red';
+
+  html += _dmBlock(5, 'Momentum',
+
+    momFmt,
+
+    mom > 0 ? 'Tren naik' : mom < 0 ? 'Tren turun' : 'Datar',
+
+    'Kemiringan garis tren (regresi linear). <strong>Positif = naik, negatif = turun.</strong> Makin jauh dari 0, makin kuat tren-nya.',
+
+    momCls, momColor);
+
+  html += '</div><div class="dm-grid-2">';
+
+  // 6. Volatilitas
+
+  var vol = d.volatility || 0;
+
+  var volPct = (vol * 100).toFixed(1);
+
+  var volColor = vol < 0.3 ? 'dv-green' : vol < 0.5 ? 'dv-amber' : 'dv-red';
+
+  var volCls = vol < 0.3 ? 'dm-green' : vol < 0.5 ? 'dm-amber' : 'dm-red';
+
+  html += _dmBlock(6, 'Volatilitas',
+
+    volPct + '%',
+
+    vol < 0.3 ? 'Stabil' : vol < 0.5 ? 'Fluktuasi sedang' : 'Sangat fluktuatif',
+
+    'Koefisien variasi minat. <strong>Makin kecil = makin stabil</strong> dan mudah diprediksi.',
+
+    volCls, volColor);
+
+  // 7. Market Pulse Score
+
+  var pulse = d.market_pulse_score || 0;
+
+  var pulseColor = pulse >= 65 ? 'dv-green' : pulse >= 45 ? 'dv-gold' : 'dv-red';
+
+  var pulseCls = pulse >= 65 ? 'dm-green' : pulse >= 45 ? 'dm-gold' : 'dm-red';
+
+  html += _dmBlock(7, 'Market Pulse',
+
+    pulse + '<span style="font-size:14px;color:var(--text-dim)"> / 100</span>',
+
+    'Kesehatan pasar keseluruhan',
+
+    'Gabungan dari growth (40%), momentum (35%), dan stabilitas (25%). <strong>Di atas 65 = kondisi pasar sehat.</strong>',
+
+    pulseCls, pulseColor);
+
+  html += '</div><div class="dm-grid-2">';
+
+  // 8. FOMO Index
+
+  var fomo = d.fomo_index || 0;
+
+  var fomoColor = fomo < 0.3 ? 'dv-green' : fomo < 0.6 ? 'dv-amber' : 'dv-red';
+
+  var fomoCls = fomo < 0.3 ? 'dm-green' : fomo < 0.6 ? 'dm-amber' : 'dm-red';
+
+  var fomoLabel = fomo < 0.3 ? 'Tren organik' : fomo < 0.6 ? 'Ada sinyal hype' : 'Hype tinggi — waspada';
+
+  html += _dmBlock(8, 'FOMO Index',
+
+    fomo.toFixed(3),
+
+    fomoLabel,
+
+    'Rasio minat <strong>7 hari terakhir vs rata-rata sebelumnya</strong>. Nilai tinggi (> 0.6) = kemungkinan tren sesaat yang akan cepat turun.',
+
+    fomoCls, fomoColor);
+
+  // 9. Saturasi
+
+  var sat = d.saturation_index || 0;
+
+  var satColor = sat < 0.4 ? 'dv-green' : sat < 0.65 ? 'dv-amber' : 'dv-red';
+
+  var satCls = sat < 0.4 ? 'dm-green' : sat < 0.65 ? 'dm-amber' : 'dm-red';
+
+  var satLabel = sat < 0.4 ? 'Pasar terbuka' : sat < 0.65 ? 'Mulai padat' : 'Pasar jenuh';
+
+  html += _dmBlock(9, 'Saturasi Pasar',
+
+    sat.toFixed(2),
+
+    satLabel,
+
+    'Estimasi kejenuhan pasar berdasarkan <strong>pertumbuhan vs momentum</strong>. Makin rendah = makin banyak ruang untuk pemain baru.',
+
+    satCls, satColor);
+
+  html += '</div>';
+
+  // ── KELOMPOK 3: PROYEKSI — html += '<div class="dm-section-title">// Proyeksi & Pola</div>';
+
+  // 10. Forecast 30 Hari
+
+  var fc = d.forecast_30d_avg || 0;
+
+  var fcConf = d.forecast_confidence || 0;
+
+  var fcConfPct = (fcConf * 100).toFixed(0);
+
+  var fcColor = fc > 50 ? 'dv-green' : fc > 25 ? 'dv-gold' : 'dv-amber';
+
+  html += _dmBlock(10, 'Forecast 30 Hari',
+
+    fc.toFixed(1),
+
+    'Proyeksi rata-rata minat',
+
+    'Prediksi minat 30 hari ke depan menggunakan <strong>regresi linear</strong> dari data 3 bulan terakhir. ' +
+
+    '<strong>Akurasi: ' + fcConfPct + '%</strong>  ' +
+
+    (fcConf >= 0.7 ? 'proyeksi cukup dapat diandalkan.' : fcConf >= 0.5 ? 'proyeksi moderat, ada ketidakpastian.' : 'proyeksi lemah karena data fluktuatif.'),
+
+    'dm-blue', fcColor);
+
+  // 11. Pola Musiman
+
+  var isSeas = d.is_seasonal || false;
+
+  var seasConf = d.seasonal_confidence || 0;
+
+  var seasPct = (seasConf * 100).toFixed(0);
+
+  var peakMonths = d.seasonal_peak_months || [];
+
+  var peakNames = peakMonths.map(function (m) { return MONTHS[m - 1]; }).join(', ');
+
+  var seasValue = isSeas ? 'YA' : 'TIDAK';
+
+  var seasColor = isSeas ? 'dv-amber' : 'dv-text';
+
+  var seasCls = isSeas ? 'dm-amber' : '';
+
+  var seasDesc = isSeas
+
+    ? 'Produk ini <strong>memiliki pola musiman</strong> yang terdeteksi (keyakinan ' + seasPct + '%). ' +
+
+    (peakNames ? 'Bulan puncak biasanya di: <strong>' + peakNames + '</strong>. Siapkan stok sebelum bulan-bulan ini.' : 'Data bulan puncak belum tersedia.')
+
+    : 'Tidak terdeteksi pola musiman yang signifikan. <strong>Permintaan cenderung konsisten</strong> sepanjang tahun.';
+
+  html += _dmBlock(11, 'Pola Musiman',
+
+    seasValue,
+
+    isSeas ? 'Musiman terdeteksi — keyakinan ' + seasPct + '%' : 'Tidak musiman',
+
+    seasDesc, seasCls, seasColor);
+
+  // Footer note
+
+  html += '<div style="' +
+
+    'margin-top:32px; padding:14px 16px;' +
+
+    'background:rgba(212,168,67,0.04);' +
+
+    'border:1px dashed rgba(212,168,67,0.2);' +
+
+    'font-family:\'DM Mono\',monospace;' +
+
+    'font-size:10px; line-height:1.8;' +
+
+    'color:var(--text-faint); letter-spacing:0.03em;' +
+
+    '">' +
+
+    '// Data bersumber dari Google Trends via SerpApi<br>' +
+
+    '// Analisis dihitung oleh Sentra Engine v2.0<br>' +
+
+    '// Semua metrik bersifat indikatif — bukan jaminan hasil bisnis' +
+
+    '</div>';
+
+  c.innerHTML = html;
+
+}
+
+/* --
+
+   SECTION — TESTIMONI CAROUSEL (GSAP)
+
+-- */
+
+function initTestimonialCarousel() {
+
+  const track = document.getElementById('tcTrack');
+
+  const viewport = document.getElementById('tcViewport');
+
+  const dotsContainer = document.getElementById('tcDots');
+
+  const prevBtn = document.getElementById('tcPrev');
+
+  const nextBtn = document.getElementById('tcNext');
+
+  if (!track || !viewport) return;
+
+  const slides = Array.from(track.children);
+
+  const slideCount = slides.length;
+
+  if (slideCount === 0) return;
+
+  let currentIndex = 0;
+
+  let isAnimating = false;
+
+  let autoPlayTimer = null;
+
+  const interval = 5000;
+
+  // 1. Setup Dots
+
+  slides.forEach((_, i) => {
+
+    const dot = document.createElement('div');
+
+    dot.className = 'tc-dot' + (i === 0 ? ' active' : '');
+
+    dot.addEventListener('click', () => goToSlide(i));
+
+    dotsContainer.appendChild(dot);
+
+  });
+
+  const dots = Array.from(dotsContainer.children);
+
+  // 2. Clone for Seamless Loop
+
+  const firstClone = slides[0].cloneNode(true);
+
+  const lastClone = slides[slideCount - 1].cloneNode(true);
+
+  track.appendChild(firstClone);
+
+  track.insertBefore(lastClone, slides[0]);
+
+  // 3. Initial Position
+
+  const updateTrackPosition = () => {
+
+    const slideWidth = slides[0].offsetWidth + 30; // 30 is gap
+
+    gsap.set(track, { x: -(currentIndex + 1) * slideWidth });
+
+  };
+
+  window.addEventListener('resize', updateTrackPosition);
+
+  updateTrackPosition();
+
+  function goToSlide(index, direction = 'next') {
+
+    if (isAnimating) return;
+
+    isAnimating = true;
+
+    const slideWidth = slides[0].offsetWidth + 30;
+
+    currentIndex = index;
+
+    // Update dots
+
+    dots.forEach((d, i) => {
+
+      let activeIdx = currentIndex;
+
+      if (currentIndex >= slideCount) activeIdx = 0;
+
+      if (currentIndex < 0) activeIdx = slideCount - 1;
+
+      d.classList.toggle('active', i === activeIdx);
 
     });
 
-    track.addEventListener('touchstart', e => {
+    gsap.to(track, {
 
-      startX = e.touches[0].clientX;
+      x: -(currentIndex + 1) * slideWidth,
 
-      stopAuto();
+      duration: 0.8,
 
-    }, { passive: true });
+      ease: "power2.inOut",
 
-    track.addEventListener('mousemove', e => {
+      onComplete: () => {
 
-      if (!isDragging) return;
+        isAnimating = false;
 
-      dragDelta = e.clientX - startX;
+        // Loop logic
 
-    });
+        if (currentIndex >= slideCount) {
 
-    track.addEventListener('touchmove', e => {
+          currentIndex = 0;
 
-      dragDelta = e.touches[0].clientX - startX;
+          gsap.set(track, { x: -slideWidth });
 
-    }, { passive: true });
+        } else if (currentIndex < 0) {
 
-    function endDrag() {
+          currentIndex = slideCount - 1;
 
-      if (Math.abs(dragDelta) > 50) {
-
-        goTo(dragDelta < 0 ? current + 1 : current - 1);
-
-      } else {
-
-        goTo(current);
-
-      }
-
-      isDragging = false;
-
-      dragDelta = 0;
-
-      track.classList.remove('dragging');
-
-      startAuto();
-
-    }
-
-    track.addEventListener('mouseup', endDrag);
-
-    track.addEventListener('mouseleave', () => {
-
-      if (isDragging) endDrag();
-
-    });
-
-    track.addEventListener('touchend', endDrag);
-
-    // Pause saat hover
-
-    track.addEventListener('mouseenter', stopAuto);
-
-    track.addEventListener('mouseleave', startAuto);
-
-  })();
-
-  let _detailData = null;
-
-  function openDetailPanel() {
-
-    if (!_detailData) return;
-
-    populateDetailPanel(_detailData);
-
-    document.getElementById('detail-overlay').style.display = 'block';
-
-    document.getElementById('detail-panel').style.display = 'block';
-
-    document.body.style.overflow = 'hidden';
-
-  }
-
-  function closeDetailPanel() {
-
-    document.getElementById('detail-overlay').style.display = 'none';
-
-    document.getElementById('detail-panel').style.display = 'none';
-
-    document.body.style.removeProperty('overflow');
-
-  }
-
-  function _dmGauge(val, max, colorClass) {
-
-    var pct = Math.min(Math.max((val / max) * 100, 0), 100);
-
-    return '<div class="dm-gauge-track">' +
-
-      '<div class="dm-gauge-fill ' + colorClass + '" style="width:' + pct + '%; background:currentColor;"></div>' +
-
-      '</div>';
-
-  }
-
-  function _dmBlock(num, label, valueHTML, sublabel, explain, colorClass, extra) {
-
-    return '<div class="detail-metric-block ' + (colorClass || '') + '">' +
-
-      '<div class="dm-number">0' + num + '</div>' +
-
-      '<div class="dm-label">' + label + '</div>' +
-
-      '<div class="dm-value ' + (extra || 'dv-gold') + '">' + valueHTML + '</div>' +
-
-      '<div class="dm-sublabel">' + sublabel + '</div>' +
-
-      (explain ? '<div class="dm-explain">' + explain + '</div>' : '') +
-
-      '</div>';
-
-  }
-
-  function populateDetailPanel(d) {
-
-    var kw = d.keyword || '—';
-
-    document.getElementById('detail-keyword-label').textContent = kw;
-
-    var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
-
-    var c = document.getElementById('detail-metrics-container');
-
-    if (!c) return;
-
-    var html = '';
-
-    // ── KELOMPOK 1: KEPUTUSAN — html += '<div class="dm-section-title">// Keputusan Utama</div>';
-
-    // 1. Entry Timing Score
-
-    var ts = d.entry_timing_score || 0;
-
-    var tl = d.entry_timing_label || '-';
-
-    var tsColor = ts >= 70 ? 'dv-green' : ts >= 50 ? 'dv-gold' : ts >= 30 ? 'dv-amber' : 'dv-red';
-
-    var tsClass = ts >= 70 ? 'dm-green' : ts >= 50 ? 'dm-gold' : ts >= 30 ? 'dm-amber' : 'dm-red';
-
-    html += _dmBlock(1, 'Entry Timing Score', ts + '<span style="font-size:16px;color:var(--text-dim)"> / 100</span>',
-
-      tl,
-
-      'Skor gabungan dari <strong>10 faktor</strong> yang menentukan apakah sekarang adalah waktu terbaik untuk mulai berjualan produk ini. Di atas 70 = waktu terbaik. 50-69 = boleh masuk dengan persiapan. Di bawah 50 = tunggu atau hindari.',
-
-      tsClass, tsColor);
-
-    // 2. Lifecycle Stage
-
-    var stage = d.lifecycle_stage || '-';
-
-    var stageMap = {
-
-      'Emerging': { color: 'dv-gold', cls: 'dm-gold', desc: 'Produk baru mulai dikenal pasar. <strong>Peluang awal yang bagus</strong>  masuk sekarang sebelum ramai.' },
-
-      'Rising': { color: 'dv-green', cls: 'dm-green', desc: 'Tren sedang naik tajam. <strong>Momentum kuat</strong>  pasar sedang tumbuh aktif.' },
-
-      'Peak': { color: 'dv-amber', cls: 'dm-amber', desc: 'Produk sedang di puncak popularitas. <strong>Hati-hati</strong>  persaingan tinggi, mungkin akan turun.' },
-
-      'Stable': { color: 'dv-text', cls: '', desc: 'Tren relatif datar dan stabil. <strong>Pasar matang</strong>  bisa masuk tapi persaingan sudah ada.' },
-
-      'Declining': { color: 'dv-red', cls: 'dm-red', desc: 'Minat pasar sedang menurun. <strong>Tidak disarankan</strong> untuk mulai berjualan saat ini.' }
-
-    };
-
-    var si = stageMap[stage] || { color: 'dv-text', cls: '', desc: '—' };
-
-    html += _dmBlock(2, 'Lifecycle Stage', stage, 'Fase siklus hidup produk', si.desc, si.cls, si.color);
-
-    // 3. Risk Level
-
-    var risk = d.risk_level || '—';
-
-    var riskMap = {
-
-      'Low Risk': { color: 'dv-green', cls: 'dm-green', desc: 'Volatilitas rendah dan tidak ada sinyal hype berlebihan. <strong>Risiko investasi relatif kecil.</strong>' },
-
-      'Medium Risk': { color: 'dv-amber', cls: 'dm-amber', desc: 'Ada potensi fluktuasi yang perlu diwaspadai. <strong>Masih layak, tapi siapkan strategi cadangan.</strong>' },
-
-      'High Risk': { color: 'dv-red', cls: 'dm-red', desc: 'Tren sangat tidak stabil atau terdeteksi hype sesaat. <strong>Hindari investasi besar di produk ini sekarang.</strong>' }
-
-    };
-
-    var ri = riskMap[risk] || { color: 'dv-text', cls: '', desc: '—' };
-
-    html += _dmBlock(3, 'Risk Level', risk, 'Berdasarkan volatilitas + FOMO index', ri.desc, ri.cls, ri.color);
-
-    // ── KELOMPOK 2: METRIK PASAR — html += '<div class="dm-section-title">// Metrik Pasar</div>';
-
-    html += '<div class="dm-grid-2">';
-
-    // 4. Growth 7 Hari
-
-    var gr = d.growth || 0;
-
-    var grPct = (gr * 100).toFixed(1);
-
-    var grColor = gr > 0 ? 'dv-green' : gr > -0.1 ? 'dv-amber' : 'dv-red';
-
-    var grCls = gr > 0 ? 'dm-green' : gr > -0.1 ? 'dm-amber' : 'dm-red';
-
-    html += _dmBlock(4, 'Growth 7 Hari',
-
-      (gr >= 0 ? '+' : '') + grPct + '%',
-
-      'Dibanding 7 hari sebelumnya',
-
-      'Selisih rata-rata minat <strong>7 hari terakhir</strong> vs <strong>7 hari sebelumnya</strong>.',
-
-      grCls, grColor);
-
-    // 5. Momentum
-
-    var mom = d.momentum || 0;
-
-    var momFmt = (mom >= 0 ? '+' : '') + mom.toFixed(3);
-
-    var momColor = mom > 0.2 ? 'dv-green' : mom > 0 ? 'dv-gold' : mom > -0.2 ? 'dv-amber' : 'dv-red';
-
-    var momCls = mom > 0.2 ? 'dm-green' : mom > 0 ? 'dm-gold' : mom > -0.2 ? 'dm-amber' : 'dm-red';
-
-    html += _dmBlock(5, 'Momentum',
-
-      momFmt,
-
-      mom > 0 ? 'Tren naik' : mom < 0 ? 'Tren turun' : 'Datar',
-
-      'Kemiringan garis tren (regresi linear). <strong>Positif = naik, negatif = turun.</strong> Makin jauh dari 0, makin kuat tren-nya.',
-
-      momCls, momColor);
-
-    html += '</div><div class="dm-grid-2">';
-
-    // 6. Volatilitas
-
-    var vol = d.volatility || 0;
-
-    var volPct = (vol * 100).toFixed(1);
-
-    var volColor = vol < 0.3 ? 'dv-green' : vol < 0.5 ? 'dv-amber' : 'dv-red';
-
-    var volCls = vol < 0.3 ? 'dm-green' : vol < 0.5 ? 'dm-amber' : 'dm-red';
-
-    html += _dmBlock(6, 'Volatilitas',
-
-      volPct + '%',
-
-      vol < 0.3 ? 'Stabil' : vol < 0.5 ? 'Fluktuasi sedang' : 'Sangat fluktuatif',
-
-      'Koefisien variasi minat. <strong>Makin kecil = makin stabil</strong> dan mudah diprediksi.',
-
-      volCls, volColor);
-
-    // 7. Market Pulse Score
-
-    var pulse = d.market_pulse_score || 0;
-
-    var pulseColor = pulse >= 65 ? 'dv-green' : pulse >= 45 ? 'dv-gold' : 'dv-red';
-
-    var pulseCls = pulse >= 65 ? 'dm-green' : pulse >= 45 ? 'dm-gold' : 'dm-red';
-
-    html += _dmBlock(7, 'Market Pulse',
-
-      pulse + '<span style="font-size:14px;color:var(--text-dim)"> / 100</span>',
-
-      'Kesehatan pasar keseluruhan',
-
-      'Gabungan dari growth (40%), momentum (35%), dan stabilitas (25%). <strong>Di atas 65 = kondisi pasar sehat.</strong>',
-
-      pulseCls, pulseColor);
-
-    html += '</div><div class="dm-grid-2">';
-
-    // 8. FOMO Index
-
-    var fomo = d.fomo_index || 0;
-
-    var fomoColor = fomo < 0.3 ? 'dv-green' : fomo < 0.6 ? 'dv-amber' : 'dv-red';
-
-    var fomoCls = fomo < 0.3 ? 'dm-green' : fomo < 0.6 ? 'dm-amber' : 'dm-red';
-
-    var fomoLabel = fomo < 0.3 ? 'Tren organik' : fomo < 0.6 ? 'Ada sinyal hype' : 'Hype tinggi — waspada';
-
-    html += _dmBlock(8, 'FOMO Index',
-
-      fomo.toFixed(3),
-
-      fomoLabel,
-
-      'Rasio minat <strong>7 hari terakhir vs rata-rata sebelumnya</strong>. Nilai tinggi (> 0.6) = kemungkinan tren sesaat yang akan cepat turun.',
-
-      fomoCls, fomoColor);
-
-    // 9. Saturasi
-
-    var sat = d.saturation_index || 0;
-
-    var satColor = sat < 0.4 ? 'dv-green' : sat < 0.65 ? 'dv-amber' : 'dv-red';
-
-    var satCls = sat < 0.4 ? 'dm-green' : sat < 0.65 ? 'dm-amber' : 'dm-red';
-
-    var satLabel = sat < 0.4 ? 'Pasar terbuka' : sat < 0.65 ? 'Mulai padat' : 'Pasar jenuh';
-
-    html += _dmBlock(9, 'Saturasi Pasar',
-
-      sat.toFixed(2),
-
-      satLabel,
-
-      'Estimasi kejenuhan pasar berdasarkan <strong>pertumbuhan vs momentum</strong>. Makin rendah = makin banyak ruang untuk pemain baru.',
-
-      satCls, satColor);
-
-    html += '</div>';
-
-    // ── KELOMPOK 3: PROYEKSI — html += '<div class="dm-section-title">// Proyeksi & Pola</div>';
-
-    // 10. Forecast 30 Hari
-
-    var fc = d.forecast_30d_avg || 0;
-
-    var fcConf = d.forecast_confidence || 0;
-
-    var fcConfPct = (fcConf * 100).toFixed(0);
-
-    var fcColor = fc > 50 ? 'dv-green' : fc > 25 ? 'dv-gold' : 'dv-amber';
-
-    html += _dmBlock(10, 'Forecast 30 Hari',
-
-      fc.toFixed(1),
-
-      'Proyeksi rata-rata minat',
-
-      'Prediksi minat 30 hari ke depan menggunakan <strong>regresi linear</strong> dari data 3 bulan terakhir. ' +
-
-      '<strong>Akurasi: ' + fcConfPct + '%</strong>  ' +
-
-      (fcConf >= 0.7 ? 'proyeksi cukup dapat diandalkan.' : fcConf >= 0.5 ? 'proyeksi moderat, ada ketidakpastian.' : 'proyeksi lemah karena data fluktuatif.'),
-
-      'dm-blue', fcColor);
-
-    // 11. Pola Musiman
-
-    var isSeas = d.is_seasonal || false;
-
-    var seasConf = d.seasonal_confidence || 0;
-
-    var seasPct = (seasConf * 100).toFixed(0);
-
-    var peakMonths = d.seasonal_peak_months || [];
-
-    var peakNames = peakMonths.map(function (m) { return MONTHS[m - 1]; }).join(', ');
-
-    var seasValue = isSeas ? 'YA' : 'TIDAK';
-
-    var seasColor = isSeas ? 'dv-amber' : 'dv-text';
-
-    var seasCls = isSeas ? 'dm-amber' : '';
-
-    var seasDesc = isSeas
-
-      ? 'Produk ini <strong>memiliki pola musiman</strong> yang terdeteksi (keyakinan ' + seasPct + '%). ' +
-
-      (peakNames ? 'Bulan puncak biasanya di: <strong>' + peakNames + '</strong>. Siapkan stok sebelum bulan-bulan ini.' : 'Data bulan puncak belum tersedia.')
-
-      : 'Tidak terdeteksi pola musiman yang signifikan. <strong>Permintaan cenderung konsisten</strong> sepanjang tahun.';
-
-    html += _dmBlock(11, 'Pola Musiman',
-
-      seasValue,
-
-      isSeas ? 'Musiman terdeteksi — keyakinan ' + seasPct + '%' : 'Tidak musiman',
-
-      seasDesc, seasCls, seasColor);
-
-    // Footer note
-
-    html += '<div style="' +
-
-      'margin-top:32px; padding:14px 16px;' +
-
-      'background:rgba(212,168,67,0.04);' +
-
-      'border:1px dashed rgba(212,168,67,0.2);' +
-
-      'font-family:\'DM Mono\',monospace;' +
-
-      'font-size:10px; line-height:1.8;' +
-
-      'color:var(--text-faint); letter-spacing:0.03em;' +
-
-      '">' +
-
-      '// Data bersumber dari Google Trends via SerpApi<br>' +
-
-      '// Analisis dihitung oleh Sentra Engine v2.0<br>' +
-
-      '// Semua metrik bersifat indikatif — bukan jaminan hasil bisnis' +
-
-      '</div>';
-
-    c.innerHTML = html;
-
-  }
-
-  /* --
-
-     SECTION — TESTIMONI CAROUSEL (GSAP)
-
-  -- */
-
-  function initTestimonialCarousel() {
-
-    const track = document.getElementById('tcTrack');
-
-    const viewport = document.getElementById('tcViewport');
-
-    const dotsContainer = document.getElementById('tcDots');
-
-    const prevBtn = document.getElementById('tcPrev');
-
-    const nextBtn = document.getElementById('tcNext');
-
-    if (!track || !viewport) return;
-
-    const slides = Array.from(track.children);
-
-    const slideCount = slides.length;
-
-    if (slideCount === 0) return;
-
-    let currentIndex = 0;
-
-    let isAnimating = false;
-
-    let autoPlayTimer = null;
-
-    const interval = 5000;
-
-    // 1. Setup Dots
-
-    slides.forEach((_, i) => {
-
-      const dot = document.createElement('div');
-
-      dot.className = 'tc-dot' + (i === 0 ? ' active' : '');
-
-      dot.addEventListener('click', () => goToSlide(i));
-
-      dotsContainer.appendChild(dot);
-
-    });
-
-    const dots = Array.from(dotsContainer.children);
-
-    // 2. Clone for Seamless Loop
-
-    const firstClone = slides[0].cloneNode(true);
-
-    const lastClone = slides[slideCount - 1].cloneNode(true);
-
-    track.appendChild(firstClone);
-
-    track.insertBefore(lastClone, slides[0]);
-
-    // 3. Initial Position
-
-    const updateTrackPosition = () => {
-
-      const slideWidth = slides[0].offsetWidth + 30; // 30 is gap
-
-      gsap.set(track, { x: -(currentIndex + 1) * slideWidth });
-
-    };
-
-    window.addEventListener('resize', updateTrackPosition);
-
-    updateTrackPosition();
-
-    function goToSlide(index, direction = 'next') {
-
-      if (isAnimating) return;
-
-      isAnimating = true;
-
-      const slideWidth = slides[0].offsetWidth + 30;
-
-      currentIndex = index;
-
-      // Update dots
-
-      dots.forEach((d, i) => {
-
-        let activeIdx = currentIndex;
-
-        if (currentIndex >= slideCount) activeIdx = 0;
-
-        if (currentIndex < 0) activeIdx = slideCount - 1;
-
-        d.classList.toggle('active', i === activeIdx);
-
-      });
-
-      gsap.to(track, {
-
-        x: -(currentIndex + 1) * slideWidth,
-
-        duration: 0.8,
-
-        ease: "power2.inOut",
-
-        onComplete: () => {
-
-          isAnimating = false;
-
-          // Loop logic
-
-          if (currentIndex >= slideCount) {
-
-            currentIndex = 0;
-
-            gsap.set(track, { x: -slideWidth });
-
-          } else if (currentIndex < 0) {
-
-            currentIndex = slideCount - 1;
-
-            gsap.set(track, { x: -slideCount * slideWidth });
-
-          }
+          gsap.set(track, { x: -slideCount * slideWidth });
 
         }
 
-      });
+      }
 
-    }
+    });
 
-    function nextSlide() { goToSlide(currentIndex + 1); }
+  }
 
-    function prevSlide() { goToSlide(currentIndex - 1); }
+  function nextSlide() { goToSlide(currentIndex + 1); }
 
-    nextBtn.addEventListener('click', () => { stopAutoPlay(); nextSlide(); startAutoPlay(); });
+  function prevSlide() { goToSlide(currentIndex - 1); }
 
-    prevBtn.addEventListener('click', () => { stopAutoPlay(); prevSlide(); startAutoPlay(); });
+  nextBtn.addEventListener('click', () => { stopAutoPlay(); nextSlide(); startAutoPlay(); });
 
-    // Auto Play
+  prevBtn.addEventListener('click', () => { stopAutoPlay(); prevSlide(); startAutoPlay(); });
 
-    function startAutoPlay() {
+  // Auto Play
 
-      if (autoPlayTimer) return;
+  function startAutoPlay() {
 
-      autoPlayTimer = setInterval(nextSlide, interval);
+    if (autoPlayTimer) return;
 
-    }
+    autoPlayTimer = setInterval(nextSlide, interval);
 
-    function stopAutoPlay() {
+  }
 
-      clearInterval(autoPlayTimer);
+  function stopAutoPlay() {
 
-      autoPlayTimer = null;
+    clearInterval(autoPlayTimer);
+
+    autoPlayTimer = null;
+
+  }
+
+  startAutoPlay();
+
+  viewport.addEventListener('mouseenter', stopAutoPlay);
+
+  viewport.addEventListener('mouseleave', startAutoPlay);
+
+  // Swipe Support
+
+  let startX = 0;
+
+  viewport.addEventListener('touchstart', (e) => {
+
+    stopAutoPlay();
+
+    startX = e.touches[0].clientX;
+
+  }, { passive: true });
+
+  viewport.addEventListener('touchend', (e) => {
+
+    const endX = e.changedTouches[0].clientX;
+
+    const diff = startX - endX;
+
+    if (Math.abs(diff) > 50) {
+
+      if (diff > 0) nextSlide();
+
+      else prevSlide();
 
     }
 
     startAutoPlay();
 
-    viewport.addEventListener('mouseenter', stopAutoPlay);
+  }, { passive: true });
 
-    viewport.addEventListener('mouseleave', startAutoPlay);
+}
 
-    // Swipe Support
+// Initialize carousel on load
 
-    let startX = 0;
+if (document.readyState === 'loading') {
 
-    viewport.addEventListener('touchstart', (e) => {
+  document.addEventListener('DOMContentLoaded', initTestimonialCarousel);
 
-      stopAutoPlay();
+} else {
 
-      startX = e.touches[0].clientX;
+  initTestimonialCarousel();
 
-    }, { passive: true });
-
-    viewport.addEventListener('touchend', (e) => {
-
-      const endX = e.changedTouches[0].clientX;
-
-      const diff = startX - endX;
-
-      if (Math.abs(diff) > 50) {
-
-        if (diff > 0) nextSlide();
-
-        else prevSlide();
-
-      }
-
-      startAutoPlay();
-
-    }, { passive: true });
-
-  }
-
-  // Initialize carousel on load
-
-  if (document.readyState === 'loading') {
-
-    document.addEventListener('DOMContentLoaded', initTestimonialCarousel);
-
-  } else {
-
-    initTestimonialCarousel();
-
-  }
+}
 
