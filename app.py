@@ -29,6 +29,15 @@ from flask_cors import CORS
 
 from sentra_engine import analyze_keyword, compare_keywords, fetch_regional_data, get_regional_interest
 from ai_recommendation import generate_ai_insight, generate_compare_insight, generate_local_insight
+from umkm_engine import (
+    compute_umkm_health,
+    build_umkm_analysis_prompt,
+    build_umkm_plan_prompt,
+    build_umkm_promo_prompt,
+    groq_generate,
+    upsert_umkm_profile,
+    get_umkm_profile,
+)
 
 app = Flask(__name__, template_folder='.')
 CORS(app)
@@ -244,11 +253,13 @@ def get_auth_session():
         except Exception as e:
             print(f"[AUTH ERROR] Invalid token: {e}")
 
-    # If not authenticated, check for guest_id in body for backward compatibility or pure guests
+    # If not authenticated, check for guest_id in query/body for backward compatibility or pure guests
     if not user_id:
         try:
-            data = request.get_json(silent=True) or {}
-            tmp_id = (data.get("user_id") or "").strip()
+            tmp_id = (request.args.get("user_id") or "").strip()
+            if not tmp_id:
+                data = request.get_json(silent=True) or {}
+                tmp_id = (data.get("user_id") or "").strip()
             if tmp_id.startswith("guest_") or len(tmp_id) > 20: # simple guest validation
                 user_id = tmp_id
         except:
@@ -1230,6 +1241,161 @@ def analyze_local_route():
         "top_3": top_3,
         "local_insight": local_insight
     })
+
+
+# =========================
+# UMKM DASHBOARD ENDPOINTS
+# =========================
+@app.route("/api/umkm/profile", methods=["GET", "POST"])
+def umkm_profile():
+    """
+    GET  : load profile for current user (JWT or guest user_id)
+    POST : upsert profile
+    """
+    user_id, _, _ = get_auth_session()
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    sb = get_supabase()
+    if not sb:
+        return jsonify({"error": "Koneksi database tidak tersedia"}), 503
+
+    if request.method == "GET":
+        try:
+            profile = get_umkm_profile(sb, user_id)
+            return jsonify({"profile": profile or {}})
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+    data = request.get_json(silent=True) or {}
+    try:
+        profile = upsert_umkm_profile(sb, user_id, data)
+        return jsonify({"profile": profile})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/umkm/analyze", methods=["POST"])
+def umkm_analyze():
+    """
+    Upsert profile + compute lightweight metrics + generate warm UMKM insight (Groq).
+    """
+    user_id, _, _ = get_auth_session()
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    sb = get_supabase()
+    if not sb:
+        return jsonify({"error": "Koneksi database tidak tersedia"}), 503
+
+    payload = request.get_json(silent=True) or {}
+    try:
+        profile = upsert_umkm_profile(sb, user_id, payload)
+        metrics = compute_umkm_health(profile)
+        prompt = build_umkm_analysis_prompt(profile, metrics)
+        insight = groq_generate(prompt)
+
+        # store analytics snapshot (best-effort)
+        try:
+            sb.table("umkm_analytics").insert({
+                "user_id": user_id,
+                "metrics": metrics,
+                "ai_insight": insight,
+                "created_at": datetime.utcnow().isoformat(),
+            }).execute()
+        except Exception:
+            pass
+
+        return jsonify({"profile": profile, "metrics": metrics, "insight": insight})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/umkm/plan", methods=["POST"])
+def umkm_plan():
+    user_id, _, _ = get_auth_session()
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    sb = get_supabase()
+    if not sb:
+        return jsonify({"error": "Koneksi database tidak tersedia"}), 503
+
+    try:
+        profile = get_umkm_profile(sb, user_id) or {}
+        metrics = compute_umkm_health(profile)
+        prompt = build_umkm_plan_prompt(profile, metrics)
+        plan = groq_generate(prompt)
+        return jsonify({"plan": plan})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/umkm/promo", methods=["POST"])
+def umkm_promo():
+    user_id, _, _ = get_auth_session()
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    sb = get_supabase()
+    if not sb:
+        return jsonify({"error": "Koneksi database tidak tersedia"}), 503
+
+    try:
+        profile = get_umkm_profile(sb, user_id) or {}
+        prompt = build_umkm_promo_prompt(profile)
+        promo = groq_generate(prompt)
+        return jsonify({"promo": promo})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/umkm/competitors", methods=["POST"])
+def umkm_competitors():
+    """
+    Find competitors via Google Places Text Search API (server-side).
+    Requires env GOOGLE_MAPS_API_KEY.
+    """
+    user_id, _, _ = get_auth_session()
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    key = (os.environ.get("GOOGLE_MAPS_API_KEY") or "").strip()
+    if not key:
+        return jsonify({"error": "GOOGLE_MAPS_API_KEY belum dikonfigurasi"}), 503
+
+    data = request.get_json(silent=True) or {}
+    query = (data.get("query") or "").strip()
+    if not query:
+        return jsonify({"error": "Query tidak boleh kosong"}), 400
+
+    # Optional: bias by UMKM profile location
+    sb = get_supabase()
+    location_hint = ""
+    if sb:
+        try:
+            prof = get_umkm_profile(sb, user_id) or {}
+            location_hint = (prof.get("location") or "").strip()
+        except Exception:
+            location_hint = ""
+
+    full_query = f"{query} {location_hint}".strip()
+    try:
+        import requests
+        url = "https://maps.googleapis.com/maps/api/place/textsearch/json"
+        resp = requests.get(url, params={"query": full_query, "key": key}, timeout=25)
+        j = resp.json() if resp is not None else {}
+        results = []
+        for r in (j.get("results") or [])[:8]:
+            results.append({
+                "name": r.get("name"),
+                "address": r.get("formatted_address"),
+                "rating": r.get("rating"),
+                "user_ratings_total": r.get("user_ratings_total"),
+            })
+        return jsonify({"results": results})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 # =========================

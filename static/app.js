@@ -21,7 +21,6 @@ setTimeout(() => {
       '.radar-section', '.radar-section-modern', '.wp-section',
       '#market-snapshot', '.snapshot-section', '.pricing-section',
       '#testimoni-section', '#sector-dashboard',
-      '#results', '#compare-results',
       '#radar-grid-modern', '.radar-card-premium'
     ].join(', ');
 
@@ -131,7 +130,7 @@ function startSplashScreen() {
         document.querySelectorAll(
           'header, .hero, .howto-section, .radar-section, .radar-section-modern, ' +
           '.wp-section, .social-proof-section, #market-snapshot, .snapshot-section, ' +
-          '.pricing-section, #results, #compare-results, #sector-dashboard, ' +
+          '.pricing-section, #sector-dashboard, ' +
           '#testimoni-section'
         ).forEach(el => {
           el.style.opacity = '1';
@@ -1882,15 +1881,15 @@ function renderResults(d) {
 
   const regSec = document.getElementById('regional-section');
 
-  const regBreakdownSec = document.getElementById('regional-breakdown-section');
+  const regionalInterest = normalizeRegionalInterestData(d.regional_interest);
+  d.regional_interest = regionalInterest;
 
-
-
-  if (d.regional_interest && d.regional_interest.length > 0) {
+  if (regionalInterest.length > 0) {
 
     if (regSec) regSec.style.display = 'block';
-
-    if (regBreakdownSec) regBreakdownSec.style.display = 'block';
+    if (window.MapLogic && typeof window.MapLogic.refresh === 'function') {
+      window.MapLogic.refresh();
+    }
 
     // Update the MapLogic (Indonesia Tile Map)
 
@@ -1898,7 +1897,7 @@ function renderResults(d) {
 
       // Normalize formatting if needed: {name, value} or {province, value}
 
-      const mapData = d.regional_interest.map(item => ({
+      const mapData = regionalInterest.map(item => ({
 
         name: item.province || item.name,
 
@@ -1916,7 +1915,7 @@ function renderResults(d) {
 
     if (topList) {
 
-      topList.innerHTML = d.regional_interest.slice(0, 5).map((item, i) => `
+      topList.innerHTML = regionalInterest.slice(0, 5).map((item, i) => `
 
               <div class="flex items-center justify-between p-3 bg-zinc-900/60 border border-zinc-800 rounded-xl">
 
@@ -1936,29 +1935,9 @@ function renderResults(d) {
 
     }
 
-    const regSumm = document.getElementById('r-regional-summary');
-
-    if (regSumm && d.regional_interest[0]) {
-
-      regSumm.textContent = `Minat tertinggi berasal dari ${d.regional_interest[0].province || d.regional_interest[0].name} dengan indeks pencarian mencapai ${d.regional_interest[0].value}%.`;
-
-    }
-
-
-
-    // Update Regional Bar Chart if exists
-
-    if (typeof renderRegionalBarChart === 'function') {
-
-      renderRegionalBarChart(d.regional_interest);
-
-    }
-
   } else {
 
     if (regSec) regSec.style.display = 'none';
-
-    if (regBreakdownSec) regBreakdownSec.style.display = 'none';
 
   }
 
@@ -3950,6 +3929,21 @@ function sanitizeText(str) {
     .trim();
 }
 
+function normalizeRegionalInterestData(items) {
+  if (!Array.isArray(items)) return [];
+  return items
+    .map((item) => {
+      const province = item?.province || item?.name || item?.region || item?.wilayah || '';
+      const rawValue = item?.value ?? item?.score ?? item?.index ?? item?.interest ?? item?.search_interest ?? 0;
+      const value = Math.max(0, Math.min(100, Number(rawValue) || 0));
+      return {
+        province: String(province).trim(),
+        value
+      };
+    })
+    .filter((item) => item.province.length > 0);
+}
+
 async function doSearch() {
 
   const kw = document.getElementById('kw').value.trim();
@@ -4016,7 +4010,13 @@ async function doSearch() {
 
         if (localData) {
 
-          data.regional_interest = localData.regional_data || [];
+          const localRegionalRaw =
+            localData.regional_data ||
+            localData.regional_interest ||
+            localData.regional_breakdown ||
+            data.regional_interest ||
+            [];
+          data.regional_interest = normalizeRegionalInterestData(localRegionalRaw);
 
           data.regional_breakdown = localData.regional_breakdown || [];
 
@@ -4035,6 +4035,7 @@ async function doSearch() {
     // Sanitize news
 
     if (data.news) data.news = data.news.map(n => ({ ...n, title: sanitizeText(n.title) }));
+    data.regional_interest = normalizeRegionalInterestData(data.regional_interest);
 
     lastAnalysisResult = data;
 
@@ -4045,6 +4046,9 @@ async function doSearch() {
     if (regionalSec && data.regional_interest && data.regional_interest.length > 0) {
 
       regionalSec.style.display = 'block';
+      if (window.MapLogic && typeof window.MapLogic.refresh === 'function') {
+        window.MapLogic.refresh();
+      }
 
       const loader = document.getElementById('map-loader');
 
@@ -4061,14 +4065,6 @@ async function doSearch() {
         const insightEl = document.getElementById('r-local-insight');
 
         if (insightEl) typeWriter(insightEl, sanitizeText(data.local_insight), 5);
-
-      }
-
-      // Render breakdown list
-
-      if (data.regional_breakdown && data.regional_breakdown.length > 0) {
-
-        renderRegionalBreakdown(data.regional_breakdown);
 
       }
 
@@ -4750,11 +4746,11 @@ const hardcodedData = {
 
 function getCompetitionBadge(share) {
 
-  if (share > 20) return '<span class="px-2 py-0.5 rounded text-[8px] font-mono tracking-widest bg-red-500/20 text-red-400 border border-red-500/30">Tinggi</span>';
+  if (share > 20) return '<span class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-[10px] font-mono tracking-widest bg-red-500/15 text-red-300 border border-red-500/25"><span class="w-1.5 h-1.5 rounded-full bg-red-400 shadow-[0_0_10px_rgba(248,113,113,0.55)]"></span>Persaingan: Tinggi</span>';
 
-  if (share > 10) return '<span class="px-2 py-0.5 rounded text-[8px] font-mono tracking-widest bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">Sedang</span>';
+  if (share > 10) return '<span class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-[10px] font-mono tracking-widest bg-yellow-500/15 text-yellow-200 border border-yellow-500/25"><span class="w-1.5 h-1.5 rounded-full bg-yellow-300 shadow-[0_0_10px_rgba(253,224,71,0.5)]"></span>Persaingan: Sedang</span>';
 
-  return '<span class="px-2 py-0.5 rounded text-[8px] font-mono tracking-widest bg-green-500/20 text-green-400 border border-green-500/30">Rendah</span>';
+  return '<span class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-[10px] font-mono tracking-widest bg-green-500/15 text-green-200 border border-green-500/25"><span class="w-1.5 h-1.5 rounded-full bg-green-300 shadow-[0_0_10px_rgba(134,239,172,0.45)]"></span>Persaingan: Rendah</span>';
 
 }
 
@@ -4809,8 +4805,7 @@ function renderModernGrid() {
     const flameHtml = isHottest ? `<i class="fa-solid fa-fire text-[#FACC15] animate-pulse drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]" title="Paling Panas Minggu Ini"></i>` : '';
 
     const cardHtml = `
-
-          <div class="radar-card-premium group relative bg-zinc-900/50 border border-zinc-800 rounded-2xl p-5 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-500 hover:-translate-y-2 hover:bg-zinc-900" style="--accent: ${conf.color};">
+          <div class="radar-card-premium group relative bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 md:p-4.5 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-500 hover:-translate-y-1.5 hover:bg-zinc-900/70" style="--accent: ${conf.color};">
 
              <!-- Top Highlights Glow via tailwind hover pseudo class won't work perfectly with inline var without heavy config, so we use a style tag for hover glow in index.html -->
 
@@ -4818,9 +4813,9 @@ function renderModernGrid() {
 
              <!-- Header -->
 
-             <div class="flex justify-between items-start mb-4 relative z-10">
+             <div class="flex justify-between items-start mb-3 relative z-10">
 
-                <div class="px-2 py-1 rounded text-[10px] font-mono tracking-wider font-bold" style="background-color: ${conf.color}20; color: ${conf.color}; border: 1px solid ${conf.color}40;">
+                <div class="px-2 py-1 rounded-md text-[10px] font-mono tracking-[0.22em] font-bold" style="background-color: ${conf.color}18; color: ${conf.color}; border: 1px solid ${conf.color}35;">
 
                   ${conf.code}
 
@@ -4834,13 +4829,13 @@ function renderModernGrid() {
 
              <!-- Body -->
 
-             <div class="relative z-10 mb-2">
+             <div class="relative z-10 mb-2 min-h-[44px]">
 
-                <h3 class="text-zinc-400 text-sm font-jakarta font-semibold mb-1 truncate">${conf.name}</h3>
+                <h3 class="text-zinc-200 text-[12px] md:text-[13px] font-jakarta font-semibold mb-1 leading-snug radar-sector-name" title="${conf.name}">${conf.name}</h3>
 
                 <div class="flex items-baseline gap-1">
 
-                   <div class="font-syne text-4xl font-extrabold ${colorClass} tracking-tighter sector-growth-counter" data-target="${growth}">0%</div>
+                   <div class="font-syne text-[22px] md:text-[24px] font-extrabold ${colorClass} tracking-tight sector-growth-counter" data-target="${growth}">0%</div>
 
                    <div class="text-[10px] text-zinc-500 uppercase font-mono tracking-widest">YoY</div>
 
@@ -4852,7 +4847,7 @@ function renderModernGrid() {
 
              <!-- Visualizer (Chart) -->
 
-             <div class="h-[60px] w-full mt-4 mb-4 relative z-10 opacity-70 group-hover:opacity-100 transition-opacity duration-500">
+             <div class="h-[44px] w-full mt-3 mb-3 relative z-10 opacity-70 group-hover:opacity-100 transition-opacity duration-500">
 
                 <canvas id="spark-modern-${sector}"></canvas>
 
@@ -4862,12 +4857,8 @@ function renderModernGrid() {
 
              <!-- Footer -->
 
-             <div class="relative z-10 flex justify-between items-center border-t border-zinc-800/50 pt-3">
-
-                <div class="text-[9px] text-zinc-500 font-mono tracking-widest uppercase">Persaingan</div>
-
-                ${getCompetitionBadge(data.share)}
-
+             <div class="relative z-10 flex justify-end items-center border-t border-zinc-800/50 pt-3">
+               ${getCompetitionBadge(data.share)}
              </div>
 
              
@@ -4940,9 +4931,9 @@ function renderPremiumSparklines() {
 
           borderColor: conf.color,
 
-          borderWidth: 2,
+          borderWidth: 1.5,
 
-          tension: 0.4,
+          tension: 0.45,
 
           pointRadius: 0,
 
@@ -4950,9 +4941,9 @@ function renderPremiumSparklines() {
 
           backgroundColor: ctx => {
 
-            const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 60);
+            const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 44);
 
-            gradient.addColorStop(0, conf.color + '40');
+            gradient.addColorStop(0, conf.color + '2B');
 
             gradient.addColorStop(1, 'transparent');
 
