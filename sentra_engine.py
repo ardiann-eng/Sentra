@@ -231,35 +231,57 @@ def fetch_regional_data(keyword, geo="ID"):
 
 def get_regional_interest(keyword, geo='ID'):
     """
-    Fetch regional interest (PROVINCES) via Pytrends.
+    Fetch regional interest (PROVINCES) via SerpAPI to avoid Vercel IP blocks.
     Returns sorted list of { province, value, rank }.
     """
     def _fetch():
-        print(f"[FETCH PROVINCE BREAKDOWN] '{keyword}' | geo={geo}")
+        print(f"[FETCH PROVINCE BREAKDOWN SERPAPI] '{keyword}' | geo={geo}")
         _jitter()
+        
+        params = {
+            "engine": "google_trends",
+            "q": keyword,
+            "geo": geo,
+            "date": "today 3-m",
+            "data_type": "GEO_MAP",
+            "resolution": "REGION",
+            "hl": "id",
+            "api_key": _SERPAPI_KEY,
+        }
+
         try:
-            from pytrends.request import TrendReq
-            pt = TrendReq(hl='id-ID', tz=420)
-            pt.build_payload([keyword], geo=geo, timeframe='today 3-m')
-            df = pt.interest_by_region(resolution='REGION', inc_low_vol=True, inc_geo_code=False)
-            if df is None or df.empty: return []
-            
-            breakdown = []
-            for province, row in df.iterrows():
-                val = int(row[keyword]) if pd.notna(row[keyword]) else 0
-                breakdown.append({"province": str(province), "value": val})
-            
-            breakdown.sort(key=lambda x: x["value"], reverse=True)
-            if not breakdown: return []
-            
-            max_val = breakdown[0]["value"] if breakdown[0]["value"] > 0 else 1
-            for i, item in enumerate(breakdown):
-                item["rank"] = i + 1
-                item["value"] = int((item["value"] / max_val) * 100)
-            return breakdown
+            results = GoogleSearch(params).get_dict()
         except Exception as e:
-            print(f"[FETCH BREAKDOWN ERROR] {e}")
+            print(f"[FETCH BREAKDOWN ERROR] SerpApi exception: {e}")
             return []
+
+        if "error" in results:
+            print(f"[FETCH BREAKDOWN ERROR] SerpApi error: {results['error']}")
+            return []
+
+        regions = results.get("compared_breakdown_by_region", [])
+        if not regions:
+            return []
+
+        breakdown = []
+        for r in regions:
+            try:
+                province = r.get("geo", "")
+                val = r.get("values", [])[0].get("extracted_value", 0)
+                if province and val is not None:
+                    breakdown.append({"province": str(province), "value": int(val)})
+            except (KeyError, IndexError, ValueError):
+                continue
+
+        breakdown.sort(key=lambda x: x["value"], reverse=True)
+        if not breakdown: return []
+            
+        max_val = breakdown[0]["value"] if breakdown[0]["value"] > 0 else 1
+        for i, item in enumerate(breakdown):
+            item["rank"] = i + 1
+            item["value"] = int((item["value"] / max_val) * 100)
+            
+        return breakdown
 
     def _get_mock_data():
         import random
@@ -269,8 +291,7 @@ def get_regional_interest(keyword, geo='ID'):
             "Lampung", "Kalimantan Timur", "Daerah Istimewa Yogyakarta"
         ]
         mock = []
-        for i, p in enumerate(provinces):
-            # Simulated interest values (Jakarta & Java usually high)
+        for p in provinces:
             base = 100 if p == "Jakarta" else 90 if "Jawa" in p else random.randint(30, 80)
             mock.append({"province": p, "value": base})
         
@@ -285,7 +306,7 @@ def get_regional_interest(keyword, geo='ID'):
     try:
         res = _run_with_timeout(_fetch, timeout=_FETCH_HARD_TIMEOUT)
         if not res or len(res) == 0:
-            print("[FETCH BREAKDOWN] No data from Pytrends, using smart mock data fallback.")
+            print("[FETCH BREAKDOWN] No data from SerpApi, using smart mock data fallback.")
             return _get_mock_data()
         return res
     except Exception:
