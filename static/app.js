@@ -87,6 +87,8 @@ let selectedKategori = null;
 let selectedModalTier = null;
 let lastAnalysisResult = null;
 let _aiInsightGenerated = false;
+let lastCompareData = null;
+let lastAnalysisData = null;
 
 function getAuthHeaders() {
   const headers = { 'Content-Type': 'application/json' };
@@ -1565,6 +1567,8 @@ function renderResults(d) {
   _detailData = d;
 
   lastAnalysisData = d;
+
+  lastAnalysisResult = d;
 
   const resultsEl = document.getElementById('results');
 
@@ -3432,6 +3436,47 @@ async function triggerAiInsight() {
 
     }
 
+async function triggerCompareAi() {
+  const el = document.getElementById('cmp-ai');
+  if (!el || !lastCompareData) return;
+  el.innerHTML = '<span class="text-[10px] animate-pulse">Membandingkan tren...</span>';
+  try {
+    const res = await fetch('/api/get-compare-ai', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(lastCompareData)
+    });
+    const d = await res.json();
+    if (d.ai_insight) {
+      typeWriter(el, d.ai_insight.replace(/\*\*/g, ''), 6);
+    } else {
+      el.textContent = "Analisis tidak tersedia.";
+    }
+  } catch(e) { el.textContent = "Gagal memuat AI."; }
+}
+
+async function triggerLocalAi() {
+  const el = document.getElementById('r-local-insight');
+  if (!el || !lastAnalysisResult) return;
+  el.innerHTML = '<span class="text-[10px] animate-pulse">Menganalisis wilayah...</span>';
+  try {
+    const res = await fetch('/api/get-local-ai', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({
+        keyword: lastAnalysisResult.keyword,
+        regional_data: lastAnalysisResult.regional_interest
+      })
+    });
+    const d = await res.json();
+    if (d.ai_insight) {
+      typeWriter(el, d.ai_insight, 5);
+    } else {
+      el.textContent = "Strategi lokal tidak tersedia.";
+    }
+  } catch(e) { el.textContent = "Error AI."; }
+}
+
   }
 
 }
@@ -3570,6 +3615,8 @@ function analyzeCategory(type) {
 
 function renderCompareResults(d) {
 
+  lastCompareData = d;
+
   // Force reset visibility
 
   const cmpEl = document.getElementById('compare-results');
@@ -3668,13 +3715,11 @@ function renderCompareResults(d) {
 
   renderTrendChart(t, a.keyword, b.keyword);
 
-  // AI Insight
+  // AI Insight (Manual only)
 
   const aiEl = document.getElementById('cmp-ai');
 
-  const cleaned = (d.ai_insight || 'Insight tidak tersedia.').replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
-
-  typeWriter(aiEl, cleaned, 6);
+  if (aiEl) aiEl.innerHTML = '<button class="px-4 py-2 border border-brand/30 text-brand text-[10px] uppercase tracking-widest hover:bg-brand/10 transition-all" onclick="triggerCompareAi()">Generate AI Comparison</button>';
 
   // cleaned: removed dead code — duplicate switchTab() nested inside compare handler (correct global definition exists below)
 
@@ -4063,12 +4108,12 @@ async function doSearch() {
 
       // Trigger insight typing
 
-      if (data.local_insight) {
-
+      if (!data.local_insight) {
         const insightEl = document.getElementById('r-local-insight');
-
+        if (insightEl) insightEl.innerHTML = '<button class="text-[10px] text-brand/60 underline uppercase tracking-tighter" onclick="triggerLocalAi()">Klik untuk Strategi Lokal</button>';
+      } else {
+        const insightEl = document.getElementById('r-local-insight');
         if (insightEl) typeWriter(insightEl, sanitizeText(data.local_insight), 5);
-
       }
 
     }

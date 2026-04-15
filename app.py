@@ -538,6 +538,32 @@ def get_ai_insight_route():
         return jsonify({"ai_insight": f"Gagal menghasilkan insight: {str(e)}"}), 500
 
 
+@app.route("/api/get-compare-ai", methods=["POST"])
+def get_compare_ai():
+    data = request.get_json(silent=True)
+    if not data: return jsonify({"error": "No data"}), 400
+    try:
+        from ai_recommendation import generate_compare_insight
+        insight = generate_compare_insight(data)
+        return jsonify({"ai_insight": insight})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/get-local-ai", methods=["POST"])
+def get_local_ai():
+    data = request.get_json(silent=True)
+    if not data: return jsonify({"error": "No data"}), 400
+    try:
+        from ai_recommendation import generate_local_insight
+        keyword = data.get("keyword", "N/A")
+        regional_data = data.get("regional_data", [])
+        insight = generate_local_insight(keyword, regional_data)
+        return jsonify({"ai_insight": insight})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/api/compare", methods=["POST"])
 @require_auth
 def compare():
@@ -767,12 +793,7 @@ def analyze_sector():
         searches_today += 1
 
     # ---- MATIKAN SEMENTARA AI UNTUK TESTING ---
-    try:
-         result["ai_insight"] = generate_ai_insight(result)
-    except ValueError as e:
-         result["ai_insight"] = f"⚠ {str(e)}"
-    except Exception:
-        result["ai_insight"] = "AI insight tidak tersedia saat ini."
+    result["ai_insight"] = ""
         
     # Save to L1 + L2 cache
     cache_set(keyword, geo, cat, result, result.get("ai_insight", ""))
@@ -1230,13 +1251,8 @@ def analyze_local_route():
     top_province = regional_breakdown[0]["province"] if regional_breakdown else None
     top_3 = [r["province"] for r in regional_breakdown[:3]] if regional_breakdown else []
 
-    # AI Strategi Lokal — only call if we have data
+    # AI Autopilot OFF: Strategi lokal tidak lagi di-generate otomatis
     local_insight = ""
-    if regional_data:
-        try:
-            local_insight = generate_local_insight(keyword, regional_data)
-        except Exception:
-            local_insight = ""
 
     return jsonify({
         "keyword": keyword,
