@@ -5,9 +5,9 @@ import os
 from groq import Groq
 
 _GROQ_MODELS = [
-    "llama-3.3-70b-versatile",
-    "llama-3.1-8b-instant",
-    "mixtral-8x7b-32768"
+    "llama-3.1-8b-instant",       # Super cepat & hemat (Primary)
+    "llama-3.3-70b-versatile",    # Lebih pintar tapi berat (Secondary)
+    "mixtral-8x7b-32768"          # Alternatif jika semua penuh
 ]
 
 def _generate_via_groq(prompt: str) -> tuple[str, int, str, str]:
@@ -26,10 +26,10 @@ def _generate_via_groq(prompt: str) -> tuple[str, int, str, str]:
                     {"role": "system", "content": "You are an AI assistant for business insights for Indonesian SMEs (UMKM)."},
                     {"role": "user", "content": prompt},
                 ],
-                temperature=0.7, # Sedikit lebih kreatif untuk insight bisnis
-                max_tokens=1024,
+                temperature=0.7, 
+                max_tokens=600,    # Dipersempit agar hemat token dan lebih tajam jawabannya
                 top_p=1,
-                stream=False # Menggunakan mode sync sesuai arsitektur backend saat ini
+                stream=False
             )
             
             text = completion.choices[0].message.content or ""
