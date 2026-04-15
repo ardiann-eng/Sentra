@@ -2090,7 +2090,6 @@ let singleChart = null;
 
 let forecastVisible = false;
 
-let lastAnalysisData = null; // simpan data terakhir untuk toggle forecast
 
 function renderSingleTrendChart(d) {
 
