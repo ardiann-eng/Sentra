@@ -44,7 +44,7 @@ def generate_ai_insight(data: dict) -> str:
         text, status_code, err_detail = _generate_via_groq(prompt)
         if status_code != 200:
             print(f"[AI ERROR] Groq API status {status_code}: {err_detail}")
-            return f"⚠ Groq AI error (HTTP {status_code}). Coba lagi nanti."
+            return f"⚠ Groq AI error: {err_detail}"
 
         if text:
             print(f"[AI] Berhasil: {_GROQ_MODEL}")
