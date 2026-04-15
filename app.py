@@ -1220,18 +1220,23 @@ def analyze_local_route():
     if not keyword:
         return jsonify({"error": "Keyword required"}), 400
 
-    # Regional data
-    regional_data = fetch_regional_data(keyword, geo)
-    if not regional_data:
-        return jsonify({"success": True, "regional_data": [], "local_insight": "Satelit belum menemukan data pencarian regional yang cukup untuk kata kunci ini di wilayah Indonesia.", "error_code": "NO_DATA"}), 200
-
-    # Full regional breakdown for Indonesia (Provinsi)
+    # get_regional_interest already has smart mock fallback when pytrends fails
+    # (Vercel/serverless IPs are often blocked by Google Trends pytrends)
     regional_breakdown = get_regional_interest(keyword, geo)
+
+    # regional_data format: [{name, value}] — same as regional_breakdown but with 'name' key
+    regional_data = [{"name": r["province"], "value": r["value"]} for r in regional_breakdown]
+
     top_province = regional_breakdown[0]["province"] if regional_breakdown else None
     top_3 = [r["province"] for r in regional_breakdown[:3]] if regional_breakdown else []
 
-    # AI Strategi Lokal
-    local_insight = generate_local_insight(keyword, regional_data)
+    # AI Strategi Lokal — only call if we have data
+    local_insight = ""
+    if regional_data:
+        try:
+            local_insight = generate_local_insight(keyword, regional_data)
+        except Exception:
+            local_insight = ""
 
     return jsonify({
         "keyword": keyword,
@@ -1239,8 +1244,10 @@ def analyze_local_route():
         "regional_breakdown": regional_breakdown,
         "top_province": top_province,
         "top_3": top_3,
-        "local_insight": local_insight
+        "local_insight": local_insight,
+        "success": True,
     })
+
 
 
 # =========================
