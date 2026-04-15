@@ -409,6 +409,9 @@ function updateNavAuth() {
 
   if (stickyContainer) stickyContainer.innerHTML = profileBtn;
 
+  // Add for UMKM dashboard topbar if exists
+  const umkmAuth = document.getElementById('umkm-auth-action');
+  if (umkmAuth) umkmAuth.innerHTML = profileBtn;
 }
 
 function _getInitial() {

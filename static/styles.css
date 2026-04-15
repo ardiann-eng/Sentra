@@ -6388,9 +6388,9 @@ select#geo-select option {
 /* ── PROFILE DROPDOWN ── */
 .profile-dropdown {
   position: fixed;
-  top: 56px;
+  top: 68px;
   right: 24px;
-  z-index: 9991;
+  z-index: 15000;
   width: 280px;
   background: rgba(12, 10, 7, 0.92);
   backdrop-filter: blur(24px);
@@ -6407,7 +6407,7 @@ select#geo-select option {
 
 .profile-dropdown.open {
   opacity: 1;
-  pointer-events: all;
+  pointer-events: auto;
   transform: translateY(0);
 }
 
