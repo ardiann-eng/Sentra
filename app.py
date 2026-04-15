@@ -1405,16 +1405,16 @@ def umkm_competitors():
     full_query = f"{query} {location_hint}".strip()
 
     try:
-        import serpapi
-        client = serpapi.Client(api_key=_SERPAPI_KEY)
+        from serpapi import GoogleSearch
         search_params = {
             "engine": "google_maps",
             "q": full_query,
             "type": "search",
             "hl": "id",
             "gl": "id",
+            "api_key": _SERPAPI_KEY
         }
-        search_result = client.search(search_params)
+        search_result = GoogleSearch(search_params).get_dict()
         local_results = search_result.get("local_results") or []
 
         results = []
