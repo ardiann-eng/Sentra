@@ -274,7 +274,7 @@
       tap: true
     }).setView([-2.4, 118], 5);
 
-    L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', { maxZoom: 18 }).addTo(_umkmMap);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 18, attribution: '&copy; CARTO' }).addTo(_umkmMap);
     _umkmLayer = L.layerGroup().addTo(_umkmMap);
 
     const loader = document.getElementById('umkm-map-loader');
