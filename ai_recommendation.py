@@ -4,33 +4,51 @@ Sentra BI v2.0 — AI Recommendation Engine (Groq Llama 3.3)
 import os
 from groq import Groq
 
-# Model ID sesuai instruksi USER
-_GROQ_MODEL = "llama-3.3-70b-versatile"
+_GROQ_MODELS = [
+    "llama-3.3-70b-versatile",
+    "llama-3.1-8b-instant",
+    "mixtral-8x7b-32768"
+]
 
-def _generate_via_groq(prompt: str) -> tuple[str, int, str]:
+def _generate_via_groq(prompt: str) -> tuple[str, int, str, str]:
     api_key = os.environ.get("GROQ_API_KEY")
     if not api_key:
-        return "", 0, "NO_KEY"
+        return "", 0, "NO_KEY", ""
 
-    try:
-        client = Groq(api_key=api_key)
-        completion = client.chat.completions.create(
-            model=_GROQ_MODEL,
-            messages=[
-                {"role": "system", "content": "You are an AI assistant for business insights for Indonesian SMEs (UMKM)."},
-                {"role": "user", "content": prompt},
-            ],
-            temperature=0.7, # Sedikit lebih kreatif untuk insight bisnis
-            max_tokens=1024,
-            top_p=1,
-            stream=False # Menggunakan mode sync sesuai arsitektur backend saat ini
-        )
-        
-        text = completion.choices[0].message.content or ""
-        return text.strip(), 200, ""
+    client = Groq(api_key=api_key)
+    last_err = ""
 
-    except Exception as e:
-        return "", 500, str(e)
+    for model_name in _GROQ_MODELS:
+        try:
+            completion = client.chat.completions.create(
+                model=model_name,
+                messages=[
+                    {"role": "system", "content": "You are an AI assistant for business insights for Indonesian SMEs (UMKM)."},
+                    {"role": "user", "content": prompt},
+                ],
+                temperature=0.7, # Sedikit lebih kreatif untuk insight bisnis
+                max_tokens=1024,
+                top_p=1,
+                stream=False # Menggunakan mode sync sesuai arsitektur backend saat ini
+            )
+            
+            text = completion.choices[0].message.content or ""
+            return text.strip(), 200, "", model_name
+            
+        except Exception as e:
+            err_str = str(e)
+            last_err = err_str
+            print(f"[AI FALLBACK] Model {model_name} failed: {err_str[:100]}...")
+            
+            # Kalau kena rate limit (429), lompati ke model yang lebih ringan
+            if '429' in err_str or 'rate_limit' in err_str.lower():
+                continue
+            else:
+                # Kalau error lain (misal API key salah, 401), langung berhenti
+                return "", 500, err_str, model_name
+
+    # Kalau semua model sudah dicoba dan tidak ada yang berhasil
+    return "", 500, f"Semua AI sedang sibuk (Rate Limit). Coba lagi nanti. Detail: {last_err[:100]}...", ""
 
 
 def generate_ai_insight(data: dict) -> str:
@@ -41,13 +59,13 @@ def generate_ai_insight(data: dict) -> str:
     prompt = _build_prompt(data)
 
     try:
-        text, status_code, err_detail = _generate_via_groq(prompt)
+        text, status_code, err_detail, used_model = _generate_via_groq(prompt)
         if status_code != 200:
             print(f"[AI ERROR] Groq API status {status_code}: {err_detail}")
             return f"⚠ Groq AI error: {err_detail}"
 
         if text:
-            print(f"[AI] Berhasil: {_GROQ_MODEL}")
+            print(f"[AI] Berhasil: {used_model}")
             return text
 
         return "⚠ Groq AI mengembalikan respons kosong. Coba lagi."
@@ -65,7 +83,7 @@ def generate_compare_insight(compare_data: dict) -> str:
     prompt = _build_compare_prompt(compare_data)
 
     try:
-        text, status_code, err_detail = _generate_via_groq(prompt)
+        text, status_code, err_detail, used_model = _generate_via_groq(prompt)
         if status_code != 200:
             print(f"[AI COMPARE ERROR] Groq API status {status_code}: {err_detail}")
             return "⚠ AI Compare Insight tidak tersedia saat ini."
@@ -91,7 +109,7 @@ def generate_local_insight(keyword: str, regional_data: list) -> str:
     prompt = _build_local_prompt(keyword, regional_data)
 
     try:
-        text, status_code, err_detail = _generate_via_groq(prompt)
+        text, status_code, err_detail, used_model = _generate_via_groq(prompt)
         if status_code != 200:
             print(f"[AI LOCAL ERROR] Groq API status {status_code}: {err_detail}")
             return "Strategi lokal tidak dapat dimuat saat ini."
