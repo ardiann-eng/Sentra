@@ -6064,6 +6064,10 @@ select#geo-select option {
   opacity: 0;
   pointer-events: none;
   transition: opacity .3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
 }
 
 #auth-overlay.open {
@@ -6091,24 +6095,22 @@ html:has(#auth-overlay.open) {
 }
 
 #auth-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) translateY(24px);
+  position: relative; /* Centered by flex parent */
   z-index: 9991;
-  width: min(460px, 92%);
-  max-height: calc(100vh - 40px);
+  width: min(460px, 100%);
+  max-height: calc(100dvh - 40px);
   background: transparent;
   opacity: 0;
   pointer-events: none;
   overflow: hidden;
+  transform: translateY(24px);
   transition: opacity .35s cubic-bezier(.23, 1, .32, 1), transform .45s cubic-bezier(.23, 1, .32, 1);
 }
 
 #auth-modal.open {
   opacity: 1;
   pointer-events: all;
-  transform: translate(-50%, -50%) translateY(0);
+  transform: translateY(0);
 }
 
 #auth-modal-inner {
@@ -6120,8 +6122,8 @@ html:has(#auth-overlay.open) {
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
-  touch-action: pan-y;
-  overscroll-behavior: contain;
+  touch-action: manipulation; /* More stable than pan-y */
+  overscroll-behavior: none;   /* Disable bounce within modal */
   max-height: calc(100dvh - 48px);
   border-radius: 20px;
   border: 1px solid rgba(212, 168, 67, 0.2);

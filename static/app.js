@@ -679,8 +679,8 @@ function openAuthModal(tab) {
     gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' });
     gsap.fromTo(
       modal,
-      { xPercent: -50, yPercent: -50, y: 32, opacity: 0, scale: 0.96 },
-      { xPercent: -50, yPercent: -50, y: 0, opacity: 1, scale: 1, duration: 0.5, ease: 'power4.out' }
+      { y: 32, opacity: 0, scale: 0.96 },
+      { y: 0, opacity: 1, scale: 1, duration: 0.5, ease: 'power4.out' }
     );
   }
 }
@@ -726,8 +726,6 @@ function closeAuthModal() {
       ease: 'power2.out'
     });
     gsap.to(modal, {
-      xPercent: -50,
-      yPercent: -50,
       y: 12,
       opacity: 0,
       duration: 0.2,
