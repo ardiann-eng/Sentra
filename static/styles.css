@@ -6071,6 +6071,18 @@ select#geo-select option {
   pointer-events: all;
 }
 
+body:has(#auth-overlay.open) {
+  overflow: hidden !important;
+}
+
+#auth-overlay.open ~ * {
+  pointer-events: none;
+}
+
+#auth-overlay.open ~ #auth-modal {
+  pointer-events: all;
+}
+
 #auth-modal {
   position: fixed;
   top: 50%;
@@ -6082,6 +6094,7 @@ select#geo-select option {
   background: transparent;
   opacity: 0;
   pointer-events: none;
+  overflow: hidden;
   transition: opacity .35s cubic-bezier(.23, 1, .32, 1), transform .45s cubic-bezier(.23, 1, .32, 1);
 }
 
@@ -6098,7 +6111,9 @@ select#geo-select option {
 
 .auth-modern-shell {
   position: relative;
-  overflow: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  max-height: calc(100dvh - 48px);
   border-radius: 20px;
   border: 1px solid rgba(212, 168, 67, 0.2);
   background:
@@ -6111,7 +6126,6 @@ select#geo-select option {
   padding: 32px;
   width: 100%;
   max-width: 440px;
-  max-height: calc(100vh - 40px);
   display: flex;
   flex-direction: column;
 }

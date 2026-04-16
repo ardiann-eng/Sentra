@@ -916,19 +916,46 @@
 
   function boot() {
     wire();
-    const mode = localStorage.getItem(LS_MODE_KEY);
-    const done = localStorage.getItem(LS_ONBOARD_KEY) === '1';
 
+    // Check for explicit redirect intent via URL param
+    const urlParams = new URLSearchParams(window.location.search);
+    const modeParam = urlParams.get('mode');
+
+    // If ?mode=umkm-dashboard is set AND onboarding is already done → go straight to dashboard
+    if (modeParam === 'umkm-dashboard' && localStorage.getItem(LS_ONBOARD_KEY) === '1') {
+      // Clean the URL param so refresh doesn't keep re-triggering
+      try {
+        urlParams.delete('mode');
+        const cleanUrl = urlParams.toString()
+          ? `${window.location.pathname}?${urlParams.toString()}`
+          : window.location.pathname;
+        window.history.replaceState({}, '', cleanUrl);
+      } catch (_) { /* silent */ }
+      showUMKMShell(true);
+      goTo('home');
+      setTimeout(() => loadProfile(), 350);
+      return;
+    }
+
+    const done = localStorage.getItem(LS_ONBOARD_KEY) === '1';
+    const mode = localStorage.getItem(LS_MODE_KEY);
+
+    // Not yet onboarded → always show mode-selection screen
     if (!done) {
       openOnboarding(false);
       return;
     }
-    if (mode === 'umkm') {
+
+    // Already chose UMKM mode AND came back deliberately (e.g. nav link or bookmark)
+    if (mode === 'umkm' && modeParam === 'umkm-dashboard') {
       showUMKMShell(true);
       goTo('home');
-      // eager load profile to populate home
       setTimeout(() => loadProfile(), 350);
+      return;
     }
+
+    // Default: already onboarded → stay on current page (analysis mode or no-op)
+    // Do NOT auto-redirect; let user navigate intentionally.
   }
 
   window.SentraUMKM = {

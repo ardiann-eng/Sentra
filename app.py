@@ -505,29 +505,33 @@ def auth_login():
     if not email or not password:
         return jsonify({"error": "Email dan password wajib diisi."}), 400
 
+    sb = get_supabase()
+    if not sb:
+        return jsonify({"error": "Koneksi database tidak tersedia."}), 503
+
     try:
-        auth_data = _supabase_auth_request(
-            "token?grant_type=password",
-            {"email": email, "password": password},
-        )
-        user = auth_data.get("user") or {}
-        session_payload = {
-            "access_token": auth_data.get("access_token"),
-            "refresh_token": auth_data.get("refresh_token"),
-            "expires_in": auth_data.get("expires_in"),
-            "expires_at": auth_data.get("expires_at"),
-            "token_type": auth_data.get("token_type"),
-            "user": user,
-        }
+        res = sb.auth.sign_in_with_password({"email": email, "password": password})
+        if not res.user:
+            return jsonify({"error": "Email atau password belum cocok."}), 401
+        session = res.session
         return jsonify({
             "success": True,
-            "message": "Login berhasil. Selamat datang kembali di Sentra AI.",
-            "session": session_payload,
-            "user": user,
+            "message": "Login berhasil.",
+            "session": {
+                "access_token":  session.access_token,
+                "refresh_token": session.refresh_token,
+                "expires_in":    session.expires_in,
+                "token_type":    session.token_type,
+            },
+            "user": {"id": res.user.id, "email": res.user.email},
         })
     except Exception as e:
-        msg, status = _friendly_auth_error(e, "Login belum berhasil. Coba lagi ya.")
-        return jsonify({"error": msg}), status
+        err = str(e).lower()
+        if "invalid" in err or "credentials" in err:
+            return jsonify({"error": "Email atau password belum cocok. Coba cek lagi ya."}), 401
+        if "email not confirmed" in err:
+            return jsonify({"error": "Email belum diverifikasi. Cek inbox kamu."}), 400
+        return jsonify({"error": "Login gagal. Coba lagi."}), 500
 
 
 @app.route("/api/auth/register", methods=["POST"])
@@ -542,26 +546,33 @@ def auth_register():
     if len(password) < 8:
         return jsonify({"error": "Password minimal 8 karakter."}), 400
 
-    payload = {
-        "email": email,
-        "password": password,
-        "data": {
-            "full_name": full_name,
-            "nama": full_name,
-        }
-    }
+    sb = get_supabase()
+    if not sb:
+        return jsonify({"error": "Koneksi database tidak tersedia."}), 503
+
     try:
-        auth_data = _supabase_auth_request("signup", payload)
+        res = sb.auth.sign_up({
+            "email": email,
+            "password": password,
+            "options": {"data": {"full_name": full_name, "nama": full_name}}
+        })
+        if not res.user:
+            return jsonify({"error": "Pendaftaran gagal. Coba lagi."}), 500
         return jsonify({
             "success": True,
-            "message": "Akun berhasil dibuat. Silakan cek email untuk verifikasi jika diminta.",
-            "user": auth_data.get("user"),
-            "session": auth_data.get("session"),
-            "needs_email_verification": auth_data.get("session") is None,
+            "message": "Akun berhasil dibuat. Cek email untuk verifikasi jika diminta.",
+            "user": {"id": res.user.id, "email": res.user.email},
+            "session": {
+                "access_token":  res.session.access_token  if res.session else None,
+                "refresh_token": res.session.refresh_token if res.session else None,
+            },
+            "needs_email_verification": res.session is None,
         })
     except Exception as e:
-        msg, status = _friendly_auth_error(e, "Pendaftaran belum berhasil. Coba lagi ya.")
-        return jsonify({"error": msg}), status
+        err = str(e).lower()
+        if "already" in err or "registered" in err:
+            return jsonify({"error": "Email ini sudah terdaftar. Coba masuk."}), 409
+        return jsonify({"error": "Pendaftaran gagal. Coba lagi."}), 500
 
 
 @app.route("/api/auth/forgot-password", methods=["POST"])

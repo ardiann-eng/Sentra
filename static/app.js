@@ -666,6 +666,8 @@ function openAuthModal(tab) {
   document.body.style.overflow = 'hidden';
   if (document.documentElement) {
     document.documentElement.style.overflow = 'hidden';
+    document.documentElement.style.position = 'fixed';
+    document.documentElement.style.width = '100%';
   }
 
   if (typeof gsap !== 'undefined' && modal && overlay) {
@@ -696,6 +698,8 @@ function closeAuthModal() {
     document.body.style.removeProperty('overflow');
     if (document.documentElement) {
       document.documentElement.style.removeProperty('overflow');
+      document.documentElement.style.removeProperty('position');
+      document.documentElement.style.removeProperty('width');
     }
     setAuthMessage('clear', '');
   };
