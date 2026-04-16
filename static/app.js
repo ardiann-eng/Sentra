@@ -904,10 +904,22 @@ async function handleLoginAction() {
     if (!res.ok) throw new Error(data.error || 'Login belum berhasil.');
 
     persistRememberMe(email, remember);
-    await syncSupabaseSession(data.session);
-    setAuthMessage('success', data.message || 'Berhasil masuk.');
+    
+    // Sync session with a timeout safety
+    try {
+      await Promise.race([
+        syncSupabaseSession(data.session),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
+      ]);
+    } catch (e) { console.warn('Session sync slow/failed', e); }
+
+    setAuthLoading(false, 'Masuk ke Sentra');
+    setAuthMessage('success', 'Login berhasil! Memuat ulang halaman...');
+    
     pulseAuthSuccess();
-    setTimeout(() => closeAuthModal(), 520);
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
   } catch (e) {
     setAuthMessage('error', authFriendlyError(e.message || e));
     const form = document.querySelector('.auth-form-shell');

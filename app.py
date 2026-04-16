@@ -528,7 +528,7 @@ def auth_login():
                 "access_token":  session.access_token,
                 "refresh_token": session.refresh_token,
                 "expires_in":    session.expires_in,
-                "expires_at":    getattr(session, 'expires_at', None),
+                "expires_at":    int(session.expires_at) if hasattr(session, 'expires_at') and session.expires_at else None,
                 "token_type":    session.token_type,
                 "user":          {"id": user.id, "email": user.email}
             },
