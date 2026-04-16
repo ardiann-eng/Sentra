@@ -6074,6 +6074,9 @@ select#geo-select option {
 
 body:has(#auth-overlay.open) {
   overflow: hidden !important;
+  overflow-x: hidden !important;
+  position: fixed;
+  width: 100%;
 }
 
 #auth-overlay.open ~ * {
@@ -6113,6 +6116,8 @@ body:has(#auth-overlay.open) {
 .auth-modern-shell {
   position: relative;
   overflow-y: auto;
+  overflow-x: hidden;
+  touch-action: pan-y;
   overscroll-behavior: contain;
   max-height: calc(100dvh - 48px);
   border-radius: 20px;
