@@ -510,10 +510,14 @@ def auth_login():
         return jsonify({"error": "Koneksi database tidak tersedia."}), 503
 
     try:
+        # Use keyword arguments for clarity and compatibility
         res = sb.auth.sign_in_with_password({"email": email, "password": password})
         if not res.user:
             return jsonify({"error": "Email atau password belum cocok."}), 401
+        
         session = res.session
+        user = res.user
+        
         return jsonify({
             "success": True,
             "message": "Login berhasil.",
@@ -521,17 +525,21 @@ def auth_login():
                 "access_token":  session.access_token,
                 "refresh_token": session.refresh_token,
                 "expires_in":    session.expires_in,
+                "expires_at":    getattr(session, 'expires_at', None),
                 "token_type":    session.token_type,
+                "user":          {"id": user.id, "email": user.email}
             },
-            "user": {"id": res.user.id, "email": res.user.email},
+            "user": {"id": user.id, "email": user.email},
         })
     except Exception as e:
-        err = str(e).lower()
+        err_msg = str(e)
+        print(f"[AUTH LOGIN ERROR] {err_msg}")
+        err = err_msg.lower()
         if "invalid" in err or "credentials" in err:
             return jsonify({"error": "Email atau password belum cocok. Coba cek lagi ya."}), 401
         if "email not confirmed" in err:
             return jsonify({"error": "Email belum diverifikasi. Cek inbox kamu."}), 400
-        return jsonify({"error": "Login gagal. Coba lagi."}), 500
+        return jsonify({"error": f"Login gagal: {err_msg[:100]}"}), 500
 
 
 @app.route("/api/auth/register", methods=["POST"])
@@ -551,13 +559,18 @@ def auth_register():
         return jsonify({"error": "Koneksi database tidak tersedia."}), 503
 
     try:
-        res = sb.auth.sign_up({
-            "email": email,
-            "password": password,
-            "options": {"data": {"full_name": full_name, "nama": full_name}}
-        })
+        # Correct parameter passing for sign_up
+        res = sb.auth.sign_up(
+            email=email,
+            password=password,
+            options={"data": {"full_name": full_name, "nama": full_name}}
+        )
+        if hasattr(res, 'error') and res.error:
+            raise Exception(res.error.message)
+            
         if not res.user:
             return jsonify({"error": "Pendaftaran gagal. Coba lagi."}), 500
+            
         return jsonify({
             "success": True,
             "message": "Akun berhasil dibuat. Cek email untuk verifikasi jika diminta.",
@@ -565,14 +578,17 @@ def auth_register():
             "session": {
                 "access_token":  res.session.access_token  if res.session else None,
                 "refresh_token": res.session.refresh_token if res.session else None,
+                "user":          {"id": res.user.id, "email": res.user.email} if res.user else None
             },
             "needs_email_verification": res.session is None,
         })
     except Exception as e:
-        err = str(e).lower()
+        err_msg = str(e)
+        print(f"[AUTH REGISTER ERROR] {err_msg}")
+        err = err_msg.lower()
         if "already" in err or "registered" in err:
             return jsonify({"error": "Email ini sudah terdaftar. Coba masuk."}), 409
-        return jsonify({"error": "Pendaftaran gagal. Coba lagi."}), 500
+        return jsonify({"error": f"Pendaftaran gagal: {err_msg[:100]}"}), 500
 
 
 @app.route("/api/auth/forgot-password", methods=["POST"])
