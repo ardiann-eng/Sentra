@@ -1116,32 +1116,30 @@ function renderProfileDropdown() {
 
   }
 
-  inner.innerHTML =
-
-    '<div class="profile-dropdown-header">' +
-
-    '<div class="profile-avatar-md">' + initial + '</div>' +
-
-    '<div class="profile-info-col">' +
-
-    '<div class="profile-name">' + displayName + '</div>' +
-
-    '<div class="profile-email">' + email + '</div>' +
-
-    '</div>' +
-
-    '</div>' +
-
-    '<div class="profile-plan-badge ' + plan + '">' + planLabel + '</div>' +
-
-    '<hr class="profile-divider">' +
-
-    usahaHTML +
-
-    '<hr class="profile-divider">' +
-
-    '<button class="profile-logout-btn" onclick="handleLogout()">Keluar</button>';
-
+  inner.innerHTML = `
+    <div class="profile-dropdown-header">
+      <div class="profile-avatar-md">${initial}</div>
+      <div class="profile-info-col">
+        <div class="profile-name">${displayName}</div>
+        <div class="profile-email">${email}</div>
+      </div>
+    </div>
+    <div class="profile-plan-badge ${plan}">${planLabel}</div>
+    
+    <hr class="profile-divider">
+    
+    <button class="profile-dropdown-item" onclick="window.SentraUMKM?.openDashboard?.(); closeProfileDropdown();">
+      <i class="fa-solid fa-chart-line"></i> Analisis Usahamu
+    </button>
+    
+    <button class="profile-dropdown-item" onclick="openProfilePanel(); closeProfileDropdown();">
+      <i class="fa-solid fa-user-gear"></i> Pengaturan Akun
+    </button>
+    
+    <hr class="profile-divider">
+    
+    <button class="profile-logout-btn" onclick="handleLogout()">Keluar</button>
+  `;
 }
 
 async function handleLogout() {

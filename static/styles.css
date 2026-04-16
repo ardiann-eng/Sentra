@@ -6918,6 +6918,35 @@ html:has(#auth-overlay.open) {
   transition: all 0.2s;
 }
 
+.profile-dropdown-item {
+  width: 100%;
+  padding: 12px 6px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.profile-dropdown-item:hover {
+  color: var(--gold);
+  background: rgba(250, 204, 21, 0.05);
+}
+
+.profile-dropdown-item i {
+  width: 20px;
+  text-align: center;
+  color: var(--gold);
+  font-size: 14px;
+}
+
 .profile-usaha-btn {
   background: rgba(212, 168, 67, 0.08);
 }

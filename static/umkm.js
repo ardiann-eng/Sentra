@@ -148,6 +148,18 @@
     setOnboardingStep(ONBOARDING_STEPS.UMKM);
   }
 
+  function openDashboard() {
+    const done = localStorage.getItem(LS_ONBOARD_KEY) === '1';
+    if (!done) {
+      openOnboarding(true);
+      openUMKMOnboarding();
+    } else {
+      showUMKMShell(true);
+      goTo('home');
+      setTimeout(() => loadProfile(), 300);
+    }
+  }
+
   function backToModeStep() {
     setOnboardingStep(ONBOARDING_STEPS.MODE);
   }
@@ -960,6 +972,7 @@
 
   window.SentraUMKM = {
     openOnboarding,
+    openDashboard,
     closeOnboarding,
     openUMKMOnboarding,
     backToModeStep,
