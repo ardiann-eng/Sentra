@@ -428,314 +428,600 @@ function _getInitial() {
 
 /*  AUTH MODAL RENDERING  */
 
+const AUTH_REMEMBER_KEY = 'sentra_remember_me';
+const AUTH_REMEMBER_EMAIL_KEY = 'sentra_remember_email';
+let authView = 'login';
+
+function getRememberedAuth() {
+  try {
+    return {
+      enabled: localStorage.getItem(AUTH_REMEMBER_KEY) === '1',
+      email: localStorage.getItem(AUTH_REMEMBER_EMAIL_KEY) || ''
+    };
+  } catch (e) {
+    return { enabled: false, email: '' };
+  }
+}
+
+function persistRememberMe(email, enabled) {
+  try {
+    if (enabled) {
+      localStorage.setItem(AUTH_REMEMBER_KEY, '1');
+      localStorage.setItem(AUTH_REMEMBER_EMAIL_KEY, email || '');
+    } else {
+      localStorage.removeItem(AUTH_REMEMBER_KEY);
+      localStorage.removeItem(AUTH_REMEMBER_EMAIL_KEY);
+    }
+  } catch (e) { /* silent */ }
+}
+
+function getPasswordStrengthMeta(password) {
+  const value = password || '';
+  let score = 0;
+  if (value.length >= 8) score += 1;
+  if (/[A-Z]/.test(value)) score += 1;
+  if (/[a-z]/.test(value)) score += 1;
+  if (/\d/.test(value)) score += 1;
+  if (/[^A-Za-z0-9]/.test(value)) score += 1;
+
+  if (!value) return { score: 0, label: 'Belum diisi', tone: 'muted' };
+  if (score <= 2) return { score, label: 'Masih lemah', tone: 'weak' };
+  if (score <= 4) return { score, label: 'Cukup aman', tone: 'medium' };
+  return { score, label: 'Kuat', tone: 'strong' };
+}
+
+function validateAuthInput(kind, value) {
+  const email = (value || '').trim();
+  if (kind === 'email') {
+    if (!email) return 'Email wajib diisi.';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return 'Format email belum valid.';
+    return '';
+  }
+  if (kind === 'password-login') {
+    if (!(value || '').trim()) return 'Password wajib diisi.';
+    return '';
+  }
+  if (kind === 'password-signup') {
+    if (!(value || '').trim()) return 'Password wajib diisi.';
+    if ((value || '').length < 8) return 'Minimal 8 karakter.';
+    if (!/[A-Za-z]/.test(value || '') || !/\d/.test(value || '')) return 'Gunakan kombinasi huruf dan angka.';
+    return '';
+  }
+  if (kind === 'name' && authView === 'signup') {
+    if (!(value || '').trim()) return 'Nama panggilan wajib diisi.';
+    return '';
+  }
+  return '';
+}
+
+function authFriendlyError(message) {
+  const raw = String(message || '').toLowerCase();
+  if (!raw) return 'Ada kendala kecil. Coba lagi ya.';
+  if (raw.includes('invalid login credentials')) return 'Email atau password belum cocok. Coba cek lagi ya.';
+  if (raw.includes('email not confirmed')) return 'Email kamu belum terverifikasi. Cek inbox lalu klik link verifikasi.';
+  if (raw.includes('already')) return 'Email ini sudah terdaftar. Coba masuk atau reset password.';
+  return String(message);
+}
+
+function renderAuthModalContent(view) {
+  const inner = document.getElementById('auth-modal-inner');
+  if (!inner) return;
+
+  authView = view || 'login';
+  const remembered = getRememberedAuth();
+  const isLogin = authView === 'login';
+  const isSignup = authView === 'signup';
+  const isForgot = authView === 'forgot';
+  const isProfileSetup = authView === 'profile-setup';
+
+  const title = isForgot
+    ? 'Atur ulang akses'
+    : isProfileSetup
+      ? 'Satu langkah lagi'
+      : isSignup
+        ? 'Buat akun Sentra'
+        : 'Masuk ke Sentra';
+  const subtitle = isForgot
+    ? 'Masukkan email terdaftar. Kami kirim link reset password yang aman ke inbox kamu.'
+    : isProfileSetup
+      ? 'Biar pengalamanmu terasa lebih personal, isi nama panggilan dulu ya.'
+      : 'Masuk atau daftar untuk menyimpan insight, melanjutkan analisis, dan membuka pengalaman Sentra yang lebih personal.';
+
+  let content = '';
+
+  if (isForgot) {
+    content = `
+      <form id="auth-forgot-form" class="auth-form-shell">
+        <label class="auth-field">
+          <span class="auth-field-label">Email</span>
+          <div class="auth-input-shell">
+            <i class="fa-regular fa-envelope auth-input-icon"></i>
+            <input id="auth-email" type="email" placeholder="nama@email.com" class="auth-input auth-input-modern" autocomplete="email" value="${remembered.email || ''}" />
+          </div>
+          <div class="auth-field-meta">
+            <span class="auth-helper">Kami akan mengirim link reset password ke email ini.</span>
+            <span id="auth-email-status" class="auth-status-text"></span>
+          </div>
+        </label>
+        <button type="submit" id="auth-submit-btn" class="auth-submit auth-submit-modern">
+          <span class="auth-submit-label">Kirim Link Reset</span>
+        </button>
+        <button type="button" class="auth-secondary-link" onclick="switchAuthTab('login')">Kembali ke Login</button>
+        <div id="auth-error" class="auth-feedback error"></div>
+        <div id="auth-success" class="auth-feedback success"></div>
+      </form>
+    `;
+  } else if (isProfileSetup) {
+    content = `
+      <form id="auth-profile-form" class="auth-form-shell">
+        <label class="auth-field">
+          <span class="auth-field-label">Nama panggilan</span>
+          <div class="auth-input-shell">
+            <i class="fa-regular fa-user auth-input-icon"></i>
+            <input type="text" class="auth-input auth-input-modern" id="profile-nama-input" placeholder="Contoh: Rani" maxlength="50" />
+          </div>
+        </label>
+        <button type="submit" id="auth-submit-btn" class="auth-submit auth-submit-modern">
+          <span class="auth-submit-label">Simpan & Mulai</span>
+        </button>
+        <div id="auth-error" class="auth-feedback error"></div>
+      </form>
+    `;
+  } else {
+    content = `
+      <div class="auth-tab-wrap">
+        <div class="auth-tabs">
+          <button class="auth-tab-btn ${isLogin ? 'active' : ''}" type="button" onclick="switchAuthTab('login')">Login</button>
+          <button class="auth-tab-btn ${isSignup ? 'active' : ''}" type="button" onclick="switchAuthTab('signup')">Daftar</button>
+          <div class="auth-tab-glider ${isSignup ? 'is-signup' : ''}"></div>
+        </div>
+      </div>
+
+      <form id="auth-main-form" class="auth-form-shell" style="gap: 10px;">
+        ${isSignup ? `
+          <label class="auth-field" style="gap: 4px;">
+            <span class="auth-field-label">Nama panggilan</span>
+            <div class="auth-input-shell">
+              <i class="fa-regular fa-user auth-input-icon"></i>
+              <input id="auth-name" type="text" placeholder="Contoh: Budi" class="auth-input auth-input-modern" autocomplete="name" />
+            </div>
+            <div id="auth-name-status" class="auth-status-text" style="font-size: 10px; margin-top: -4px;"></div>
+          </label>` : ''}
+
+        <label class="auth-field" style="gap: 4px;">
+          <span class="auth-field-label">Email</span>
+          <div class="auth-input-shell">
+            <i class="fa-regular fa-envelope auth-input-icon"></i>
+            <input id="auth-email" type="email" placeholder="nama@email.com" class="auth-input auth-input-modern" autocomplete="email" value="${remembered.enabled ? remembered.email : ''}" />
+          </div>
+          <div id="auth-email-status" class="auth-status-text" style="font-size: 10px; margin-top: -4px;"></div>
+        </label>
+
+        <label class="auth-field" style="gap: 4px;">
+          <span class="auth-field-label">Password</span>
+          <div class="auth-input-shell">
+            <i class="fa-solid fa-lock auth-input-icon"></i>
+            <input id="auth-password" type="password" placeholder="${isLogin ? 'Masukkan password kamu' : 'Minimal 8 karakter'}" class="auth-input auth-input-modern" autocomplete="${isLogin ? 'current-password' : 'new-password'}" />
+            <button type="button" class="auth-eye-toggle" data-toggle-password aria-label="Tampilkan password">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+          <div id="auth-password-status" class="auth-status-text" style="font-size: 10px; margin-top: -4px; height: 12px;"></div>
+        </label>
+
+        <div class="auth-row" style="margin-top: 2px;">
+          <label class="auth-check">
+            <input id="auth-remember" type="checkbox" ${remembered.enabled ? 'checked' : ''} />
+            <span class="auth-custom-check"></span>
+            <span>Ingat Saya</span>
+          </label>
+          <button type="button" class="auth-secondary-link" onclick="switchAuthTab('forgot')" style="font-size: 12px;">Lupa Password?</button>
+        </div>
+
+        <button type="submit" id="auth-submit-btn" class="auth-submit auth-submit-modern" style="margin-top: 6px;">
+          <span class="auth-submit-label">${isSignup ? 'Buat Akun Sekarang' : 'Masuk ke Sentra'}</span>
+        </button>
+
+
+        <div id="auth-error" class="auth-feedback error"></div>
+        <div id="auth-success" class="auth-feedback success"></div>
+      </form>
+    `;
+  }
+
+  inner.innerHTML = `
+    <div class="auth-modern-shell">
+      <div class="auth-modern-grid"></div>
+      <div class="auth-glow auth-glow-a"></div>
+      <div class="auth-glow auth-glow-b"></div>
+
+      <div class="auth-modern-head" style="margin-bottom: 16px;">
+        <div>
+          <div class="auth-modern-eyebrow">Sentra AI Access</div>
+          <h3 class="auth-modern-title" style="font-size: 24px;">${title}</h3>
+          <p class="auth-modern-sub" style="font-size: 13px; line-height: 1.4;">${subtitle}</p>
+        </div>
+        <button type="button" class="auth-modal-close modern" onclick="closeAuthModal()" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      ${content}
+    </div>
+  `;
+
+  wireAuthModalInteractions();
+}
+
 function openAuthModal(tab) {
+  const nextView = tab === 'daftar' ? 'signup' : (tab || 'login');
+  authMode = nextView;
+  renderAuthModalContent(nextView);
 
-  tab = tab || 'login';
-
-  authMode = tab;
-
-  renderAuthModalContent(tab);
-
-  document.getElementById('auth-overlay').classList.add('open');
-
-  document.getElementById('auth-modal').classList.add('open');
-
+  const overlay = document.getElementById('auth-overlay');
+  const modal = document.getElementById('auth-modal');
+  if (typeof gsap !== 'undefined') {
+    gsap.killTweensOf([overlay, modal]);
+  }
+  if (overlay) overlay.classList.add('open');
+  if (modal) modal.classList.add('open');
   document.body.style.overflow = 'hidden';
+  if (document.documentElement) {
+    document.documentElement.style.overflow = 'hidden';
+  }
 
+  if (typeof gsap !== 'undefined' && modal && overlay) {
+    gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' });
+    gsap.fromTo(
+      modal,
+      { xPercent: -50, yPercent: -50, y: 32, opacity: 0, scale: 0.96 },
+      { xPercent: -50, yPercent: -50, y: 0, opacity: 1, scale: 1, duration: 0.5, ease: 'power4.out' }
+    );
+  }
 }
 
 function closeAuthModal() {
+  const overlay = document.getElementById('auth-overlay');
+  const modal = document.getElementById('auth-modal');
+  const finishClose = () => {
+    if (overlay) {
+      overlay.classList.remove('open');
+      overlay.style.removeProperty('opacity');
+      overlay.style.removeProperty('pointer-events');
+    }
+    if (modal) {
+      modal.classList.remove('open');
+      modal.style.removeProperty('opacity');
+      modal.style.removeProperty('pointer-events');
+      modal.style.removeProperty('transform');
+    }
+    document.body.style.removeProperty('overflow');
+    if (document.documentElement) {
+      document.documentElement.style.removeProperty('overflow');
+    }
+    setAuthMessage('clear', '');
+  };
 
-  document.getElementById('auth-overlay').classList.remove('open');
-
-  document.getElementById('auth-modal').classList.remove('open');
-
-  document.body.style.removeProperty('overflow');
-
-}
-
-function renderAuthModalContent(tab) {
-
-  const inner = document.getElementById('auth-modal-inner');
-
-  const isLogin = tab === 'login';
-
-  let formContent = '';
-
-  if (isLogin) {
-
-    formContent =
-
-      '<div class="auth-form-fields">' +
-
-      '<input id="auth-email" type="email" placeholder="Email" class="auth-input" />' +
-
-      '<input id="auth-password" type="password" placeholder="Password" class="auth-input" />' +
-
-      '</div>' +
-
-      '<button type="button" class="auth-submit" onclick="handleLoginAction()">MASUK</button>' +
-
-      '<div id="auth-error" class="auth-error"></div>';
-
-  } else {
-
-    formContent =
-
-      '<div class="auth-form-fields">' +
-
-      '<input id="auth-email" type="email" placeholder="Email" class="auth-input" />' +
-
-      '<input id="auth-password" type="password" placeholder="Password" class="auth-input" />' +
-
-      '</div>' +
-
-      '<button type="button" class="auth-submit" onclick="handleRegister()">DAFTAR</button>' +
-
-      '<div id="auth-error" class="auth-error"></div>';
-
+  if (typeof gsap !== 'undefined' && overlay && modal) {
+    gsap.killTweensOf([overlay, modal]);
+    gsap.to(overlay, {
+      opacity: 0,
+      duration: 0.18,
+      ease: 'power2.out'
+    });
+    gsap.to(modal, {
+      xPercent: -50,
+      yPercent: -50,
+      y: 12,
+      opacity: 0,
+      duration: 0.2,
+      ease: 'power2.out',
+      onComplete: finishClose
+    });
+    return;
   }
 
-  inner.innerHTML =
-
-    '<div class="auth-modal-header">' +
-
-    '<div class="auth-modal-title">Selamat Datang</div>' +
-
-    '<button class="auth-modal-close" onclick="closeAuthModal()">&times;</button>' +
-
-    '</div>' +
-
-    '<div class="auth-modal-sub">Masuk untuk menyimpan riwayat dan akses fitur Pro.</div>' +
-
-    '<div class="auth-tabs">' +
-
-    '<button class="auth-tab-btn ' + (isLogin ? 'active' : '') + '" onclick="switchAuthTab(\'login\')">Login</button>' +
-
-    '<button class="auth-tab-btn ' + (!isLogin ? 'active' : '') + '" onclick="switchAuthTab(\'daftar\')">Daftar</button>' +
-
-    '</div>' +
-
-    formContent;
-
+  finishClose();
 }
 
 function switchAuthTab(tab) {
-
-  authMode = tab === 'daftar' ? 'signup' : 'login';
-
-  renderAuthModalContent(authMode === 'signup' ? 'signup' : 'login');
-
+  const nextView = tab === 'daftar' ? 'signup' : tab;
+  authMode = nextView;
+  const shell = document.querySelector('.auth-modern-shell');
+  if (typeof gsap !== 'undefined' && shell) {
+    gsap.to(shell, {
+      opacity: 0,
+      y: 8,
+      duration: 0.16,
+      ease: 'power2.in',
+      onComplete: () => {
+        renderAuthModalContent(nextView);
+        const fresh = document.querySelector('.auth-modern-shell');
+        if (fresh) gsap.fromTo(fresh, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.24, ease: 'power2.out' });
+      }
+    });
+    return;
+  }
+  renderAuthModalContent(nextView);
 }
 
 function setAuthLoading(isLoading, teksAsli) {
-
-  const btn = document.querySelector('.auth-submit');
-
+  const btn = document.getElementById('auth-submit-btn');
+  const label = btn?.querySelector('.auth-submit-label');
   if (!btn) return;
-
   if (isLoading) {
-
     btn.disabled = true;
-
     btn.classList.add('loading');
-
-    btn.innerHTML =
-
-      '<span class="auth-dots">' +
-
-      '<span></span><span></span><span></span>' +
-
-      '</span>';
-
+    if (label) {
+      label.innerHTML = '<span class="auth-dots"><span></span><span></span><span></span></span>';
+    }
   } else {
-
     btn.disabled = false;
-
     btn.classList.remove('loading');
+    if (label) label.textContent = teksAsli;
+  }
+}
 
-    btn.innerHTML = teksAsli;
+function setAuthMessage(type, message) {
+  const err = document.getElementById('auth-error');
+  const success = document.getElementById('auth-success');
+  if (err) err.textContent = type === 'error' ? message : '';
+  if (success) success.textContent = type === 'success' ? message : '';
+}
 
+function pulseAuthSuccess() {
+  const shell = document.querySelector('.auth-modern-shell');
+  if (typeof gsap === 'undefined' || !shell) return;
+  gsap.fromTo(shell, { boxShadow: '0 24px 90px rgba(0,0,0,0.65)' }, {
+    boxShadow: '0 24px 90px rgba(250,204,21,0.18)',
+    duration: 0.24,
+    yoyo: true,
+    repeat: 1
+  });
+}
+
+function updateFieldStatus(fieldKey, message, state) {
+  const el = document.getElementById(`auth-${fieldKey}-status`);
+  if (!el) return;
+  el.textContent = message || '';
+  el.className = `auth-status-text ${message ? 'show' : ''} ${state || ''}`.trim();
+}
+
+function runAuthRealtimeValidation() {
+  const email = document.getElementById('auth-email');
+  const password = document.getElementById('auth-password');
+  const name = document.getElementById('auth-name');
+  if (email) {
+    email.addEventListener('input', () => {
+      const err = validateAuthInput('email', email.value);
+      updateFieldStatus('email', err || 'Email siap dipakai', err ? 'error' : 'success');
+    });
+  }
+  if (password) {
+    password.addEventListener('input', () => {
+      if (authView === 'signup') {
+        const meta = getPasswordStrengthMeta(password.value);
+        updateFieldStatus('password', `Password: ${meta.label}`, meta.tone);
+      } else if (password.value) {
+        updateFieldStatus('password', 'Password terisi', 'success');
+      }
+    });
+  }
+  if (name) {
+    name.addEventListener('input', () => {
+      const err = validateAuthInput('name', name.value);
+      updateFieldStatus('name', err || 'Siap, panggilan ini akan dipakai di dashboard', err ? 'error' : 'success');
+    });
+  }
+}
+
+function wireAuthModalInteractions() {
+  const passwordToggle = document.querySelector('[data-toggle-password]');
+  const passwordInput = document.getElementById('auth-password');
+  const remembered = getRememberedAuth();
+
+  if (passwordToggle && passwordInput) {
+    passwordToggle.addEventListener('click', () => {
+      const nextType = passwordInput.type === 'password' ? 'text' : 'password';
+      passwordInput.type = nextType;
+      passwordToggle.innerHTML = `<i class="fa-regular ${nextType === 'password' ? 'fa-eye' : 'fa-eye-slash'}"></i>`;
+    });
   }
 
+  runAuthRealtimeValidation();
+
+  const form = document.getElementById('auth-main-form');
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (authView === 'signup') handleRegister();
+    else handleLoginAction();
+  });
+
+  document.getElementById('auth-forgot-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    handleForgotPassword();
+  });
+
+  document.getElementById('auth-profile-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    saveProfileName();
+  });
+
+  if (remembered.enabled) updateFieldStatus('email', 'Email tersimpan di perangkat ini', 'success');
+
+  const closeBtn = document.querySelector('.auth-modal-close.modern');
+  closeBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    closeAuthModal();
+  });
+}
+
+async function syncSupabaseSession(session) {
+  if (!sb || !session?.access_token || !session?.refresh_token) return;
+  try {
+    await sb.auth.setSession({
+      access_token: session.access_token,
+      refresh_token: session.refresh_token
+    });
+  } catch (e) { /* silent */ }
 }
 
 async function handleLoginAction() {
-
   const email = document.getElementById('auth-email')?.value?.trim();
-
   const password = document.getElementById('auth-password')?.value;
-
-  const errorEl = document.getElementById('auth-error');
-
-  if (!email || !password) {
-
-    if (errorEl) errorEl.textContent = 'Email dan password wajib diisi.';
-
+  const remember = Boolean(document.getElementById('auth-remember')?.checked);
+  const emailErr = validateAuthInput('email', email);
+  const passwordErr = validateAuthInput('password-login', password);
+  if (emailErr || passwordErr) {
+    setAuthMessage('error', emailErr || passwordErr);
     return;
-
   }
 
-  if (errorEl) errorEl.textContent = '';
-
-  if (!sb) {
-
-    if (errorEl) errorEl.textContent = 'Koneksi database tidak tersedia.';
-
-    return;
-
-  }
-
-  setAuthLoading(true, 'MASUK');
-
+  setAuthMessage('clear', '');
+  setAuthLoading(true, 'Masuk ke Sentra');
   try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, remember_me: remember })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Login belum berhasil.');
 
-    const { error } = await sb.auth.signInWithPassword({ email, password });
-
-    setAuthLoading(false, 'MASUK');
-
-    if (error) {
-
-      if (errorEl) errorEl.textContent = error.message; // temporary for debugging
-
-      const form = document.querySelector('.auth-form-fields');
-
-      if (form) {
-
-        form.classList.add('auth-shake');
-
-        setTimeout(() => form.classList.remove('auth-shake'), 500);
-
-      }
-
-    } else {
-
-      closeAuthModal();
-
-    }
-
+    persistRememberMe(email, remember);
+    await syncSupabaseSession(data.session);
+    setAuthMessage('success', data.message || 'Berhasil masuk.');
+    pulseAuthSuccess();
+    setTimeout(() => closeAuthModal(), 520);
   } catch (e) {
-
-    setAuthLoading(false, 'MASUK');
-
-    if (errorEl) errorEl.textContent = 'Terjadi kesalahan koneksi.';
-
+    setAuthMessage('error', authFriendlyError(e.message || e));
+    const form = document.querySelector('.auth-form-shell');
+    if (form) {
+      form.classList.add('auth-shake');
+      setTimeout(() => form.classList.remove('auth-shake'), 500);
+    }
+  } finally {
+    setAuthLoading(false, 'Masuk ke Sentra');
   }
-
 }
 
 async function handleRegister() {
-
-  if (!sb) {
-
-    document.getElementById('auth-error').textContent = 'Koneksi database tidak tersedia.';
-
-    return;
-
-  }
-
+  const fullName = document.getElementById('auth-name')?.value?.trim();
   const email = document.getElementById('auth-email')?.value?.trim();
-
   const password = document.getElementById('auth-password')?.value;
+  const remember = Boolean(document.getElementById('auth-remember')?.checked);
+  const emailErr = validateAuthInput('email', email);
+  const passwordErr = validateAuthInput('password-signup', password);
+  const nameErr = validateAuthInput('name', fullName);
 
-  const errorEl = document.getElementById('auth-error');
-
-  if (!email || !password) {
-
-    errorEl.textContent = 'Email dan password wajib diisi.';
-
+  if (nameErr || emailErr || passwordErr) {
+    setAuthMessage('error', nameErr || emailErr || passwordErr);
     return;
-
   }
 
-  if (password.length < 6) {
+  setAuthMessage('clear', '');
+  setAuthLoading(true, 'Buat Akun Sentra');
+  try {
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, full_name: fullName, remember_me: remember })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Pendaftaran belum berhasil.');
 
-    errorEl.textContent = 'Password minimal 6 karakter.';
-
-    return;
-
+    persistRememberMe(email, remember);
+    if (data.session?.access_token && data.session?.refresh_token) {
+      await syncSupabaseSession(data.session);
+    }
+    setAuthMessage('success', data.message || 'Akun berhasil dibuat.');
+    pulseAuthSuccess();
+    if (data.needs_email_verification) {
+      setTimeout(() => switchAuthTab('login'), 900);
+      return;
+    }
+    currentUser = data.user || currentUser;
+    setTimeout(() => openProfileSetup(), 560);
+  } catch (e) {
+    setAuthMessage('error', authFriendlyError(e.message || e));
+  } finally {
+    setAuthLoading(false, 'Buat Akun Sentra');
   }
-
-  errorEl.textContent = '';
-
-  setAuthLoading(true, 'DAFTAR');
-
-  const { data, error } = await sb.auth.signUp({ email, password });
-
-  setAuthLoading(false, 'DAFTAR');
-
-  if (error) {
-
-    errorEl.textContent = error.message;
-
-    return;
-
-  }
-
-  if (data?.user) {
-
-    currentUser = data.user;
-
-    closeAuthModal();
-
-    openProfileSetup();
-
-  }
-
 }
 
 /*  PROFILE SETUP (after first register)  */
 
 function openProfileSetup() {
-
-  var inner = document.getElementById('auth-modal-inner');
-
-  inner.innerHTML =
-
-    '<div class="auth-modal-header">' +
-
-    '<div class="auth-modal-title" style="font-size:32px">Satu langkah lagi</div>' +
-
-    '<button class="auth-modal-close" onclick="closeAuthModal()">&times;</button>' +
-
-    '</div>' +
-
-    '<div class="auth-modal-sub">Siapa namamu?</div>' +
-
-    '<div class="auth-form-fields" style="margin-top:24px">' +
-
-    '<input type="text" class="auth-input" id="profile-nama-input" placeholder="Nama kamu..." />' +
-
-    '</div>' +
-
-    '<button class="auth-submit-btn" onclick="saveProfileName()">SIMPAN & MULAI</button>';
-
-  document.getElementById('auth-overlay').classList.add('open');
-
-  document.getElementById('auth-modal').classList.add('open');
-
-  document.body.style.overflow = 'hidden';
-
+  openAuthModal('profile-setup');
 }
 
 async function saveProfileName() {
-
   var namaInput = document.getElementById('profile-nama-input');
-
   var nama = namaInput ? namaInput.value.trim() : '';
+  if (!nama || !sb || !currentUser) {
+    setAuthMessage('error', 'Nama panggilan wajib diisi.');
+    return;
+  }
 
-  if (!nama || !sb || !currentUser) return;
+  setAuthMessage('clear', '');
+  setAuthLoading(true, 'Simpan & Mulai');
+  try {
+    await sb.from('profiles').update({ nama: nama }).eq('id', currentUser.id);
+    await loadProfile(currentUser.id);
+    updateNavAuth();
+    setAuthMessage('success', 'Profil siap. Selamat datang di Sentra.');
+    pulseAuthSuccess();
+    setTimeout(function () {
+      closeAuthModal();
+      openProfilePanel();
+    }, 420);
+  } catch (e) {
+    setAuthMessage('error', 'Nama belum berhasil disimpan. Coba lagi ya.');
+  } finally {
+    setAuthLoading(false, 'Simpan & Mulai');
+  }
+}
 
-  await sb.from('profiles').update({ nama: nama }).eq('id', currentUser.id);
+async function handleForgotPassword() {
+  const email = document.getElementById('auth-email')?.value?.trim();
+  const emailErr = validateAuthInput('email', email);
+  if (emailErr) {
+    setAuthMessage('error', emailErr);
+    return;
+  }
 
-  await loadProfile(currentUser.id);
+  setAuthMessage('clear', '');
+  setAuthLoading(true, 'Kirim Link Reset');
+  try {
+    const res = await fetch('/api/auth/forgot-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Belum bisa mengirim link reset.');
+    setAuthMessage('success', data.message || 'Link reset sudah dikirim.');
+    pulseAuthSuccess();
+  } catch (e) {
+    setAuthMessage('error', authFriendlyError(e.message || e));
+  } finally {
+    setAuthLoading(false, 'Kirim Link Reset');
+  }
+}
 
-  updateNavAuth();
-
-  closeAuthModal();
-
-  setTimeout(function () { openProfilePanel(); }, 300);
-
+async function handleGoogleLogin() {
+  if (!sb) {
+    setAuthMessage('error', 'Koneksi auth belum siap. Coba lagi ya.');
+    return;
+  }
+  try {
+    const redirectTo = window.location.origin;
+    await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo }
+    });
+  } catch (e) {
+    setAuthMessage('error', 'Google login belum berhasil dibuka. Coba lagi ya.');
+  }
 }
 
 /*  PROFILE DROPDOWN  */
@@ -3358,18 +3644,38 @@ function renderSummaryCard(d) {
 
 }
 
+function setAiInsightState(mode) {
+  const trigger = document.getElementById('ai-trigger-state');
+  const loading = document.getElementById('ai-loading-state');
+  const result = document.getElementById('ai-result-state');
+
+  const states = { trigger, loading, result };
+  Object.values(states).forEach((el) => {
+    if (!el) return;
+    el.classList.add('hidden');
+    el.style.removeProperty('display');
+  });
+
+  const active = states[mode];
+  if (active) {
+    active.classList.remove('hidden');
+    if (mode === 'result') {
+      active.style.display = 'grid';
+    } else if (mode === 'trigger') {
+      active.style.display = 'block';
+    } else if (mode === 'loading') {
+      active.style.display = 'flex';
+    }
+  }
+}
+
 function showAiTriggerState() {
-
-  document.getElementById('ai-trigger-state').style.display = 'block';
-
-  document.getElementById('ai-loading-state').style.display = 'none';
-
-  document.getElementById('ai-result-state').style.display = 'none';
-
+  setAiInsightState('trigger');
   const btn = document.getElementById('ai-trigger-btn');
-
-  if (btn) { btn.disabled = false; document.getElementById('ai-btn-text').textContent = 'Tampilkan Insight dari AI'; }
-
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = 'Dapatkan Insight Bisnis AI';
+  }
 }
 
 function scrollToAiInsight() {
@@ -3392,9 +3698,7 @@ async function triggerAiInsight() {
 
   if (btn) btn.disabled = true;
 
-  triggerState.classList.add('hidden');
-
-  loadingState.classList.remove('hidden');
+  setAiInsightState('loading');
 
   try {
 
@@ -3412,9 +3716,7 @@ async function triggerAiInsight() {
 
     if (!res.ok) throw new Error(aiData.error || 'AI Error');
 
-    loadingState.classList.add('hidden');
-
-    resultState.classList.remove('hidden');
+    setAiInsightState('result');
 
     if (aiData.ai_insight) {
 
@@ -3438,9 +3740,7 @@ async function triggerAiInsight() {
 
     console.error('[AI INSIGHT]', err);
 
-    loadingState.classList.add('hidden');
-
-    triggerState.classList.remove('hidden');
+    setAiInsightState('trigger');
 
     if (btn) {
 
@@ -3450,46 +3750,46 @@ async function triggerAiInsight() {
 
     }
 
-async function triggerCompareAi() {
-  const el = document.getElementById('cmp-ai');
-  if (!el || !lastCompareData) return;
-  el.innerHTML = '<span class="text-[10px] animate-pulse">Membandingkan tren...</span>';
-  try {
-    const res = await fetch('/api/get-compare-ai', {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(lastCompareData)
-    });
-    const d = await res.json();
-    if (d.ai_insight) {
-      typeWriter(el, d.ai_insight.replace(/\*\*/g, ''), 6);
-    } else {
-      el.textContent = "Analisis tidak tersedia.";
+    async function triggerCompareAi() {
+      const el = document.getElementById('cmp-ai');
+      if (!el || !lastCompareData) return;
+      el.innerHTML = '<span class="text-[10px] animate-pulse">Membandingkan tren...</span>';
+      try {
+        const res = await fetch('/api/get-compare-ai', {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(lastCompareData)
+        });
+        const d = await res.json();
+        if (d.ai_insight) {
+          typeWriter(el, d.ai_insight.replace(/\*\*/g, ''), 6);
+        } else {
+          el.textContent = "Analisis tidak tersedia.";
+        }
+      } catch (e) { el.textContent = "Gagal memuat AI."; }
     }
-  } catch(e) { el.textContent = "Gagal memuat AI."; }
-}
 
-async function triggerLocalAi() {
-  const el = document.getElementById('r-local-insight');
-  if (!el || !lastAnalysisResult) return;
-  el.innerHTML = '<span class="text-[10px] animate-pulse">Menganalisis wilayah...</span>';
-  try {
-    const res = await fetch('/api/get-local-ai', {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify({
-        keyword: lastAnalysisResult.keyword,
-        regional_data: lastAnalysisResult.regional_interest
-      })
-    });
-    const d = await res.json();
-    if (d.ai_insight) {
-      typeWriter(el, d.ai_insight, 5);
-    } else {
-      el.textContent = "Strategi lokal tidak tersedia.";
+    async function triggerLocalAi() {
+      const el = document.getElementById('r-local-insight');
+      if (!el || !lastAnalysisResult) return;
+      el.innerHTML = '<span class="text-[10px] animate-pulse">Menganalisis wilayah...</span>';
+      try {
+        const res = await fetch('/api/get-local-ai', {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify({
+            keyword: lastAnalysisResult.keyword,
+            regional_data: lastAnalysisResult.regional_interest
+          })
+        });
+        const d = await res.json();
+        if (d.ai_insight) {
+          typeWriter(el, d.ai_insight, 5);
+        } else {
+          el.textContent = "Strategi lokal tidak tersedia.";
+        }
+      } catch (e) { el.textContent = "Error AI."; }
     }
-  } catch(e) { el.textContent = "Error AI."; }
-}
 
   }
 
@@ -4579,6 +4879,7 @@ function switchTab(tab) {
 // Data cache — pre-seeded by initRadarHeadlines
 
 const radarDataCache = {};
+const radarSparklineCharts = {};
 
 const SECTOR_NAMES = {
 
@@ -4807,13 +5108,17 @@ const hardcodedData = {
 };
 
 function getCompetitionBadge(share) {
+  let label = 'Rendah';
+  let cls = 'low';
+  if (share > 20) { label = 'Tinggi'; cls = 'high'; }
+  else if (share > 10) { label = 'Sedang'; cls = 'medium'; }
 
-  if (share > 20) return '<span class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-[10px] font-mono tracking-widest bg-red-500/15 text-red-300 border border-red-500/25"><span class="w-1.5 h-1.5 rounded-full bg-red-400 shadow-[0_0_10px_rgba(248,113,113,0.55)]"></span>Persaingan: Tinggi</span>';
-
-  if (share > 10) return '<span class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-[10px] font-mono tracking-widest bg-yellow-500/15 text-yellow-200 border border-yellow-500/25"><span class="w-1.5 h-1.5 rounded-full bg-yellow-300 shadow-[0_0_10px_rgba(253,224,71,0.5)]"></span>Persaingan: Sedang</span>';
-
-  return '<span class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-[10px] font-mono tracking-widest bg-green-500/15 text-green-200 border border-green-500/25"><span class="w-1.5 h-1.5 rounded-full bg-green-300 shadow-[0_0_10px_rgba(134,239,172,0.45)]"></span>Persaingan: Rendah</span>';
-
+  return `
+    <div class="radar-comp-tag ${cls}">
+      <span class="radar-comp-dot"></span>
+      <span class="radar-comp-text">${label}</span>
+    </div>
+  `;
 }
 
 function renderModernGrid() {
@@ -4864,73 +5169,43 @@ function renderModernGrid() {
 
     const isHottest = (sector === hottestSector);
 
-    const flameHtml = isHottest ? `<i class="fa-solid fa-fire text-[#FACC15] animate-pulse drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]" title="Paling Panas Minggu Ini"></i>` : '';
+    const flameHtml = isHottest ? '<span class="radar-card-hot" title="Paling panas minggu ini"><i class="fa-solid fa-fire"></i></span>' : '';
 
     const cardHtml = `
-          <div class="radar-card-premium group relative bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 md:p-4.5 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-500 hover:-translate-y-1.5 hover:bg-zinc-900/70" style="--accent: ${conf.color};">
+          <button class="radar-card-premium sector-card-modern group" type="button" style="--accent: ${conf.color};" aria-label="Lihat sektor ${conf.name}">
+            <div class="radar-card-sheen"></div>
+            
+            <div class="radar-card-top">
+              <div class="radar-card-code" style="background-color: ${conf.color}16; color: ${conf.color}; border-color: ${conf.color}35;">
+                ${conf.code}
+              </div>
+              ${flameHtml}
+            </div>
 
-             <!-- Top Highlights Glow via tailwind hover pseudo class won't work perfectly with inline var without heavy config, so we use a style tag for hover glow in index.html -->
-
-             
-
-             <!-- Header -->
-
-             <div class="flex justify-between items-start mb-3 relative z-10">
-
-                <div class="px-2 py-1 rounded-md text-[10px] font-mono tracking-[0.22em] font-bold" style="background-color: ${conf.color}18; color: ${conf.color}; border: 1px solid ${conf.color}35;">
-
-                  ${conf.code}
-
+            <div class="radar-card-body">
+              <h3 class="radar-sector-title" title="${conf.name}">${conf.name}</h3>
+              
+              <div class="radar-stats-grid">
+                <div class="radar-stat-item">
+                  <div class="radar-stat-value ${colorClass} sector-growth-counter" data-target="${growth}">0%</div>
+                  <div class="radar-stat-label">Pertumbuhan YoY</div>
                 </div>
+              </div>
 
-                <div>${flameHtml}</div>
-
-             </div>
-
-             
-
-             <!-- Body -->
-
-             <div class="relative z-10 mb-2 min-h-[44px]">
-
-                <h3 class="text-zinc-200 text-[12px] md:text-[13px] font-jakarta font-semibold mb-1 leading-snug radar-sector-name" title="${conf.name}">${conf.name}</h3>
-
-                <div class="flex items-baseline gap-1">
-
-                   <div class="font-syne text-[22px] md:text-[24px] font-extrabold ${colorClass} tracking-tight sector-growth-counter" data-target="${growth}">0%</div>
-
-                   <div class="text-[10px] text-zinc-500 uppercase font-mono tracking-widest">YoY</div>
-
+              <div class="radar-meta-row">
+                <div class="radar-comp-wrapper">
+                  <span class="radar-meta-hint">Persaingan</span>
+                  ${getCompetitionBadge(data.share)}
                 </div>
+              </div>
+            </div>
 
-             </div>
+            <div class="radar-chart-area">
+              <canvas id="spark-modern-${sector}"></canvas>
+            </div>
 
-             
-
-             <!-- Visualizer (Chart) -->
-
-             <div class="h-[44px] w-full mt-3 mb-3 relative z-10 opacity-70 group-hover:opacity-100 transition-opacity duration-500">
-
-                <canvas id="spark-modern-${sector}"></canvas>
-
-             </div>
-
-             
-
-             <!-- Footer -->
-
-             <div class="relative z-10 flex justify-end items-center border-t border-zinc-800/50 pt-3">
-               ${getCompetitionBadge(data.share)}
-             </div>
-
-             
-
-             <!-- Hover Glow Backdrop -->
-
-             <div class="absolute -bottom-20 -right-20 w-40 h-40 rounded-full blur-[50px] opacity-0 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none" style="background-color: ${conf.color};"></div>
-
-          </div>
-
+            <div class="radar-card-accent-glow" style="background-color: ${conf.color};"></div>
+          </button>
         `;
 
 
@@ -4947,7 +5222,7 @@ function renderModernGrid() {
 
   const timeString = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
 
-  if (document.getElementById('radar-uptime')) document.getElementById('radar-uptime').textContent = "SYNC " + timeString;
+  if (document.getElementById('radar-uptime')) document.getElementById('radar-uptime').textContent = "LAST SYNC: " + timeString;
 
 
 
@@ -4979,7 +5254,11 @@ function renderPremiumSparklines() {
 
     const values = hardcodedData[sector].spark;
 
-    new Chart(canvas, {
+    if (radarSparklineCharts[sector]) {
+      radarSparklineCharts[sector].destroy();
+    }
+
+    radarSparklineCharts[sector] = new Chart(canvas, {
 
       type: 'line',
 
@@ -4993,9 +5272,9 @@ function renderPremiumSparklines() {
 
           borderColor: conf.color,
 
-          borderWidth: 1.5,
+          borderWidth: 2,
 
-          tension: 0.45,
+          tension: 0.5,
 
           pointRadius: 0,
 
@@ -5003,7 +5282,7 @@ function renderPremiumSparklines() {
 
           backgroundColor: ctx => {
 
-            const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 44);
+            const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 60);
 
             gradient.addColorStop(0, conf.color + '2B');
 
@@ -5320,95 +5599,36 @@ function initSparklines() {
 }
 
 function initRadarAnimations() {
+  const cards = gsap.utils.toArray('.radar-card-premium');
+  if (!cards.length) return;
 
-  if (typeof gsap === 'undefined') return;
-
-
-
-  // Global registration
-
-  if (typeof ScrollTrigger !== 'undefined') {
-
-    gsap.registerPlugin(ScrollTrigger);
-
-  }
-
-  // 1. Reveal Cards
-
-  gsap.fromTo(".sector-card-modern, .radar-card-premium",
-
-    { y: 50, opacity: 0 },
-
+  // Simple staggered entry for the grid
+  gsap.fromTo(cards,
+    { y: 30, opacity: 0 },
     {
-
-      y: 0,
-
-      opacity: 1,
-
+      y: 0, opacity: 1,
       duration: 0.8,
-
       stagger: 0.1,
-
-      ease: "power3.out",
-
-      ...(typeof ScrollTrigger !== 'undefined' ? {
-
-        scrollTrigger: {
-
-          trigger: ".radar-grid-modern, #sector-dashboard",
-
-          start: "top 80%",
-
-        }
-
-      } : {})
-
+      ease: "power2.out",
+      scrollTrigger: {
+        trigger: ".radar-grid-modern",
+        start: "top 85%"
+      }
     }
-
   );
-
-  // 2. Animate Counter Numbers (supports both .sector-growth and .sector-growth-counter)
-
-  document.querySelectorAll('.sector-growth, .sector-growth-counter').forEach(el => {
-
-    const textValue = (el.getAttribute('data-target') || el.textContent).replace(/[^-0-9.]/g, '');
-
-    const targetValue = parseFloat(textValue) || 0;
-
+  // 4. Counter Animations
+  document.querySelectorAll('.sector-growth-counter').forEach(el => {
+    const targetValue = parseFloat(el.getAttribute('data-target')) || 0;
     const obj = { val: 0 };
-
-
-
     gsap.to(obj, {
-
       val: targetValue,
-
       duration: 2,
-
-      ease: "power3.out",
-
+      scrollTrigger: { trigger: el, start: "top 95%" },
       onUpdate: () => {
-
         el.textContent = (obj.val >= 0 ? '+' : '') + obj.val.toFixed(1) + '%';
-
-      },
-
-      ...(typeof ScrollTrigger !== 'undefined' ? {
-
-        scrollTrigger: {
-
-          trigger: el,
-
-          start: "top 90%",
-
-        }
-
-      } : {})
-
+      }
     });
-
   });
-
 }
 
 if (document.readyState === 'loading') {

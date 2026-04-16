@@ -2,10 +2,51 @@
 (function () {
   const LS_MODE_KEY = 'sentra_mode';
   const LS_ONBOARD_KEY = 'sentra_onboarding_done';
+  const ONBOARDING_STEPS = {
+    MODE: 'mode',
+    UMKM: 'umkm'
+  };
+
+  const CATEGORY_OPTIONS = [
+    { value: 'Kuliner & Minuman', label: 'Kuliner & Minuman', hint: 'Cafe, frozen food, bakery, minuman kemasan' },
+    { value: 'Fashion', label: 'Fashion', hint: 'Pakaian, hijab, sepatu, aksesoris' },
+    { value: 'Kecantikan & Perawatan', label: 'Kecantikan & Perawatan', hint: 'Skincare, kosmetik, body care, salon' },
+    { value: 'Kerajinan & Dekorasi', label: 'Kerajinan & Dekorasi', hint: 'Souvenir, dekor rumah, handmade' },
+    { value: 'Jasa', label: 'Jasa', hint: 'Laundry, desain, katering, servis, les' },
+    { value: 'Rumah Tangga', label: 'Rumah Tangga', hint: 'Perabot, perlengkapan dapur, kebutuhan harian' },
+    { value: 'Kesehatan', label: 'Kesehatan', hint: 'Herbal, alat kesehatan, kebutuhan wellness' },
+    { value: 'Teknologi & Elektronik', label: 'Teknologi & Elektronik', hint: 'Aksesoris gadget, komputer, audio' },
+    { value: 'Pertanian & Pangan', label: 'Pertanian & Pangan', hint: 'Hasil tani, olahan pangan, kebutuhan ternak' },
+    { value: 'Lainnya', label: 'Lainnya', hint: 'Kategori usaha lain yang belum masuk daftar' }
+  ];
+
+  const PROVINCE_OPTIONS = [
+    'Aceh', 'Sumatera Utara', 'Sumatera Barat', 'Riau', 'Jambi', 'Sumatera Selatan', 'Bengkulu', 'Lampung',
+    'Kepulauan Bangka Belitung', 'Kepulauan Riau', 'DKI Jakarta', 'Jawa Barat', 'Jawa Tengah', 'DI Yogyakarta',
+    'Jawa Timur', 'Banten', 'Bali', 'Nusa Tenggara Barat', 'Nusa Tenggara Timur', 'Kalimantan Barat',
+    'Kalimantan Tengah', 'Kalimantan Selatan', 'Kalimantan Timur', 'Kalimantan Utara', 'Sulawesi Utara',
+    'Sulawesi Tengah', 'Sulawesi Selatan', 'Sulawesi Tenggara', 'Gorontalo', 'Sulawesi Barat', 'Maluku',
+    'Maluku Utara', 'Papua', 'Papua Barat', 'Papua Selatan', 'Papua Tengah', 'Papua Pegunungan', 'Papua Barat Daya'
+  ].map((name) => ({ value: name, label: name, hint: 'Provinsi Indonesia' }));
+
+  const PLATFORM_OPTIONS = [
+    { value: 'WhatsApp', icon: 'fa-brands fa-whatsapp' },
+    { value: 'Instagram', icon: 'fa-brands fa-instagram' },
+    { value: 'TikTok Shop', icon: 'fa-brands fa-tiktok' },
+    { value: 'Shopee', icon: 'fa-solid fa-bag-shopping' },
+    { value: 'Tokopedia', icon: 'fa-solid fa-store' },
+    { value: 'GoFood', icon: 'fa-solid fa-motorcycle' },
+    { value: 'GrabFood', icon: 'fa-solid fa-bicycle' },
+    { value: 'Website Sendiri', icon: 'fa-solid fa-globe' },
+    { value: 'Offline / Toko Fisik', icon: 'fa-solid fa-shop' }
+  ];
 
   const el = {
     onboardingOverlay: () => document.getElementById('onboarding-overlay'),
     onboardingModal: () => document.getElementById('onboarding-modal'),
+    onboardingModeStep: () => document.getElementById('sentra-onboarding-mode-step'),
+    onboardingUMKMStep: () => document.getElementById('sentra-onboarding-umkm-step'),
+    onboardingForm: () => document.getElementById('umkm-onboarding-form'),
     shell: () => document.getElementById('umkm-shell'),
     navItems: () => Array.from(document.querySelectorAll('.umkm-nav-item')),
     pages: () => Array.from(document.querySelectorAll('.umkm-page')),
@@ -22,6 +63,12 @@
     'local-trends': { title: 'Tren Pasar Lokal', eyebrow: 'Dashboard UMKM' },
     reports: { title: 'Laporan & PDF', eyebrow: 'Dashboard UMKM' },
     settings: { title: 'Pengaturan Usaha', eyebrow: 'Dashboard UMKM' },
+  };
+
+  const state = {
+    onboardingStep: ONBOARDING_STEPS.MODE,
+    selectedPlatforms: [],
+    selects: [],
   };
 
   function getUserId() {
@@ -50,6 +97,29 @@
     gsap.fromTo(node, { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: 'power3.out' });
   }
 
+  function animateFormFocus(target) {
+    if (typeof gsap === 'undefined' || !target) return;
+    gsap.fromTo(target, { y: 0 }, { y: -2, duration: 0.18, yoyo: true, repeat: 1, ease: 'power2.out' });
+  }
+
+  function setOnboardingStep(step) {
+    state.onboardingStep = step;
+    const modeStep = el.onboardingModeStep();
+    const umkmStep = el.onboardingUMKMStep();
+    if (!modeStep || !umkmStep) return;
+
+    const showUMKM = step === ONBOARDING_STEPS.UMKM;
+    modeStep.classList.toggle('active', !showUMKM);
+    umkmStep.classList.toggle('active', showUMKM);
+    modeStep.setAttribute('aria-hidden', showUMKM ? 'true' : 'false');
+    umkmStep.setAttribute('aria-hidden', showUMKM ? 'false' : 'true');
+
+    const target = showUMKM ? umkmStep : modeStep;
+    if (typeof gsap !== 'undefined') {
+      gsap.fromTo(target, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.35, ease: 'power3.out' });
+    }
+  }
+
   function openOnboarding(force = false) {
     const done = localStorage.getItem(LS_ONBOARD_KEY) === '1';
     if (done && !force) return;
@@ -58,6 +128,7 @@
     if (!overlay || !modal) return;
     overlay.classList.remove('hidden');
     lockScroll(true);
+    setOnboardingStep(ONBOARDING_STEPS.MODE);
     if (typeof gsap !== 'undefined') {
       gsap.set(modal, { y: 18, opacity: 0, scale: 0.98, transformOrigin: 'center center' });
       gsap.to(modal, { y: 0, opacity: 1, scale: 1, duration: 0.55, ease: 'power3.out' });
@@ -71,6 +142,14 @@
     // only unlock if UMKM shell not open
     const shellOpen = !el.shell()?.classList.contains('hidden');
     if (!shellOpen) lockScroll(false);
+  }
+
+  function openUMKMOnboarding() {
+    setOnboardingStep(ONBOARDING_STEPS.UMKM);
+  }
+
+  function backToModeStep() {
+    setOnboardingStep(ONBOARDING_STEPS.MODE);
   }
 
   function showUMKMShell(show) {
@@ -133,6 +212,10 @@
   }
 
   function selectMode(mode) {
+    if (mode === 'umkm') {
+      openUMKMOnboarding();
+      return;
+    }
     setMode(mode);
   }
 
@@ -339,6 +422,16 @@
     } catch (_) { /* ignore charts */ }
   }
 
+  function fillDashboardFromProfile(profile) {
+    if (!profile) return;
+    const hs = document.getElementById('umkm-health-score');
+    const wo = document.getElementById('umkm-weekly-opportunity');
+    const focus = document.getElementById('umkm-focus');
+    if (hs && hs.textContent === '—') hs.textContent = 'Mulai setup';
+    if (wo) wo.textContent = profile.category || 'Kenali peluang pasar';
+    if (focus) focus.textContent = profile.city || profile.province || 'Rapikan profil usaha';
+  }
+
   async function refreshLocalTrendsFromProfile(profile) {
     const keyword = (profile?.category || profile?.business_name || '').toString().trim();
     if (!keyword) return;
@@ -364,9 +457,11 @@
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Gagal memuat profil');
       if (out) out.textContent = JSON.stringify(data.profile || {}, null, 2);
+      hydrateOnboardingForm(data.profile || {});
 
       // also reflect into home
       if (data.profile && Object.keys(data.profile).length > 0) {
+        fillDashboardFromProfile(data.profile);
         // attempt quick analyze refresh (non-blocking)
         submitProfileAndAnalyze({ ...data.profile, user_id: getUserId() });
         refreshLocalTrendsFromProfile(data.profile);
@@ -475,7 +570,292 @@
   function resetMode() {
     localStorage.removeItem(LS_MODE_KEY);
     localStorage.removeItem(LS_ONBOARD_KEY);
+    resetOnboardingForm();
     openOnboarding(true);
+  }
+
+  function formatRupiahInput(value) {
+    const digits = String(value || '').replace(/\D/g, '');
+    if (!digits) return '';
+    return new Intl.NumberFormat('id-ID').format(Number(digits));
+  }
+
+  function parseNumericInput(value) {
+    const digits = String(value || '').replace(/\D/g, '');
+    return digits ? Number(digits) : null;
+  }
+
+  function setFeedback(type, message) {
+    const errorEl = document.getElementById('umkm-onboarding-error');
+    const successEl = document.getElementById('umkm-onboarding-success');
+    if (errorEl) {
+      errorEl.textContent = type === 'error' ? message : '';
+      errorEl.classList.toggle('hidden', type !== 'error');
+    }
+    if (successEl) {
+      successEl.textContent = type === 'success' ? message : '';
+      successEl.classList.toggle('hidden', type !== 'success');
+    }
+  }
+
+  function setSubmitLoading(isLoading) {
+    const btn = document.getElementById('umkm-onboarding-submit');
+    const label = btn?.querySelector('.sentra-btn-label');
+    const loader = btn?.querySelector('.sentra-btn-loader');
+    if (!btn || !label || !loader) return;
+    btn.disabled = isLoading;
+    label.textContent = isLoading ? 'Menyimpan profil usaha...' : 'Simpan & Masuk ke Dashboard';
+    loader.classList.toggle('hidden', !isLoading);
+  }
+
+  function updateDescriptionCount() {
+    const textarea = document.getElementById('umkm-description');
+    const counter = document.getElementById('umkm-description-count');
+    if (!textarea || !counter) return;
+    counter.textContent = `${textarea.value.length}/200`;
+  }
+
+  function renderPlatformChips(selected = []) {
+    const wrap = document.getElementById('umkm-platform-chips');
+    const hidden = document.getElementById('umkm-sales-platforms');
+    if (!wrap || !hidden) return;
+    state.selectedPlatforms = Array.isArray(selected) ? [...selected] : [];
+    hidden.value = JSON.stringify(state.selectedPlatforms);
+
+    wrap.innerHTML = PLATFORM_OPTIONS.map((platform) => {
+      const active = state.selectedPlatforms.includes(platform.value);
+      return `
+        <button type="button" class="sentra-chip ${active ? 'is-active' : ''}" data-platform="${platform.value}">
+          <i class="${platform.icon}"></i>
+          <span>${platform.value}</span>
+        </button>
+      `;
+    }).join('');
+
+    wrap.querySelectorAll('[data-platform]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const value = btn.dataset.platform;
+        if (!value) return;
+        if (state.selectedPlatforms.includes(value)) {
+          state.selectedPlatforms = state.selectedPlatforms.filter((item) => item !== value);
+        } else {
+          state.selectedPlatforms.push(value);
+        }
+        renderPlatformChips(state.selectedPlatforms);
+      });
+    });
+  }
+
+  function createSelect(root, options) {
+    const hidden = root.querySelector('input[type="hidden"]');
+    const trigger = root.querySelector('[data-select-trigger]');
+    const valueEl = root.querySelector('[data-select-value]');
+    const panel = root.querySelector('[data-select-panel]');
+    const searchBox = root.querySelector('[data-select-search]');
+    const search = root.querySelector('[data-select-search] input');
+    const optionsWrap = root.querySelector('[data-select-options]');
+    if (!hidden || !trigger || !valueEl || !panel || !searchBox || !search || !optionsWrap) return null;
+
+    const selectState = {
+      root,
+      hidden,
+      trigger,
+      valueEl,
+      panel,
+      searchBox,
+      search,
+      optionsWrap,
+      options,
+      filtered: options,
+      value: ''
+    };
+
+    function render(filteredOptions = selectState.filtered) {
+      if (!filteredOptions.length) {
+        optionsWrap.innerHTML = '<div class="sentra-select-empty">Belum ada hasil yang cocok.</div>';
+        return;
+      }
+      optionsWrap.innerHTML = filteredOptions.map((opt) => {
+        const selected = opt.value === selectState.value;
+        return `
+          <button type="button" class="sentra-select-option ${selected ? 'is-selected is-active' : ''}" data-value="${opt.value}">
+            <span>
+              ${opt.label}
+              ${opt.hint ? `<small>${opt.hint}</small>` : ''}
+            </span>
+            <i class="fa-solid fa-check"></i>
+          </button>
+        `;
+      }).join('');
+
+      optionsWrap.querySelectorAll('[data-value]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          setValue(btn.dataset.value || '');
+          close();
+        });
+      });
+    }
+
+    function setValue(value) {
+      const match = selectState.options.find((opt) => opt.value === value);
+      selectState.value = match?.value || '';
+      hidden.value = selectState.value;
+      valueEl.textContent = match?.label || trigger.dataset.placeholder || 'Pilih opsi';
+      root.classList.toggle('has-value', Boolean(selectState.value));
+      render(selectState.filtered);
+    }
+
+    function open() {
+      state.selects.forEach((item) => item.close());
+      root.classList.add('open');
+      panel.hidden = false;
+      trigger.setAttribute('aria-expanded', 'true');
+      render(selectState.filtered);
+      setTimeout(() => search.focus(), 20);
+      if (typeof gsap !== 'undefined') {
+        gsap.fromTo(panel, { y: -8, opacity: 0 }, { y: 0, opacity: 1, duration: 0.22, ease: 'power2.out' });
+      }
+    }
+
+    function close() {
+      root.classList.remove('open');
+      panel.hidden = true;
+      trigger.setAttribute('aria-expanded', 'false');
+      search.value = '';
+      selectState.filtered = selectState.options;
+    }
+
+    trigger.dataset.placeholder = valueEl.textContent;
+    trigger.addEventListener('click', () => {
+      if (root.classList.contains('open')) close();
+      else open();
+    });
+
+    search.addEventListener('input', () => {
+      const keyword = search.value.trim().toLowerCase();
+      selectState.filtered = selectState.options.filter((opt) => {
+        const haystack = `${opt.label} ${opt.hint || ''}`.toLowerCase();
+        return haystack.includes(keyword);
+      });
+      render(selectState.filtered);
+    });
+
+    return { ...selectState, setValue, open, close, render };
+  }
+
+  function closeAllSelects(target) {
+    state.selects.forEach((item) => {
+      if (target && item.root.contains(target)) return;
+      item.close();
+    });
+  }
+
+  function hydrateOnboardingForm(profile) {
+    const form = el.onboardingForm();
+    if (!form || !profile) return;
+    const setValue = (name, value) => {
+      const input = form.querySelector(`[name="${name}"]`);
+      if (input) input.value = value ?? '';
+    };
+
+    setValue('business_name', profile.business_name || '');
+    setValue('city', profile.city || '');
+    setValue('avg_monthly_revenue', profile.avg_monthly_revenue ? formatRupiahInput(profile.avg_monthly_revenue) : '');
+    setValue('active_customers', profile.active_customers || '');
+    setValue('business_description', profile.business_description || '');
+    updateDescriptionCount();
+
+    const categorySelect = state.selects.find((item) => item.root.dataset.select === 'category');
+    const provinceSelect = state.selects.find((item) => item.root.dataset.select === 'province');
+    if (categorySelect) categorySelect.setValue(profile.category || '');
+    if (provinceSelect) provinceSelect.setValue(profile.province || '');
+
+    let platforms = profile.sales_platforms || [];
+    if (typeof platforms === 'string') {
+      try {
+        platforms = JSON.parse(platforms);
+      } catch (_) {
+        platforms = platforms.split(',').map((item) => item.trim()).filter(Boolean);
+      }
+    }
+    renderPlatformChips(platforms);
+  }
+
+  function resetOnboardingForm() {
+    const form = el.onboardingForm();
+    form?.reset();
+    state.selects.forEach((item) => item.setValue(''));
+    renderPlatformChips([]);
+    setFeedback('clear', '');
+    updateDescriptionCount();
+  }
+
+  function collectOnboardingPayload() {
+    const form = el.onboardingForm();
+    if (!form) return null;
+    const formData = new FormData(form);
+    const payload = Object.fromEntries(formData.entries());
+    payload.avg_monthly_revenue = parseNumericInput(payload.avg_monthly_revenue);
+    payload.active_customers = payload.active_customers ? Number(payload.active_customers) : null;
+    payload.sales_platforms = [...state.selectedPlatforms];
+    payload.margin_pct = null;
+    payload.target_customer = payload.active_customers
+      ? `${payload.active_customers} pelanggan aktif`
+      : 'Pemilik UMKM Indonesia';
+    return payload;
+  }
+
+  function validateOnboarding(payload) {
+    if (!payload.business_name?.trim()) return 'Nama usaha wajib diisi.';
+    if (!payload.category?.trim()) return 'Kategori usaha wajib dipilih.';
+    if (!payload.province?.trim()) return 'Provinsi wajib dipilih.';
+    if (!payload.city?.trim()) return 'Kota / Kabupaten wajib diisi.';
+    if ((payload.business_description || '').length > 200) return 'Deskripsi singkat maksimal 200 karakter.';
+    return '';
+  }
+
+  async function submitUMKMOnboarding() {
+    const payload = collectOnboardingPayload();
+    if (!payload) return;
+    const error = validateOnboarding(payload);
+    if (error) {
+      setFeedback('error', error);
+      return;
+    }
+
+    setFeedback('clear', '');
+    setSubmitLoading(true);
+    try {
+      const res = await fetch('/api/umkm/onboarding', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...payload, user_id: getUserId() })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Gagal menyimpan onboarding UMKM');
+
+      setFeedback('success', 'Profil usaha kamu sudah tersimpan. Kita masuk ke dashboard, ya.');
+      if (typeof gsap !== 'undefined') {
+        gsap.to(el.onboardingModal(), {
+          boxShadow: '0 0 0 rgba(0,0,0,0), 0 0 30px rgba(250,204,21,0.25)',
+          duration: 0.28,
+          yoyo: true,
+          repeat: 1
+        });
+      }
+
+      setTimeout(() => {
+        setMode('umkm');
+        showUMKMShell(true);
+        goTo('home');
+        fillDashboardFromProfile(data.profile || payload);
+        submitProfileAndAnalyze({ ...(data.profile || payload), user_id: getUserId() });
+      }, 650);
+    } catch (e) {
+      setFeedback('error', String(e.message || e));
+    } finally {
+      setSubmitLoading(false);
+    }
   }
 
   function wire() {
@@ -490,7 +870,10 @@
     // close drawer on ESC
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeMobileNav();
+      if (e.key === 'Escape') closeAllSelects();
     });
+
+    document.addEventListener('click', (e) => closeAllSelects(e.target));
 
     // profile form
     const form = document.getElementById('umkm-profile-form');
@@ -502,6 +885,33 @@
         submitProfileAndAnalyze(payload);
       });
     }
+
+    const onboardingForm = el.onboardingForm();
+    if (onboardingForm) {
+      onboardingForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        submitUMKMOnboarding();
+      });
+
+      onboardingForm.querySelectorAll('input, textarea').forEach((field) => {
+        field.addEventListener('focus', () => animateFormFocus(field.closest('.sentra-field') || field));
+      });
+    }
+
+    const revenue = document.getElementById('umkm-revenue');
+    revenue?.addEventListener('input', () => {
+      const cursorSafeValue = formatRupiahInput(revenue.value);
+      revenue.value = cursorSafeValue;
+    });
+
+    document.getElementById('umkm-description')?.addEventListener('input', updateDescriptionCount);
+
+    state.selects = Array.from(document.querySelectorAll('.sentra-select'))
+      .map((root) => createSelect(root, root.dataset.select === 'province' ? PROVINCE_OPTIONS : CATEGORY_OPTIONS))
+      .filter(Boolean);
+
+    renderPlatformChips([]);
+    updateDescriptionCount();
   }
 
   function boot() {
@@ -524,6 +934,8 @@
   window.SentraUMKM = {
     openOnboarding,
     closeOnboarding,
+    openUMKMOnboarding,
+    backToModeStep,
     selectMode,
     goTo,
     loadProfile,

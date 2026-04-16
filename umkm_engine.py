@@ -164,19 +164,52 @@ def groq_generate(prompt: str) -> str:
 
 
 def upsert_umkm_profile(sb, user_id: str, profile: dict) -> dict:
+    location = (
+        profile.get("location")
+        or ", ".join(
+            [p for p in [(profile.get("city") or "").strip(), (profile.get("province") or "").strip()] if p]
+        )
+    )
+    sales_platforms = profile.get("sales_platforms")
+    if isinstance(sales_platforms, str):
+        sales_platforms = [p.strip() for p in sales_platforms.split(",") if p.strip()]
+
     payload = {
         "user_id": user_id,
         "business_name": (profile.get("business_name") or "").strip(),
         "category": (profile.get("category") or "").strip(),
-        "location": (profile.get("location") or "").strip(),
+        "location": (location or "").strip(),
         "avg_monthly_revenue": _safe_num(profile.get("avg_monthly_revenue")),
         "margin_pct": _safe_num(profile.get("margin_pct")),
         "target_customer": (profile.get("target_customer") or "").strip(),
+        "province": (profile.get("province") or "").strip(),
+        "city": (profile.get("city") or "").strip(),
+        "active_customers": _safe_num(profile.get("active_customers")),
+        "sales_platforms": sales_platforms or [],
+        "business_description": (profile.get("business_description") or "").strip(),
         "updated_at": _now_iso(),
     }
-    res = sb.table("umkm_profiles").upsert(payload, on_conflict="user_id").execute()
-    rows = res.data or []
-    return rows[0] if rows else payload
+
+    try:
+        res = sb.table("umkm_profiles").upsert(payload, on_conflict="user_id").execute()
+        rows = res.data or []
+        return rows[0] if rows else payload
+    except Exception:
+        # Backward-compatible retry if the table has not been migrated with new onboarding columns yet.
+        legacy_payload = {
+            "user_id": payload["user_id"],
+            "business_name": payload["business_name"],
+            "category": payload["category"],
+            "location": payload["location"],
+            "avg_monthly_revenue": payload["avg_monthly_revenue"],
+            "margin_pct": payload["margin_pct"],
+            "target_customer": payload["target_customer"],
+            "updated_at": payload["updated_at"],
+        }
+        res = sb.table("umkm_profiles").upsert(legacy_payload, on_conflict="user_id").execute()
+        rows = res.data or []
+        merged = rows[0] if rows else legacy_payload
+        return {**payload, **merged}
 
 
 def get_umkm_profile(sb, user_id: str) -> dict | None:

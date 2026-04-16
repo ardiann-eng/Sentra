@@ -5,6 +5,8 @@ import io
 import time
 import threading
 import logging
+import json
+from urllib import error as urlerror, request as urlrequest
 from datetime import date, datetime, timedelta
 from functools import wraps
 
@@ -170,6 +172,69 @@ def get_supabase():
     except Exception:
         _supabase_client = None
     return _supabase_client
+
+
+def get_supabase_anon_key() -> str:
+    return (os.environ.get("SUPABASE_ANON_KEY") or os.environ.get("SUPABASE_KEY") or "").strip()
+
+
+def _supabase_auth_request(path: str, payload: dict, method: str = "POST") -> dict:
+    url = (os.environ.get("SUPABASE_URL") or "").strip()
+    anon_key = get_supabase_anon_key()
+    if not url or not anon_key:
+        raise RuntimeError("SUPABASE_URL atau SUPABASE_ANON_KEY belum dikonfigurasi.")
+
+    req = urlrequest.Request(
+        f"{url}/auth/v1/{path}",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "apikey": anon_key,
+            "Authorization": f"Bearer {anon_key}",
+            "Content-Type": "application/json",
+        },
+        method=method,
+    )
+    try:
+        with urlrequest.urlopen(req, timeout=20) as resp:
+            body = resp.read().decode("utf-8") or "{}"
+            return json.loads(body)
+    except urlerror.HTTPError as e:
+        body = e.read().decode("utf-8") if e.fp else "{}"
+        try:
+            detail = json.loads(body)
+        except Exception:
+            detail = {"error_description": body or "Supabase Auth error"}
+        detail["_status"] = e.code
+        raise RuntimeError(json.dumps(detail))
+
+
+def _friendly_auth_error(exc: Exception, fallback: str) -> tuple[str, int]:
+    raw = str(exc)
+    status = 400
+    try:
+        parsed = json.loads(raw)
+        raw = (
+            parsed.get("msg")
+            or parsed.get("error_description")
+            or parsed.get("message")
+            or fallback
+        )
+        status = parsed.get("_status") or status
+    except Exception:
+        raw = raw or fallback
+
+    msg = raw.lower()
+    if "invalid login credentials" in msg:
+        return "Email atau password belum cocok. Coba cek lagi ya.", 401
+    if "email not confirmed" in msg:
+        return "Email kamu belum terverifikasi. Cek inbox lalu klik link verifikasi dari Sentra.", 400
+    if "user already registered" in msg or "already been registered" in msg:
+        return "Email ini sudah terdaftar. Coba masuk atau reset password.", 409
+    if "password should be at least" in msg or "weak password" in msg:
+        return "Password masih terlalu lemah. Gunakan minimal 8 karakter dengan kombinasi huruf dan angka.", 400
+    if "signup is disabled" in msg:
+        return "Pendaftaran belum aktif saat ini. Coba lagi beberapa saat lagi.", 503
+    return raw if raw else fallback, status
 
 
 # =========================
@@ -430,6 +495,99 @@ def user_status():
         "searches_remaining": remaining,
         "daily_limit": FREE_DAILY_LIMIT if tier == "free" else None,
     })
+
+
+@app.route("/api/auth/login", methods=["POST"])
+def auth_login():
+    data = request.get_json(silent=True) or {}
+    email = (data.get("email") or "").strip().lower()
+    password = data.get("password") or ""
+    if not email or not password:
+        return jsonify({"error": "Email dan password wajib diisi."}), 400
+
+    try:
+        auth_data = _supabase_auth_request(
+            "token?grant_type=password",
+            {"email": email, "password": password},
+        )
+        user = auth_data.get("user") or {}
+        session_payload = {
+            "access_token": auth_data.get("access_token"),
+            "refresh_token": auth_data.get("refresh_token"),
+            "expires_in": auth_data.get("expires_in"),
+            "expires_at": auth_data.get("expires_at"),
+            "token_type": auth_data.get("token_type"),
+            "user": user,
+        }
+        return jsonify({
+            "success": True,
+            "message": "Login berhasil. Selamat datang kembali di Sentra AI.",
+            "session": session_payload,
+            "user": user,
+        })
+    except Exception as e:
+        msg, status = _friendly_auth_error(e, "Login belum berhasil. Coba lagi ya.")
+        return jsonify({"error": msg}), status
+
+
+@app.route("/api/auth/register", methods=["POST"])
+def auth_register():
+    data = request.get_json(silent=True) or {}
+    email = (data.get("email") or "").strip().lower()
+    password = data.get("password") or ""
+    full_name = (data.get("full_name") or "").strip()
+
+    if not email or not password:
+        return jsonify({"error": "Email dan password wajib diisi."}), 400
+    if len(password) < 8:
+        return jsonify({"error": "Password minimal 8 karakter."}), 400
+
+    payload = {
+        "email": email,
+        "password": password,
+        "data": {
+            "full_name": full_name,
+            "nama": full_name,
+        }
+    }
+    try:
+        auth_data = _supabase_auth_request("signup", payload)
+        return jsonify({
+            "success": True,
+            "message": "Akun berhasil dibuat. Silakan cek email untuk verifikasi jika diminta.",
+            "user": auth_data.get("user"),
+            "session": auth_data.get("session"),
+            "needs_email_verification": auth_data.get("session") is None,
+        })
+    except Exception as e:
+        msg, status = _friendly_auth_error(e, "Pendaftaran belum berhasil. Coba lagi ya.")
+        return jsonify({"error": msg}), status
+
+
+@app.route("/api/auth/forgot-password", methods=["POST"])
+def auth_forgot_password():
+    data = request.get_json(silent=True) or {}
+    email = (data.get("email") or "").strip().lower()
+    if not email:
+        return jsonify({"error": "Masukkan email yang terdaftar dulu ya."}), 400
+
+    sb = get_supabase()
+    if not sb:
+        return jsonify({"error": "Koneksi database tidak tersedia"}), 503
+
+    redirect_to = (
+        (os.environ.get("SUPABASE_RESET_REDIRECT_URL") or "").strip()
+        or request.host_url.rstrip("/") + "/"
+    )
+    try:
+        sb.auth.reset_password_email(email, {"redirect_to": redirect_to})
+        return jsonify({
+            "success": True,
+            "message": "Link reset password sudah dikirim. Cek inbox atau folder spam email kamu ya.",
+        })
+    except Exception as e:
+        msg, status = _friendly_auth_error(e, "Belum bisa mengirim link reset password. Coba lagi sebentar lagi.")
+        return jsonify({"error": msg}), status
 
 
 @app.route("/api/analyze", methods=["POST"])
@@ -1294,6 +1452,66 @@ def umkm_profile():
     try:
         profile = upsert_umkm_profile(sb, user_id, data)
         return jsonify({"profile": profile})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/umkm/onboarding", methods=["POST"])
+def umkm_onboarding():
+    """
+    Save UMKM onboarding form, then let frontend redirect to dashboard shell.
+    """
+    user_id, _, _ = get_auth_session()
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    sb = get_supabase()
+    if not sb:
+        return jsonify({"error": "Koneksi database tidak tersedia"}), 503
+
+    payload = request.get_json(silent=True) or {}
+    business_name = (payload.get("business_name") or "").strip()
+    category = (payload.get("category") or "").strip()
+    province = (payload.get("province") or "").strip()
+    city = (payload.get("city") or "").strip()
+    description = (payload.get("business_description") or "").strip()
+    sales_platforms = payload.get("sales_platforms") or []
+
+    if not business_name:
+        return jsonify({"error": "Nama usaha wajib diisi."}), 400
+    if not category:
+        return jsonify({"error": "Kategori usaha wajib dipilih."}), 400
+    if not province:
+        return jsonify({"error": "Provinsi wajib dipilih."}), 400
+    if not city:
+        return jsonify({"error": "Kota / Kabupaten wajib diisi."}), 400
+    if len(description) > 200:
+        return jsonify({"error": "Deskripsi usaha maksimal 200 karakter."}), 400
+    if not isinstance(sales_platforms, list):
+        return jsonify({"error": "Platform jualan utama harus berupa daftar."}), 400
+
+    try:
+        profile_payload = {
+            "business_name": business_name,
+            "category": category,
+            "province": province,
+            "city": city,
+            "location": ", ".join([p for p in [city, province] if p]),
+            "avg_monthly_revenue": payload.get("avg_monthly_revenue"),
+            "active_customers": payload.get("active_customers"),
+            "sales_platforms": sales_platforms,
+            "business_description": description,
+            # Legacy fields kept for compatibility with existing dashboard prompt/metrics.
+            "target_customer": payload.get("target_customer") or "Pelanggan aktif UMKM Indonesia",
+            "margin_pct": payload.get("margin_pct"),
+        }
+        profile = upsert_umkm_profile(sb, user_id, profile_payload)
+        return jsonify({
+            "success": True,
+            "message": "Profil usaha berhasil disimpan.",
+            "profile": profile,
+            "redirect_to": "/?mode=umkm-dashboard",
+        })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

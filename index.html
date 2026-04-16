@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
 
   <link
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:slnt,wght@0,100..900;1,100..900&family=DM+Mono:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:slnt,wght@0,100..900;1,100..900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&family=DM+Mono:wght@400;500&display=swap"
     rel="stylesheet" />
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -27,8 +27,8 @@
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Draggable.min.js"></script>
 
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -111,10 +111,6 @@
 
       </div>
 
-      <button class="sticky-nav-umkm" type="button" onclick="window.SentraUMKM?.selectMode?.('umkm')">
-        <i class="fa-solid fa-store"></i>
-        Dashboard UMKM
-      </button>
 
       <button class="sticky-nav-cta" data-target="kw">Upgrade ke Pro</button>
 
@@ -147,34 +143,155 @@
     <div id="onboarding-modal" class="sentra-modal-box" onclick="event.stopPropagation()">
       <button class="sentra-modal-close" type="button" aria-label="Tutup" onclick="window.SentraUMKM?.closeOnboarding?.()">×</button>
 
-      <div class="sentra-modal-eyebrow">Selamat datang di Sentra AI</div>
-      <h2 class="sentra-modal-title">Kamu mau pakai Sentra sebagai apa hari ini?</h2>
-      <p class="sentra-modal-desc">
-        Pilih yang paling cocok. Nanti kamu bisa ganti mode kapan saja.
-      </p>
+      <div id="sentra-onboarding-mode-step" class="sentra-onboarding-step active">
+        <div class="sentra-modal-eyebrow">Selamat datang di Sentra AI</div>
+        <h2 class="sentra-modal-title">Kamu mau pakai Sentra sebagai apa hari ini?</h2>
+        <p class="sentra-modal-desc">
+          Pilih yang paling cocok. Nanti kamu bisa ganti mode kapan saja.
+        </p>
 
-      <div class="sentra-modal-actions">
-        <button id="btn-mode-analisis" class="sentra-modal-card" type="button" onclick="window.SentraUMKM?.selectMode?.('analysis')">
-          <div class="sentra-modal-card-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
-          <div class="sentra-modal-card-body">
-            <div class="sentra-modal-card-title">Saya mau analisis tren pasar</div>
-            <div class="sentra-modal-card-sub">Cari ide jualan, cek timing, dan lihat peluang sebelum orang lain.</div>
-          </div>
-          <div class="sentra-modal-card-cta">Masuk Analisis →</div>
-        </button>
+        <div class="sentra-modal-actions">
+          <button id="btn-mode-analisis" class="sentra-modal-card" type="button" onclick="window.SentraUMKM?.selectMode?.('analysis')">
+            <div class="sentra-modal-card-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+            <div class="sentra-modal-card-body">
+              <div class="sentra-modal-card-title">Saya mau analisis tren pasar</div>
+              <div class="sentra-modal-card-sub">Cari ide jualan, cek timing, dan lihat peluang sebelum orang lain.</div>
+            </div>
+            <div class="sentra-modal-card-cta">Masuk Analisis →</div>
+          </button>
 
-        <button id="btn-mode-umkm" class="sentra-modal-card highlight" type="button" onclick="window.SentraUMKM?.selectMode?.('umkm')">
-          <div class="sentra-modal-card-icon"><i class="fa-solid fa-store"></i></div>
-          <div class="sentra-modal-card-body">
-            <div class="sentra-modal-card-title">Saya pemilik UMKM</div>
-            <div class="sentra-modal-card-sub">Mari rapikan usaha kamu. Aku bantu cek kesehatan, strategi, dan peluang minggu ini.</div>
-          </div>
-          <div class="sentra-modal-card-cta">Buka Dashboard UMKM →</div>
-        </button>
+          <button id="btn-mode-umkm" class="sentra-modal-card highlight" type="button" onclick="window.SentraUMKM?.openUMKMOnboarding?.()">
+            <div class="sentra-modal-card-icon"><i class="fa-solid fa-store"></i></div>
+            <div class="sentra-modal-card-body">
+              <div class="sentra-modal-card-title">Saya pemilik UMKM</div>
+              <div class="sentra-modal-card-sub">Mari rapikan usaha kamu. Aku bantu cek kesehatan, strategi, dan peluang minggu ini.</div>
+            </div>
+            <div class="sentra-modal-card-cta">Lanjut isi profil usaha →</div>
+          </button>
+        </div>
+
+        <div class="sentra-modal-footer">
+          <div class="sentra-modal-footnote">Tip: mulai dari UMKM kalau kamu sudah punya usaha dan ingin langkah yang lebih “praktis harian”.</div>
+        </div>
       </div>
 
-      <div class="sentra-modal-footer">
-        <div class="sentra-modal-footnote">Tip: mulai dari UMKM kalau kamu sudah punya usaha dan ingin langkah yang lebih “praktis harian”.</div>
+      <div id="sentra-onboarding-umkm-step" class="sentra-onboarding-step" aria-hidden="true">
+        <div class="sentra-onboarding-topbar">
+          <button class="sentra-onboarding-back" type="button" onclick="window.SentraUMKM?.backToModeStep?.()">
+            <i class="fa-solid fa-arrow-left"></i>
+            Kembali
+          </button>
+          <div class="sentra-onboarding-progress">
+            <span class="is-active"></span>
+            <span class="is-active"></span>
+          </div>
+        </div>
+
+        <div class="sentra-onboarding-hero">
+          <div>
+            <div class="sentra-modal-eyebrow">Onboarding UMKM</div>
+            <h2 class="sentra-modal-title">Mari kenali usaha kamu dulu</h2>
+            <p class="sentra-modal-desc">
+              Isi singkat saja. Setelah ini Sentra akan bantu kamu masuk ke dashboard dengan rekomendasi yang lebih nyambung untuk usaha kamu.
+            </p>
+          </div>
+          <div class="sentra-onboarding-badge">
+            <i class="fa-solid fa-sparkles"></i>
+            Premium setup
+          </div>
+        </div>
+
+        <form id="umkm-onboarding-form" class="sentra-onboarding-form">
+          <div class="sentra-onboarding-grid">
+            <label class="sentra-field">
+              <span class="sentra-field-label">Nama Usaha <em>*</em></span>
+              <input id="umkm-business-name" name="business_name" type="text" maxlength="80" placeholder="Contoh: Kopi Sore Nusantara" required />
+              <span class="sentra-field-hint">Nama yang biasa kamu pakai di toko, marketplace, atau media sosial.</span>
+            </label>
+
+            <div class="sentra-field">
+              <span class="sentra-field-label">Kategori Usaha <em>*</em></span>
+              <div class="sentra-select" data-select="category">
+                <input type="hidden" name="category" />
+                <button type="button" class="sentra-select-trigger" data-select-trigger aria-expanded="false">
+                  <span data-select-value>Pilih kategori usaha</span>
+                  <i class="fa-solid fa-chevron-down"></i>
+                </button>
+                <div class="sentra-select-panel" data-select-panel hidden>
+                  <div class="sentra-select-search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" data-select-search placeholder="Cari kategori..." />
+                  </div>
+                  <div class="sentra-select-options" data-select-options></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="sentra-field">
+              <span class="sentra-field-label">Provinsi <em>*</em></span>
+              <div class="sentra-select" data-select="province">
+                <input type="hidden" name="province" />
+                <button type="button" class="sentra-select-trigger" data-select-trigger aria-expanded="false">
+                  <span data-select-value>Pilih provinsi</span>
+                  <i class="fa-solid fa-chevron-down"></i>
+                </button>
+                <div class="sentra-select-panel" data-select-panel hidden>
+                  <div class="sentra-select-search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" data-select-search placeholder="Cari provinsi..." />
+                  </div>
+                  <div class="sentra-select-options" data-select-options></div>
+                </div>
+              </div>
+            </div>
+
+            <label class="sentra-field">
+              <span class="sentra-field-label">Kota / Kabupaten <em>*</em></span>
+              <input id="umkm-city" name="city" type="text" maxlength="80" placeholder="Contoh: Bandung" required />
+            </label>
+
+            <label class="sentra-field">
+              <span class="sentra-field-label">Omzet Rata-rata per Bulan</span>
+              <div class="sentra-input-affix">
+                <span>Rp</span>
+                <input id="umkm-revenue" name="avg_monthly_revenue" type="text" inputmode="numeric" placeholder="15.000.000" />
+              </div>
+            </label>
+
+            <label class="sentra-field">
+              <span class="sentra-field-label">Jumlah Pelanggan Aktif</span>
+              <input id="umkm-customers" name="active_customers" type="number" min="0" step="1" placeholder="Contoh: 120" />
+            </label>
+
+            <div class="sentra-field sentra-field-full">
+              <span class="sentra-field-label">Platform Jualan Utama</span>
+              <div id="umkm-platform-chips" class="sentra-chip-group" role="group" aria-label="Platform jualan utama"></div>
+              <input type="hidden" name="sales_platforms" id="umkm-sales-platforms" />
+            </div>
+
+            <label class="sentra-field sentra-field-full">
+              <span class="sentra-field-label">Deskripsi Singkat Usaha</span>
+              <textarea id="umkm-description" name="business_description" maxlength="200" rows="4" placeholder="Ceritakan singkat produk utama, siapa pelangganmu, atau hal yang bikin usahamu spesial."></textarea>
+              <div class="sentra-field-meta">
+                <span class="sentra-field-hint">Maksimal 200 karakter. Biar Sentra bisa kasih saran yang lebih terasa personal.</span>
+                <span id="umkm-description-count">0/200</span>
+              </div>
+            </label>
+          </div>
+
+          <div id="umkm-onboarding-error" class="sentra-form-feedback error hidden"></div>
+          <div id="umkm-onboarding-success" class="sentra-form-feedback success hidden"></div>
+
+          <div class="sentra-onboarding-actions">
+            <div class="sentra-onboarding-copy">
+              Tenang, kamu bisa edit profil usaha kapan saja dari dashboard.
+            </div>
+            <button id="umkm-onboarding-submit" class="sentra-gold-btn" type="submit">
+              <span class="sentra-btn-label">Simpan &amp; Masuk ke Dashboard</span>
+              <span class="sentra-btn-loader hidden"></span>
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -1176,64 +1293,34 @@
 
     <!-- ────────────────────────────────────────────────── RADAR PASAR SENTRA (REDESIGN) ────────────────────────────────────────────────── -->
 
-    <section class="radar-section-modern" id="sector-dashboard"
+    <section class="radar-section-modern" id="sector-dashboard">
+      <div class="wrap radar-modern-wrap">
+        <div class="radar-modern-header">
+          <div class="radar-modern-copy">
+            <div class="radar-modern-eyebrow">Market Intelligence</div>
+            <h2 class="radar-modern-title">Radar Pasar Sentra</h2>
+            <p class="radar-modern-subtitle">Monitor performa sektor pasar secara real-time berdasarkan aktivitas pencarian pembeli.</p>
+          </div>
 
-      style="background-color: #0F0F0F; padding: 100px 0; border-top: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden;">
-
-      <div class="wrap" style="position: relative; z-index: 2;">
-
-        <!-- Header -->
-
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-14 gap-6">
-
-          <div>
-
-            <div class="flex items-center gap-3 mb-4">
-
-              <div class="w-2 h-2 rounded-full bg-[#FACC15] shadow-[0_0_12px_rgba(250,204,21,0.8)] animate-pulse"></div>
-
-              <div class="font-mono text-[10px] tracking-[4px] text-zinc-400 uppercase">Live Radar Sektor</div>
-
+          <div class="radar-status-bar">
+            <div class="radar-status-live">
+              <span class="radar-live-pulse"></span>
+              <i class="fa-solid fa-satellite-dish" style="font-size: 9px; color: #ef4444; margin-right: 5px; opacity: 0.8;"></i>
+              <span class="radar-status-text">LIVE FEED</span>
             </div>
-
-            <h2 class="font-syne text-2xl md:text-3xl lg:text-4xl text-zinc-100 mb-3 tracking-tight">Radar Pasar Sentra
-
-            </h2>
-
-            <p class="text-zinc-500 font-jakarta text-sm md:text-base leading-relaxed">Pantau sektor mana yang sedang panas minggu ini. <strong
-
-                class="text-[#FACC15] font-bold font-syne uppercase text-xs tracking-widest px-2 ml-1 border border-[#FACC15]/30 rounded-md bg-[#FACC15]/10">LIVE
-
-                Panas</strong> minggu ini.</p>
-
+            <div class="radar-status-divider"></div>
+            <div class="radar-status-sync" style="display: flex; align-items: center; gap: 6px;">
+              <i class="fa-solid fa-cloud-arrow-down" style="font-size: 9px; color: rgba(255,255,255,0.4);"></i>
+              <div id="radar-uptime" class="radar-status-time">SYNCING...</div>
+            </div>
           </div>
-
-          <div
-
-            class="text-left md:text-right flex flex-col items-start md:items-end bg-zinc-900/40 p-4 border border-zinc-800 rounded-xl backdrop-blur-md">
-
-            <div class="text-[10px] font-mono text-zinc-500 uppercase tracking-[3px] mb-2">Sync Status</div>
-
-            <div id="radar-uptime" class="text-zinc-100 font-mono font-bold text-sm tracking-wider">ON-GRID</div>
-
-            <div class="text-[9px] text-[#FACC15]/70 mt-1 font-mono uppercase tracking-widest"><i
-
-                class="fa-solid fa-satellite-dish mr-1"></i> Updated Real-time</div>
-
-          </div>
-
         </div>
 
-        <!-- 7-Column Grid Container -->
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4 md:gap-5"
-
-          id="radar-grid-modern">
-
-          <!-- Dynamically populated by app.js -->
-
+        <div class="radar-modern-viewport">
+          <div class="radar-grid-modern flex lg:grid" id="radar-grid-modern">
+            <!-- Dynamically populated by app.js -->
+          </div>
         </div>
-
       </div>
 
       <!-- Ambient Glows -->
