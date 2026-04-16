@@ -10335,15 +10335,19 @@ header,
 }
 
 .sentra-modal-box {
-  width: min(980px, 100%);
+  width: min(760px, 100%);
+  max-height: calc(100dvh - 32px);
   border-radius: 22px;
   border: 1px solid rgba(250, 204, 21, 0.18);
   background: radial-gradient(1200px 600px at 15% 10%, rgba(250, 204, 21, 0.09), transparent 55%),
     linear-gradient(180deg, rgba(18, 18, 18, 0.98), rgba(10, 10, 10, 0.98));
   box-shadow: 0 30px 90px rgba(0, 0, 0, 0.65);
-  padding: 34px 32px 28px;
+  padding: 34px 28px 28px;
   position: relative;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(250, 204, 21, 0.2) transparent;
 }
 
 .sentra-modal-box::before {
@@ -10709,10 +10713,10 @@ header,
 
 .sentra-select-panel {
   position: absolute;
-  top: calc(100% + 10px);
+  top: calc(100% + 5px);
   left: 0;
   right: 0;
-  z-index: 6;
+  z-index: 100;
   border-radius: 18px;
   border: 1px solid rgba(250, 204, 21, 0.16);
   background: rgba(11, 11, 11, 0.98);
