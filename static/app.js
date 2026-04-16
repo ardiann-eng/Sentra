@@ -1138,18 +1138,20 @@ function renderProfileDropdown() {
     
     <hr class="profile-divider">
     
-    <button class="profile-logout-btn" onclick="handleLogout()">Keluar</button>
+    <button class="profile-dropdown-item danger" onclick="handleLogout()">
+      <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar
+    </button>
   `;
 }
 
 async function handleLogout() {
-
   if (!sb) return;
-
-  await sb.auth.signOut();
-
+  try {
+    await sb.auth.signOut();
+  } catch (e) { console.error(e); }
+  
   closeProfileDropdown();
-
+  window.location.reload(); // Simplest way to clear state
 }
 
 document.addEventListener('click', function (e) {

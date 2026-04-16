@@ -6940,6 +6940,19 @@ html:has(#auth-overlay.open) {
   background: rgba(250, 204, 21, 0.05);
 }
 
+.profile-dropdown-item.danger {
+  color: #f87171;
+}
+
+.profile-dropdown-item.danger:hover {
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+}
+
+.profile-dropdown-item.danger i {
+  color: #f87171;
+}
+
 .profile-dropdown-item i {
   width: 20px;
   text-align: center;
