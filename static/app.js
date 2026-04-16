@@ -3026,11 +3026,13 @@ function parseAiSections(text) {
 
     const indices = matches.map(m => text.indexOf(m[0]));
 
-    const pasar = text.substring(indices[0], indices[1]).replace(/^\s*\d+\.\s*[^\n]*\n?/, '').trim();
+    // Strip only the leading "N. " prefix — NOT the whole line
+    // (AI writes content on the same line as the number)
+    const pasar = text.substring(indices[0], indices[1]).replace(/^\s*\d+\.\s*/, '').trim();
 
-    const aksi = text.substring(indices[1], indices[2]).replace(/^\s*\d+\.\s*[^\n]*\n?/, '').trim();
+    const aksi = text.substring(indices[1], indices[2]).replace(/^\s*\d+\.\s*/, '').trim();
 
-    const waktu = text.substring(indices[2]).replace(/^\s*\d+\.\s*[^\n]*\n?/, '').trim();
+    const waktu = text.substring(indices[2]).replace(/^\s*\d+\.\s*/, '').trim();
 
     return { pasar, aksi, waktu };
 
@@ -3728,15 +3730,16 @@ async function triggerAiInsight() {
 
       _aiInsightGenerated = true;
 
-      // GSAP Card Entrance
-
-      gsap.fromTo("#ai-result-state > div",
-
-        { y: 20, opacity: 0 },
-
-        { y: 0, opacity: 1, duration: 0.6, stagger: 0.2, ease: 'power2.out' }
-
-      );
+      // Defer GSAP until after all staggered setTimeout insertions finish
+      // renderAiCards uses 0/400/800ms delays — 900ms ensures all are done
+      setTimeout(() => {
+        if (typeof gsap !== 'undefined') {
+          gsap.fromTo('#ai-result-state > div',
+            { y: 20, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.6, stagger: 0.15, ease: 'power2.out' }
+          );
+        }
+      }, 900);
 
     }
 
