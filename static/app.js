@@ -663,13 +663,16 @@ function openAuthModal(tab) {
   }
   if (overlay) overlay.classList.add('open');
   if (modal) modal.classList.add('open');
+  const scrollY = window.scrollY;
   document.body.style.overflow = 'hidden';
   document.body.style.position = 'fixed';
+  document.body.style.top = `-${scrollY}px`;
   document.body.style.width = '100%';
+  document.body.setAttribute('data-scroll-pos', scrollY);
+
   if (document.documentElement) {
     document.documentElement.style.overflow = 'hidden';
-    document.documentElement.style.position = 'fixed';
-    document.documentElement.style.width = '100%';
+    document.documentElement.style.height = '100%';
   }
 
   if (typeof gsap !== 'undefined' && modal && overlay) {
@@ -697,13 +700,20 @@ function closeAuthModal() {
       modal.style.removeProperty('pointer-events');
       modal.style.removeProperty('transform');
     }
+    const scrollY = document.body.getAttribute('data-scroll-pos');
     document.body.style.removeProperty('overflow');
     document.body.style.removeProperty('position');
+    document.body.style.removeProperty('top');
     document.body.style.removeProperty('width');
+    
     if (document.documentElement) {
       document.documentElement.style.removeProperty('overflow');
-      document.documentElement.style.removeProperty('position');
-      document.documentElement.style.removeProperty('width');
+      document.documentElement.style.removeProperty('height');
+    }
+    
+    if (scrollY) {
+      window.scrollTo(0, parseInt(scrollY));
+      document.body.removeAttribute('data-scroll-pos');
     }
     setAuthMessage('clear', '');
   };

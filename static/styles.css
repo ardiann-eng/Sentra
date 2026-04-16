@@ -6074,9 +6074,12 @@ select#geo-select option {
 
 body:has(#auth-overlay.open) {
   overflow: hidden !important;
-  overflow-x: hidden !important;
-  position: fixed;
-  width: 100%;
+  overscroll-behavior: none !important;
+}
+
+html:has(#auth-overlay.open) {
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
 }
 
 #auth-overlay.open ~ * {
