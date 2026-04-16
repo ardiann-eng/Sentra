@@ -6058,16 +6058,16 @@ select#geo-select option {
   z-index: 9990;
   background:
     radial-gradient(900px 500px at 10% 10%, rgba(250, 204, 21, 0.08), transparent 60%),
-    rgba(6, 6, 5, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+    rgba(6, 6, 5, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   opacity: 0;
   pointer-events: none;
   transition: opacity .3s ease;
-  display: grid;
-  place-items: center;
-  padding: 16px;
-  overflow: hidden; /* Prevent overlay itself from scrolling */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
 }
 
 #auth-overlay.open {
@@ -6095,18 +6095,16 @@ html:has(#auth-overlay.open) {
 }
 
 #auth-modal {
-  position: relative;
+  position: relative; /* Centered by flex parent */
   z-index: 9991;
-  width: min(440px, 92vw);
-  max-width: 440px;
-  max-height: calc(100dvh - 32px);
+  width: min(460px, 100%);
+  max-height: calc(100dvh - 40px);
   background: transparent;
   opacity: 0;
   pointer-events: none;
   overflow: hidden;
-  transform: translateY(20px);
-  transition: opacity .35s ease, transform .4s cubic-bezier(.23, 1, .32, 1);
-  box-sizing: border-box;
+  transform: translateY(24px);
+  transition: opacity .35s cubic-bezier(.23, 1, .32, 1), transform .45s cubic-bezier(.23, 1, .32, 1);
 }
 
 #auth-modal.open {
@@ -6122,27 +6120,27 @@ html:has(#auth-overlay.open) {
 
 .auth-modern-shell {
   position: relative;
-  width: 100%;
   overflow-y: auto;
-  overflow-x: hidden !important; /* Force LOCK horizontal */
+  overflow-x: hidden;
   touch-action: pan-y;
   overscroll-behavior: none;
-  max-height: calc(100dvh - 32px);
-  /* Disable elastic scroll/bounce */
+  max-height: calc(100dvh - 48px);
+  /* Disable elastic scroll for short content */
   -webkit-overflow-scrolling: auto; 
   border-radius: 20px;
-  border: 1px solid rgba(212, 168, 67, 0.22);
+  border: 1px solid rgba(212, 168, 67, 0.2);
   background:
     radial-gradient(circle at 100% 0%, rgba(212, 168, 67, 0.12), transparent 40%),
     radial-gradient(circle at 0% 100%, rgba(212, 168, 67, 0.08), transparent 40%),
     linear-gradient(180deg, rgba(14, 14, 12, 0.98), rgba(8, 8, 6, 0.99));
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.85);
-  padding: 32px 24px;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+  padding: 32px;
+  width: 100%;
+  max-width: 440px;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
 }
 
 .auth-modern-shell::after {
