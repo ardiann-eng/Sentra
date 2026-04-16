@@ -10853,6 +10853,19 @@ header,
 }
 
 @media (max-width: 860px) {
+  .sentra-modal-overlay {
+    padding: 16px;
+    align-items: flex-start; /* Start from top to allow scrolling */
+    overflow-y: auto;
+  }
+
+  .sentra-modal-box {
+    padding: 24px 20px;
+    width: 100%;
+    margin: 20px 0; /* Breathing room for scroll */
+    max-height: none; /* Let its content define height */
+  }
+
   .sentra-modal-actions {
     grid-template-columns: 1fr;
   }
@@ -10866,6 +10879,31 @@ header,
 
   .sentra-onboarding-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .sentra-field input,
+  .sentra-field textarea,
+  .sentra-select-trigger {
+    font-size: 16px; /* Prevents iOS auto-zoom */
+    padding: 12px 14px;
+  }
+
+  .sentra-onboarding-form {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sentra-modal-title {
+    font-size: 20px;
+  }
+  .sentra-onboarding-topbar {
+    margin-bottom: 12px;
+  }
+  .sentra-onboarding-badge {
+    padding: 8px 12px;
+    font-size: 9px;
   }
 }
 
