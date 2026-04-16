@@ -163,8 +163,10 @@ def get_supabase():
     if _supabase_client is not None:
         return _supabase_client
     url = (os.environ.get("SUPABASE_URL") or "").strip()
-    key = (os.environ.get("SUPABASE_KEY") or os.environ.get("SUPABASE_ANON_KEY") or "").strip()
+    # Prioritize ANON_KEY for auth operations. Service Role should only be used where explicitly needed.
+    key = (os.environ.get("SUPABASE_ANON_KEY") or os.environ.get("SUPABASE_KEY") or "").strip()
     if not url or not key:
+        print("[SUPABASE] Missing URL or Key")
         return None
     try:
         from supabase import create_client
@@ -510,10 +512,11 @@ def auth_login():
         return jsonify({"error": "Koneksi database tidak tersedia."}), 503
 
     try:
-        # Use keyword arguments for clarity and compatibility
-        res = sb.auth.sign_in_with_password({"email": email, "password": password})
-        if not res.user:
-            return jsonify({"error": "Email atau password belum cocok."}), 401
+        # Sign in using keyword arguments for safety
+        res = sb.auth.sign_in_with_password(email=email, password=password)
+        
+        if not res.session or not res.user:
+            return jsonify({"error": "Sesi tidak valid. Coba lagi."}), 401
         
         session = res.session
         user = res.user
@@ -533,13 +536,13 @@ def auth_login():
         })
     except Exception as e:
         err_msg = str(e)
-        print(f"[AUTH LOGIN ERROR] {err_msg}")
+        logger.error(f"[AUTH LOGIN ERROR] {err_msg}")
         err = err_msg.lower()
         if "invalid" in err or "credentials" in err:
             return jsonify({"error": "Email atau password belum cocok. Coba cek lagi ya."}), 401
         if "email not confirmed" in err:
             return jsonify({"error": "Email belum diverifikasi. Cek inbox kamu."}), 400
-        return jsonify({"error": f"Login gagal: {err_msg[:100]}"}), 500
+        return jsonify({"error": f"Gagal masuk: {err_msg}"}), 500
 
 
 @app.route("/api/auth/register", methods=["POST"])
