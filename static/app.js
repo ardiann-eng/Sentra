@@ -664,6 +664,8 @@ function openAuthModal(tab) {
   if (overlay) overlay.classList.add('open');
   if (modal) modal.classList.add('open');
   document.body.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+  document.body.style.width = '100%';
   if (document.documentElement) {
     document.documentElement.style.overflow = 'hidden';
     document.documentElement.style.position = 'fixed';
@@ -696,6 +698,8 @@ function closeAuthModal() {
       modal.style.removeProperty('transform');
     }
     document.body.style.removeProperty('overflow');
+    document.body.style.removeProperty('position');
+    document.body.style.removeProperty('width');
     if (document.documentElement) {
       document.documentElement.style.removeProperty('overflow');
       document.documentElement.style.removeProperty('position');

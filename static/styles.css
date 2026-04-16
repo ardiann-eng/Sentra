@@ -6069,6 +6069,7 @@ select#geo-select option {
 #auth-overlay.open {
   opacity: 1;
   pointer-events: all;
+  touch-action: none;
 }
 
 body:has(#auth-overlay.open) {
