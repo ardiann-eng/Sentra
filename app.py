@@ -512,8 +512,7 @@ def auth_login():
         return jsonify({"error": "Koneksi database tidak tersedia."}), 503
 
     try:
-        # Fixed: sign_in_with_password expects a 'credentials' dict
-        res = sb.auth.sign_in_with_password(credentials={"email": email, "password": password})
+        res = sb.auth.sign_in_with_password({"email": email, "password": password})
         
         if not res.session or not res.user:
             return jsonify({"error": "Sesi tidak valid. Coba lagi."}), 401
@@ -562,12 +561,11 @@ def auth_register():
         return jsonify({"error": "Koneksi database tidak tersedia."}), 503
 
     try:
-        # Correct parameter passing for sign_up
-        res = sb.auth.sign_up(
-            email=email,
-            password=password,
-            options={"data": {"full_name": full_name, "nama": full_name}}
-        )
+        res = sb.auth.sign_up({
+            "email": email,
+            "password": password,
+            "options": {"data": {"full_name": full_name, "nama": full_name}}
+        })
         if hasattr(res, 'error') and res.error:
             raise Exception(res.error.message)
             

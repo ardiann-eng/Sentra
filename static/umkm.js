@@ -722,6 +722,16 @@
       root.classList.add('open');
       panel.hidden = false;
       trigger.setAttribute('aria-expanded', 'true');
+
+      // position: fixed to escape overflow clipping from the scrollable modal
+      const rect = trigger.getBoundingClientRect();
+      panel.style.position = 'fixed';
+      panel.style.top = (rect.bottom + 5) + 'px';
+      panel.style.left = rect.left + 'px';
+      panel.style.width = rect.width + 'px';
+      panel.style.right = 'auto';
+      panel.style.zIndex = '99900';
+
       render(selectState.filtered);
       setTimeout(() => search.focus(), 20);
       if (typeof gsap !== 'undefined') {
@@ -732,6 +742,12 @@
     function close() {
       root.classList.remove('open');
       panel.hidden = true;
+      panel.style.position = '';
+      panel.style.top = '';
+      panel.style.left = '';
+      panel.style.width = '';
+      panel.style.right = '';
+      panel.style.zIndex = '';
       trigger.setAttribute('aria-expanded', 'false');
       search.value = '';
       selectState.filtered = selectState.options;
@@ -886,6 +902,7 @@
     });
 
     document.addEventListener('click', (e) => closeAllSelects(e.target));
+    document.addEventListener('scroll', () => closeAllSelects(), true);
 
     // profile form
     const form = document.getElementById('umkm-profile-form');

@@ -1058,7 +1058,17 @@ function openProfileDropdown() {
 
   renderProfileDropdown();
 
-  document.getElementById('profile-dropdown').classList.add('open');
+  var dropdown = document.getElementById('profile-dropdown');
+  var btn = document.getElementById('auth-profile-btn');
+
+  if (dropdown && btn) {
+    var rect = btn.getBoundingClientRect();
+    dropdown.style.top  = (rect.bottom + 10) + 'px';
+    dropdown.style.right = (window.innerWidth - rect.right) + 'px';
+    dropdown.style.left  = 'auto';
+  }
+
+  dropdown.classList.add('open');
 
 }
 
@@ -1117,30 +1127,42 @@ function renderProfileDropdown() {
   }
 
   inner.innerHTML = `
-    <div class="profile-dropdown-header">
-      <div class="profile-avatar-md">${initial}</div>
-      <div class="profile-info-col">
-        <div class="profile-name">${displayName}</div>
-        <div class="profile-email">${email}</div>
+    <div class="pdd-header">
+      <div class="pdd-avatar">${initial}</div>
+      <div class="pdd-info">
+        <div class="pdd-name">${displayName}</div>
+        <div class="pdd-email">${email}</div>
       </div>
+      <div class="pdd-plan ${plan}">${planLabel}</div>
     </div>
-    <div class="profile-plan-badge ${plan}">${planLabel}</div>
-    
-    <hr class="profile-divider">
-    
-    <button class="profile-dropdown-item" onclick="window.SentraUMKM?.openDashboard?.(); closeProfileDropdown();">
-      <i class="fa-solid fa-chart-line"></i> Analisis Usahamu
-    </button>
-    
-    <button class="profile-dropdown-item" onclick="openProfilePanel(); closeProfileDropdown();">
-      <i class="fa-solid fa-user-gear"></i> Pengaturan Akun
-    </button>
-    
-    <hr class="profile-divider">
-    
-    <button class="profile-dropdown-item danger" onclick="handleLogout()">
-      <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar
-    </button>
+
+    <div class="pdd-sep"></div>
+
+    <nav class="pdd-nav">
+      <button class="pdd-item" onclick="window.SentraUMKM?.openDashboard?.(); closeProfileDropdown();">
+        <span class="pdd-icon"><i class="fa-solid fa-chart-line"></i></span>
+        <span>Analisis Usahamu</span>
+        <i class="fa-solid fa-chevron-right pdd-item-arrow"></i>
+      </button>
+      <button class="pdd-item" onclick="openProfilePanel(); closeProfileDropdown();">
+        <span class="pdd-icon"><i class="fa-solid fa-user-gear"></i></span>
+        <span>Pengaturan Akun</span>
+        <i class="fa-solid fa-chevron-right pdd-item-arrow"></i>
+      </button>
+    </nav>
+
+    <div class="pdd-sep"></div>
+
+    <nav class="pdd-nav">
+      <button class="pdd-item danger" onclick="handleLogout()">
+        <span class="pdd-icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></span>
+        <span>Keluar</span>
+      </button>
+    </nav>
+
+    <div class="pdd-footer">
+      <span class="pdd-footer-label">Sentra AI · Market Intelligence</span>
+    </div>
   `;
 }
 
