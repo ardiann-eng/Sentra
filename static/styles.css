@@ -7858,7 +7858,7 @@ html:has(#auth-overlay.open) {
 
   /* ── SPACING GLOBAL ── */
   .wrap {
-    padding: 0 24px 80px;
+    padding: 0 16px 80px;
   }
 
   .howto-section,
@@ -7869,8 +7869,8 @@ html:has(#auth-overlay.open) {
   #market-snapshot,
   #results,
   #compare-results {
-    padding-top: 64px;
-    padding-bottom: 64px;
+    padding-top: 48px;
+    padding-bottom: 48px;
   }
 
   .wrap+.wrap {
@@ -7981,9 +7981,9 @@ html:has(#auth-overlay.open) {
 
   /* ── KARTU HASIL ANALISIS ── */
   #results {
-    border-radius: 18px;
-    background: rgba(14, 14, 10, 0.9);
-    padding: 20px 18px 24px;
+    border-radius: 0;
+    background: transparent;
+    padding: 0;
   }
 
   #results .res-header {
