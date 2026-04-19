@@ -3822,28 +3822,6 @@ async function triggerAiInsight() {
       } catch (e) { el.textContent = "Gagal memuat AI."; }
     }
 
-    async function triggerLocalAi() {
-      const el = document.getElementById('r-local-insight');
-      if (!el || !lastAnalysisResult) return;
-      el.innerHTML = '<span class="text-[10px] animate-pulse">Menganalisis wilayah...</span>';
-      try {
-        const res = await fetch('/api/get-local-ai', {
-          method: 'POST',
-          headers: getAuthHeaders(),
-          body: JSON.stringify({
-            keyword: lastAnalysisResult.keyword,
-            regional_data: lastAnalysisResult.regional_interest
-          })
-        });
-        const d = await res.json();
-        if (d.ai_insight) {
-          typeWriter(el, d.ai_insight, 5);
-        } else {
-          el.textContent = "Strategi lokal tidak tersedia.";
-        }
-      } catch (e) { el.textContent = "Error AI."; }
-    }
-
   }
 
 }
@@ -4472,16 +4450,6 @@ async function doSearch() {
       // Update map specifically
 
       if (window.MapLogic) window.MapLogic.update(data.regional_interest);
-
-      // Trigger insight typing
-
-      if (!data.local_insight) {
-        const insightEl = document.getElementById('r-local-insight');
-        if (insightEl) insightEl.innerHTML = '<button class="text-[10px] text-brand/60 underline uppercase tracking-tighter" onclick="triggerLocalAi()">Klik untuk Strategi Lokal</button>';
-      } else {
-        const insightEl = document.getElementById('r-local-insight');
-        if (insightEl) typeWriter(insightEl, sanitizeText(data.local_insight), 5);
-      }
 
     }
 

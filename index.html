@@ -191,14 +191,14 @@
         <div class="sentra-onboarding-hero">
           <div>
             <div class="sentra-modal-eyebrow">Onboarding UMKM</div>
-            <h2 class="sentra-modal-title">Mari kenali usaha kamu dulu</h2>
+            <h2 class="sentra-modal-title">Kenali usaha kamu</h2>
             <p class="sentra-modal-desc">
-              Isi singkat saja. Setelah ini Sentra akan bantu kamu masuk ke dashboard dengan rekomendasi yang lebih nyambung untuk usaha kamu.
+              Isi singkat — bisa diubah kapan saja dari dashboard.
             </p>
           </div>
           <div class="sentra-onboarding-badge">
             <i class="fa-solid fa-sparkles"></i>
-            Premium setup
+            Premium
           </div>
         </div>
 
@@ -207,7 +207,6 @@
             <label class="sentra-field">
               <span class="sentra-field-label">Nama Usaha <em>*</em></span>
               <input id="umkm-business-name" name="business_name" type="text" maxlength="80" placeholder="Contoh: Kopi Sore Nusantara" required />
-              <span class="sentra-field-hint">Nama yang biasa kamu pakai di toko, marketplace, atau media sosial.</span>
             </label>
 
             <div class="sentra-field">
@@ -272,9 +271,9 @@
 
             <label class="sentra-field sentra-field-full">
               <span class="sentra-field-label">Deskripsi Singkat Usaha</span>
-              <textarea id="umkm-description" name="business_description" maxlength="200" rows="4" placeholder="Ceritakan singkat produk utama, siapa pelangganmu, atau hal yang bikin usahamu spesial."></textarea>
+              <textarea id="umkm-description" name="business_description" maxlength="200" rows="3" placeholder="Produk utama, siapa pelangganmu, hal yang bikin usahamu spesial..."></textarea>
               <div class="sentra-field-meta">
-                <span class="sentra-field-hint">Maksimal 200 karakter. Biar Sentra bisa kasih saran yang lebih terasa personal.</span>
+                <span class="sentra-field-hint">Maks. 200 karakter</span>
                 <span id="umkm-description-count">0/200</span>
               </div>
             </label>
@@ -284,9 +283,6 @@
           <div id="umkm-onboarding-success" class="sentra-form-feedback success hidden"></div>
 
           <div class="sentra-onboarding-actions">
-            <div class="sentra-onboarding-copy">
-              Tenang, kamu bisa edit profil usaha kapan saja dari dashboard.
-            </div>
             <button id="umkm-onboarding-submit" class="sentra-gold-btn" type="submit">
               <span class="sentra-btn-label">Simpan &amp; Masuk ke Dashboard</span>
               <span class="sentra-btn-loader hidden"></span>
@@ -1738,7 +1734,7 @@
 
         <!-- 3. MARKET HEALTH & KPIs -->
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5 lg:gap-6">
 
           <!-- Market Pulse Score -->
 
@@ -2121,10 +2117,10 @@
           </div>
 
           <div class="grid grid-cols-1 lg:grid-cols-10 gap-6">
-            <div class="lg:col-span-7 bg-[#0F0F0F] border border-zinc-800/80 rounded-2xl p-4 md:p-6 overflow-hidden relative">
-              <div id="regional-interest-map-wrap" class="relative rounded-xl border border-zinc-800/70 overflow-hidden">
+            <div class="lg:col-span-7 bg-[#0F0F0F] border border-zinc-800/80 rounded-2xl p-4 md:p-6 relative">
+              <div id="regional-interest-map-wrap" class="relative rounded-xl border border-zinc-800/70 overflow-clip">
                 <div class="regional-map-grid-overlay"></div>
-                <div id="regional-interest-map" class="h-[420px] md:h-[500px] w-full"></div>
+                <div id="regional-interest-map" class="h-[280px] sm:h-[380px] md:h-[500px] w-full"></div>
                 <div id="map-loader" class="absolute inset-0 z-[1001] bg-zinc-900/85 flex flex-col items-center justify-center">
                   <div class="w-12 h-12 border-2 border-brand/20 border-t-brand rounded-full animate-spin mb-4"></div>
                   <div class="text-[10px] font-mono text-zinc-400 uppercase tracking-widest animate-pulse">Memuat peta provinsi...</div>
@@ -2143,22 +2139,6 @@
             </div>
 
             <div class="lg:col-span-3 flex flex-col gap-5">
-              <div class="bg-zinc-900/70 border border-zinc-800/70 p-6 rounded-2xl relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-brand/5 blur-3xl rounded-full -mr-16 -mt-16"></div>
-                <div class="flex items-center gap-3 mb-5">
-                  <div class="w-10 h-10 rounded-xl bg-brand/10 border border-brand/20 flex items-center justify-center text-brand">
-                    <i class="fa-solid fa-bolt"></i>
-                  </div>
-                  <div>
-                    <h6 class="text-zinc-100 font-jakarta font-bold">Strategi Lokal</h6>
-                    <p class="text-[10px] text-zinc-500 font-mono uppercase tracking-wider">AI Recommendation</p>
-                  </div>
-                </div>
-                <div id="r-local-insight" class="text-zinc-400 text-sm leading-relaxed font-jakarta">
-                  Menganalisis data regional untuk memberikan strategi pemasaran yang tepat sasaran...
-                </div>
-              </div>
-
               <div class="bg-zinc-900/60 border border-zinc-800/60 p-6 rounded-2xl">
                 <div class="flex items-center justify-between mb-4">
                   <h6 class="text-zinc-100 font-jakarta font-bold">Live Ranking</h6>

@@ -725,29 +725,42 @@
 
       // position: fixed to escape overflow clipping from the scrollable modal
       const rect = trigger.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const spaceBelow = vh - rect.bottom - 8;
+      const spaceAbove = rect.top - 8;
+
       panel.style.position = 'fixed';
-      panel.style.top = (rect.bottom + 5) + 'px';
       panel.style.left = rect.left + 'px';
       panel.style.width = rect.width + 'px';
       panel.style.right = 'auto';
       panel.style.zIndex = '99900';
 
+      // Open upward if not enough space below
+      if (spaceBelow >= 180 || spaceBelow >= spaceAbove) {
+        panel.style.top = (rect.bottom + 5) + 'px';
+        panel.style.bottom = 'auto';
+        optionsWrap.style.maxHeight = Math.max(80, Math.min(spaceBelow - 54, 240)) + 'px';
+      } else {
+        panel.style.bottom = (vh - rect.top + 5) + 'px';
+        panel.style.top = 'auto';
+        optionsWrap.style.maxHeight = Math.max(80, Math.min(spaceAbove - 54, 240)) + 'px';
+      }
+
       render(selectState.filtered);
-      setTimeout(() => search.focus(), 20);
+      // Don't auto-focus on mobile — keyboard pops up and shifts panel position
+      if (window.innerWidth > 640) {
+        setTimeout(() => search.focus(), 20);
+      }
       if (typeof gsap !== 'undefined') {
-        gsap.fromTo(panel, { y: -8, opacity: 0 }, { y: 0, opacity: 1, duration: 0.22, ease: 'power2.out' });
+        gsap.fromTo(panel, { y: -6, opacity: 0 }, { y: 0, opacity: 1, duration: 0.18, ease: 'power2.out' });
       }
     }
 
     function close() {
       root.classList.remove('open');
       panel.hidden = true;
-      panel.style.position = '';
-      panel.style.top = '';
-      panel.style.left = '';
-      panel.style.width = '';
-      panel.style.right = '';
-      panel.style.zIndex = '';
+      panel.style.cssText = '';
+      optionsWrap.style.maxHeight = '';
       trigger.setAttribute('aria-expanded', 'false');
       search.value = '';
       selectState.filtered = selectState.options;

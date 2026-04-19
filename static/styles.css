@@ -68,7 +68,7 @@
 
 html {
   scroll-behavior: smooth;
-  overflow-x: hidden;
+  overflow-x: clip;
   max-width: 100%;
 }
 
@@ -79,7 +79,7 @@ body {
   font-size: 14px;
   line-height: 1.6;
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow-x: clip;
   max-width: 100%;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   -webkit-font-smoothing: antialiased;
@@ -3637,14 +3637,6 @@ footer {
   line-height: 1;
 }
 
-/* ── RADAR PASAR MODERN DESIGN ── */
-.radar-grid-modern {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 12px;
-  margin: 40px 0;
-}
-
 .sector-card-modern {
   position: relative;
   background: rgba(15, 15, 15, 0.4);
@@ -3817,24 +3809,7 @@ footer {
   overflow: hidden;
 }
 
-@media (max-width: 1200px) {
-  .radar-grid-modern {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (max-width: 900px) {
-  .radar-grid-modern {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
 @media (max-width: 600px) {
-  .radar-grid-modern {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-  }
-
   .sector-card-modern {
     padding: 16px;
     min-height: 180px;
@@ -5862,20 +5837,6 @@ select#geo-select option {
     border-top: 1px solid rgba(0, 0, 0, .2);
   }
 
-  /* Status bar wraps to column on very small screens */
-  .status-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-    padding: 8px 12px;
-  }
-
-  .status-bar-right {
-    padding-top: 4px;
-    border-top: 1px solid var(--gold-line);
-    width: 100%;
-  }
-
   /* 5 ─ Sector grid: 1 column, full-width cards */
   .radar-section {
     padding: 32px 0;
@@ -7594,26 +7555,6 @@ html:has(#auth-overlay.open) {
     width: 100%;
     font-size: 13px;
   }
-
-  /* Status Bar */
-  .status-bar {
-    flex-direction: column;
-    gap: 12px;
-    align-items: center;
-    padding: 12px;
-  }
-
-  .status-bar-right {
-    border-top: 1px solid var(--gold-line);
-    padding-top: 12px;
-    width: 100%;
-    justify-content: center;
-  }
-
-  .status-sep {
-    display: none;
-  }
-
 
   /* Compare Mode */
   .compare-row {
@@ -9655,35 +9596,9 @@ html:has(#auth-overlay.open) {
   color: #444 !important;
 }
 
-/* Force Radar Grid to be Full Width and Centered */
-.radar-grid-modern {
-  width: 100% !important;
-  max-width: 100% !important;
-  margin: 40px auto !important;
-  display: grid !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-}
-
-.radar-section-modern {
-  background-color: #0f0f0f;
-  padding: 92px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  position: relative;
-  overflow: hidden;
-}
-
 .radar-modern-wrap {
   position: relative;
   z-index: 2;
-}
-
-.radar-modern-header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 28px;
-  margin-bottom: 28px;
 }
 
 .radar-modern-copy {
@@ -9829,6 +9744,7 @@ html:has(#auth-overlay.open) {
 .radar-modern-viewport {
   width: 100%;
   margin-top: 40px;
+  overflow: hidden;
 }
 
 .radar-grid-modern {
@@ -9912,23 +9828,6 @@ html:has(#auth-overlay.open) {
   display: flex;
   flex-direction: column;
   gap: 20px;
-}
-
-.radar-sector-title {
-  font-family: var(--font-heading);
-  font-size: 14px;
-  font-weight: 700;
-  color: #fff;
-  margin: 0;
-  line-height: 1.3;
-  letter-spacing: -0.01em;
-  text-transform: uppercase;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  height: 2.6em;
-  /* Ensure consistent text height */
 }
 
 .radar-stats-grid {
@@ -10614,15 +10513,12 @@ header,
 }
 
 .sentra-onboarding-form {
-  border-radius: 22px;
+  border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   background:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    radial-gradient(900px 300px at 15% 0%, rgba(250, 204, 21, 0.08), transparent 60%),
-    rgba(10, 10, 10, 0.72);
-  background-size: 28px 28px, 28px 28px, auto, auto;
-  padding: 22px;
+    radial-gradient(800px 260px at 15% 0%, rgba(250, 204, 21, 0.07), transparent 60%),
+    rgba(10, 10, 10, 0.65);
+  padding: 20px;
 }
 
 .sentra-onboarding-grid {
@@ -10634,7 +10530,7 @@ header,
 .sentra-field {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 7px;
 }
 
 .sentra-field-full {
@@ -10668,7 +10564,7 @@ header,
 .sentra-field input,
 .sentra-field textarea,
 .sentra-select-trigger {
-  padding: 14px 16px;
+  padding: 12px 14px;
   font-size: 14px;
 }
 
@@ -10683,7 +10579,7 @@ header,
 
 .sentra-field textarea {
   resize: vertical;
-  min-height: 118px;
+  min-height: 82px;
 }
 
 .sentra-field-hint,
@@ -10845,11 +10741,11 @@ header,
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.03);
   color: rgba(255, 255, 255, 0.76);
-  padding: 11px 14px;
-  font-size: 13px;
+  padding: 8px 12px;
+  font-size: 12px;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   cursor: pointer;
   transition: all 0.18s ease;
 }
@@ -10894,9 +10790,9 @@ header,
 .sentra-onboarding-actions {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 16px;
-  margin-top: 22px;
+  margin-top: 20px;
 }
 
 .sentra-onboarding-copy {
@@ -10951,15 +10847,15 @@ header,
 @media (max-width: 860px) {
   .sentra-modal-overlay {
     padding: 16px;
-    align-items: flex-start; /* Start from top to allow scrolling */
+    align-items: flex-start;
     overflow-y: auto;
   }
 
   .sentra-modal-box {
-    padding: 24px 20px;
+    padding: 22px 18px;
     width: 100%;
-    margin: 20px 0; /* Breathing room for scroll */
-    max-height: none; /* Let its content define height */
+    margin: 16px 0;
+    max-height: none;
   }
 
   .sentra-modal-actions {
@@ -10978,19 +10874,13 @@ header,
     gap: 12px;
   }
 
-  .sentra-field input,
-  .sentra-field textarea,
-  .sentra-select-trigger {
-    font-size: 16px; /* Prevents iOS auto-zoom */
-    padding: 12px 14px;
-  }
-
   .sentra-onboarding-form {
     padding: 16px;
   }
 }
 
 @media (max-width: 480px) {
+  /* Bottom-sheet layout */
   .sentra-modal-overlay {
     padding: 0;
     align-items: flex-end;
@@ -10998,54 +10888,120 @@ header,
   }
 
   .sentra-modal-box {
-    padding: 20px 16px 28px;
+    padding: 16px 14px 24px;
     margin: 0;
-    border-radius: 20px 20px 0 0;
+    border-radius: 18px 18px 0 0;
     width: 100%;
-    max-height: 92dvh;
+    max-height: 94dvh;
     overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
   }
 
-  .sentra-modal-title {
-    font-size: 19px;
+  .sentra-modal-box::-webkit-scrollbar { display: none; }
+
+  /* Compact header */
+  .sentra-modal-eyebrow {
+    font-size: 8px;
     margin-bottom: 6px;
   }
 
+  .sentra-modal-title {
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+
   .sentra-modal-desc {
-    font-size: 13px;
-    line-height: 1.55;
-    margin-bottom: 12px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    margin-bottom: 10px;
+    color: rgba(255,255,255,0.5);
   }
 
   .sentra-onboarding-topbar {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
 
   .sentra-onboarding-hero {
-    margin-bottom: 14px;
-    gap: 12px;
+    margin-bottom: 12px;
+    gap: 8px;
+    align-items: center;
   }
 
   .sentra-onboarding-badge {
-    display: none;
+    font-size: 9px;
+    padding: 6px 10px;
   }
 
+  /* Compact form */
   .sentra-onboarding-form {
-    padding: 12px;
+    padding: 14px 12px;
+    border-radius: 14px;
   }
 
   .sentra-onboarding-grid {
     gap: 10px;
   }
 
+  .sentra-field {
+    gap: 5px;
+  }
+
+  .sentra-field-label {
+    font-size: 12px;
+  }
+
   .sentra-field input,
   .sentra-field textarea,
   .sentra-select-trigger {
+    font-size: 16px; /* prevents iOS zoom */
     padding: 10px 12px;
+    border-radius: 12px;
   }
 
-  .sentra-select-options {
-    max-height: 200px;
+  .sentra-field textarea {
+    min-height: 70px;
+  }
+
+  .sentra-field-hint,
+  .sentra-field-meta {
+    font-size: 11px;
+  }
+
+  .sentra-input-affix {
+    padding: 0 12px;
+    border-radius: 12px;
+  }
+
+  .sentra-input-affix input {
+    padding: 10px 0;
+  }
+
+  .sentra-chip {
+    padding: 7px 10px;
+    font-size: 11.5px;
+  }
+
+  .sentra-chip-group {
+    gap: 7px;
+  }
+
+  /* Submit button full-width */
+  .sentra-onboarding-actions {
+    margin-top: 16px;
+  }
+
+  .sentra-gold-btn {
+    width: 100%;
+    padding: 13px 18px;
+    font-size: 14px;
+    border-radius: 14px;
+  }
+
+  /* Back button compact */
+  .sentra-onboarding-back {
+    padding: 7px 12px;
+    font-size: 11px;
   }
 }
 
@@ -11635,5 +11591,147 @@ header,
 @media (max-width: 980px) {
   .umkm-mobile-menu-btn {
     display: inline-flex;
+  }
+}
+
+/* ════════════════════════════════════════════════
+   MOBILE FIXES — KPI CARDS, MAP, STATUS BAR
+   ════════════════════════════════════════════════ */
+
+/* KPI Cards — compact 2-col layout on mobile */
+@media (max-width: 767px) {
+  .kpi-card-themed {
+    padding: 14px 12px;
+    min-height: 140px;
+    border-radius: 14px;
+  }
+
+  .kpi-icon-header {
+    margin-bottom: 10px;
+  }
+
+  .kpi-icon-box {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+  }
+
+  .kpi-badge {
+    font-size: 8px;
+    padding: 3px 7px;
+  }
+
+  .kpi-label {
+    font-size: 9px;
+    margin-bottom: 2px;
+  }
+
+  .kpi-value {
+    font-size: 22px;
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+
+  .kpi-desc {
+    font-size: 10px;
+    line-height: 1.4;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* Map — taller on mobile, no hard clip */
+@media (max-width: 640px) {
+  #regional-interest-map {
+    height: max(56vw, 260px) !important;
+  }
+
+  #regional-interest-map-wrap {
+    overflow: visible;
+    border-radius: 10px;
+  }
+
+  /* Ensure map card doesn't clip Leaflet controls */
+  .lg\:col-span-7 {
+    overflow: visible !important;
+  }
+}
+
+/* Status bar — pill-style on mobile, clear hierarchy */
+@media (max-width: 680px) {
+  .search-wrap.single-search {
+    margin-bottom: 0;
+  }
+
+  .status-bar {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 10px;
+    margin-top: 8px;
+    background: rgba(255,255,255,0.03);
+    border-color: rgba(212,168,67,0.10);
+    max-width: 100%;
+  }
+
+  .status-bar-left {
+    gap: 6px;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .status-bar-right {
+    gap: 5px;
+    padding-top: 0;
+    border-top: none;
+    width: auto;
+    flex-shrink: 0;
+  }
+
+  .status-quota-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .status-dots .dot {
+    width: 7px;
+    height: 7px;
+  }
+
+  .status-geo-sel {
+    max-width: 120px;
+    font-size: 10px;
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.4);
+    padding: 0;
+  }
+
+  .status-geo-label {
+    display: none;
+  }
+
+  .status-sep {
+    display: none;
+  }
+
+  .status-geo-lock {
+    font-size: 9px;
+    opacity: 0.4;
+  }
+
+  /* Visual breathing room between search and status info */
+  #ip-entry {
+    margin-top: 14px;
   }
 }
