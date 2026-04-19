@@ -663,8 +663,8 @@
     const trigger = root.querySelector('[data-select-trigger]');
     const valueEl = root.querySelector('[data-select-value]');
     const panel = root.querySelector('[data-select-panel]');
-    const searchBox = root.querySelector('[data-select-search]');
-    const search = root.querySelector('[data-select-search] input');
+    const searchBox = root.querySelector('.sentra-select-search');
+    const search = root.querySelector('[data-select-search]');
     const optionsWrap = root.querySelector('[data-select-options]');
     if (!hidden || !trigger || !valueEl || !panel || !searchBox || !search || !optionsWrap) return null;
 
