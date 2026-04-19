@@ -68,7 +68,7 @@
 
 html {
   scroll-behavior: smooth;
-  overflow-x: clip;
+  overflow-x: hidden;
   max-width: 100%;
 }
 
@@ -79,7 +79,8 @@ body {
   font-size: 14px;
   line-height: 1.6;
   min-height: 100vh;
-  overflow-x: clip;
+  overflow-x: hidden;
+  position: relative;
   max-width: 100%;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   -webkit-font-smoothing: antialiased;
@@ -9707,8 +9708,7 @@ html:has(#auth-overlay.open) {
   padding: 100px 0;
   background: #080808;
   position: relative;
-  overflow: visible;
-  /* Restore standard scrolling */
+  overflow: hidden;
 }
 
 .radar-modern-header {
