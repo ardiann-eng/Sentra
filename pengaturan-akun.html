@@ -54,6 +54,17 @@
       --header-h:    68px;
     }
 
+    .topbar-back-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--bg-raised); border: 1px solid var(--border);
+      color: var(--text-muted); margin-right: 12px; transition: all .18s;
+      text-decoration: none;
+    }
+    .topbar-back-btn:hover {
+      background: var(--border); color: var(--gold); border-color: var(--gold-dim);
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
@@ -353,13 +364,11 @@
     .plan-badge.pro  { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--border-hover); }
 
     /* ── DANGER ZONE ── */
-    .danger-zone {
-      border: 1px solid rgba(239,68,68,0.2);
-      border-radius: 16px; overflow: hidden;
-      margin-bottom: 20px;
+    .danger-zone-card {
+      border: 1px solid rgba(239,68,68,0.2) !important;
     }
-    .danger-zone .card-header { border-bottom-color: rgba(239,68,68,0.15); }
-    .danger-zone .card-header-icon { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.2); color: var(--danger); }
+    .danger-zone-card .card-header { border-bottom-color: rgba(239,68,68,0.15); }
+    .danger-zone-card .card-header-icon { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.2); color: var(--danger); }
 
     /* ── LOGIN HISTORY ── */
     .login-row {
@@ -399,6 +408,9 @@
   <header id="topbar">
     <div class="topbar-content">
       <div class="topbar-breadcrumb">
+        <a href="/" class="topbar-back-btn" title="Kembali ke Dashboard">
+          <i class="fa-solid fa-arrow-left"></i>
+        </a>
         <a href="/">Sentra AI</a>
         <span class="topbar-breadcrumb-sep">/</span>
         <span class="topbar-breadcrumb-current">Pengaturan Akun</span>
@@ -672,7 +684,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </form>
     </section>
 
     <!-- ── 5. LANGGANAN ── -->
@@ -726,8 +738,8 @@
       </div>
     </section>
 
-    <!-- ── DANGER ZONE ── -->
-    <section class="danger-zone">
+    <!-- ── 6. ZONA BERBAHAYA ── -->
+    <section class="settings-card section-anchor danger-zone-card" id="section-danger">
       <div class="card-header">
         <div class="card-header-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
         <div class="card-header-text">
