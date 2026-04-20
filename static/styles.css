@@ -5986,20 +5986,33 @@ select#geo-select option {
 
 /* Navbar auth button (logged out) */
 .auth-nav-login {
-  background: none;
-  border: 1px solid var(--gold-line);
-  color: var(--gold);
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  padding: 6px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #FACC15 0%, #D4A843 100%);
+  border: none;
+  color: #0A0A08;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  padding: 9px 20px;
+  border-radius: 12px;
   cursor: pointer;
-  letter-spacing: .06em;
-  transition: background .2s, border-color .2s;
+  box-shadow: 0 2px 16px rgba(212, 168, 67, 0.28), 0 1px 0 rgba(255,255,255,0.12) inset;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+  white-space: nowrap;
 }
 
 .auth-nav-login:hover {
-  background: var(--gold-glow);
-  border-color: var(--gold);
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 6px 28px rgba(250, 204, 21, 0.42), 0 1px 0 rgba(255,255,255,0.15) inset;
+  filter: brightness(1.08);
+}
+
+.auth-nav-login:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 10px rgba(212, 168, 67, 0.25);
 }
 
 /* Navbar profile button (logged in) */
@@ -8500,14 +8513,11 @@ html:has(#auth-overlay.open) {
     display: none;
   }
 
-  /* Tombol Masuk di sticky nav */
+  /* Tombol Masuk di mobile */
   .auth-nav-login {
-    padding: 7px 14px;
-    font-size: 11px;
-    border-radius: 999px;
-    border: 1px solid rgba(212, 168, 67, 0.3);
-    background: transparent;
-    color: #D4A843;
+    padding: 8px 16px;
+    font-size: 12px;
+    border-radius: 10px;
   }
 
   /* ── STICKY CTA "MULAI GRATIS" (BOTTOM FLOATING) ─ */
