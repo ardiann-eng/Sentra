@@ -798,6 +798,7 @@
   function closeAllSelects(target) {
     state.selects.forEach((item) => {
       if (target && item.root.contains(target)) return;
+      if (target && item.panel && item.panel.contains(target)) return;
       item.close();
     });
   }
