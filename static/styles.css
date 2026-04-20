@@ -1164,6 +1164,7 @@ header,
 .compare-inputs {
   display: none;
   max-width: 700px;
+  width: 100%;
   margin: 0 auto;
 }
 
@@ -1175,26 +1176,44 @@ header,
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   gap: 0;
-  align-items: stretch;
+  align-items: center;
   margin-bottom: 0;
+}
+
+.compare-input-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.compare-input-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.38);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding-left: 2px;
+}
+
+.compare-input-label i {
+  color: rgba(212, 168, 67, 0.6);
+  margin-right: 4px;
 }
 
 .compare-input-box {
   display: flex;
   align-items: stretch;
   border: 1px solid var(--gold-line);
+  border-radius: 14px;
   background: var(--surface);
+  overflow: hidden;
   transition: border-color .25s, box-shadow .25s;
 }
 
 .compare-input-box:focus-within {
   border-color: var(--gold);
-  box-shadow: 0 0 0 1px var(--gold), 0 0 40px rgba(212, 168, 67, .1);
-}
-
-.compare-input-box .search-prefix {
-  font-size: 14px;
-  padding: 0 14px
+  box-shadow: 0 0 0 1px rgba(212, 168, 67, 0.3), 0 0 30px rgba(212, 168, 67, .08);
 }
 
 .compare-input-box input {
@@ -1205,8 +1224,8 @@ header,
   color: var(--text);
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 15px;
-  padding: 0 16px;
-  height: 56px;
+  padding: 14px 16px;
+  height: 52px;
 }
 
 .compare-input-box input::placeholder {
@@ -1217,14 +1236,25 @@ header,
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 16px;
-  font-family: 'Syne', sans-serif;
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--gold);
-  letter-spacing: 2px;
-  text-transform: uppercase;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 14px;
   user-select: none;
+}
+
+.vs-text {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  color: rgba(212, 168, 67, 0.6);
+  letter-spacing: 3px;
+}
+
+.vs-line {
+  display: block;
+  width: 1px;
+  height: 18px;
+  background: rgba(212, 168, 67, 0.18);
 }
 
 .compare-btn-row {
@@ -1234,21 +1264,28 @@ header,
 }
 
 #btn-compare {
-  padding: 16px 48px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 36px;
   background: var(--gold);
   border: none;
   color: var(--bg);
-  font-family: 'Syne', sans-serif;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  text-transform: uppercase;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  border-radius: 12px;
   cursor: pointer;
-  transition: background .2s, transform .1s;
+  box-shadow: 0 4px 20px rgba(212, 168, 67, 0.3);
+  transition: background .2s, transform .1s, box-shadow .2s, gap .2s;
 }
 
 #btn-compare:hover {
-  background: var(--gold-bright)
+  background: var(--gold-bright);
+  box-shadow: 0 6px 30px rgba(212, 168, 67, 0.45);
+  gap: 14px;
 }
 
 #btn-compare:active {
@@ -6089,7 +6126,7 @@ html:has(#auth-overlay.open) {
 .auth-modern-shell {
   position: relative;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: clip; /* clips slide animation without breaking vertical scroll */
   touch-action: pan-y;
   overscroll-behavior: none;
   max-height: calc(100dvh - 48px);
@@ -6189,6 +6226,7 @@ html:has(#auth-overlay.open) {
   letter-spacing: -0.03em;
   font-family: var(--font-main);
   font-weight: 700;
+  will-change: opacity, transform;
 }
 
 .auth-modern-sub {
@@ -6225,6 +6263,20 @@ html:has(#auth-overlay.open) {
   background: rgba(250, 204, 21, 0.08);
 }
 
+/* Container for the animated form content */
+.auth-form-content-wrap {
+  position: relative;
+  z-index: 1;
+  will-change: transform, opacity;
+  /* clip horizontal slide overflow */
+}
+
+/* Text wrapper in header */
+.auth-head-text {
+  flex: 1;
+  min-width: 0;
+}
+
 .auth-tab-wrap {
   position: relative;
   z-index: 1;
@@ -6249,8 +6301,10 @@ html:has(#auth-overlay.open) {
   height: calc(100% - 12px);
   border-radius: 14px;
   background: rgba(250, 204, 21, 0.12);
-  border: 1px solid rgba(250, 204, 21, 0.16);
-  transition: transform .26s ease;
+  border: 1px solid rgba(250, 204, 21, 0.22);
+  box-shadow: 0 0 18px rgba(250, 204, 21, 0.08);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
 }
 
 .auth-tab-glider.is-signup {
@@ -6262,14 +6316,18 @@ html:has(#auth-overlay.open) {
   z-index: 1;
   border: 0;
   background: transparent;
-  color: rgba(255, 255, 255, 0.64);
+  color: rgba(255, 255, 255, 0.52);
   padding: 12px 10px;
   border-radius: 14px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: color .2s ease;
+  transition: color 0.22s ease;
+}
+
+.auth-tab-btn:hover:not(.active) {
+  color: rgba(255, 255, 255, 0.82);
 }
 
 .auth-tab-btn.active {
@@ -7908,10 +7966,12 @@ html:has(#auth-overlay.open) {
   .search-wrap {
     width: 100%;
     padding: 0 16px;
+    box-sizing: border-box;
   }
 
   .search-wrap.single-search {
     width: 100%;
+    padding: 0 16px;
     margin-bottom: 12px;
   }
 
@@ -7921,6 +7981,7 @@ html:has(#auth-overlay.open) {
     gap: 8px;
     background: transparent;
     border: none;
+    border-radius: 0;
   }
 
   .search-prefix {
@@ -7929,12 +7990,14 @@ html:has(#auth-overlay.open) {
 
   #kw {
     width: 100%;
-    padding: 14px 16px;
+    padding: 16px 18px;
     font-size: 15px;
     color: #F5F0E0;
     background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(212, 168, 67, 0.2);
+    border: 1px solid rgba(212, 168, 67, 0.22);
+    border-radius: 14px;
     text-align: left;
+    box-sizing: border-box;
   }
 
   #kw::placeholder {
@@ -7943,41 +8006,144 @@ html:has(#auth-overlay.open) {
   }
 
   #btn {
-    width: calc(100% - 12px);
-    height: 48px;
-    max-height: 52px;
+    width: 100%;
+    height: 52px;
     background: #D4A843;
     color: #0A0A08 !important;
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 15px !important;
     font-weight: 700;
-    letter-spacing: 0.2px;
+    letter-spacing: -0.01em;
     text-transform: none;
     white-space: nowrap;
-    overflow: visible;
     justify-content: center;
-    border-radius: 10px;
-    margin: 4px 6px;
+    border-radius: 14px;
+    margin: 0;
+    box-sizing: border-box;
+    box-shadow: 0 4px 20px rgba(212, 168, 67, 0.3);
   }
 
   #btn::after {
     content: none;
   }
 
+  /* ── COMPARE INPUTS MOBILE ── */
+  .compare-inputs {
+    width: 100%;
+    padding: 0 16px;
+    box-sizing: border-box;
+  }
+
+  .compare-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+    align-items: stretch;
+  }
+
+  .compare-input-col {
+    gap: 6px;
+  }
+
+  .vs-badge {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+  }
+
+  .vs-line {
+    width: 40px;
+    height: 1px;
+  }
+
+  .vs-text {
+    font-size: 10px;
+    letter-spacing: 4px;
+  }
+
+  .compare-input-box input {
+    height: 50px;
+    font-size: 14px;
+    padding: 14px 16px;
+  }
+
+  #btn-compare {
+    width: 100%;
+    height: 52px;
+    justify-content: center;
+    font-size: 15px;
+    border-radius: 14px;
+    margin-top: 4px;
+    box-sizing: border-box;
+  }
+
   /* Tombol sekunder jadi link kecil di bawah CTA */
   .ip-entry {
-    margin-top: 8px;
+    margin-top: 10px;
   }
 
   .ip-entry-btn {
     font-size: 13px;
-    color: #D4A843;
-    text-decoration: underline;
-    gap: 4px;
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    gap: 6px;
+    border-color: rgba(212, 168, 67, 0.1);
+  }
+
+  .ip-entry-btn i:first-child {
+    color: rgba(212, 168, 67, 0.5);
   }
 
   .ip-entry-arrow {
-    display: none;
+    display: inline-flex;
+  }
+
+  /* ── COMPARE RESULTS MOBILE ── */
+  #compare-results {
+    padding: 32px 0 48px;
+  }
+
+  .cmp-vs-title {
+    font-size: 22px;
+    line-height: 1.3;
+  }
+
+  .cmp-vs-title .kw-vs {
+    font-size: 14px;
+    margin: 0 8px;
+  }
+
+  .winner-banner {
+    padding: 16px 18px;
+    margin-bottom: 16px;
+  }
+
+  .winner-name {
+    font-size: 18px;
+  }
+
+  .winner-score {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .cmp-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .cmp-table th,
+  .cmp-table td {
+    padding: 10px 12px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .cmp-header {
+    padding-bottom: 16px;
+    margin-bottom: 16px;
   }
 
   /* ── KARTU HASIL ANALISIS ── */

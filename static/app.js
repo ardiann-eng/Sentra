@@ -503,36 +503,31 @@ function authFriendlyError(message) {
   return String(message);
 }
 
-function renderAuthModalContent(view) {
-  const inner = document.getElementById('auth-modal-inner');
-  if (!inner) return;
+/* ── Auth helpers ─────────────────────────────────── */
 
-  authView = view || 'login';
+function _authHeadText(view) {
+  const isForgot = view === 'forgot';
+  const isProfileSetup = view === 'profile-setup';
+  const isSignup = view === 'signup';
+  return {
+    title: isForgot ? 'Atur ulang akses'
+      : isProfileSetup ? 'Satu langkah lagi'
+        : isSignup ? 'Buat akun Sentra'
+          : 'Masuk ke Sentra',
+    subtitle: isForgot ? 'Link reset akan dikirim ke email kamu.'
+      : isProfileSetup ? 'Hampir selesai — isi nama panggilanmu.'
+        : isSignup ? 'Gratis selamanya. Simpan insight & riwayat analisismu.'
+          : 'Lanjutkan analisis dan insight yang sudah kamu simpan.'
+  };
+}
+
+function _buildAuthFormHTML(view) {
   const remembered = getRememberedAuth();
-  const isLogin = authView === 'login';
-  const isSignup = authView === 'signup';
-  const isForgot = authView === 'forgot';
-  const isProfileSetup = authView === 'profile-setup';
+  const isLogin = view === 'login';
+  const isSignup = view === 'signup';
 
-  const title = isForgot
-    ? 'Atur ulang akses'
-    : isProfileSetup
-      ? 'Satu langkah lagi'
-      : isSignup
-        ? 'Buat akun Sentra'
-        : 'Masuk ke Sentra';
-  const subtitle = isForgot
-    ? 'Link reset akan dikirim ke email kamu.'
-    : isProfileSetup
-      ? 'Hampir selesai — isi nama panggilanmu.'
-      : isSignup
-        ? 'Gratis selamanya. Simpan insight & riwayat analisismu.'
-        : 'Lanjutkan analisis dan insight yang sudah kamu simpan.';
-
-  let content = '';
-
-  if (isForgot) {
-    content = `
+  if (view === 'forgot') {
+    return `
       <form id="auth-forgot-form" class="auth-form-shell">
         <label class="auth-field">
           <span class="auth-field-label">Email</span>
@@ -541,20 +536,21 @@ function renderAuthModalContent(view) {
             <input id="auth-email" type="email" placeholder="nama@email.com" class="auth-input auth-input-modern" autocomplete="email" value="${remembered.email || ''}" />
           </div>
           <div class="auth-field-meta">
-            <span class="auth-helper">Kami akan mengirim link reset password ke email ini.</span>
+            <span class="auth-helper">Kami kirim link reset ke email ini.</span>
             <span id="auth-email-status" class="auth-status-text"></span>
           </div>
         </label>
         <button type="submit" id="auth-submit-btn" class="auth-submit auth-submit-modern">
           <span class="auth-submit-label">Kirim Link Reset</span>
         </button>
-        <button type="button" class="auth-secondary-link" onclick="switchAuthTab('login')">Kembali ke Login</button>
+        <button type="button" class="auth-secondary-link" onclick="switchAuthTab('login')">← Kembali ke Login</button>
         <div id="auth-error" class="auth-feedback error"></div>
         <div id="auth-success" class="auth-feedback success"></div>
-      </form>
-    `;
-  } else if (isProfileSetup) {
-    content = `
+      </form>`;
+  }
+
+  if (view === 'profile-setup') {
+    return `
       <form id="auth-profile-form" class="auth-form-shell">
         <label class="auth-field">
           <span class="auth-field-label">Nama panggilan</span>
@@ -567,69 +563,71 @@ function renderAuthModalContent(view) {
           <span class="auth-submit-label">Simpan & Mulai</span>
         </button>
         <div id="auth-error" class="auth-feedback error"></div>
-      </form>
-    `;
-  } else {
-    content = `
-      <div class="auth-tab-wrap">
-        <div class="auth-tabs">
-          <button class="auth-tab-btn ${isLogin ? 'active' : ''}" type="button" onclick="switchAuthTab('login')">Login</button>
-          <button class="auth-tab-btn ${isSignup ? 'active' : ''}" type="button" onclick="switchAuthTab('signup')">Daftar</button>
-          <div class="auth-tab-glider ${isSignup ? 'is-signup' : ''}"></div>
+      </form>`;
+  }
+
+  // login / signup
+  return `
+    <form id="auth-main-form" class="auth-form-shell" style="gap:10px;">
+      ${isSignup ? `
+        <label class="auth-field" style="gap:4px;">
+          <span class="auth-field-label">Nama panggilan</span>
+          <div class="auth-input-shell">
+            <i class="fa-regular fa-user auth-input-icon"></i>
+            <input id="auth-name" type="text" placeholder="Contoh: Budi" class="auth-input auth-input-modern" autocomplete="name" />
+          </div>
+          <div id="auth-name-status" class="auth-status-text" style="font-size:10px;margin-top:-4px;"></div>
+        </label>` : ''}
+
+      <label class="auth-field" style="gap:4px;">
+        <span class="auth-field-label">Email</span>
+        <div class="auth-input-shell">
+          <i class="fa-regular fa-envelope auth-input-icon"></i>
+          <input id="auth-email" type="email" placeholder="nama@email.com" class="auth-input auth-input-modern" autocomplete="email" value="${remembered.enabled ? remembered.email : ''}" />
         </div>
+        <div id="auth-email-status" class="auth-status-text" style="font-size:10px;margin-top:-4px;"></div>
+      </label>
+
+      <label class="auth-field" style="gap:4px;">
+        <span class="auth-field-label">Password</span>
+        <div class="auth-input-shell">
+          <i class="fa-solid fa-lock auth-input-icon"></i>
+          <input id="auth-password" type="password" placeholder="${isLogin ? 'Masukkan password kamu' : 'Minimal 8 karakter'}" class="auth-input auth-input-modern" autocomplete="${isLogin ? 'current-password' : 'new-password'}" />
+          <button type="button" class="auth-eye-toggle" data-toggle-password aria-label="Tampilkan password">
+            <i class="fa-regular fa-eye"></i>
+          </button>
+        </div>
+        <div id="auth-password-status" class="auth-status-text" style="font-size:10px;margin-top:-4px;height:12px;"></div>
+      </label>
+
+      <div class="auth-row" style="margin-top:2px;">
+        <label class="auth-check">
+          <input id="auth-remember" type="checkbox" ${remembered.enabled ? 'checked' : ''} />
+          <span class="auth-custom-check"></span>
+          <span>Ingat Saya</span>
+        </label>
+        ${isLogin ? `<button type="button" class="auth-secondary-link" onclick="switchAuthTab('forgot')" style="font-size:12px;">Lupa Password?</button>` : ''}
       </div>
 
-      <form id="auth-main-form" class="auth-form-shell" style="gap: 10px;">
-        ${isSignup ? `
-          <label class="auth-field" style="gap: 4px;">
-            <span class="auth-field-label">Nama panggilan</span>
-            <div class="auth-input-shell">
-              <i class="fa-regular fa-user auth-input-icon"></i>
-              <input id="auth-name" type="text" placeholder="Contoh: Budi" class="auth-input auth-input-modern" autocomplete="name" />
-            </div>
-            <div id="auth-name-status" class="auth-status-text" style="font-size: 10px; margin-top: -4px;"></div>
-          </label>` : ''}
+      <button type="submit" id="auth-submit-btn" class="auth-submit auth-submit-modern" style="margin-top:6px;">
+        <span class="auth-submit-label">${isSignup ? 'Buat Akun Sekarang' : 'Masuk ke Sentra'}</span>
+      </button>
 
-        <label class="auth-field" style="gap: 4px;">
-          <span class="auth-field-label">Email</span>
-          <div class="auth-input-shell">
-            <i class="fa-regular fa-envelope auth-input-icon"></i>
-            <input id="auth-email" type="email" placeholder="nama@email.com" class="auth-input auth-input-modern" autocomplete="email" value="${remembered.enabled ? remembered.email : ''}" />
-          </div>
-          <div id="auth-email-status" class="auth-status-text" style="font-size: 10px; margin-top: -4px;"></div>
-        </label>
+      <div id="auth-error" class="auth-feedback error"></div>
+      <div id="auth-success" class="auth-feedback success"></div>
+    </form>`;
+}
 
-        <label class="auth-field" style="gap: 4px;">
-          <span class="auth-field-label">Password</span>
-          <div class="auth-input-shell">
-            <i class="fa-solid fa-lock auth-input-icon"></i>
-            <input id="auth-password" type="password" placeholder="${isLogin ? 'Masukkan password kamu' : 'Minimal 8 karakter'}" class="auth-input auth-input-modern" autocomplete="${isLogin ? 'current-password' : 'new-password'}" />
-            <button type="button" class="auth-eye-toggle" data-toggle-password aria-label="Tampilkan password">
-              <i class="fa-regular fa-eye"></i>
-            </button>
-          </div>
-          <div id="auth-password-status" class="auth-status-text" style="font-size: 10px; margin-top: -4px; height: 12px;"></div>
-        </label>
+/* ── Full render (initial open / forgot / profile-setup) ── */
+function renderAuthModalContent(view) {
+  const inner = document.getElementById('auth-modal-inner');
+  if (!inner) return;
 
-        <div class="auth-row" style="margin-top: 2px;">
-          <label class="auth-check">
-            <input id="auth-remember" type="checkbox" ${remembered.enabled ? 'checked' : ''} />
-            <span class="auth-custom-check"></span>
-            <span>Ingat Saya</span>
-          </label>
-          <button type="button" class="auth-secondary-link" onclick="switchAuthTab('forgot')" style="font-size: 12px;">Lupa Password?</button>
-        </div>
-
-        <button type="submit" id="auth-submit-btn" class="auth-submit auth-submit-modern" style="margin-top: 6px;">
-          <span class="auth-submit-label">${isSignup ? 'Buat Akun Sekarang' : 'Masuk ke Sentra'}</span>
-        </button>
-
-
-        <div id="auth-error" class="auth-feedback error"></div>
-        <div id="auth-success" class="auth-feedback success"></div>
-      </form>
-    `;
-  }
+  authView = view || 'login';
+  const isLogin = authView === 'login';
+  const isSignup = authView === 'signup';
+  const showTabs = isLogin || isSignup;
+  const { title, subtitle } = _authHeadText(authView);
 
   inner.innerHTML = `
     <div class="auth-modern-shell">
@@ -637,17 +635,29 @@ function renderAuthModalContent(view) {
       <div class="auth-glow auth-glow-a"></div>
       <div class="auth-glow auth-glow-b"></div>
 
-      <div class="auth-modern-head" style="margin-bottom: 20px;">
-        <div>
+      <div class="auth-modern-head" style="margin-bottom:20px;">
+        <div class="auth-head-text">
           <h3 class="auth-modern-title">${title}</h3>
           <p class="auth-modern-sub">${subtitle}</p>
         </div>
-        <button type="button" class="auth-modal-close modern" onclick="closeAuthModal()" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button>
+        <button type="button" class="auth-modal-close modern" onclick="closeAuthModal()" aria-label="Tutup">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       </div>
 
-      ${content}
-    </div>
-  `;
+      ${showTabs ? `
+        <div class="auth-tab-wrap" id="auth-tab-section">
+          <div class="auth-tabs">
+            <button class="auth-tab-btn ${isLogin ? 'active' : ''}" type="button" onclick="switchAuthTab('login')">Login</button>
+            <button class="auth-tab-btn ${isSignup ? 'active' : ''}" type="button" onclick="switchAuthTab('signup')">Daftar</button>
+            <div class="auth-tab-glider ${isSignup ? 'is-signup' : ''}" id="auth-tab-glider"></div>
+          </div>
+        </div>` : ''}
+
+      <div id="auth-form-content" class="auth-form-content-wrap">
+        ${_buildAuthFormHTML(authView)}
+      </div>
+    </div>`;
 
   wireAuthModalInteractions();
 }
@@ -741,9 +751,102 @@ function closeAuthModal() {
 
 function switchAuthTab(tab) {
   const nextView = tab === 'daftar' ? 'signup' : tab;
+  if (nextView === authView) return;
   authMode = nextView;
+
+  const isTabSlide = (authView === 'login' || authView === 'signup') &&
+                     (nextView === 'login' || nextView === 'signup');
+
+  if (typeof gsap !== 'undefined' && isTabSlide) {
+    _authTabSlide(nextView);
+  } else {
+    _authShellFade(nextView);
+  }
+}
+
+function _authTabSlide(nextView) {
+  const direction = nextView === 'signup' ? 1 : -1;
+  const formContent = document.getElementById('auth-form-content');
+  const titleEl = document.querySelector('.auth-modern-title');
+  const subtitleEl = document.querySelector('.auth-modern-sub');
+  const glider = document.getElementById('auth-tab-glider');
+  const tabBtns = document.querySelectorAll('.auth-tab-btn');
+
+  if (!formContent) { _authShellFade(nextView); return; }
+
+  // Kill any in-progress animation on the same elements
+  gsap.killTweensOf([formContent, titleEl, subtitleEl].filter(Boolean));
+
+  const tl = gsap.timeline({ defaults: { overwrite: 'auto' } });
+
+  // ── Phase 1: slide current content out ──────────────
+  tl.to(formContent, {
+    x: direction * -48,
+    opacity: 0,
+    duration: 0.2,
+    ease: 'power2.in'
+  });
+
+  // Slightly fade + nudge title
+  if (titleEl && subtitleEl) {
+    tl.to([titleEl, subtitleEl], {
+      opacity: 0.35,
+      y: direction * -4,
+      duration: 0.16,
+      ease: 'power2.in'
+    }, '<');
+  }
+
+  // Move glider (CSS handles transition since we just toggle class)
+  if (glider) {
+    tl.add(() => {
+      glider.classList.toggle('is-signup', nextView === 'signup');
+    }, '<0.06');
+  }
+
+  // ── Phase 2: swap DOM ────────────────────────────────
+  tl.add(() => {
+    authView = nextView;
+
+    // Update tab button active state
+    tabBtns.forEach((btn, i) => {
+      btn.classList.toggle('active', i === (nextView === 'signup' ? 1 : 0));
+    });
+
+    // Update head text
+    const { title, subtitle } = _authHeadText(nextView);
+    if (titleEl) titleEl.textContent = title;
+    if (subtitleEl) subtitleEl.textContent = subtitle;
+
+    // Swap form HTML and position off-screen (opposite direction)
+    formContent.innerHTML = _buildAuthFormHTML(nextView);
+    gsap.set(formContent, { x: direction * 48, opacity: 0 });
+
+    wireAuthModalInteractions();
+  });
+
+  // ── Phase 3: slide new content in ───────────────────
+  tl.to(formContent, {
+    x: 0,
+    opacity: 1,
+    duration: 0.28,
+    ease: 'power3.out'
+  });
+
+  if (titleEl && subtitleEl) {
+    tl.to([titleEl, subtitleEl], {
+      opacity: 1,
+      y: 0,
+      duration: 0.22,
+      ease: 'power3.out'
+    }, '<0.06');
+  }
+}
+
+function _authShellFade(nextView) {
   const shell = document.querySelector('.auth-modern-shell');
   if (typeof gsap !== 'undefined' && shell) {
+    gsap.killTweensOf(shell);
     gsap.to(shell, {
       opacity: 0,
       y: 8,
@@ -752,7 +855,12 @@ function switchAuthTab(tab) {
       onComplete: () => {
         renderAuthModalContent(nextView);
         const fresh = document.querySelector('.auth-modern-shell');
-        if (fresh) gsap.fromTo(fresh, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.24, ease: 'power2.out' });
+        if (fresh) {
+          gsap.fromTo(fresh,
+            { opacity: 0, y: 10 },
+            { opacity: 1, y: 0, duration: 0.26, ease: 'power2.out' }
+          );
+        }
       }
     });
     return;
@@ -4335,6 +4443,60 @@ function normalizeRegionalInterestData(items) {
       };
     })
     .filter((item) => item.province.length > 0);
+}
+
+async function doCompare() {
+  const kwA = (document.getElementById('kw-a')?.value || '').trim();
+  const kwB = (document.getElementById('kw-b')?.value || '').trim();
+
+  if (!kwA || !kwB) {
+    showErr('Isi kedua produk untuk memulai perbandingan.');
+    return;
+  }
+  if (kwA.toLowerCase() === kwB.toLowerCase()) {
+    showErr('Kedua produk tidak boleh sama.');
+    return;
+  }
+
+  const geo = document.getElementById('geo-select')?.value || 'ID';
+  setLoading(true, true);
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 90000);
+
+    const res = await fetch('/api/compare', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ keyword_a: kwA, keyword_b: kwB, geo }),
+      signal: controller.signal
+    });
+
+    clearTimeout(timeout);
+    const data = await res.json();
+
+    if (res.status === 403 && data.error_code === 'LIMIT_EXCEEDED') {
+      showUpgradeModal('limit');
+      setLoading(false, true);
+      return;
+    }
+
+    if (!res.ok || data.error) {
+      showErr(data.error || 'Terjadi kesalahan saat membandingkan.');
+      setLoading(false, true);
+      return;
+    }
+
+    renderCompareResults(data);
+
+    if (data._meta) updateQuotaUI(data._meta);
+
+  } catch (e) {
+    console.error('[doCompare]', e);
+    showErr(e.name === 'AbortError' ? 'Waktu habis. Coba lagi.' : 'Terjadi kesalahan jaringan.');
+  } finally {
+    setLoading(false, true);
+  }
 }
 
 async function doSearch() {
