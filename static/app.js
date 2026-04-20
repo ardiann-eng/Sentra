@@ -1315,7 +1315,7 @@ function renderProfileDropdown() {
         <span>Analisis Usahamu</span>
         <i class="fa-solid fa-chevron-right pdd-item-arrow"></i>
       </button>
-      <button class="pdd-item" onclick="openProfilePanel(); closeProfileDropdown();">
+      <button class="pdd-item" onclick="window.location.href='/pengaturan-akun'; closeProfileDropdown();">
         <span class="pdd-icon"><i class="fa-solid fa-user-gear"></i></span>
         <span>Pengaturan Akun</span>
         <i class="fa-solid fa-chevron-right pdd-item-arrow"></i>
