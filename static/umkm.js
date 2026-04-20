@@ -120,7 +120,7 @@
     }
   }
 
-  function openOnboarding(force = false) {
+  function openOnboarding(force = false, initialStep = ONBOARDING_STEPS.MODE) {
     const done = localStorage.getItem(LS_ONBOARD_KEY) === '1';
     if (done && !force) return;
     const overlay = el.onboardingOverlay();
@@ -128,7 +128,7 @@
     if (!overlay || !modal) return;
     overlay.classList.remove('hidden');
     lockScroll(true);
-    setOnboardingStep(ONBOARDING_STEPS.MODE);
+    setOnboardingStep(initialStep);
     if (typeof gsap !== 'undefined') {
       gsap.set(modal, { y: 18, opacity: 0, scale: 0.98, transformOrigin: 'center center' });
       gsap.to(modal, { y: 0, opacity: 1, scale: 1, duration: 0.55, ease: 'power3.out' });

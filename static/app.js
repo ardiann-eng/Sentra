@@ -1318,7 +1318,7 @@ function renderProfileDropdown() {
     <div class="pdd-sep"></div>
 
     <nav class="pdd-nav">
-      <button class="pdd-item" onclick="window.location.href='/pengaturan-akun#section-bisnis'; closeProfileDropdown();">
+      <button class="pdd-item" onclick="window.SentraUMKM?.openOnboarding?.(true, 'umkm'); closeProfileDropdown();">
         <span class="pdd-icon"><i class="fa-solid fa-chart-line"></i></span>
         <span>Analisis Usahamu</span>
         <i class="fa-solid fa-chevron-right pdd-item-arrow"></i>
