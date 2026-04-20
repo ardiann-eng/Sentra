@@ -1088,11 +1088,11 @@ async function handleRegister() {
 
     persistRememberMe(email, remember);
 
-    setAuthMessage('success', data.message || 'Akun berhasil dibuat.');
     pulseAuthSuccess();
 
     if (data.needs_email_verification) {
-      setTimeout(() => switchAuthTab('login'), 900);
+      closeAuthModal();
+      window.location.reload();
       return;
     }
 
@@ -1118,7 +1118,10 @@ async function handleRegister() {
       fetchUserStatus();
     }
 
-    setTimeout(() => openProfileSetup(), 560);
+    setTimeout(() => {
+      closeAuthModal();
+      window.location.reload();
+    }, 560);
   } catch (e) {
     if (e?.name === 'AbortError') {
       setAuthMessage('error', 'Proses daftar terlalu lama. Coba lagi sebentar ya.');

@@ -574,7 +574,7 @@ def auth_register():
             
         return jsonify({
             "success": True,
-            "message": "Akun berhasil dibuat. Cek email untuk verifikasi jika diminta.",
+            "message": "Akun berhasil dibuat.",
             "user": {"id": res.user.id, "email": res.user.email},
             "session": {
                 "access_token":  res.session.access_token  if res.session else None,
