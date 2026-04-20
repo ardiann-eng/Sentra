@@ -996,10 +996,10 @@ async function syncSupabaseSession(session) {
 // Digantikan oleh flow sequential di dalam handleRegister().
 
 async function handleLoginAction() {
-  const email = document.getElementById('auth-email')?.value?.trim();
+  const email    = document.getElementById('auth-email')?.value?.trim();
   const password = document.getElementById('auth-password')?.value;
   const remember = Boolean(document.getElementById('auth-remember')?.checked);
-  const emailErr = validateAuthInput('email', email);
+  const emailErr    = validateAuthInput('email', email);
   const passwordErr = validateAuthInput('password-login', password);
   if (emailErr || passwordErr) {
     setAuthMessage('error', emailErr || passwordErr);
@@ -1018,24 +1018,38 @@ async function handleLoginAction() {
     if (!res.ok) throw new Error(data.error || 'Login belum berhasil.');
 
     persistRememberMe(email, remember);
-    
-    // Sync session with a timeout safety
-    try {
-      await Promise.race([
-        syncSupabaseSession(data.session),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
-      ]);
-    } catch (e) { console.warn('Session sync slow/failed', e); }
+
+    // Sync session ke Supabase client yg sudah ada di halaman
+    if (data.session?.access_token && data.session?.refresh_token && sb) {
+      try {
+        await sb.auth.setSession({
+          access_token:  data.session.access_token,
+          refresh_token: data.session.refresh_token
+        });
+      } catch (e) { console.warn('[LOGIN] setSession slow/failed:', e); }
+    }
+
+    // Update state in-page — tidak perlu reload/redirect kalau sudah di homepage
+    currentUser      = data.user || { id: data.session?.user?.id, email };
+    userState.userId = currentUser.id || '';
+    userState.token  = data.session?.access_token || '';
+
+    if (currentUser.id) await loadProfile(currentUser.id);
+    updateNavAuth();
+    fetchUserStatus();
 
     setAuthLoading(false, 'Masuk ke Sentra');
-    setAuthMessage('success', 'Login berhasil! Mengalihkan...');
-
+    setAuthMessage('success', 'Login berhasil!');
     pulseAuthSuccess();
-    // Pakai href = '/' bukan reload() — mencegah loop jika dibuka dari subpage
+
     setTimeout(() => {
       closeAuthModal();
-      window.location.href = '/';
-    }, 800);
+      // Redirect hanya jika user bukan di homepage (misal dari subpage)
+      if (window.location.pathname !== '/') {
+        window.location.href = '/';
+      }
+    }, 700);
+
   } catch (e) {
     setAuthMessage('error', authFriendlyError(e.message || e));
     const form = document.querySelector('.auth-form-shell');
@@ -1083,14 +1097,14 @@ async function handleRegister() {
 
     persistRememberMe(email, remember);
 
-    // === Case 1: Supabase minta verifikasi email dulu (session = null) ===
+    // === Case 1: Supabase perlu verifikasi email (session = null) ===
     if (data.needs_email_verification || !data.session?.access_token) {
       setAuthLoading(false, 'Buat Akun Sekarang');
       setAuthMessage('success', 'Akun berhasil dibuat! Cek email kamu untuk verifikasi, lalu masuk.');
       return;
     }
 
-    // === Case 2: Session tersedia — sync lalu redirect ke homepage ===
+    // === Case 2: Session tersedia — sync lalu update state in-page ===
     const session = data.session;
     if (session?.access_token && session?.refresh_token && sb) {
       try {
@@ -1099,22 +1113,29 @@ async function handleRegister() {
           refresh_token: session.refresh_token
         });
       } catch (syncErr) {
-        console.warn('[REGISTER] Session sync gagal, lanjut tetap:', syncErr);
+        console.warn('[REGISTER] setSession gagal, lanjut:', syncErr);
       }
     }
 
-    // Update local state
-    userState.userId = data.user?.id || '';
+    // Update state in-page — tidak perlu reload/redirect kalau sudah di homepage
+    currentUser      = data.user || { id: session?.user?.id, email };
+    userState.userId = currentUser?.id || '';
     userState.token  = session?.access_token || '';
 
-    pulseAuthSuccess();
-    setAuthMessage('success', 'Berhasil daftar! Mengalihkan...');
+    if (currentUser?.id) await loadProfile(currentUser.id);
+    updateNavAuth();
+    fetchUserStatus();
 
-    // Redirect ke homepage — bukan reload() agar tidak trigger loop
+    pulseAuthSuccess();
+    setAuthMessage('success', `Selamat datang di Sentra AI, ${fullName || email}! 🎉`);
+
     setTimeout(() => {
       closeAuthModal();
-      window.location.href = '/';
-    }, 800);
+      // Redirect hanya kalau bukan di homepage
+      if (window.location.pathname !== '/') {
+        window.location.href = '/';
+      }
+    }, 900);
 
   } catch (e) {
     if (e?.name === 'AbortError') {

@@ -1803,6 +1803,133 @@ def keyword_news():
     return jsonify({"news": results, "from_cache": False})
 
 
+# =========================
+# PENGATURAN AKUN — PAGE & API
+# =========================
+
+@app.route("/pengaturan-akun")
+def pengaturan_akun():
+    return render_template("pengaturan-akun.html")
+
+
+@app.route("/api/account/me", methods=["GET"])
+def account_me():
+    """Return full account data: auth user + profile + umkm profile."""
+    user_id, tier, is_pro = get_auth_session()
+    if not user_id or user_id.startswith("guest_"):
+        return jsonify({"error": "Unauthorized"}), 401
+
+    sb = get_supabase()
+    if not sb:
+        return jsonify({"error": "Database tidak tersedia"}), 503
+
+    try:
+        token = request.headers.get("Authorization", "").replace("Bearer ", "").strip()
+        auth_user = {}
+        if token:
+            try:
+                user_res = sb.auth.get_user(token)
+                if user_res.user:
+                    auth_user = {
+                        "id":              user_res.user.id,
+                        "email":           user_res.user.email,
+                        "phone":           getattr(user_res.user, "phone", "") or "",
+                        "created_at":      str(getattr(user_res.user, "created_at", "") or ""),
+                        "last_sign_in_at": str(getattr(user_res.user, "last_sign_in_at", "") or ""),
+                    }
+            except Exception:
+                pass
+
+        profile_res = sb.table("profiles").select("*").eq("id", user_id).maybe_single().execute()
+        profile = profile_res.data or {}
+
+        # UMKM profile — pakai service client agar bypass RLS
+        sb_svc = get_supabase_service()
+        umkm_res = sb_svc.table("umkm_profiles").select("*").eq("user_id", user_id).maybe_single().execute()
+        umkm = umkm_res.data or {}
+
+        return jsonify({
+            "auth":    auth_user,
+            "profile": profile,
+            "umkm":    umkm,
+            "tier":    tier,
+            "is_pro":  is_pro,
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/account/update-profile", methods=["POST"])
+def account_update_profile():
+    """Update profile table fields: full_name, phone, avatar_url."""
+    user_id, _, _ = get_auth_session()
+    if not user_id or user_id.startswith("guest_"):
+        return jsonify({"error": "Unauthorized"}), 401
+
+    sb = get_supabase()
+    if not sb:
+        return jsonify({"error": "Database tidak tersedia"}), 503
+
+    data = request.get_json(silent=True) or {}
+    payload = {"id": user_id, "updated_at": datetime.utcnow().isoformat()}
+
+    if "full_name" in data:
+        payload["full_name"] = (data["full_name"] or "").strip()[:100]
+    if "nama" in data:
+        payload["nama"] = (data["nama"] or "").strip()[:100]
+    if "phone" in data:
+        payload["phone"] = (data["phone"] or "").strip()[:20]
+    if "avatar_url" in data:
+        payload["avatar_url"] = (data["avatar_url"] or "").strip()[:2000]
+
+    try:
+        res = sb.table("profiles").upsert(payload, on_conflict="id").execute()
+        rows = res.data or []
+        return jsonify({"profile": rows[0] if rows else payload})
+    except Exception as e:
+        return jsonify({
+            "error": str(e),
+            "hint": "Jalankan SQL migration: ALTER TABLE profiles ADD COLUMN IF NOT EXISTS full_name text, phone text, avatar_url text, updated_at timestamptz;"
+        }), 500
+
+
+@app.route("/api/account/update-umkm", methods=["POST"])
+def account_update_umkm():
+    """Upsert UMKM profile from account settings page."""
+    user_id, _, _ = get_auth_session()
+    if not user_id or user_id.startswith("guest_"):
+        return jsonify({"error": "Unauthorized"}), 401
+
+    sb = get_supabase_service()
+    if not sb:
+        return jsonify({"error": "Database tidak tersedia"}), 503
+
+    data = request.get_json(silent=True) or {}
+    try:
+        profile = upsert_umkm_profile(sb, user_id, data)
+        return jsonify({"profile": profile})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/account/delete-umkm", methods=["POST"])
+def account_delete_umkm():
+    """Hapus data bisnis UMKM user (danger zone)."""
+    user_id, _, _ = get_auth_session()
+    if not user_id or user_id.startswith("guest_"):
+        return jsonify({"error": "Unauthorized"}), 401
+
+    sb = get_supabase_service()
+    if not sb:
+        return jsonify({"error": "Database tidak tersedia"}), 503
+
+    try:
+        sb.table("umkm_profiles").delete().eq("user_id", user_id).execute()
+        return jsonify({"success": True, "message": "Data bisnis berhasil dihapus."})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/api/health")
 def health():
     sb_ok = get_supabase() is not None
