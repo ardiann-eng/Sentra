@@ -720,12 +720,13 @@
           <p>Password dan aktivitas login</p>
         </div>
       </div>
-      <div class="card-body">
+      <form class="card-body" onsubmit="event.preventDefault(); AccSettings.changePassword();">
         <div class="form-grid" style="margin-bottom:8px;">
           <div class="field-group">
             <label class="field-label">Password Baru</label>
             <div style="position:relative;">
               <input type="password" id="field-pw-new" class="field-input" placeholder="Minimal 8 karakter"
+                     autocomplete="new-password"
                      oninput="AccSettings.checkPwStrength(this.value)" style="padding-right:42px;" />
               <button type="button" onclick="AccSettings.togglePw('field-pw-new', this)"
                       style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:14px;">
@@ -738,7 +739,9 @@
           <div class="field-group">
             <label class="field-label">Konfirmasi Password</label>
             <div style="position:relative;">
-              <input type="password" id="field-pw-confirm" class="field-input" placeholder="Ulangi password baru" style="padding-right:42px;" />
+              <input type="password" id="field-pw-confirm" class="field-input" placeholder="Ulangi password baru" 
+                     autocomplete="new-password"
+                     style="padding-right:42px;" />
               <button type="button" onclick="AccSettings.togglePw('field-pw-confirm', this)"
                       style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:14px;">
                 <i class="fa-regular fa-eye"></i>
@@ -748,7 +751,7 @@
         </div>
 
         <div class="btn-row">
-          <button class="btn btn-primary" onclick="AccSettings.changePassword()" id="btn-change-pw">
+          <button type="submit" class="btn btn-primary" id="btn-change-pw">
             <i class="fa-solid fa-lock"></i> Ganti Password
           </button>
         </div>

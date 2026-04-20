@@ -6,25 +6,9 @@ import time
 import threading
 import logging
 import json
+from datetime import date, datetime, timedelta
+from functools import wraps
 from urllib import error as urlerror, request as urlrequest
-from datetime import date, datetime, timedelta
-from functools import wraps
-
-# Configure logging for Vercel/Production
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(name)s: %(message)s'
-)
-logger = logging.getLogger("sentra_bi")
-
-import os
-import re
-import math
-import io
-import time
-import threading
-from datetime import date, datetime, timedelta
-from functools import wraps
 
 from flask import Flask, request, jsonify, render_template, send_file
 from flask_cors import CORS
@@ -1819,34 +1803,46 @@ def account_me():
     if not user_id or user_id.startswith("guest_"):
         return jsonify({"error": "Unauthorized"}), 401
 
-    sb = get_supabase()
+    sb = get_supabase_service()
     if not sb:
         return jsonify({"error": "Database tidak tersedia"}), 503
 
     try:
+        # 1. Auth check
         token = request.headers.get("Authorization", "").replace("Bearer ", "").strip()
         auth_user = {}
         if token:
             try:
                 user_res = sb.auth.get_user(token)
                 if user_res.user:
+                    u = user_res.user
                     auth_user = {
-                        "id":              user_res.user.id,
-                        "email":           user_res.user.email,
-                        "phone":           getattr(user_res.user, "phone", "") or "",
-                        "created_at":      str(getattr(user_res.user, "created_at", "") or ""),
-                        "last_sign_in_at": str(getattr(user_res.user, "last_sign_in_at", "") or ""),
+                        "id":              u.id,
+                        "email":           getattr(u, "email", ""),
+                        "phone":           getattr(u, "phone", "") or "",
+                        "created_at":      str(getattr(u, "created_at", "") or ""),
+                        "last_sign_in_at": str(getattr(u, "last_sign_in_at", "") or ""),
                     }
-            except Exception:
-                pass
+            except Exception as e_auth:
+                print(f"[ACCOUNT_ME] Auth user fetch fail: {e_auth}")
 
-        profile_res = sb.table("profiles").select("*").eq("id", user_id).maybe_single().execute()
-        profile = profile_res.data or {}
+        # 2. Profiles fetch
+        profile = {}
+        try:
+            profile_res = sb.table("profiles").select("*").eq("id", user_id).maybe_single().execute()
+            profile = profile_res.data or {}
+        except Exception as e_prof:
+            print(f"[ACCOUNT_ME] Profile table fetch fail: {e_prof}")
+            # Don't 500 if profile is missing, just return empty
 
-        # UMKM profile — pakai service client agar bypass RLS
-        sb_svc = get_supabase_service()
-        umkm_res = sb_svc.table("umkm_profiles").select("*").eq("user_id", user_id).maybe_single().execute()
-        umkm = umkm_res.data or {}
+        # 3. UMKM profile fetch
+        umkm = {}
+        try:
+            sb_svc = get_supabase_service()
+            umkm_res = sb_svc.table("umkm_profiles").select("*").eq("user_id", user_id).maybe_single().execute()
+            umkm = umkm_res.data or {}
+        except Exception as e_umkm:
+            print(f"[ACCOUNT_ME] UMKM table fetch fail: {e_umkm}")
 
         return jsonify({
             "auth":    auth_user,
@@ -1856,6 +1852,7 @@ def account_me():
             "is_pro":  is_pro,
         })
     except Exception as e:
+        print(f"[ACCOUNT_ME] Critical 500: {e}")
         return jsonify({"error": str(e)}), 500
 
 
@@ -1866,7 +1863,7 @@ def account_update_profile():
     if not user_id or user_id.startswith("guest_"):
         return jsonify({"error": "Unauthorized"}), 401
 
-    sb = get_supabase()
+    sb = get_supabase_service()
     if not sb:
         return jsonify({"error": "Database tidak tersedia"}), 503
 
