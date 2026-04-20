@@ -538,9 +538,9 @@
 
     <div class="hero">
 
-      <h1 class="hero-title">Ketahui Peluang Bisnismu<br><em>Sebelum Orang Lain</em></h1>
+      <h1 class="hero-title">Temukan Peluang Bisnismu<br><em>Sebelum Orang Lain</em></h1>
 
-      <p class="hero-sub">Data Real-Time<span>·</span>Insight Otomatis<span>·</span>Rekomendasi Langsung</p>
+      <p class="hero-sub">Data real-time<span>·</span>Insight otomatis<span>·</span>Rekomendasi langsung</p>
 
 
 
@@ -568,13 +568,16 @@
 
         <div class="search-box">
 
-          <div class="search-prefix">›_</div>
+          <div class="search-prefix"><i class="fa-solid fa-magnifying-glass"></i></div>
 
-          <input type="text" id="kw" placeholder="produk apa yang ingin kamu jual?" autocomplete="off"
+          <input type="text" id="kw" placeholder="Cari produk, kata kunci, atau jenis usaha..." autocomplete="off"
 
             spellcheck="false" />
 
-          <button id="btn" onclick="doSearch()">Analisis Sekarang</button>
+          <button id="btn" onclick="doSearch()">
+            Analisis Sekarang
+            <i class="fa-solid fa-arrow-right btn-icon"></i>
+          </button>
 
         </div>
 
@@ -582,13 +585,13 @@
 
 
 
-      <!-- STATUS BAR: quota + geo in one row -->
+      <!-- STATUS BAR: quota -->
 
       <div class="status-bar hidden" id="status-bar">
 
         <div class="status-bar-left">
 
-
+          <i class="fa-solid fa-circle-dot status-quota-icon"></i>
 
           <span class="status-quota-text" id="quota-text">Riset tersisa hari ini: &mdash;</span>
 
@@ -596,15 +599,11 @@
 
           <button class="status-upgrade-btn" id="quota-upgrade-btn" onclick="showUpgradeModal()"
 
-            style="display:none">Upgrade →</button>
+            style="display:none">Upgrade &rarr;</button>
 
         </div>
 
         <div class="status-bar-right">
-
-          <span class="status-sep">×</span>
-
-          <span class="status-geo-label">Lokasi</span>
 
           <select id="geo-select" class="status-geo-sel" disabled title="Lokasi spesifik hanya untuk pengguna Pro">
 
@@ -632,10 +631,6 @@
 
           </select>
 
-          <span class="status-geo-lock" id="geo-lock"
-
-            title="Upgrade ke Pro untuk analisis per-Provinsi">××</span>
-
         </div>
 
       </div>
@@ -646,9 +641,11 @@
 
         <button class="ip-entry-btn" onclick="openIdeWizard()">
 
-          Tentukan produkmu
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
 
-          <span class="ip-entry-arrow">×</span>
+          Belum tahu produknya? Bantu saya pilih
+
+          <span class="ip-entry-arrow"><i class="fa-solid fa-arrow-right"></i></span>
 
         </button>
 

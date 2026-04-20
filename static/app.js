@@ -522,10 +522,12 @@ function renderAuthModalContent(view) {
         ? 'Buat akun Sentra'
         : 'Masuk ke Sentra';
   const subtitle = isForgot
-    ? 'Masukkan email terdaftar. Kami kirim link reset password yang aman ke inbox kamu.'
+    ? 'Link reset akan dikirim ke email kamu.'
     : isProfileSetup
-      ? 'Biar pengalamanmu terasa lebih personal, isi nama panggilan dulu ya.'
-      : 'Masuk atau daftar untuk menyimpan insight, melanjutkan analisis, dan membuka pengalaman Sentra yang lebih personal.';
+      ? 'Hampir selesai — isi nama panggilanmu.'
+      : isSignup
+        ? 'Gratis selamanya. Simpan insight & riwayat analisismu.'
+        : 'Lanjutkan analisis dan insight yang sudah kamu simpan.';
 
   let content = '';
 
@@ -635,11 +637,10 @@ function renderAuthModalContent(view) {
       <div class="auth-glow auth-glow-a"></div>
       <div class="auth-glow auth-glow-b"></div>
 
-      <div class="auth-modern-head" style="margin-bottom: 16px;">
+      <div class="auth-modern-head" style="margin-bottom: 20px;">
         <div>
-          <div class="auth-modern-eyebrow">Sentra AI Access</div>
-          <h3 class="auth-modern-title" style="font-size: 24px;">${title}</h3>
-          <p class="auth-modern-sub" style="font-size: 13px; line-height: 1.4;">${subtitle}</p>
+          <h3 class="auth-modern-title">${title}</h3>
+          <p class="auth-modern-sub">${subtitle}</p>
         </div>
         <button type="button" class="auth-modal-close modern" onclick="closeAuthModal()" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button>
       </div>
@@ -996,12 +997,11 @@ async function saveProfileName() {
     await sb.from('profiles').update({ nama: nama }).eq('id', currentUser.id);
     await loadProfile(currentUser.id);
     updateNavAuth();
-    setAuthMessage('success', 'Profil siap. Selamat datang di Sentra.');
+    setAuthMessage('success', 'Profil siap. Memuat halaman...');
     pulseAuthSuccess();
     setTimeout(function () {
-      closeAuthModal();
-      openProfilePanel();
-    }, 420);
+      window.location.reload();
+    }, 800);
   } catch (e) {
     setAuthMessage('error', 'Nama belum berhasil disimpan. Coba lagi ya.');
   } finally {

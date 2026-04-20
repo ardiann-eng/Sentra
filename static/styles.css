@@ -822,6 +822,9 @@ header,
 .hero {
   padding: 72px 0 56px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .hero-title {
@@ -983,31 +986,36 @@ header,
 
 /* ── MODE TOGGLE ── */
 .mode-toggle-wrap {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  margin-bottom: 28px;
+  gap: 12px;
+  margin-bottom: 32px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--gold-line);
+  border-radius: 40px;
+  padding: 8px 18px;
 }
 
 .mode-label {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.3px;
   color: var(--text-dim);
   transition: color .3s;
+  cursor: pointer;
 }
 
 .mode-label.active {
-  color: var(--gold)
+  color: var(--gold);
+  font-weight: 600;
 }
 
 .toggle-track {
-  width: 52px;
-  height: 26px;
-  border-radius: 13px;
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
   background: var(--surface2);
   border: 1px solid var(--gold-line);
   cursor: pointer;
@@ -1016,54 +1024,56 @@ header,
 }
 
 .toggle-track.on {
-  background: rgba(212, 168, 67, .2);
-  border-color: var(--gold)
+  background: rgba(212, 168, 67, .22);
+  border-color: var(--gold);
 }
 
 .toggle-knob {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background: var(--text-dim);
   position: absolute;
   top: 2px;
-  left: 3px;
+  left: 2px;
   transition: transform .3s, background .3s;
 }
 
 .toggle-track.on .toggle-knob {
-  transform: translateX(25px);
-  background: var(--gold)
+  transform: translateX(20px);
+  background: var(--gold);
 }
 
 /* ── SEARCH ── */
 .search-wrap {
   max-width: 700px;
-  margin: 0 auto
+  width: 100%;
+  margin: 0 auto;
 }
 
 .search-box {
   display: flex;
   align-items: stretch;
   border: 1px solid var(--gold-line);
-  background: var(--surface);
+  border-radius: 16px;
+  background: rgba(18, 16, 12, 0.85);
   transition: border-color .25s, box-shadow .25s;
+  overflow: hidden;
 }
 
 .search-box:focus-within {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 1px var(--gold), 0 0 40px rgba(212, 168, 67, .1);
+  border-color: rgba(212, 168, 67, 0.6);
+  box-shadow: 0 0 0 1px rgba(212, 168, 67, 0.2), 0 8px 40px rgba(212, 168, 67, .08);
 }
 
 .search-prefix {
   display: flex;
   align-items: center;
-  padding: 0 18px;
-  color: var(--gold);
-  font-family: 'DM Mono', monospace;
-  font-size: 18px;
-  border-right: 1px solid var(--gold-line);
+  padding: 0 20px;
+  color: rgba(212, 168, 67, 0.5);
+  font-size: 16px;
   user-select: none;
+  flex-shrink: 0;
 }
 
 #kw {
@@ -1073,54 +1083,57 @@ header,
   outline: none;
   color: var(--text);
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 18px;
-  padding: 0 24px;
-  height: 72px;
+  font-size: 17px;
+  padding: 0 4px 0 8px;
+  height: 68px;
 }
 
 #kw::placeholder {
   color: var(--text-faint);
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 400;
 }
 
 #btn {
-  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 32px;
+  margin: 6px;
+  border-radius: 12px;
   background: var(--gold);
   border: none;
   color: var(--bg);
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 15px;
   font-weight: 700;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.2px;
   text-transform: none;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
-  box-shadow: 0 0 20px rgba(212, 168, 67, 0.15);
+  box-shadow: 0 4px 20px rgba(212, 168, 67, 0.3);
   position: relative;
   overflow: hidden;
 }
 
-#btn::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.6s;
+.btn-icon {
+  font-size: 12px;
+  transition: transform 0.2s ease;
 }
 
 #btn:hover {
   background: var(--gold-bright);
-  box-shadow: 0 0 30px rgba(212, 168, 67, 0.4);
+  box-shadow: 0 6px 30px rgba(212, 168, 67, 0.45);
+  gap: 14px;
 }
 
-#btn:hover::after {
-  transform: translateX(100%);
+#btn:hover .btn-icon {
+  transform: translateX(2px);
 }
 
 #btn:active {
-  transform: scale(.97)
+  transform: scale(.97);
 }
 
 /* Analyze Button Pulse */
@@ -5100,21 +5113,48 @@ footer {
   height: 200px;
 }
 
-/* ── STATUS BAR (quota + geo, single row) ── */
+/* ── STATUS BAR (quota, elegant pill) ── */
 .status-bar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 14px auto 0;
+  padding: 6px 14px;
+  border-radius: 40px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--text-faint);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(212,168,67,0.1);
+  width: auto;
+  max-width: 700px;
+}
+
+.status-bar.hidden {
+  display: none;
+}
+
+.status-bar-left {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
-  max-width: 700px;
-  margin: 8px auto 0;
-  padding: 6px 12px;
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
+  gap: 7px;
+}
+
+.status-bar-right {
+  display: none;
+}
+
+.status-quota-icon {
+  font-size: 7px;
+  color: var(--green);
+  opacity: 0.8;
+}
+
+.status-quota-text {
   color: var(--text-faint);
-  background: var(--surface);
-  border: 1px solid var(--gold-line);
+  font-size: 11.5px;
 }
 
 .ip-entry {
@@ -5127,57 +5167,35 @@ footer {
 .ip-entry-btn {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 500;
-  color: var(--text-faint);
-  background: none;
-  border: none;
+  color: var(--text-dim);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(212,168,67,0.12);
+  border-radius: 40px;
   cursor: pointer;
-  padding: 0;
-  letter-spacing: 0.3px;
-  transition: color .2s, gap .2s;
+  padding: 8px 18px;
+  letter-spacing: 0.2px;
+  transition: color .2s, border-color .2s, background .2s;
 }
 
 .ip-entry-btn:hover {
   color: var(--gold);
-  gap: 16px;
+  border-color: rgba(212,168,67,0.35);
+  background: rgba(212,168,67,0.05);
 }
 
 .ip-entry-arrow {
-  font-family: 'DM Mono', monospace;
-  font-size: 16px;
   color: var(--gold);
+  font-size: 11px;
   transition: transform .2s;
-  display: inline-block;
+  display: inline-flex;
 }
 
 .ip-entry-btn:hover .ip-entry-arrow {
-  transform: translateX(4px);
-}
-
-.status-bar.hidden {
-  display: none;
-}
-
-.status-bar-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.status-bar-right {
-  display: none;
-}
-
-.status-sep {
-  color: var(--gold-dim);
-  opacity: .4;
-}
-
-.status-quota-text {
-  color: var(--text-faint);
+  transform: translateX(3px);
 }
 
 .status-dots {
@@ -5808,14 +5826,15 @@ select#geo-select option {
   }
 
   #btn {
-    width: 100%;
-    padding: 0;
-    height: 54px;
-    font-size: 16px;
+    width: calc(100% - 12px);
+    margin: 4px 6px;
+    padding: 0 20px;
+    height: 52px;
+    font-size: 15px;
     font-weight: 700;
-    letter-spacing: 0.4px;
-    text-transform: none;
-    border-top: 1px solid rgba(0, 0, 0, .2);
+    justify-content: center;
+    border-radius: 10px;
+    border-top: none;
   }
 
   /* 5 ─ Sector grid: 1 column, full-width cards */
@@ -7924,18 +7943,21 @@ html:has(#auth-overlay.open) {
   }
 
   #btn {
-    width: 100%;
+    width: calc(100% - 12px);
     height: 48px;
     max-height: 52px;
     background: #D4A843;
     color: #0A0A08 !important;
     font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 14px !important;
-    font-weight: 600;
-    letter-spacing: 0.3px;
+    font-size: 15px !important;
+    font-weight: 700;
+    letter-spacing: 0.2px;
     text-transform: none;
     white-space: nowrap;
     overflow: visible;
+    justify-content: center;
+    border-radius: 10px;
+    margin: 4px 6px;
   }
 
   #btn::after {
