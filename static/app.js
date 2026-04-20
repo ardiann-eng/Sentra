@@ -4449,6 +4449,8 @@ function normalizeRegionalInterestData(items) {
 }
 
 async function doCompare() {
+  if (!currentUser) { openAuthModal('login'); return; }
+
   const kwA = (document.getElementById('kw-a')?.value || '').trim();
   const kwB = (document.getElementById('kw-b')?.value || '').trim();
 
@@ -4505,6 +4507,8 @@ async function doCompare() {
 async function doSearch() {
 
   if (compareMode) { doCompare(); return; }
+
+  if (!currentUser) { openAuthModal('login'); return; }
 
   const kw = document.getElementById('kw').value.trim();
 
