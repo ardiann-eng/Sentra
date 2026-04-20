@@ -163,22 +163,30 @@ def get_supabase():
 _supabase_service_client = None
 
 def get_supabase_service():
-    """Service-role client — bypass RLS. JANGAN expose key ini ke frontend.
-    Dipakai khusus untuk operasi DB server-side (UMKM routes)."""
+    """Service-role client — bypass RLS. Wajib untuk operasi tabel profiles/umkm.
+    Membutuhkan SUPABASE_SERVICE_KEY di environment variables."""
     global _supabase_service_client
     if _supabase_service_client is not None:
         return _supabase_service_client
+
     url = (os.environ.get("SUPABASE_URL") or "").strip()
-    service_key = (os.environ.get("SUPABASE_SERVICE_KEY") or os.environ.get("SUPABASE_KEY") or "").strip()
+    # Gunakan SERVICE_KEY secara eksklusif. JANGAN fallback ke anon key karena akan kena blokir RLS.
+    service_key = (os.environ.get("SUPABASE_SERVICE_KEY") or "").strip()
+
     if not url or not service_key:
-        print("[SUPABASE SERVICE] Missing URL or Service Key — fallback ke anon client")
-        return get_supabase()  # graceful fallback ke anon jika service key belum diset
+        print("\n" + "!"*60)
+        print(" [CRITICAL] SUPABASE_SERVICE_KEY TIDAK DITEMUKAN!")
+        print(" Bypass RLS tidak aktif. Fitur profil & UMKM akan gagal (Error 42501).")
+        print(" Harap tambahkan SUPABASE_SERVICE_KEY ke environment variables.")
+        print("!"*60 + "\n")
+        return None
+
     try:
         from supabase import create_client
         _supabase_service_client = create_client(url, service_key)
-        print("[SUPABASE SERVICE] Service-role client berhasil diinisialisasi")
+        print("[SUPABASE SERVICE] Service-role client berhasil diinisialisasi (RLS Bypassed)")
     except Exception as e:
-        print(f"[SUPABASE SERVICE] Gagal buat service client: {e}")
+        print(f"[SUPABASE SERVICE] Gagal inisialisasi: {e}")
         _supabase_service_client = None
     return _supabase_service_client
 
