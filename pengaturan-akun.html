@@ -75,21 +75,30 @@
       overflow-x: hidden;
     }
 
-    /* ── LOADER ── */
-    #page-loader {
-      position: fixed; inset: 0; background: var(--bg-base);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 9999; transition: opacity .35s ease;
+    /* ── SHIMMER ANIMATION ── */
+    @keyframes shimmer {
+      0% { background-position: -468px 0; }
+      100% { background-position: 468px 0; }
     }
-    #page-loader.hidden { opacity: 0; pointer-events: none; }
-    .loader-ring {
-      width: 44px; height: 44px;
-      border: 3px solid var(--border);
-      border-top-color: var(--gold);
-      border-radius: 50%;
-      animation: spin .75s linear infinite;
+    .skeleton {
+      background: linear-gradient(90deg, #1A1A1A 25%, #222222 50%, #1A1A1A 75%);
+      background-size: 800px 100%;
+      animation: shimmer 2s infinite linear;
+      border-radius: 8px;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .skeleton-avatar { width: 80px; height: 80px; border-radius: 50%; flex-shrink: 0; }
+    .skeleton-title  { width: 140px; height: 20px; margin-bottom: 8px; }
+    .skeleton-text   { width: 100%; height: 14px; margin-bottom: 6px; }
+    .skeleton-input  { width: 100%; height: 46px; border-radius: 12px; }
+    .skeleton-btn    { width: 160px; height: 42px; border-radius: 10px; }
+
+    /* Toggle Visibility */
+    .card-body-content { opacity: 1; transition: opacity .3s ease; }
+    .settings-card.is-loading .card-body-content { opacity: 0; pointer-events: none; }
+    .settings-card.is-loading .card-skeleton { display: block; }
+    .card-skeleton { display: none; position: absolute; inset: 0; padding: 24px; z-index: 5; background: var(--bg-card); border-radius: 16px; }
+    .settings-card { position: relative; min-height: 120px; }
 
 
 
@@ -394,10 +403,7 @@
 </head>
 <body>
 
-<!-- PAGE LOADER -->
-<div id="page-loader">
-  <div class="loader-ring"></div>
-</div>
+
 
 
 
@@ -429,8 +435,24 @@
     <p class="page-subtitle">Kelola profil, data bisnis, dan preferensi akun Sentra AI kamu.</p>
 
     <!-- ── 1. INFORMASI PROFIL ── -->
-    <section class="settings-card section-anchor" id="section-profil">
-      <div class="card-header">
+    <section class="settings-card section-anchor is-loading" id="section-profil">
+      <div class="card-skeleton">
+        <div style="display:flex; gap:20px; align-items:center; margin-bottom:28px;">
+          <div class="skeleton skeleton-avatar"></div>
+          <div>
+            <div class="skeleton skeleton-title"></div>
+            <div class="skeleton skeleton-text" style="width:180px;"></div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="skeleton skeleton-input"></div>
+          <div class="skeleton skeleton-input"></div>
+          <div class="skeleton skeleton-input"></div>
+        </div>
+      </div>
+
+      <div class="card-body-content">
+        <div class="card-header">
         <div class="card-header-icon"><i class="fa-solid fa-user"></i></div>
         <div class="card-header-text">
           <h2>Informasi Profil</h2>
@@ -484,8 +506,20 @@
     </section>
 
     <!-- ── 2. DATA BISNIS ── -->
-    <section class="settings-card section-anchor" id="section-bisnis">
-      <div class="card-header">
+    <section class="settings-card section-anchor is-loading" id="section-bisnis">
+      <div class="card-skeleton">
+        <div class="skeleton skeleton-title" style="margin-bottom:20px;"></div>
+        <div class="form-grid">
+          <div class="skeleton skeleton-input"></div>
+          <div class="skeleton skeleton-input"></div>
+          <div class="skeleton skeleton-input" style="grid-column: 1/-1;"></div>
+          <div class="skeleton skeleton-input"></div>
+          <div class="skeleton skeleton-input"></div>
+        </div>
+      </div>
+
+      <div class="card-body-content">
+        <div class="card-header">
         <div class="card-header-icon"><i class="fa-solid fa-store"></i></div>
         <div class="card-header-text">
           <h2>Data Bisnis</h2>
@@ -543,11 +577,23 @@
           <button class="btn btn-ghost" onclick="AccSettings.cancelBisnis()">Batal</button>
         </div>
       </div>
+        </div>
+      </div>
     </section>
 
     <!-- ── 3. PREFERENSI ── -->
-    <section class="settings-card section-anchor" id="section-preferensi">
-      <div class="card-header">
+    <section class="settings-card section-anchor is-loading" id="section-preferensi">
+      <div class="card-skeleton">
+        <div class="skeleton skeleton-title"></div>
+        <div style="display:flex; flex-direction:column; gap:16px; margin-top:20px;">
+          <div class="skeleton skeleton-input" style="height:32px;"></div>
+          <div class="skeleton skeleton-input" style="height:32px;"></div>
+          <div class="skeleton skeleton-input" style="height:32px;"></div>
+        </div>
+      </div>
+
+      <div class="card-body-content">
+        <div class="card-header">
         <div class="card-header-icon"><i class="fa-solid fa-sliders"></i></div>
         <div class="card-header-text">
           <h2>Preferensi Akun</h2>
@@ -612,8 +658,18 @@
     </section>
 
     <!-- ── 4. KEAMANAN ── -->
-    <section class="settings-card section-anchor" id="section-keamanan">
-      <div class="card-header">
+    <section class="settings-card section-anchor is-loading" id="section-keamanan">
+      <div class="card-skeleton">
+        <div class="skeleton skeleton-title"></div>
+        <div class="form-grid" style="margin-top:20px;">
+          <div class="skeleton skeleton-input"></div>
+          <div class="skeleton skeleton-input"></div>
+        </div>
+        <div class="skeleton skeleton-btn" style="margin-top:20px;"></div>
+      </div>
+
+      <div class="card-body-content">
+        <div class="card-header">
         <div class="card-header-icon"><i class="fa-solid fa-shield-halved"></i></div>
         <div class="card-header-text">
           <h2>Keamanan Akun</h2>
@@ -688,8 +744,14 @@
     </section>
 
     <!-- ── 5. LANGGANAN ── -->
-    <section class="settings-card section-anchor" id="section-langganan">
-      <div class="card-header">
+    <section class="settings-card section-anchor is-loading" id="section-langganan">
+      <div class="card-skeleton">
+        <div class="skeleton skeleton-title"></div>
+        <div class="skeleton skeleton-input" style="height:80px; margin-top:16px;"></div>
+      </div>
+
+      <div class="card-body-content">
+        <div class="card-header">
         <div class="card-header-icon"><i class="fa-solid fa-crown"></i></div>
         <div class="card-header-text">
           <h2>Langganan</h2>
@@ -739,8 +801,14 @@
     </section>
 
     <!-- ── 6. ZONA BERBAHAYA ── -->
-    <section class="settings-card section-anchor danger-zone-card" id="section-danger">
-      <div class="card-header">
+    <section class="settings-card section-anchor danger-zone-card is-loading" id="section-danger">
+      <div class="card-skeleton">
+        <div class="skeleton skeleton-title"></div>
+        <div class="skeleton skeleton-input" style="height:60px; margin-top:10px;"></div>
+      </div>
+
+      <div class="card-body-content">
+        <div class="card-header">
         <div class="card-header-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
         <div class="card-header-text">
           <h2 style="color:var(--danger);">Zona Berbahaya</h2>

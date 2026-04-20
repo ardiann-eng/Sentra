@@ -50,8 +50,7 @@ const AccSettings = (() => {
       loadPrefs();
       _bindAvatarInput();
       _bindCharCounters();
-      _hideLoader();
-      _animateIn();
+      _finishLoading();
 
     } catch (err) {
       console.error('[AccSettings] init error:', err);
@@ -59,22 +58,23 @@ const AccSettings = (() => {
     }
   }
 
-  function _hideLoader() {
-    const loader = document.getElementById('page-loader');
-    if (loader) loader.classList.add('hidden');
-  }
+  function _finishLoading() {
+    const cards = document.querySelectorAll('.settings-card');
+    
+    // Remove loading class to reveal content markup
+    cards.forEach(card => card.classList.remove('is-loading'));
 
-  function _animateIn() {
-    if (typeof gsap === 'undefined') return;
-    // Set opacity 1 immediately in case of script delay or hidden initially
-    gsap.set('#page-content > *', { opacity: 1 });
-    gsap.from('#page-content > *', {
-      opacity: 0,
-      y: 12,
-      duration: 0.35,
-      stagger: 0.05,
-      ease: 'power2.out',
-    });
+    if (typeof gsap !== 'undefined') {
+      // Smooth reveal animation
+      gsap.from('.card-body-content', {
+        opacity: 0,
+        y: 10,
+        duration: 0.45,
+        stagger: 0.08,
+        ease: 'power2.out',
+        clearProps: 'all'
+      });
+    }
   }
 
   function _fatalError(msg) {
