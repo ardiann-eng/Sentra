@@ -4339,6 +4339,8 @@ function normalizeRegionalInterestData(items) {
 
 async function doSearch() {
 
+  if (compareMode) { doCompare(); return; }
+
   const kw = document.getElementById('kw').value.trim();
 
   const geo = document.getElementById('geo-select')?.value || 'ID';

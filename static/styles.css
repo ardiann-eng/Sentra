@@ -121,49 +121,49 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 28px 0 36px;
+  padding: 20px 0 24px;
   border-bottom: 1px solid var(--gold-line);
 }
 
 .logo {
   display: flex;
-  align-items: baseline;
-  gap: 14px
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
 }
 
 .logo-word {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 34px;
+  font-size: 26px;
   font-weight: 700;
   color: var(--gold);
-  letter-spacing: 6px;
+  letter-spacing: 5px;
   text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.logo-divider {
+  color: var(--gold-dim);
+  font-size: 18px;
+  opacity: 0.5;
+  flex-shrink: 0;
 }
 
 .logo-sub {
   font-family: var(--font-main);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 500;
   color: var(--text-dim);
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  border-left: 1px solid var(--gold-line);
-  padding-left: 14px;
+  white-space: nowrap;
 }
 
 .header-right {
   display: flex;
   align-items: center;
-  gap: 16px
-}
-
-.ver {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: var(--gold-dim);
-  border: 1px solid var(--gold-dim);
-  padding: 4px 12px;
-  letter-spacing: 2px
+  gap: 12px;
+  flex-shrink: 0;
 }
 
 .dot {
@@ -820,31 +820,31 @@ header,
 
 /* ── HERO ── */
 .hero {
-  padding: 64px 0 48px;
-  text-align: center
+  padding: 72px 0 56px;
+  text-align: center;
 }
 
 .hero-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(38px, 6vw, 68px);
+  font-size: clamp(40px, 6vw, 72px);
   font-weight: 300;
-  line-height: 1.1;
-  margin-bottom: 16px;
+  line-height: 1.08;
+  margin-bottom: 20px;
 }
 
 .hero-title em {
   font-style: italic;
-  color: var(--gold)
+  color: var(--gold);
 }
 
 .hero-sub {
-  font-family: 'Syne', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 3px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 2.5px;
   text-transform: uppercase;
   color: var(--text-dim);
-  margin-bottom: 64px;
+  margin-bottom: 52px;
 }
 
 .hero-sub span {
@@ -1084,15 +1084,15 @@ header,
 }
 
 #btn {
-  padding: 0 40px;
+  padding: 0 36px;
   background: var(--gold);
   border: none;
   color: var(--bg);
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: none;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
@@ -5168,9 +5168,7 @@ footer {
 }
 
 .status-bar-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  display: none;
 }
 
 .status-sep {
@@ -5749,39 +5747,19 @@ select#geo-select option {
     padding: 0 16px 80px;
   }
 
-  /* 2 ─ Header: stack vertically, center everything */
+  /* 2 ─ Header: single row, compact */
   header {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 14px;
-    padding: 24px 0 28px;
-  }
-
-  .logo {
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
+    padding: 16px 0 18px;
   }
 
   .logo-word {
-    font-size: 28px;
-    letter-spacing: 4px;
+    font-size: 20px;
+    letter-spacing: 3px;
   }
 
   .logo-sub {
-    border-left: none;
-    border-top: 1px solid var(--gold-line);
-    padding-left: 0;
-    padding-top: 8px;
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    text-align: center;
-  }
-
-  .header-right {
-    justify-content: center;
-    gap: 12px;
+    font-size: 8px;
+    letter-spacing: 1px;
   }
 
   /* 3 ─ Hero: larger breathing room, centered text */
@@ -5833,8 +5811,9 @@ select#geo-select option {
     width: 100%;
     padding: 0;
     height: 52px;
-    font-size: 12px;
-    letter-spacing: 3px;
+    font-size: 14px;
+    letter-spacing: 0.3px;
+    text-transform: none;
     border-top: 1px solid rgba(0, 0, 0, .2);
   }
 
@@ -7950,11 +7929,11 @@ html:has(#auth-overlay.open) {
     max-height: 52px;
     background: #D4A843;
     color: #0A0A08 !important;
-    font-family: 'Syne', sans-serif;
-    font-size: 12px !important;
-    font-weight: 800;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px !important;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: none;
     white-space: nowrap;
     overflow: visible;
   }
