@@ -5989,30 +5989,33 @@ select#geo-select option {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: linear-gradient(135deg, #FACC15 0%, #D4A843 100%);
-  border: none;
-  color: #0A0A08;
+  background: rgba(212, 168, 67, 0.08);
+  border: 1px solid rgba(212, 168, 67, 0.38);
+  color: #D4A843;
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.01em;
-  padding: 9px 20px;
-  border-radius: 12px;
+  padding: 8px 18px;
+  border-radius: 10px;
   cursor: pointer;
-  box-shadow: 0 2px 16px rgba(212, 168, 67, 0.28), 0 1px 0 rgba(255,255,255,0.12) inset;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+  box-shadow: 0 0 0 0 rgba(212, 168, 67, 0);
+  transition: background 0.2s ease, border-color 0.2s ease,
+              color 0.2s ease, box-shadow 0.2s ease, transform 0.18s ease;
   white-space: nowrap;
 }
 
 .auth-nav-login:hover {
-  transform: translateY(-1px) scale(1.03);
-  box-shadow: 0 6px 28px rgba(250, 204, 21, 0.42), 0 1px 0 rgba(255,255,255,0.15) inset;
-  filter: brightness(1.08);
+  background: rgba(212, 168, 67, 0.14);
+  border-color: rgba(212, 168, 67, 0.7);
+  color: #FACC15;
+  box-shadow: 0 0 16px rgba(212, 168, 67, 0.22);
+  transform: translateY(-1px);
 }
 
 .auth-nav-login:active {
-  transform: scale(0.97);
-  box-shadow: 0 2px 10px rgba(212, 168, 67, 0.25);
+  transform: scale(0.97) translateY(0);
+  background: rgba(212, 168, 67, 0.1);
 }
 
 /* Navbar profile button (logged in) */
@@ -8515,9 +8518,8 @@ html:has(#auth-overlay.open) {
 
   /* Tombol Masuk di mobile */
   .auth-nav-login {
-    padding: 8px 16px;
+    padding: 7px 14px;
     font-size: 12px;
-    border-radius: 10px;
   }
 
   /* ── STICKY CTA "MULAI GRATIS" (BOTTOM FLOATING) ─ */
