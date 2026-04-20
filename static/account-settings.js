@@ -57,6 +57,7 @@ const AccSettings = (() => {
       console.error('[AccSettings] init error:', err);
       _fatalError('Gagal memuat halaman. Coba refresh.');
     }
+  }
 
   function _hideLoader() {
     const loader = document.getElementById('page-loader');
