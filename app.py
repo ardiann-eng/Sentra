@@ -1885,7 +1885,7 @@ def account_update_profile():
     if "phone" in data:
         payload["phone"] = (data["phone"] or "").strip()[:20]
     if "avatar_url" in data:
-        payload["avatar_url"] = (data["avatar_url"] or "").strip()[:2000]
+        payload["avatar_url"] = (data["avatar_url"] or "").strip()[:100000]
 
     try:
         res = sb.table("profiles").upsert(payload, on_conflict="id").execute()
