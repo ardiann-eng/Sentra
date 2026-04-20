@@ -40,6 +40,10 @@
 
         extend: {
 
+          screens: {
+            xs: '420px',
+          },
+
           colors: {
 
             brand: '#D4A843',
@@ -144,7 +148,7 @@
     <div id="onboarding-modal" class="sentra-modal-box" onclick="event.stopPropagation()">
       <button class="sentra-modal-close" type="button" aria-label="Tutup" onclick="window.SentraUMKM?.closeOnboarding?.()">×</button>
 
-      <div id="sentra-onboarding-mode-step" class="sentra-onboarding-step active">
+      <div id="sentra-onboarding-mode-step" class="sentra-onboarding-step active sentra-onboarding-mode-step">
         <div class="sentra-modal-eyebrow">Selamat datang di Sentra AI</div>
         <h2 class="sentra-modal-title">Kamu mau pakai Sentra sebagai apa hari ini?</h2>
         <p class="sentra-modal-desc">
@@ -152,13 +156,15 @@
         </p>
 
         <div class="sentra-modal-actions">
-          <button id="btn-mode-analisis" class="sentra-modal-card" type="button" onclick="window.SentraUMKM?.selectMode?.('analysis')">
+          <button id="btn-mode-analisis" class="sentra-modal-card sentra-modal-card-secondary" type="button" onclick="window.SentraUMKM?.selectMode?.('analysis')">
             <div class="sentra-modal-card-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
             <div class="sentra-modal-card-body">
               <div class="sentra-modal-card-title">Saya mau analisis tren pasar</div>
               <div class="sentra-modal-card-sub">Cari ide jualan, cek timing, dan lihat peluang sebelum orang lain.</div>
             </div>
-            <div class="sentra-modal-card-cta">Masuk Analisis →</div>
+            <div class="sentra-modal-card-cta">
+              <span class="sentra-modal-card-cta-btn">MASUK ANALISIS</span>
+            </div>
           </button>
 
           <button id="btn-mode-umkm" class="sentra-modal-card highlight" type="button" onclick="window.SentraUMKM?.openUMKMOnboarding?.()">
@@ -167,12 +173,10 @@
               <div class="sentra-modal-card-title">Saya pemilik UMKM</div>
               <div class="sentra-modal-card-sub">Mari rapikan usaha kamu. Aku bantu cek kesehatan, strategi, dan peluang minggu ini.</div>
             </div>
-            <div class="sentra-modal-card-cta">Lanjut isi profil usaha →</div>
+            <div class="sentra-modal-card-cta">
+              <span class="sentra-modal-card-cta-btn">LANJUT ISI PROFIL USAHA</span>
+            </div>
           </button>
-        </div>
-
-        <div class="sentra-modal-footer">
-          <div class="sentra-modal-footnote">Tip: mulai dari UMKM kalau kamu sudah punya usaha dan ingin langkah yang lebih “praktis harian”.</div>
         </div>
       </div>
 
@@ -628,6 +632,7 @@
 
 
       <!-- STATUS BAR: quota -->
+      <div id="status-bar-anchor"></div>
 
       <div class="status-bar hidden" id="status-bar">
 
@@ -731,6 +736,8 @@
           </button>
 
         </div>
+
+        <div id="compare-quota-slot" class="compare-quota-slot"></div>
 
       </div>
 
@@ -1335,17 +1342,25 @@
             <p class="radar-modern-subtitle">Monitor performa sektor pasar secara real-time berdasarkan aktivitas pencarian pembeli.</p>
           </div>
 
-          <div class="radar-status-bar">
-            <div class="radar-status-live">
-              <span class="radar-live-pulse"></span>
-              <i class="fa-solid fa-satellite-dish" style="font-size: 9px; color: #ef4444; margin-right: 5px; opacity: 0.8;"></i>
-              <span class="radar-status-text">LIVE FEED</span>
+          <!-- Responsive Status Bar: LIVE FEED + SYNC -->
+          <div class="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-2 xs:gap-4 bg-white/3 border border-white/8 px-3 xs:px-4 py-2.5 xs:py-3 rounded-2xl backdrop-blur-xl">
+
+            <!-- LIVE FEED STATUS -->
+            <div class="flex items-center gap-2 min-w-0 flex-shrink-0">
+              <div class="relative w-2 h-2 bg-red-500 rounded-full animate-pulse flex-shrink-0"></div>
+              <i class="fa-solid fa-satellite-dish text-[10px] xs:text-xs text-red-500/80 flex-shrink-0"></i>
+              <span class="text-[10px] xs:text-xs font-mono font-bold tracking-widest text-white/90 whitespace-nowrap">LIVE FEED</span>
             </div>
-            <div class="radar-status-divider"></div>
-            <div class="radar-status-sync" style="display: flex; align-items: center; gap: 6px;">
-              <i class="fa-solid fa-cloud-arrow-down" style="font-size: 9px; color: rgba(255,255,255,0.4);"></i>
-              <div id="radar-uptime" class="radar-status-time">SYNCING...</div>
+
+            <!-- DIVIDER (hidden on mobile, visible xs+) -->
+            <div class="hidden xs:block w-px h-4 bg-white/10"></div>
+
+            <!-- SYNC STATUS -->
+            <div class="flex items-center gap-1.5 xs:gap-2 min-w-0">
+              <i class="fa-solid fa-cloud-arrow-down text-[10px] xs:text-xs text-white/40 flex-shrink-0"></i>
+              <div id="radar-uptime" class="text-[10px] xs:text-xs font-mono tracking-wider text-white/70 truncate">SYNCING...</div>
             </div>
+
           </div>
         </div>
 
@@ -2363,22 +2378,6 @@
         </div>
 
 
-
-        <!-- AI Insight -->
-
-        <div class="ai-card">
-
-          <div class="ai-head">
-
-            <div class="ai-icon">×</div>
-
-            <div class="ai-title">Analisis Perbandingan oleh Sentra</div>
-
-          </div>
-
-          <div id="cmp-ai" class="ai-body"></div>
-
-        </div>
 
       </div>
 
