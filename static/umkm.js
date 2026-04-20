@@ -720,10 +720,15 @@
     function open() {
       state.selects.forEach((item) => item.close());
       root.classList.add('open');
+
+      // Move panel to body to fully escape modal stacking context
+      panel._origParent = panel.parentNode;
+      panel._origNext = panel.nextSibling;
+      document.body.appendChild(panel);
+
       panel.hidden = false;
       trigger.setAttribute('aria-expanded', 'true');
 
-      // position: fixed to escape overflow clipping from the scrollable modal
       const rect = trigger.getBoundingClientRect();
       const vh = window.innerHeight;
       const spaceBelow = vh - rect.bottom - 8;
@@ -764,6 +769,12 @@
       trigger.setAttribute('aria-expanded', 'false');
       search.value = '';
       selectState.filtered = selectState.options;
+      // Restore panel to original DOM position
+      if (panel._origParent) {
+        panel._origParent.insertBefore(panel, panel._origNext || null);
+        panel._origParent = null;
+        panel._origNext = null;
+      }
     }
 
     trigger.dataset.placeholder = valueEl.textContent;
