@@ -246,6 +246,11 @@
       initUMKMLocalMap();
     }
 
+    // auto-load profile when opening settings
+    if (pageId === 'settings') {
+      loadProfile();
+    }
+
     if (isMobile()) closeMobileNav();
   }
 
@@ -460,26 +465,104 @@
     } catch (_) { /* silent */ }
   }
 
-  // ---- API hooks (scaffold) ----
+  // ---- API hooks ----
   async function loadProfile() {
     const out = document.getElementById('umkm-settings-output');
+    const form = document.getElementById('umkm-settings-form');
+    const summary = document.getElementById('umkm-settings-summary');
     if (out) out.textContent = 'Memuat profil...';
     try {
       const res = await fetch(withUserId('/api/umkm/profile'), { method: 'GET' });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Gagal memuat profil');
-      if (out) out.textContent = JSON.stringify(data.profile || {}, null, 2);
-      hydrateOnboardingForm(data.profile || {});
+      if (out) out.textContent = '';
 
-      // also reflect into home
-      if (data.profile && Object.keys(data.profile).length > 0) {
-        fillDashboardFromProfile(data.profile);
-        // attempt quick analyze refresh (non-blocking)
-        submitProfileAndAnalyze({ ...data.profile, user_id: getUserId() });
-        refreshLocalTrendsFromProfile(data.profile);
+      const profile = data.profile || {};
+
+      // Populate settings edit form
+      if (form) {
+        const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val ?? ''; };
+        set('sett-business-name', profile.business_name);
+        set('sett-category', profile.category);
+        set('sett-province', profile.province);
+        set('sett-city', profile.city);
+        set('sett-revenue', profile.avg_monthly_revenue);
+        set('sett-customers', profile.active_customers);
+        set('sett-description', profile.business_description);
+        form.style.display = 'block';
+      }
+
+      // Show clean summary card
+      if (summary) {
+        const hasData = profile.business_name || profile.category;
+        summary.innerHTML = hasData ? `
+          <div class="umkm-settings-summary-card">
+            <div class="umkm-settings-summary-row"><span class="umkm-settings-summary-key">Usaha</span><span>${profile.business_name || '—'}</span></div>
+            <div class="umkm-settings-summary-row"><span class="umkm-settings-summary-key">Kategori</span><span>${profile.category || '—'}</span></div>
+            <div class="umkm-settings-summary-row"><span class="umkm-settings-summary-key">Lokasi</span><span>${[profile.city, profile.province].filter(Boolean).join(', ') || '—'}</span></div>
+          </div>` : '';
+        summary.style.display = hasData ? 'block' : 'none';
+      }
+
+      hydrateOnboardingForm(profile);
+
+      // Reflect into home dashboard
+      if (Object.keys(profile).length > 0) {
+        fillDashboardFromProfile(profile);
+        submitProfileAndAnalyze({ ...profile, user_id: getUserId() });
+        refreshLocalTrendsFromProfile(profile);
       }
     } catch (e) {
-      if (out) out.textContent = String(e.message || e);
+      if (out) out.textContent = 'Gagal memuat profil: ' + String(e.message || e);
+    }
+  }
+
+  async function saveSettings(event) {
+    if (event) event.preventDefault();
+    const label = document.getElementById('sett-save-label');
+    const feedback = document.getElementById('umkm-settings-feedback');
+    const prev = label ? label.textContent : 'Simpan Perubahan';
+    if (label) label.textContent = 'Menyimpan...';
+    if (feedback) { feedback.style.display = 'none'; feedback.textContent = ''; }
+
+    const payload = {
+      business_name: document.getElementById('sett-business-name')?.value?.trim() || '',
+      category:      document.getElementById('sett-category')?.value?.trim() || '',
+      province:      document.getElementById('sett-province')?.value?.trim() || '',
+      city:          document.getElementById('sett-city')?.value?.trim() || '',
+      avg_monthly_revenue: parseFloat(document.getElementById('sett-revenue')?.value) || 0,
+      active_customers:    parseFloat(document.getElementById('sett-customers')?.value) || 0,
+      business_description: document.getElementById('sett-description')?.value?.trim() || '',
+      user_id: getUserId(),
+    };
+
+    try {
+      const res = await fetch('/api/umkm/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Gagal menyimpan');
+
+      if (feedback) {
+        feedback.textContent = '✓ Profil berhasil disimpan!';
+        feedback.className = 'umkm-settings-feedback success';
+        feedback.style.display = 'block';
+        setTimeout(() => { feedback.style.display = 'none'; }, 3000);
+      }
+
+      const profile = data.profile || payload;
+      fillDashboardFromProfile(profile);
+      submitProfileAndAnalyze({ ...profile, user_id: getUserId() });
+    } catch (e) {
+      if (feedback) {
+        feedback.textContent = 'Gagal menyimpan: ' + String(e.message || e);
+        feedback.className = 'umkm-settings-feedback error';
+        feedback.style.display = 'block';
+      }
+    } finally {
+      if (label) label.textContent = prev;
     }
   }
 
@@ -927,7 +1010,12 @@
     });
 
     document.addEventListener('click', (e) => closeAllSelects(e.target));
-    document.addEventListener('scroll', () => closeAllSelects(), true);
+    document.addEventListener('scroll', (e) => {
+      const target = e?.target;
+      // Do not close when user scrolls inside dropdown panel/options.
+      if (target && typeof target.closest === 'function' && target.closest('.sentra-select-panel')) return;
+      closeAllSelects();
+    }, true);
 
     // profile form
     const form = document.getElementById('umkm-profile-form');
@@ -1021,6 +1109,7 @@
     selectMode,
     goTo,
     loadProfile,
+    saveSettings,
     runQuickCheck,
     generatePlan,
     generatePromo,

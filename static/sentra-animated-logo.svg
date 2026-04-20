@@ -1,0 +1,149 @@
+<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <style>
+      @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-8px); }
+      }
+
+      @keyframes wingFlapLeft {
+        0%, 100% { transform: rotate(0deg); transform-origin: 65px 85px; }
+        25% { transform: rotate(-15deg); transform-origin: 65px 85px; }
+        50% { transform: rotate(0deg); transform-origin: 65px 85px; }
+        75% { transform: rotate(8deg); transform-origin: 65px 85px; }
+      }
+
+      @keyframes wingFlapRight {
+        0%, 100% { transform: rotate(0deg); transform-origin: 135px 85px; }
+        25% { transform: rotate(15deg); transform-origin: 135px 85px; }
+        50% { transform: rotate(0deg); transform-origin: 135px 85px; }
+        75% { transform: rotate(-8deg); transform-origin: 135px 85px; }
+      }
+
+      @keyframes shineGlow {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 0.8; }
+      }
+
+      .phoenix-body {
+        animation: float 3.5s ease-in-out infinite;
+      }
+
+      .wing-left {
+        animation: wingFlapLeft 2.8s ease-in-out infinite;
+      }
+
+      .wing-right {
+        animation: wingFlapRight 2.8s ease-in-out infinite;
+      }
+
+      .shine {
+        animation: shineGlow 3.2s ease-in-out infinite;
+      }
+    </style>
+
+    <!-- Gradient definitions untuk metallic effect -->
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F0C855;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#D4A843;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#A8892E;stop-opacity:1" />
+    </linearGradient>
+
+    <radialGradient id="headGlow">
+      <stop offset="0%" style="stop-color:#FFF8DC;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#D4A843;stop-opacity:1" />
+    </radialGradient>
+
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" />
+    </filter>
+  </defs>
+
+  <!-- BODY GROUP (Floating) -->
+  <g class="phoenix-body">
+
+    <!-- LEFT WING -->
+    <g class="wing-left">
+      <!-- Outer feather left -->
+      <path d="M 65 85 Q 45 70 35 40 Q 32 30 38 28 Q 50 60 70 80 Z"
+            fill="url(#goldGradient)" stroke="#6B5C1F" stroke-width="0.5" opacity="0.9"/>
+      <!-- Middle feather left -->
+      <path d="M 68 87 Q 52 75 48 50 Q 46 42 52 40 Q 62 65 75 85 Z"
+            fill="#D4A843" opacity="0.85"/>
+      <!-- Inner feather left -->
+      <path d="M 70 88 Q 58 80 56 62 Q 55 55 60 54 Q 68 72 78 88 Z"
+            fill="#E8B749" opacity="0.8"/>
+    </g>
+
+    <!-- RIGHT WING -->
+    <g class="wing-right">
+      <!-- Outer feather right -->
+      <path d="M 135 85 Q 155 70 165 40 Q 168 30 162 28 Q 150 60 130 80 Z"
+            fill="url(#goldGradient)" stroke="#6B5C1F" stroke-width="0.5" opacity="0.9"/>
+      <!-- Middle feather right -->
+      <path d="M 132 87 Q 148 75 152 50 Q 154 42 148 40 Q 138 65 125 85 Z"
+            fill="#D4A843" opacity="0.85"/>
+      <!-- Inner feather right -->
+      <path d="M 130 88 Q 142 80 144 62 Q 145 55 140 54 Q 132 72 122 88 Z"
+            fill="#E8B749" opacity="0.8"/>
+    </g>
+
+    <!-- BODY -->
+    <ellipse cx="100" cy="110" rx="28" ry="35" fill="url(#goldGradient)" opacity="0.95"/>
+
+    <!-- CHEST/BELLY (lighter gold) -->
+    <ellipse cx="100" cy="115" rx="22" ry="28" fill="#E8B749" opacity="0.8"/>
+
+    <!-- TAIL FEATHERS (bottom, flowing down) -->
+    <g id="tailFeathers">
+      <!-- Center tail -->
+      <path d="M 100 145 Q 98 165 100 185 Q 102 165 100 145 Z"
+            fill="url(#goldGradient)" opacity="0.85" stroke="#6B5C1F" stroke-width="0.5"/>
+      <!-- Left tail -->
+      <path d="M 92 140 Q 80 160 75 185 Q 85 165 92 140 Z"
+            fill="#D4A843" opacity="0.8" stroke="#6B5C1F" stroke-width="0.5"/>
+      <!-- Right tail -->
+      <path d="M 108 140 Q 120 160 125 185 Q 115 165 108 140 Z"
+            fill="#D4A843" opacity="0.8" stroke="#6B5C1F" stroke-width="0.5"/>
+    </g>
+
+    <!-- NECK -->
+    <path d="M 100 75 Q 98 85 100 100 Q 102 85 100 75 Z"
+          fill="#D4A843" opacity="0.9"/>
+
+    <!-- HEAD -->
+    <g id="head">
+      <!-- Head base -->
+      <ellipse cx="100" cy="65" rx="16" ry="18" fill="url(#headGlow)" opacity="0.95"/>
+
+      <!-- Head shading -->
+      <ellipse cx="100" cy="67" rx="14" ry="16" fill="#D4A843" opacity="0.7"/>
+
+      <!-- BEAK -->
+      <path d="M 112 63 L 135 60 L 112 68 Z"
+            fill="#B8932A" stroke="#6B5C1F" stroke-width="0.5" opacity="0.9"/>
+
+      <!-- EYE -->
+      <circle cx="104" cy="61" r="2.5" fill="#2C1810" opacity="0.9"/>
+      <circle cx="105" cy="60" r="0.8" fill="#FFFFFF" opacity="0.6"/>
+
+      <!-- CREST (top feathers) -->
+      <path d="M 98 48 Q 95 40 100 35 Q 105 40 102 48 Z"
+            fill="#E8B749" opacity="0.85"/>
+      <path d="M 102 48 Q 100 38 105 32 Q 110 40 108 48 Z"
+            fill="#D4A843" opacity="0.9"/>
+    </g>
+
+    <!-- SHINE/GLOW OVERLAY (moving light effect) -->
+    <g class="shine">
+      <!-- Shine on left wing -->
+      <ellipse cx="52" cy="70" rx="8" ry="12" fill="#FFFFFF" opacity="0.2" filter="url(#softGlow)"/>
+      <!-- Shine on body -->
+      <ellipse cx="95" cy="95" rx="10" ry="15" fill="#FFFFFF" opacity="0.15" filter="url(#softGlow)"/>
+      <!-- Shine on right wing -->
+      <ellipse cx="148" cy="70" rx="8" ry="12" fill="#FFFFFF" opacity="0.2" filter="url(#softGlow)"/>
+    </g>
+
+  </g>
+
+</svg>

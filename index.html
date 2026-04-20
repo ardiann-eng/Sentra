@@ -543,11 +543,53 @@
           <div class="umkm-card">
             <div class="umkm-card-title">Pengaturan Usaha</div>
             <div class="umkm-card-sub">Edit info usaha kamu. Tenang, ini untuk bantu rekomendasi makin relevan.</div>
-            <div class="umkm-settings">
-              <button class="umkm-btn" type="button" onclick="window.SentraUMKM?.loadProfile?.()">Muat Profil</button>
-              <button class="umkm-btn ghost" type="button" onclick="window.SentraUMKM?.resetMode?.()">Reset Onboarding</button>
-            </div>
-            <div id="umkm-settings-output" class="umkm-insight"></div>
+
+            <!-- Profile summary (shown when profile loaded) -->
+            <div id="umkm-settings-summary" style="display:none; margin-bottom:20px;"></div>
+
+            <!-- Edit form -->
+            <form id="umkm-settings-form" style="display:none;" onsubmit="window.SentraUMKM?.saveSettings?.(event)">
+              <div class="umkm-settings-grid">
+                <label class="umkm-settings-field">
+                  <span class="umkm-settings-label">Nama Usaha</span>
+                  <input id="sett-business-name" name="business_name" type="text" class="umkm-settings-input" maxlength="80" placeholder="Nama usaha kamu..." />
+                </label>
+                <label class="umkm-settings-field">
+                  <span class="umkm-settings-label">Kategori Usaha</span>
+                  <input id="sett-category" name="category" type="text" class="umkm-settings-input" maxlength="60" placeholder="Contoh: Kuliner & Minuman" />
+                </label>
+                <label class="umkm-settings-field">
+                  <span class="umkm-settings-label">Provinsi</span>
+                  <input id="sett-province" name="province" type="text" class="umkm-settings-input" maxlength="60" placeholder="Contoh: Jawa Barat" />
+                </label>
+                <label class="umkm-settings-field">
+                  <span class="umkm-settings-label">Kota / Kabupaten</span>
+                  <input id="sett-city" name="city" type="text" class="umkm-settings-input" maxlength="60" placeholder="Contoh: Bandung" />
+                </label>
+                <label class="umkm-settings-field">
+                  <span class="umkm-settings-label">Omzet Rata-rata / Bulan (Rp)</span>
+                  <input id="sett-revenue" name="avg_monthly_revenue" type="number" class="umkm-settings-input" min="0" placeholder="Contoh: 5000000" />
+                </label>
+                <label class="umkm-settings-field">
+                  <span class="umkm-settings-label">Pelanggan Aktif / Bulan</span>
+                  <input id="sett-customers" name="active_customers" type="number" class="umkm-settings-input" min="0" placeholder="Contoh: 80" />
+                </label>
+                <label class="umkm-settings-field umkm-settings-field--full">
+                  <span class="umkm-settings-label">Deskripsi Singkat Usaha</span>
+                  <textarea id="sett-description" name="business_description" class="umkm-settings-input umkm-settings-textarea" maxlength="200" rows="3" placeholder="Produk unggulan, target pelanggan, hal yang bikin usahamu beda..."></textarea>
+                </label>
+              </div>
+              <div class="umkm-settings-actions">
+                <button type="submit" class="umkm-btn">
+                  <span id="sett-save-label">Simpan Perubahan</span>
+                </button>
+                <button type="button" class="umkm-btn ghost" onclick="window.SentraUMKM?.resetMode?.()">Reset Onboarding</button>
+              </div>
+              <div id="umkm-settings-feedback" class="umkm-settings-feedback" style="display:none;"></div>
+            </form>
+
+            <!-- Loading / error state -->
+            <div id="umkm-settings-output" class="umkm-muted" style="margin-top:12px;"></div>
           </div>
         </section>
       </main>

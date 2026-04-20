@@ -255,6 +255,8 @@ function updateQuotaUI(meta) {
 
   if (geoSelect) geoSelect.disabled = !isPro;
 
+  placeStatusBarForMode();
+
   if (geoLock) geoLock.style.display = isPro ? 'none' : '';
 
   // PDF button — unlock for Pro
@@ -990,6 +992,20 @@ async function syncSupabaseSession(session) {
   } catch (e) { /* silent */ }
 }
 
+async function loginAfterRegisterFallback(email, password) {
+  const res = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password, remember_me: true })
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Auto login setelah daftar gagal.');
+  if (data.session?.access_token && data.session?.refresh_token) {
+    await syncSupabaseSession(data.session);
+  }
+  return data;
+}
+
 async function handleLoginAction() {
   const email = document.getElementById('auth-email')?.value?.trim();
   const password = document.getElementById('auth-password')?.value;
@@ -1058,28 +1074,57 @@ async function handleRegister() {
   setAuthMessage('clear', '');
   setAuthLoading(true, 'Buat Akun Sentra');
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 18000);
     const res = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, full_name: fullName, remember_me: remember })
+      body: JSON.stringify({ email, password, full_name: fullName, remember_me: remember }),
+      signal: controller.signal
     });
+    clearTimeout(timeoutId);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Pendaftaran belum berhasil.');
 
     persistRememberMe(email, remember);
-    if (data.session?.access_token && data.session?.refresh_token) {
-      await syncSupabaseSession(data.session);
-    }
+
     setAuthMessage('success', data.message || 'Akun berhasil dibuat.');
     pulseAuthSuccess();
+
     if (data.needs_email_verification) {
       setTimeout(() => switchAuthTab('login'), 900);
       return;
     }
+
+    // Sync Supabase session from API response
+    let sessionData = data.session;
+    if (sessionData?.access_token && sessionData?.refresh_token) {
+      await syncSupabaseSession(sessionData);
+    } else {
+      try {
+        const fallback = await loginAfterRegisterFallback(email, password);
+        if (fallback.session) sessionData = fallback.session;
+        if (fallback.user) data.user = fallback.user;
+      } catch (_) {}
+    }
+
+    // Set user state directly from API response — don't rely on getSession() timing
     currentUser = data.user || currentUser;
+    if (currentUser) {
+      userState.userId = currentUser.id;
+      if (sessionData?.access_token) userState.token = sessionData.access_token;
+      await loadProfile(currentUser.id);
+      updateNavAuth();
+      fetchUserStatus();
+    }
+
     setTimeout(() => openProfileSetup(), 560);
   } catch (e) {
-    setAuthMessage('error', authFriendlyError(e.message || e));
+    if (e?.name === 'AbortError') {
+      setAuthMessage('error', 'Proses daftar terlalu lama. Coba lagi sebentar ya.');
+    } else {
+      setAuthMessage('error', authFriendlyError(e.message || e));
+    }
   } finally {
     setAuthLoading(false, 'Buat Akun Sentra');
   }
@@ -1275,13 +1320,31 @@ function renderProfileDropdown() {
 }
 
 async function handleLogout() {
-  if (!sb) return;
+  // Clear local state immediately — don't wait for network
+  currentUser = null;
+  currentProfile = null;
+  userState.token = null;
+
+  if (sb) {
+    try {
+      // Cap signOut at 4s — on slow network it hangs indefinitely
+      await Promise.race([
+        sb.auth.signOut(),
+        new Promise(resolve => setTimeout(resolve, 4000))
+      ]);
+    } catch (e) { /* silent — belt-and-suspenders below handles it */ }
+  }
+
+  // Belt-and-suspenders: manually wipe Supabase tokens from localStorage
+  // so that after reload, initAuth() / getSession() doesn't re-authenticate
   try {
-    await sb.auth.signOut();
-  } catch (e) { console.error(e); }
-  
+    Object.keys(localStorage)
+      .filter(k => k.startsWith('sb-') || k.includes('supabase'))
+      .forEach(k => localStorage.removeItem(k));
+  } catch (_) {}
+
   closeProfileDropdown();
-  window.location.reload(); // Simplest way to clear state
+  window.location.reload();
 }
 
 document.addEventListener('click', function (e) {
@@ -1504,6 +1567,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initSupabase();
 
+  placeStatusBarForMode();
+
 });
 
 /* 
@@ -1720,8 +1785,12 @@ function toggleCompareMode() {
 
   lblC.classList.toggle('active', compareMode);
 
+  document.body.classList.toggle('sentra-mode-compare', compareMode);
+
   const ipEntry = document.getElementById('ip-entry');
   if (ipEntry) ipEntry.style.display = compareMode ? 'none' : '';
+
+  placeStatusBarForMode();
 
   // Hide results when switching modes
 
@@ -1729,6 +1798,15 @@ function toggleCompareMode() {
 
   document.getElementById('compare-results').style.display = 'none';
 
+}
+
+function placeStatusBarForMode() {
+  const statusBar = document.getElementById('status-bar');
+  const compareSlot = document.getElementById('compare-quota-slot');
+  const defaultAnchor = document.getElementById('status-bar-anchor');
+  if (!statusBar || !compareSlot || !defaultAnchor) return;
+  const target = compareMode ? compareSlot : defaultAnchor;
+  if (statusBar.parentElement !== target) target.appendChild(statusBar);
 }
 
 /*  LOADING  */
@@ -3914,25 +3992,6 @@ async function triggerAiInsight() {
 
     }
 
-    async function triggerCompareAi() {
-      const el = document.getElementById('cmp-ai');
-      if (!el || !lastCompareData) return;
-      el.innerHTML = '<span class="text-[10px] animate-pulse">Membandingkan tren...</span>';
-      try {
-        const res = await fetch('/api/get-compare-ai', {
-          method: 'POST',
-          headers: getAuthHeaders(),
-          body: JSON.stringify(lastCompareData)
-        });
-        const d = await res.json();
-        if (d.ai_insight) {
-          typeWriter(el, d.ai_insight.replace(/\*\*/g, ''), 6);
-        } else {
-          el.textContent = "Analisis tidak tersedia.";
-        }
-      } catch (e) { el.textContent = "Gagal memuat AI."; }
-    }
-
   }
 
 }
@@ -4069,7 +4128,7 @@ function analyzeCategory(type) {
 
 /*  COMPARE RENDERING  */
 
-function renderCompareResults(d) {
+function renderCompareResults(d, inputKwA = '', inputKwB = '') {
 
   lastCompareData = d;
 
@@ -4083,19 +4142,22 @@ function renderCompareResults(d) {
 
   cmpEl.style.visibility = 'visible';
 
-  const a = d.keyword_a;
+  const a = d.keyword_a || {};
 
-  const b = d.keyword_b;
+  const b = d.keyword_b || {};
 
   const c = d.comparison;
 
   const t = d.trend_data;
 
+  const labelA = (inputKwA || a.keyword || '').trim() || 'Keyword A';
+  const labelB = (inputKwB || b.keyword || '').trim() || 'Keyword B';
+
   // Header
 
-  document.getElementById('cmp-kw-a').textContent = a.keyword;
+  document.getElementById('cmp-kw-a').textContent = labelA;
 
-  document.getElementById('cmp-kw-b').textContent = b.keyword;
+  document.getElementById('cmp-kw-b').textContent = labelB;
 
   document.getElementById('cmp-ts').textContent =
 
@@ -4103,17 +4165,18 @@ function renderCompareResults(d) {
 
   // Table headers
 
-  document.getElementById('cmp-th-a').textContent = a.keyword;
+  document.getElementById('cmp-th-a').textContent = labelA;
 
-  document.getElementById('cmp-th-b').textContent = b.keyword;
+  document.getElementById('cmp-th-b').textContent = labelB;
 
   // Winner banner
 
-  document.getElementById('cmp-winner').textContent = c.winner_overall;
+  const winnerOverall = c.winner_overall === a.keyword ? labelA : c.winner_overall === b.keyword ? labelB : c.winner_overall;
+  document.getElementById('cmp-winner').textContent = winnerOverall;
 
   document.getElementById('cmp-winner-score').textContent =
 
-    `Skor Gabungan  ${a.keyword}: ${c.score_a} -- ${b.keyword}: ${c.score_b}`;
+    `Skor Gabungan  ${labelA}: ${c.score_a} -- ${labelB}: ${c.score_b}`;
 
   // Build table rows
 
@@ -4147,9 +4210,10 @@ function renderCompareResults(d) {
 
     const tr = document.createElement('tr');
 
-    const isWinA = m.winner === a.keyword;
+    const isWinA = m.winner === a.keyword || m.winner === labelA;
 
-    const isWinB = m.winner === b.keyword;
+    const isWinB = m.winner === b.keyword || m.winner === labelB;
+    const winnerText = m.winner === a.keyword ? labelA : m.winner === b.keyword ? labelB : m.winner;
 
     tr.innerHTML = `
 
@@ -4159,7 +4223,7 @@ function renderCompareResults(d) {
 
       <td class="col-b ${isWinB ? 'val-winner' : 'val-loser'}">${m.vb}</td>
 
-      <td class="winner-cell">${m.winner}</td>
+      <td class="winner-cell">${winnerText}</td>
 
     `;
 
@@ -4169,13 +4233,7 @@ function renderCompareResults(d) {
 
   // Chart.js
 
-  renderTrendChart(t, a.keyword, b.keyword);
-
-  // AI Insight (Manual only)
-
-  const aiEl = document.getElementById('cmp-ai');
-
-  if (aiEl) aiEl.innerHTML = '<button class="px-4 py-2 border border-brand/30 text-brand text-[10px] uppercase tracking-widest hover:bg-brand/10 transition-all" onclick="triggerCompareAi()">Generate AI Comparison</button>';
+  renderTrendChart(t, labelA, labelB);
 
   // cleaned: removed dead code — duplicate switchTab() nested inside compare handler (correct global definition exists below)
 
@@ -4492,7 +4550,7 @@ async function doCompare() {
       return;
     }
 
-    renderCompareResults(data);
+    renderCompareResults(data, kwA, kwB);
 
     if (data._meta) updateQuotaUI(data._meta);
 

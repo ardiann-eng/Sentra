@@ -1263,6 +1263,16 @@ header,
   margin-top: 16px;
 }
 
+.compare-quota-slot {
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+}
+
+.compare-quota-slot .status-bar {
+  width: min(560px, 100%);
+}
+
 #btn-compare {
   display: flex;
   align-items: center;
@@ -3446,6 +3456,7 @@ header,
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 2px;
+  table-layout: fixed;
 }
 
 .cmp-table th,
@@ -3453,6 +3464,7 @@ header,
   padding: 14px 18px;
   text-align: center;
   border-bottom: 1px solid rgba(74, 69, 53, .3);
+  word-break: break-word;
 }
 
 .cmp-table th {
@@ -3545,6 +3557,24 @@ footer {
 
 /* ── MOBILE-FIRST RESPONSIVENESS ── */
 @media(max-width:680px) {
+  .compare-quota-slot {
+    margin-top: 10px;
+  }
+
+  .compare-quota-slot .status-bar {
+    width: 100%;
+    padding: 10px 12px;
+  }
+
+  .compare-quota-slot .status-bar-right {
+    display: none;
+  }
+
+  .compare-quota-slot .status-bar-left {
+    width: 100%;
+    justify-content: center;
+  }
+
   .g3 {
     grid-template-columns: 1fr
   }
@@ -3626,8 +3656,26 @@ footer {
 
   .cmp-table th,
   .cmp-table td {
-    padding: 10px 8px;
-    font-size: 11px
+    padding: 10px 6px;
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  .cmp-table th:last-child,
+  .cmp-table td:last-child {
+    display: none;
+  }
+
+  .cmp-table th:first-child,
+  .cmp-table td:first-child {
+    width: 32%;
+    text-align: left;
+    padding-left: 8px;
+  }
+
+  .cmp-table .col-a,
+  .cmp-table .col-b {
+    border-left-width: 1px;
   }
 
   .help-tip .tip-text {
@@ -8050,6 +8098,35 @@ html:has(#auth-overlay.open) {
     box-sizing: border-box;
   }
 
+  /* On mobile compare mode: hide quota bar from its anchor (hero) position */
+  body.sentra-mode-compare #status-bar-anchor .status-bar,
+  body.sentra-mode-compare > .hero > .status-bar {
+    display: none !important;
+  }
+
+  /* Show it cleanly below the compare button */
+  body.sentra-mode-compare .compare-quota-slot {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+  }
+
+  body.sentra-mode-compare .compare-quota-slot .status-bar {
+    display: inline-flex !important;
+    width: 100%;
+    padding: 10px 12px;
+    justify-content: center;
+  }
+
+  body.sentra-mode-compare .compare-quota-slot .status-bar-right {
+    display: none;
+  }
+
+  body.sentra-mode-compare .compare-quota-slot .status-bar-left {
+    width: 100%;
+    justify-content: center;
+  }
+
   .compare-row {
     grid-template-columns: 1fr;
     gap: 0;
@@ -9898,6 +9975,15 @@ html:has(#auth-overlay.open) {
   margin-bottom: 48px;
 }
 
+@media (max-width: 767px) {
+  .radar-modern-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 32px;
+  }
+}
+
 /* Title handled above */
 
 .radar-modern-subtitle {
@@ -10447,55 +10533,48 @@ header,
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 28px;
-  background: rgba(0, 0, 0, 0.74);
-  backdrop-filter: blur(10px);
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.84);
+  backdrop-filter: blur(16px);
 }
 
 .sentra-modal-box {
-  width: min(760px, 100%);
-  max-height: calc(100dvh - 32px);
-  border-radius: 22px;
-  border: 1px solid rgba(250, 204, 21, 0.18);
-  background: radial-gradient(1200px 600px at 15% 10%, rgba(250, 204, 21, 0.09), transparent 55%),
-    linear-gradient(180deg, rgba(18, 18, 18, 0.98), rgba(10, 10, 10, 0.98));
-  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.65);
-  padding: 34px 28px 28px;
+  width: min(520px, 100%);
+  max-height: calc(100dvh - 40px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.016) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.016) 1px, transparent 1px),
+    #0e0e0e;
+  background-size: 32px 32px, 32px 32px, auto;
+  box-shadow: 0 40px 96px rgba(0, 0, 0, 0.7);
+  padding: 40px 36px 36px;
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
-  scrollbar-color: rgba(250, 204, 21, 0.2) transparent;
+  scrollbar-color: rgba(250, 204, 21, 0.15) transparent;
 }
 
 .sentra-modal-box::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  background: linear-gradient(135deg, rgba(250, 204, 21, 0.22), rgba(255, 255, 255, 0.03), rgba(250, 204, 21, 0.1));
-  opacity: 0.35;
-  pointer-events: none;
-  mask: linear-gradient(#000, #000) content-box, linear-gradient(#000, #000);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  padding: 1px;
-  border-radius: 22px;
+  display: none;
 }
 
 .sentra-modal-close {
   position: absolute;
-  top: 14px;
+  top: 16px;
   right: 16px;
-  width: 40px;
-  height: 40px;
-  border-radius: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(20, 20, 20, 0.7);
-  color: rgba(255, 255, 255, 0.65);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.35);
   cursor: pointer;
-  font-size: 22px;
+  font-size: 19px;
   line-height: 1;
-  transition: all 0.2s ease;
+  transition: all 0.18s ease;
   z-index: 20;
   display: flex;
   align-items: center;
@@ -10503,120 +10582,198 @@ header,
 }
 
 .sentra-modal-close:hover {
-  background: rgba(250, 204, 21, 0.18);
-  border-color: rgba(250, 204, 21, 0.28);
-  color: #facc15;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .sentra-modal-eyebrow {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 0.15em;
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  font-weight: 500;
   text-transform: uppercase;
-  color: rgba(250, 204, 21, 0.85);
-  margin-bottom: 12px;
+  color: rgba(250, 204, 21, 0.55);
+  margin-bottom: 14px;
 }
 
 .sentra-modal-title {
-  font-family: var(--font-main);
-  font-size: clamp(20px, 2.5vw, 30px);
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  color: #f4f4f5;
-  margin: 0 0 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(20px, 1.9vw, 23px);
+  font-weight: 400;
+  letter-spacing: -0.022em;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.32;
+  margin: 0 0 8px;
 }
 
 .sentra-modal-desc {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  color: rgba(255, 255, 255, 0.62);
-  font-size: 14px;
-  line-height: 1.7;
-  margin: 0 0 20px;
+  font-family: 'Inter', sans-serif;
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 13px;
+  line-height: 1.72;
+  margin: 0 0 28px;
 }
 
 .sentra-modal-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .sentra-modal-card {
   text-align: left;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(14, 14, 14, 0.65);
-  padding: 18px 18px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: transparent;
+  padding: 20px;
   cursor: pointer;
-  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  transition: all 0.22s ease;
   display: grid;
-  grid-template-columns: 44px 1fr;
-  gap: 14px;
+  grid-template-columns: 48px 1fr;
+  gap: 12px 16px;
   position: relative;
   overflow: hidden;
 }
 
 .sentra-modal-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(250, 204, 21, 0.28);
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
-  background: rgba(16, 16, 16, 0.78);
+  border-color: rgba(255, 255, 255, 0.13);
+  background: rgba(255, 255, 255, 0.026);
 }
 
 .sentra-modal-card.highlight {
-  border-color: rgba(250, 204, 21, 0.32);
-  background: radial-gradient(600px 240px at 20% 10%, rgba(250, 204, 21, 0.13), transparent 55%),
-    rgba(14, 14, 14, 0.7);
+  order: -1;
+  border-color: rgba(250, 204, 21, 0.22);
+  background: linear-gradient(145deg, rgba(250, 204, 21, 0.055) 0%, rgba(250, 204, 21, 0.018) 50%, transparent 80%);
+  padding: 24px 22px;
+  grid-template-columns: 60px 1fr;
+}
+
+.sentra-modal-card.highlight:hover {
+  border-color: rgba(250, 204, 21, 0.34);
+  background: linear-gradient(145deg, rgba(250, 204, 21, 0.08) 0%, rgba(250, 204, 21, 0.025) 50%, transparent 80%);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 36px rgba(250, 204, 21, 0.07);
 }
 
 .sentra-modal-card-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 16px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 18px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  color: rgba(255, 255, 255, 0.5);
+  align-self: start;
+}
+
+.sentra-modal-card.highlight .sentra-modal-card-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  background: rgba(250, 204, 21, 0.1);
+  border-color: rgba(250, 204, 21, 0.22);
   color: #facc15;
-  background: rgba(250, 204, 21, 0.08);
-  border: 1px solid rgba(250, 204, 21, 0.18);
-  font-size: 16px;
+  font-size: 24px;
+}
+
+.sentra-modal-card-body {
+  align-self: start;
 }
 
 .sentra-modal-card-title {
-  font-family: var(--font-main);
-  font-weight: 700;
-  color: #fafafa;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.68);
   letter-spacing: -0.01em;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
+  line-height: 1.35;
+}
+
+.sentra-modal-card.highlight .sentra-modal-card-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #fafafa;
+  margin-bottom: 7px;
 }
 
 .sentra-modal-card-sub {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  color: rgba(255, 255, 255, 0.58);
+  font-family: 'Inter', sans-serif;
+  color: rgba(255, 255, 255, 0.38);
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.65;
+}
+
+.sentra-modal-card.highlight .sentra-modal-card-sub {
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 13.5px;
 }
 
 .sentra-modal-card-cta {
   grid-column: 1 / -1;
-  margin-top: 12px;
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.22em;
+  margin-top: 16px;
+}
+
+.sentra-modal-card-cta-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(250, 204, 21, 0.9);
+  transition: all 0.18s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.sentra-modal-card-secondary .sentra-modal-card-cta-btn {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.sentra-modal-card.highlight .sentra-modal-card-cta-btn {
+  background: #facc15;
+  border-color: transparent;
+  color: #0a0a0a;
+  height: 44px;
+  font-weight: 700;
+  font-size: 11.5px;
+  box-shadow: 0 4px 20px rgba(250, 204, 21, 0.22);
+}
+
+.sentra-modal-card.highlight:hover .sentra-modal-card-cta-btn {
+  background: #fde047;
+  box-shadow: 0 6px 28px rgba(250, 204, 21, 0.36);
+}
+
+.sentra-modal-card:not(.highlight):hover .sentra-modal-card-cta-btn {
+  border-color: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .sentra-modal-footer {
-  margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .sentra-modal-footnote {
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.48);
-  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.32);
+  line-height: 1.65;
 }
 
 .sentra-onboarding-step {
@@ -10721,19 +10878,19 @@ header,
   background:
     radial-gradient(800px 260px at 15% 0%, rgba(250, 204, 21, 0.07), transparent 60%),
     rgba(10, 10, 10, 0.65);
-  padding: 20px;
+  padding: 28px 24px;
 }
 
 .sentra-onboarding-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: 28px 20px;
 }
 
 .sentra-field {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 10px;
 }
 
 .sentra-field-full {
@@ -10758,10 +10915,11 @@ header,
 .sentra-input-affix {
   width: 100%;
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 8px 20px rgba(0, 0, 0, 0.22);
   color: #fafafa;
-  transition: all 0.18s ease;
+  transition: all 0.22s ease;
 }
 
 .sentra-field input,
@@ -10775,9 +10933,9 @@ header,
 .sentra-field textarea:focus,
 .sentra-select.open .sentra-select-trigger {
   outline: none;
-  border-color: rgba(250, 204, 21, 0.42);
-  box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.08);
-  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(250, 204, 21, 0.45);
+  box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.08), 0 10px 24px rgba(0, 0, 0, 0.28);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.028));
 }
 
 .sentra-field textarea {
@@ -10802,7 +10960,7 @@ header,
 .sentra-input-affix {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   padding: 0 16px;
 }
 
@@ -10833,7 +10991,9 @@ header,
   font-size: 13px !important;
   font-weight: 600;
   letter-spacing: 0.04em;
-  padding: 0 10px 0 16px !important;
+  min-width: 42px;
+  text-align: center;
+  padding: 0 8px 0 12px !important;
   border-right: 1px solid rgba(255, 255, 255, 0.07) !important;
   line-height: 1;
   background: transparent !important;
@@ -10845,17 +11005,17 @@ header,
 
 .sentra-field-icon {
   position: absolute;
-  left: 15px;
+  left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(250, 204, 21, 0.45);
-  font-size: 13px;
+  color: rgba(250, 204, 21, 0.62);
+  font-size: 15px;
   pointer-events: none;
-  z-index: 1;
+  z-index: 0;
 }
 
 .sentra-field-input-wrap input {
-  padding: 14px 16px 14px 40px;
+  padding: 14px 16px 14px 46px !important;
 }
 
 .sentra-field-sublabel {
@@ -10871,7 +11031,7 @@ header,
   align-items: center;
   gap: 8px;
   margin-top: 6px;
-  margin-bottom: -2px;
+  margin-bottom: -6px;
 }
 
 .sentra-form-section-divider::after {
@@ -10952,6 +11112,7 @@ header,
   background: rgba(11, 11, 11, 0.98);
   box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
   overflow: hidden;
+  transform: translateZ(0);
 }
 
 .sentra-select-search {
@@ -10979,6 +11140,9 @@ header,
   max-height: 260px;
   overflow: auto;
   padding: 8px;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
 }
 
 .sentra-select-option {
@@ -11159,14 +11323,15 @@ header,
   }
 
   .sentra-modal-box {
-    padding: 22px 18px;
+    padding: 32px 24px 28px;
     width: 100%;
     margin: 16px 0;
     max-height: none;
   }
 
   .sentra-modal-actions {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    gap: 10px;
   }
 
   .sentra-field-meta {
@@ -11176,11 +11341,11 @@ header,
 
   .sentra-onboarding-grid {
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 18px;
   }
 
   .sentra-onboarding-form {
-    padding: 16px;
+    padding: 18px 16px;
   }
 }
 
@@ -11193,9 +11358,9 @@ header,
   }
 
   .sentra-modal-box {
-    padding: 20px 16px 24px;
+    padding: 28px 18px 24px;
     margin: auto;
-    border-radius: 20px;
+    border-radius: 18px;
     width: 100%;
     max-height: 92dvh;
     overflow-y: auto;
@@ -11207,22 +11372,78 @@ header,
 
   /* Compact header */
   .sentra-modal-eyebrow {
-    font-size: 8px;
-    margin-bottom: 6px;
+    font-size: 9px;
+    margin-bottom: 10px;
   }
 
   .sentra-modal-title {
-    font-size: 22px;
-    margin-bottom: 4px;
-    text-align: center;
+    font-size: 19px;
+    margin-bottom: 6px;
+    text-align: left;
   }
 
   .sentra-modal-desc {
+    font-size: 13px;
+    line-height: 1.65;
+    margin-bottom: 20px;
+    text-align: left;
+  }
+
+  .sentra-modal-actions {
+    gap: 8px;
+  }
+
+  .sentra-modal-card {
+    grid-template-columns: 44px 1fr;
+    gap: 10px 14px;
+    padding: 18px 16px;
+  }
+
+  .sentra-modal-card.highlight {
+    grid-template-columns: 52px 1fr;
+    padding: 20px 16px;
+  }
+
+  .sentra-modal-card-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 17px;
+  }
+
+  .sentra-modal-card.highlight .sentra-modal-card-icon {
+    width: 52px;
+    height: 52px;
+    font-size: 21px;
+  }
+
+  .sentra-modal-card-title {
+    font-size: 13px;
+  }
+
+  .sentra-modal-card.highlight .sentra-modal-card-title {
+    font-size: 15px;
+  }
+
+  .sentra-modal-card-sub {
     font-size: 12.5px;
-    line-height: 1.5;
-    margin-bottom: 10px;
-    color: rgba(255,255,255,0.5);
-    text-align: center;
+  }
+
+  .sentra-modal-card.highlight .sentra-modal-card-sub {
+    font-size: 13px;
+  }
+
+  .sentra-modal-card-cta {
+    margin-top: 14px;
+  }
+
+  .sentra-modal-card-cta-btn {
+    height: 38px;
+    font-size: 10.5px;
+  }
+
+  .sentra-modal-card.highlight .sentra-modal-card-cta-btn {
+    height: 42px;
+    font-size: 11px;
   }
 
   .sentra-onboarding-topbar {
@@ -11238,16 +11459,16 @@ header,
 
   /* Compact form */
   .sentra-onboarding-form {
-    padding: 14px 12px;
+    padding: 18px 14px;
     border-radius: 14px;
   }
 
   .sentra-onboarding-grid {
-    gap: 10px;
+    gap: 16px;
   }
 
   .sentra-field {
-    gap: 5px;
+    gap: 7px;
   }
 
   .sentra-field-label {
@@ -11258,8 +11479,17 @@ header,
   .sentra-field textarea,
   .sentra-select-trigger {
     font-size: 16px; /* prevents iOS zoom */
-    padding: 10px 12px;
+    padding: 12px 14px;
     border-radius: 12px;
+  }
+
+  .sentra-field-input-wrap input {
+    padding: 12px 14px 12px 46px !important;
+  }
+
+  .sentra-field-icon {
+    left: 14px;
+    font-size: 14px;
   }
 
   .sentra-field textarea {
@@ -11274,6 +11504,11 @@ header,
   .sentra-input-affix {
     padding: 0 12px;
     border-radius: 12px;
+  }
+
+  .sentra-affix-rp {
+    min-width: 38px;
+    padding: 0 6px 0 10px !important;
   }
 
   .sentra-input-affix input {
@@ -11723,6 +11958,113 @@ header,
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+}
+
+/* ── UMKM SETTINGS FORM ── */
+.umkm-settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px 20px;
+  margin-bottom: 20px;
+}
+
+.umkm-settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.umkm-settings-field--full {
+  grid-column: 1 / -1;
+}
+
+.umkm-settings-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.umkm-settings-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: #fafafa;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.18s ease;
+  box-sizing: border-box;
+}
+
+.umkm-settings-input:focus {
+  outline: none;
+  border-color: rgba(250, 204, 21, 0.4);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.umkm-settings-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.umkm-settings-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.umkm-settings-feedback {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.umkm-settings-feedback.success {
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  color: #86efac;
+}
+
+.umkm-settings-feedback.error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  color: #fca5a5;
+}
+
+.umkm-settings-summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(250, 204, 21, 0.05);
+  border: 1px solid rgba(250, 204, 21, 0.14);
+  margin-bottom: 20px;
+}
+
+.umkm-settings-summary-row {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.umkm-settings-summary-key {
+  width: 70px;
+  flex-shrink: 0;
+  color: rgba(250, 204, 21, 0.7);
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .umkm-settings-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .umkm-btn {

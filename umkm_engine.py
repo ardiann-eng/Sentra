@@ -157,7 +157,7 @@ Buat:
 
 
 def groq_generate(prompt: str) -> str:
-    text, status, err = _generate_via_groq(prompt)
+    text, status, err, *_ = _generate_via_groq(prompt)
     if status != 200 or not text:
         return "⚠ Lagi ada kendala memuat AI. Coba lagi ya."
     return text.strip()
