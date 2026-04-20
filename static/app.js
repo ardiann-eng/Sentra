@@ -89,6 +89,7 @@ let lastAnalysisResult = null;
 let _aiInsightGenerated = false;
 let lastCompareData = null;
 let lastAnalysisData = null;
+let isManualAuth = false; // Flag to prevent redundant data loading during login/register
 
 function getAuthHeaders() {
   const headers = { 'Content-Type': 'application/json' };
@@ -323,6 +324,8 @@ async function initAuth() {
 
     if (event === 'SIGNED_IN' && session) {
 
+      if (isManualAuth) return;
+
       currentUser = session.user;
 
       userState.userId = session.user.id;
@@ -338,6 +341,8 @@ async function initAuth() {
     }
 
     if (event === 'SIGNED_OUT') {
+
+      isManualAuth = false;
 
       currentUser = null;
 
@@ -1018,6 +1023,7 @@ async function handleLoginAction() {
     if (!res.ok) throw new Error(data.error || 'Login belum berhasil.');
 
     persistRememberMe(email, remember);
+    isManualAuth = true; // Guard onAuthStateChange
 
     // Sync session ke Supabase client yg sudah ada di halaman
     if (data.session?.access_token && data.session?.refresh_token && sb) {
@@ -1026,14 +1032,18 @@ async function handleLoginAction() {
           access_token:  data.session.access_token,
           refresh_token: data.session.refresh_token
         });
-      } catch (e) { console.warn('[LOGIN] setSession slow/failed:', e); }
+      } catch (e) {
+        // "Lock stolen" is usually non-fatal, session often still sticks
+        console.warn('[LOGIN] Sync notice (can ignore lock stolen):', e.message || e);
+      }
     }
 
-    // Update state in-page — tidak perlu reload/redirect kalau sudah di homepage
+    // Update state in-page — immediately
     currentUser      = data.user || { id: data.session?.user?.id, email };
     userState.userId = currentUser.id || '';
     userState.token  = data.session?.access_token || '';
 
+    // Load extra data once
     if (currentUser.id) await loadProfile(currentUser.id);
     updateNavAuth();
     fetchUserStatus();
@@ -1043,11 +1053,9 @@ async function handleLoginAction() {
     pulseAuthSuccess();
 
     setTimeout(() => {
+      isManualAuth = false; // Reset guard
       closeAuthModal();
-      // Redirect hanya jika user bukan di homepage (misal dari subpage)
-      if (window.location.pathname !== '/') {
-        window.location.href = '/';
-      }
+      if (window.location.pathname !== '/') window.location.href = '/';
     }, 700);
 
   } catch (e) {
@@ -1096,13 +1104,7 @@ async function handleRegister() {
     if (!res.ok) throw new Error(data.error || 'Pendaftaran belum berhasil.');
 
     persistRememberMe(email, remember);
-
-    // === Case 1: Supabase perlu verifikasi email (session = null) ===
-    if (data.needs_email_verification || !data.session?.access_token) {
-      setAuthLoading(false, 'Buat Akun Sekarang');
-      setAuthMessage('success', 'Akun berhasil dibuat! Cek email kamu untuk verifikasi, lalu masuk.');
-      return;
-    }
+    isManualAuth = true; // Guard onAuthStateChange
 
     // === Case 2: Session tersedia — sync lalu update state in-page ===
     const session = data.session;
@@ -1113,11 +1115,11 @@ async function handleRegister() {
           refresh_token: session.refresh_token
         });
       } catch (syncErr) {
-        console.warn('[REGISTER] setSession gagal, lanjut:', syncErr);
+        console.warn('[REGISTER] Sync notice (can ignore lock stolen):', syncErr.message || syncErr);
       }
     }
 
-    // Update state in-page — tidak perlu reload/redirect kalau sudah di homepage
+    // Update state in-page — immediately
     currentUser      = data.user || { id: session?.user?.id, email };
     userState.userId = currentUser?.id || '';
     userState.token  = session?.access_token || '';
@@ -1130,11 +1132,9 @@ async function handleRegister() {
     setAuthMessage('success', `Selamat datang di Sentra AI, ${fullName || email}! 🎉`);
 
     setTimeout(() => {
+      isManualAuth = false; // Reset guard
       closeAuthModal();
-      // Redirect hanya kalau bukan di homepage
-      if (window.location.pathname !== '/') {
-        window.location.href = '/';
-      }
+      if (window.location.pathname !== '/') window.location.href = '/';
     }, 900);
 
   } catch (e) {
