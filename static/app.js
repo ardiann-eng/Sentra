@@ -1055,7 +1055,11 @@ async function handleLoginAction() {
     setTimeout(() => {
       isManualAuth = false; // Reset guard
       closeAuthModal();
-      if (window.location.pathname !== '/') window.location.href = '/';
+      if (window.location.pathname !== '/') {
+        window.location.href = '/';
+      } else {
+        window.location.reload();
+      }
     }, 700);
 
   } catch (e) {
@@ -1134,7 +1138,11 @@ async function handleRegister() {
     setTimeout(() => {
       isManualAuth = false; // Reset guard
       closeAuthModal();
-      if (window.location.pathname !== '/') window.location.href = '/';
+      if (window.location.pathname !== '/') {
+        window.location.href = '/';
+      } else {
+        window.location.reload();
+      }
     }, 900);
 
   } catch (e) {
@@ -1310,7 +1318,7 @@ function renderProfileDropdown() {
     <div class="pdd-sep"></div>
 
     <nav class="pdd-nav">
-      <button class="pdd-item" onclick="window.SentraUMKM?.openDashboard?.(); closeProfileDropdown();">
+      <button class="pdd-item" onclick="window.location.href='/pengaturan-akun#section-bisnis'; closeProfileDropdown();">
         <span class="pdd-icon"><i class="fa-solid fa-chart-line"></i></span>
         <span>Analisis Usahamu</span>
         <i class="fa-solid fa-chevron-right pdd-item-arrow"></i>
