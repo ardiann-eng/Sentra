@@ -1720,6 +1720,9 @@ function toggleCompareMode() {
 
   lblC.classList.toggle('active', compareMode);
 
+  const ipEntry = document.getElementById('ip-entry');
+  if (ipEntry) ipEntry.style.display = compareMode ? 'none' : '';
+
   // Hide results when switching modes
 
   document.getElementById('results').style.display = 'none';
