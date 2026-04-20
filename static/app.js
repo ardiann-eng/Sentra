@@ -992,19 +992,8 @@ async function syncSupabaseSession(session) {
   } catch (e) { /* silent */ }
 }
 
-async function loginAfterRegisterFallback(email, password) {
-  const res = await fetch('/api/auth/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password, remember_me: true })
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Auto login setelah daftar gagal.');
-  if (data.session?.access_token && data.session?.refresh_token) {
-    await syncSupabaseSession(data.session);
-  }
-  return data;
-}
+// loginAfterRegisterFallback dihapus — menyebabkan race condition & double-request loop.
+// Digantikan oleh flow sequential di dalam handleRegister().
 
 async function handleLoginAction() {
   const email = document.getElementById('auth-email')?.value?.trim();
@@ -1039,12 +1028,14 @@ async function handleLoginAction() {
     } catch (e) { console.warn('Session sync slow/failed', e); }
 
     setAuthLoading(false, 'Masuk ke Sentra');
-    setAuthMessage('success', 'Login berhasil! Memuat ulang halaman...');
-    
+    setAuthMessage('success', 'Login berhasil! Mengalihkan...');
+
     pulseAuthSuccess();
+    // Pakai href = '/' bukan reload() — mencegah loop jika dibuka dari subpage
     setTimeout(() => {
-      window.location.reload();
-    }, 1000);
+      closeAuthModal();
+      window.location.href = '/';
+    }, 800);
   } catch (e) {
     setAuthMessage('error', authFriendlyError(e.message || e));
     const form = document.querySelector('.auth-form-shell');
@@ -1059,12 +1050,13 @@ async function handleLoginAction() {
 
 async function handleRegister() {
   const fullName = document.getElementById('auth-name')?.value?.trim();
-  const email = document.getElementById('auth-email')?.value?.trim();
+  const email    = document.getElementById('auth-email')?.value?.trim();
   const password = document.getElementById('auth-password')?.value;
   const remember = Boolean(document.getElementById('auth-remember')?.checked);
-  const emailErr = validateAuthInput('email', email);
+
+  const nameErr     = validateAuthInput('name', fullName);
+  const emailErr    = validateAuthInput('email', email);
   const passwordErr = validateAuthInput('password-signup', password);
-  const nameErr = validateAuthInput('name', fullName);
 
   if (nameErr || emailErr || passwordErr) {
     setAuthMessage('error', nameErr || emailErr || passwordErr);
@@ -1072,64 +1064,66 @@ async function handleRegister() {
   }
 
   setAuthMessage('clear', '');
-  setAuthLoading(true, 'Buat Akun Sentra');
+  setAuthLoading(true, 'Buat Akun Sekarang');
+
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 18000);
+    const timeoutId  = setTimeout(() => controller.abort(), 20000);
+
     const res = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, full_name: fullName, remember_me: remember }),
+      body: JSON.stringify({ email, password, full_name: fullName }),
       signal: controller.signal
     });
     clearTimeout(timeoutId);
+
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Pendaftaran belum berhasil.');
 
     persistRememberMe(email, remember);
 
-    pulseAuthSuccess();
-
-    if (data.needs_email_verification) {
-      closeAuthModal();
-      window.location.reload();
+    // === Case 1: Supabase minta verifikasi email dulu (session = null) ===
+    if (data.needs_email_verification || !data.session?.access_token) {
+      setAuthLoading(false, 'Buat Akun Sekarang');
+      setAuthMessage('success', 'Akun berhasil dibuat! Cek email kamu untuk verifikasi, lalu masuk.');
       return;
     }
 
-    // Sync Supabase session from API response
-    let sessionData = data.session;
-    if (sessionData?.access_token && sessionData?.refresh_token) {
-      await syncSupabaseSession(sessionData);
-    } else {
+    // === Case 2: Session tersedia — sync lalu redirect ke homepage ===
+    const session = data.session;
+    if (session?.access_token && session?.refresh_token && sb) {
       try {
-        const fallback = await loginAfterRegisterFallback(email, password);
-        if (fallback.session) sessionData = fallback.session;
-        if (fallback.user) data.user = fallback.user;
-      } catch (_) {}
+        await sb.auth.setSession({
+          access_token:  session.access_token,
+          refresh_token: session.refresh_token
+        });
+      } catch (syncErr) {
+        console.warn('[REGISTER] Session sync gagal, lanjut tetap:', syncErr);
+      }
     }
 
-    // Set user state directly from API response — don't rely on getSession() timing
-    currentUser = data.user || currentUser;
-    if (currentUser) {
-      userState.userId = currentUser.id;
-      if (sessionData?.access_token) userState.token = sessionData.access_token;
-      await loadProfile(currentUser.id);
-      updateNavAuth();
-      fetchUserStatus();
-    }
+    // Update local state
+    userState.userId = data.user?.id || '';
+    userState.token  = session?.access_token || '';
 
+    pulseAuthSuccess();
+    setAuthMessage('success', 'Berhasil daftar! Mengalihkan...');
+
+    // Redirect ke homepage — bukan reload() agar tidak trigger loop
     setTimeout(() => {
       closeAuthModal();
-      window.location.reload();
-    }, 560);
+      window.location.href = '/';
+    }, 800);
+
   } catch (e) {
     if (e?.name === 'AbortError') {
-      setAuthMessage('error', 'Proses daftar terlalu lama. Coba lagi sebentar ya.');
+      setAuthMessage('error', 'Pendaftaran terlalu lama. Coba lagi ya.');
     } else {
       setAuthMessage('error', authFriendlyError(e.message || e));
     }
   } finally {
-    setAuthLoading(false, 'Buat Akun Sentra');
+    setAuthLoading(false, 'Buat Akun Sekarang');
   }
 }
 

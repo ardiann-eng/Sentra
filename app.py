@@ -158,7 +158,7 @@ def cache_set(keyword: str, geo: str, cat: str, result: dict, ai_insight: str):
 _supabase_client = None
 
 def get_supabase():
-    """Lazy-init Supabase client. Returns None if env vars not set."""
+    """Lazy-init Supabase anon client. Dipakai untuk auth dan /api/config. Returns None jika env vars belum diset."""
     global _supabase_client
     if _supabase_client is not None:
         return _supabase_client
@@ -174,6 +174,29 @@ def get_supabase():
     except Exception:
         _supabase_client = None
     return _supabase_client
+
+
+_supabase_service_client = None
+
+def get_supabase_service():
+    """Service-role client — bypass RLS. JANGAN expose key ini ke frontend.
+    Dipakai khusus untuk operasi DB server-side (UMKM routes)."""
+    global _supabase_service_client
+    if _supabase_service_client is not None:
+        return _supabase_service_client
+    url = (os.environ.get("SUPABASE_URL") or "").strip()
+    service_key = (os.environ.get("SUPABASE_SERVICE_KEY") or os.environ.get("SUPABASE_KEY") or "").strip()
+    if not url or not service_key:
+        print("[SUPABASE SERVICE] Missing URL or Service Key — fallback ke anon client")
+        return get_supabase()  # graceful fallback ke anon jika service key belum diset
+    try:
+        from supabase import create_client
+        _supabase_service_client = create_client(url, service_key)
+        print("[SUPABASE SERVICE] Service-role client berhasil diinisialisasi")
+    except Exception as e:
+        print(f"[SUPABASE SERVICE] Gagal buat service client: {e}")
+        _supabase_service_client = None
+    return _supabase_service_client
 
 
 def get_supabase_anon_key() -> str:
@@ -566,12 +589,13 @@ def auth_register():
             "password": password,
             "options": {"data": {"full_name": full_name, "nama": full_name}}
         })
-        if hasattr(res, 'error') and res.error:
-            raise Exception(res.error.message)
-            
+
         if not res.user:
             return jsonify({"error": "Pendaftaran gagal. Coba lagi."}), 500
-            
+
+        # Jika session is None → Supabase minta konfirmasi email dulu
+        needs_verification = res.session is None
+
         return jsonify({
             "success": True,
             "message": "Akun berhasil dibuat.",
@@ -579,17 +603,20 @@ def auth_register():
             "session": {
                 "access_token":  res.session.access_token  if res.session else None,
                 "refresh_token": res.session.refresh_token if res.session else None,
-                "user":          {"id": res.user.id, "email": res.user.email} if res.user else None
-            },
-            "needs_email_verification": res.session is None,
+                "expires_in":    res.session.expires_in    if res.session else None,
+                "user":          {"id": res.user.id, "email": res.user.email}
+            } if res.session else None,
+            "needs_email_verification": needs_verification,
         })
     except Exception as e:
         err_msg = str(e)
-        print(f"[AUTH REGISTER ERROR] {err_msg}")
+        logger.error(f"[AUTH REGISTER ERROR] {err_msg}")
         err = err_msg.lower()
         if "already" in err or "registered" in err:
             return jsonify({"error": "Email ini sudah terdaftar. Coba masuk."}), 409
-        return jsonify({"error": f"Pendaftaran gagal: {err_msg[:100]}"}), 500
+        if "weak password" in err or "password should" in err:
+            return jsonify({"error": "Password terlalu lemah. Gunakan minimal 8 karakter dengan huruf dan angka."}), 400
+        return jsonify({"error": f"Pendaftaran gagal: {err_msg[:120]}"}), 500
 
 
 @app.route("/api/auth/forgot-password", methods=["POST"])
@@ -1460,12 +1487,13 @@ def umkm_profile():
     """
     GET  : load profile for current user (JWT or guest user_id)
     POST : upsert profile
+    Menggunakan service-role client untuk bypass RLS.
     """
     user_id, _, _ = get_auth_session()
     if not user_id:
         return jsonify({"error": "Unauthorized"}), 401
 
-    sb = get_supabase()
+    sb = get_supabase_service()
     if not sb:
         return jsonify({"error": "Koneksi database tidak tersedia"}), 503
 
@@ -1488,12 +1516,13 @@ def umkm_profile():
 def umkm_onboarding():
     """
     Save UMKM onboarding form, then let frontend redirect to dashboard shell.
+    Menggunakan service-role client untuk bypass RLS.
     """
     user_id, _, _ = get_auth_session()
     if not user_id:
         return jsonify({"error": "Unauthorized"}), 401
 
-    sb = get_supabase()
+    sb = get_supabase_service()
     if not sb:
         return jsonify({"error": "Koneksi database tidak tersedia"}), 503
 
@@ -1548,12 +1577,13 @@ def umkm_onboarding():
 def umkm_analyze():
     """
     Upsert profile + compute lightweight metrics + generate warm UMKM insight (Groq).
+    Menggunakan service-role client untuk bypass RLS.
     """
     user_id, _, _ = get_auth_session()
     if not user_id:
         return jsonify({"error": "Unauthorized"}), 401
 
-    sb = get_supabase()
+    sb = get_supabase_service()
     if not sb:
         return jsonify({"error": "Koneksi database tidak tersedia"}), 503
 
@@ -1582,11 +1612,12 @@ def umkm_analyze():
 
 @app.route("/api/umkm/plan", methods=["POST"])
 def umkm_plan():
+    """Menggunakan service-role client untuk bypass RLS."""
     user_id, _, _ = get_auth_session()
     if not user_id:
         return jsonify({"error": "Unauthorized"}), 401
 
-    sb = get_supabase()
+    sb = get_supabase_service()
     if not sb:
         return jsonify({"error": "Koneksi database tidak tersedia"}), 503
 
@@ -1602,11 +1633,12 @@ def umkm_plan():
 
 @app.route("/api/umkm/promo", methods=["POST"])
 def umkm_promo():
+    """Menggunakan service-role client untuk bypass RLS."""
     user_id, _, _ = get_auth_session()
     if not user_id:
         return jsonify({"error": "Unauthorized"}), 401
 
-    sb = get_supabase()
+    sb = get_supabase_service()
     if not sb:
         return jsonify({"error": "Koneksi database tidak tersedia"}), 503
 
@@ -1624,6 +1656,7 @@ def umkm_competitors():
     """
     Find competitors via SerpAPI Google Maps engine.
     Reuses the SERPAPI_KEY already configured for Google Trends.
+    Menggunakan service-role client untuk bypass RLS.
     """
     user_id, _, _ = get_auth_session()
     if not user_id:
@@ -1638,8 +1671,8 @@ def umkm_competitors():
     if not query:
         return jsonify({"error": "Query tidak boleh kosong"}), 400
 
-    # Optional: bias by UMKM profile location
-    sb = get_supabase()
+    # Optional: bias by UMKM profile location (pakai service client untuk bypass RLS)
+    sb = get_supabase_service()
     location_hint = ""
     if sb:
         try:
