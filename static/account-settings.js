@@ -20,13 +20,10 @@ const AccSettings = (() => {
   let _session    = null;
   let _data       = null;          // raw /api/account/me response
   let _avatarDataUrl = null;       // canvas-resized avatar (if changed)
-  let _sidebarOpen   = true;
   const PREFS_KEY    = 'sentra_prefs';
 
   // ─── Init ─────────────────────────────────────────────────
   async function init() {
-    _detectMobile();
-
     try {
       // 1. Fetch Supabase config from backend
       const cfgRes = await fetch('/api/config');
@@ -60,14 +57,6 @@ const AccSettings = (() => {
       console.error('[AccSettings] init error:', err);
       _fatalError('Gagal memuat halaman. Coba refresh.');
     }
-  }
-
-  function _detectMobile() {
-    if (window.innerWidth < 768) {
-      _sidebarOpen = false;
-      _applySidebarState();
-    }
-  }
 
   function _hideLoader() {
     const loader = document.getElementById('page-loader');
@@ -76,13 +65,14 @@ const AccSettings = (() => {
 
   function _animateIn() {
     if (typeof gsap === 'undefined') return;
+    // Set opacity 1 immediately in case of script delay or hidden initially
+    gsap.set('#page-content > *', { opacity: 1 });
     gsap.from('#page-content > *', {
       opacity: 0,
-      y: 16,
-      duration: 0.4,
-      stagger: 0.06,
+      y: 12,
+      duration: 0.35,
+      stagger: 0.05,
       ease: 'power2.out',
-      delay: 0.1,
     });
   }
 
@@ -96,44 +86,12 @@ const AccSettings = (() => {
     }
   }
 
-  // ─── Sidebar ──────────────────────────────────────────────
-  function toggleSidebar() {
-    _sidebarOpen = !_sidebarOpen;
-    _applySidebarState();
-  }
 
-  function closeSidebar() {
-    _sidebarOpen = false;
-    _applySidebarState();
-  }
-
-  function _applySidebarState() {
-    const sidebar  = document.getElementById('sidebar');
-    const mainWrap = document.getElementById('main-wrap');
-    const overlay  = document.getElementById('sidebar-overlay');
-    const isMobile = window.innerWidth < 768;
-
-    if (isMobile) {
-      sidebar?.classList.toggle('mobile-open', _sidebarOpen);
-      overlay?.classList.toggle('show', _sidebarOpen);
-    } else {
-      sidebar?.classList.toggle('collapsed', !_sidebarOpen);
-      mainWrap?.classList.toggle('sidebar-hidden', !_sidebarOpen);
-      overlay?.classList.remove('show');
-    }
-  }
 
   // ─── Nav (scroll to section) ──────────────────────────────
   function navTo(section) {
     const el = document.getElementById(`section-${section}`);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-    // Update active nav item
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    const navEl = document.getElementById(`nav-${section}`);
-    if (navEl) navEl.classList.add('active');
-
-    if (window.innerWidth < 768) closeSidebar();
   }
 
   // ─── Data Loading ─────────────────────────────────────────
@@ -578,8 +536,6 @@ const AccSettings = (() => {
 
   // ─── Public API ───────────────────────────────────────────
   return {
-    toggleSidebar,
-    closeSidebar,
     navTo,
     saveProfil,
     cancelProfil,
