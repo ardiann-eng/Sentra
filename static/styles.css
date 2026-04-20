@@ -10493,14 +10493,32 @@ header,
   box-shadow: 0 0 18px rgba(250, 204, 21, 0.22);
 }
 
+.sentra-onboarding-progress-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.sentra-onboarding-progress-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.38);
+}
+
 .sentra-onboarding-hero {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
+  align-items: flex-start;
+  text-align: left;
   gap: 6px;
   margin-bottom: 20px;
-  margin-bottom: 22px;
+}
+
+.sentra-onboarding-title {
+  font-size: clamp(15px, 2vw, 20px) !important;
+  line-height: 1.35 !important;
 }
 
 .sentra-onboarding-badge {
@@ -10531,7 +10549,7 @@ header,
 .sentra-onboarding-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  gap: 18px;
 }
 
 .sentra-field {
@@ -10571,7 +10589,7 @@ header,
 .sentra-field input,
 .sentra-field textarea,
 .sentra-select-trigger {
-  padding: 12px 14px;
+  padding: 14px 16px;
   font-size: 14px;
 }
 
@@ -10617,10 +10635,7 @@ header,
   letter-spacing: 0.08em;
   white-space: nowrap;
   flex-shrink: 0;
-  padding: 3px 8px;
-  background: rgba(250, 204, 21, 0.08);
-  border-radius: 6px;
-  border: 1px solid rgba(250, 204, 21, 0.15);
+  padding: 0 4px;
 }
 
 .sentra-input-affix input {
@@ -10628,6 +10643,94 @@ header,
   background: transparent;
   padding: 14px 0;
   box-shadow: none;
+}
+
+.sentra-input-affix--premium {
+  gap: 0;
+}
+
+.sentra-affix-rp {
+  color: rgba(250, 204, 21, 0.7) !important;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px !important;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0 10px 0 16px !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.07) !important;
+  line-height: 1;
+  background: transparent !important;
+}
+
+.sentra-field-input-wrap {
+  position: relative;
+}
+
+.sentra-field-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(250, 204, 21, 0.45);
+  font-size: 13px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.sentra-field-input-wrap input {
+  padding: 14px 16px 14px 40px;
+}
+
+.sentra-field-sublabel {
+  font-weight: 400;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.38);
+  margin-left: 5px;
+  letter-spacing: 0;
+}
+
+.sentra-form-section-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  margin-bottom: -2px;
+}
+
+.sentra-form-section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.sentra-form-section-icon {
+  color: rgba(250, 204, 21, 0.4);
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.sentra-form-section-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.28);
+  white-space: nowrap;
+}
+
+.sentra-select-trigger-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sentra-select-left-icon {
+  color: rgba(250, 204, 21, 0.45);
+  font-size: 12px;
+  flex-shrink: 0;
 }
 
 .sentra-select {
@@ -10805,7 +10908,15 @@ header,
   align-items: center;
   justify-content: center;
   gap: 16px;
-  margin-top: 20px;
+  margin-top: 24px;
+}
+
+.sentra-onboarding-actions .sentra-gold-btn {
+  width: 100%;
+  font-size: 15px;
+  padding: 17px 24px;
+  border-radius: 14px;
+  letter-spacing: -0.02em;
 }
 
 .sentra-onboarding-copy {

@@ -182,23 +182,35 @@
             <i class="fa-solid fa-arrow-left"></i>
             Kembali
           </button>
-          <div class="sentra-onboarding-progress">
-            <span class="is-active"></span>
-            <span class="is-active"></span>
+          <div class="sentra-onboarding-progress-wrap">
+            <div class="sentra-onboarding-progress-label">Langkah 2 dari 2</div>
+            <div class="sentra-onboarding-progress">
+              <span class="is-active"></span>
+              <span class="is-active"></span>
+            </div>
           </div>
         </div>
 
         <div class="sentra-onboarding-hero">
-          <div class="sentra-modal-eyebrow">Onboarding UMKM</div>
-          <h2 class="sentra-modal-title">Kenali usaha kamu</h2>
-          <p class="sentra-modal-desc">Isi singkat — bisa diubah kapan saja dari dashboard.</p>
+          <h2 class="sentra-modal-title sentra-onboarding-title">Ceritakan Sedikit Tentang Usaha Kamu</h2>
+          <p class="sentra-modal-desc">Isi singkat saja — bisa diubah kapan saja nanti.</p>
         </div>
 
         <form id="umkm-onboarding-form" class="sentra-onboarding-form">
           <div class="sentra-onboarding-grid">
+
+            <!-- ── Identitas Usaha ── -->
+            <div class="sentra-form-section-divider sentra-field-full">
+              <i class="fa-solid fa-id-card sentra-form-section-icon"></i>
+              <span class="sentra-form-section-label">Identitas Usaha</span>
+            </div>
+
             <label class="sentra-field">
               <span class="sentra-field-label">Nama Usaha <em>*</em></span>
-              <input id="umkm-business-name" name="business_name" type="text" maxlength="80" placeholder="Contoh: Kopi Sore Nusantara" required />
+              <div class="sentra-field-input-wrap">
+                <i class="fa-solid fa-store sentra-field-icon"></i>
+                <input id="umkm-business-name" name="business_name" type="text" maxlength="80" placeholder="Misal: Kopi Sore, Toko Bu Ani…" required />
+              </div>
             </label>
 
             <div class="sentra-field">
@@ -206,7 +218,10 @@
               <div class="sentra-select" data-select="category">
                 <input type="hidden" name="category" />
                 <button type="button" class="sentra-select-trigger" data-select-trigger aria-expanded="false">
-                  <span data-select-value>Pilih kategori usaha</span>
+                  <span class="sentra-select-trigger-inner">
+                    <i class="fa-solid fa-tag sentra-select-left-icon"></i>
+                    <span data-select-value>Pilih kategori usaha</span>
+                  </span>
                   <i class="fa-solid fa-chevron-down"></i>
                 </button>
                 <div class="sentra-select-panel" data-select-panel hidden>
@@ -219,12 +234,21 @@
               </div>
             </div>
 
+            <!-- ── Lokasi ── -->
+            <div class="sentra-form-section-divider sentra-field-full">
+              <i class="fa-solid fa-location-dot sentra-form-section-icon"></i>
+              <span class="sentra-form-section-label">Lokasi Usaha</span>
+            </div>
+
             <div class="sentra-field">
               <span class="sentra-field-label">Provinsi <em>*</em></span>
               <div class="sentra-select" data-select="province">
                 <input type="hidden" name="province" />
                 <button type="button" class="sentra-select-trigger" data-select-trigger aria-expanded="false">
-                  <span data-select-value>Pilih provinsi</span>
+                  <span class="sentra-select-trigger-inner">
+                    <i class="fa-solid fa-map-pin sentra-select-left-icon"></i>
+                    <span data-select-value>Pilih provinsi</span>
+                  </span>
                   <i class="fa-solid fa-chevron-down"></i>
                 </button>
                 <div class="sentra-select-panel" data-select-panel hidden>
@@ -239,21 +263,39 @@
 
             <label class="sentra-field">
               <span class="sentra-field-label">Kota / Kabupaten <em>*</em></span>
-              <input id="umkm-city" name="city" type="text" maxlength="80" placeholder="Contoh: Bandung" required />
+              <div class="sentra-field-input-wrap">
+                <i class="fa-solid fa-building sentra-field-icon"></i>
+                <input id="umkm-city" name="city" type="text" maxlength="80" placeholder="Contoh: Bandung, Surabaya…" required />
+              </div>
             </label>
+
+            <!-- ── Data Usaha ── -->
+            <div class="sentra-form-section-divider sentra-field-full">
+              <i class="fa-solid fa-chart-simple sentra-form-section-icon"></i>
+              <span class="sentra-form-section-label">Data Usaha (Opsional)</span>
+            </div>
 
             <label class="sentra-field">
               <span class="sentra-field-label">Omzet Rata-rata per Bulan</span>
-              <div class="sentra-input-affix">
-                <span>Rp</span>
+              <div class="sentra-input-affix sentra-input-affix--premium">
+                <span class="sentra-affix-rp">Rp</span>
                 <input id="umkm-revenue" name="avg_monthly_revenue" type="text" inputmode="numeric" placeholder="15.000.000" />
               </div>
             </label>
 
             <label class="sentra-field">
-              <span class="sentra-field-label">Jumlah Pelanggan Aktif</span>
-              <input id="umkm-customers" name="active_customers" type="number" min="0" step="1" placeholder="Contoh: 120" />
+              <span class="sentra-field-label">Pelanggan Aktif <span class="sentra-field-sublabel">per bulan</span></span>
+              <div class="sentra-field-input-wrap">
+                <i class="fa-solid fa-users sentra-field-icon"></i>
+                <input id="umkm-customers" name="active_customers" type="number" min="0" step="1" placeholder="Contoh: 120" />
+              </div>
             </label>
+
+            <!-- ── Platform & Deskripsi ── -->
+            <div class="sentra-form-section-divider sentra-field-full">
+              <i class="fa-solid fa-share-nodes sentra-form-section-icon"></i>
+              <span class="sentra-form-section-label">Platform & Cerita Usaha</span>
+            </div>
 
             <div class="sentra-field sentra-field-full">
               <span class="sentra-field-label">Platform Jualan Utama</span>
@@ -263,9 +305,9 @@
 
             <label class="sentra-field sentra-field-full">
               <span class="sentra-field-label">Deskripsi Singkat Usaha</span>
-              <textarea id="umkm-description" name="business_description" maxlength="200" rows="3" placeholder="Produk utama, siapa pelangganmu, hal yang bikin usahamu spesial..."></textarea>
+              <textarea id="umkm-description" name="business_description" maxlength="200" rows="3" placeholder="Produk unggulan, siapa pelangganmu, hal yang bikin usahamu beda dari yang lain..."></textarea>
               <div class="sentra-field-meta">
-                <span class="sentra-field-hint">Maks. 200 karakter</span>
+                <span class="sentra-field-hint">Maks. 200 karakter — makin detail, makin akurat rekomendasinya.</span>
                 <span id="umkm-description-count">0/200</span>
               </div>
             </label>
