@@ -1022,6 +1022,11 @@ async function handleLoginAction() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Login belum berhasil.');
 
+    if (data.redirect_admin) {
+      window.location.href = '/admin/';
+      return;
+    }
+
     persistRememberMe(email, remember);
     isManualAuth = true; // Guard onAuthStateChange
 

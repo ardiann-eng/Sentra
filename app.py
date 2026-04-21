@@ -26,7 +26,14 @@ from umkm_engine import (
 )
 
 app = Flask(__name__, template_folder='.')
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "sentra-admin-secret-change-in-prod")
+app.permanent_session_lifetime = timedelta(hours=8)
 CORS(app)
+
+logger = logging.getLogger(__name__)
+
+from admin import admin_bp
+app.register_blueprint(admin_bp, url_prefix="/admin")
 
 # =========================
 # TWO-LEVEL CACHE
@@ -521,6 +528,17 @@ def auth_login():
     password = data.get("password") or ""
     if not email or not password:
         return jsonify({"error": "Email dan password wajib diisi."}), 400
+
+    # Admin hardcoded credentials
+    _admin_user = os.environ.get("ADMIN_USERNAME", "admin")
+    _admin_pass = os.environ.get("ADMIN_PASSWORD", "admin123")
+    if email == _admin_user and password == _admin_pass:
+        import flask as _flask
+        _flask.session.clear()
+        _flask.session["admin_logged_in"] = True
+        _flask.session["admin_login_time"] = time.time()
+        _flask.session.permanent = True
+        return jsonify({"success": True, "redirect_admin": True})
 
     sb = get_supabase()
     if not sb:
