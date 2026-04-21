@@ -357,6 +357,21 @@ def api_user_searches(user_id):
 
 # ─── USER ACTIONS ─────────────────────────────────────────────────
 
+@admin_bp.route("/api/users/all-emails", methods=["GET"])
+@admin_required
+def api_all_emails():
+    """Returns a flat list of all registered user emails for BCC broadcasting."""
+    sb = _get_sb()
+    if not sb:
+        return jsonify({"error": "Supabase tidak tersedia"}), 500
+    try:
+        auth_map = _get_auth_full_map(sb)
+        emails = [info["email"] for info in auth_map.values() if info.get("email")]
+        return jsonify({"emails": emails})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @admin_bp.route("/api/users/<user_id>/tier", methods=["PATCH"])
 @admin_required
 def api_update_tier(user_id):

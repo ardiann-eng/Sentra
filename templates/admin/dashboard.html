@@ -439,6 +439,10 @@
           <option value="pro">Pro</option>
         </select>
         <button class="btn btn-outline" onclick="loadUsers(1)"><i class="fas fa-filter"></i> Filter</button>
+        <div style="flex:1"></div>
+        <button class="btn btn-outline" style="color:var(--gold); border-color:rgba(212,168,67,0.3)" onclick="copyAllEmails()">
+          <i class="fas fa-copy"></i> Salin Semua Email (BCC)
+        </button>
       </div>
       <div class="tbl-wrap">
         <table>
@@ -766,6 +770,28 @@ function closeConfirm(e) {
 async function doConfirm() {
   document.getElementById('confirmModal').classList.remove('show');
   if (_confirmCb) { await _confirmCb(); _confirmCb = null; }
+}
+
+async function copyAllEmails() {
+  const btn = event.currentTarget;
+  const originalHtml = btn.innerHTML;
+  btn.innerHTML = '<span class="spinner"></span> Salin...';
+  btn.disabled = true;
+  try {
+    const d = await apiFetch('/admin/api/users/all-emails');
+    if (d.error) throw new Error(d.error);
+    if (!d.emails || d.emails.length === 0) {
+      showToast('Tidak ada email', 'error');
+    } else {
+      await navigator.clipboard.writeText(d.emails.join(', '));
+      showToast(`Tersalin ${d.emails.length} email! Silakan paste di BCC`, 'success');
+    }
+  } catch (e) {
+    showToast('Gagal menyalin: ' + e.message, 'error');
+  } finally {
+    btn.innerHTML = originalHtml;
+    btn.disabled = false;
+  }
 }
 
 // ── USER ACTIONS ──────────────────────────────────────────────────────────────
