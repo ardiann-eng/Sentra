@@ -28,16 +28,39 @@ def admin_required(f):
 
 
 def _get_sb():
-    """Import get_supabase_service from app context."""
+    """Get best available Supabase client: service > anon."""
     try:
-        from app import get_supabase_service
-        return get_supabase_service()
+        from app import get_supabase_service, get_supabase
+        sb = get_supabase_service()
+        if sb:
+            return sb
+        return get_supabase()
     except Exception:
         return None
 
 
+def _get_email_map(sb) -> dict:
+    """Fetch user email map {user_id: email} via admin API."""
+    email_map: dict = {}
+    try:
+        res = sb.auth.admin.list_users()
+        # supabase-py v2: res is AdminListUsersResponse with .users list
+        users = getattr(res, "users", None) or (res if isinstance(res, list) else [])
+        for u in users:
+            uid = str(getattr(u, "id", "") or "")
+            email = getattr(u, "email", "") or ""
+            if uid:
+                email_map[uid] = email
+    except Exception:
+        pass
+    return email_map
+
+
+def _is_guest(user_id: str) -> bool:
+    return not user_id or user_id.startswith("guest_") or len(user_id) < 20
+
+
 def _safe_query(fn):
-    """Run fn(sb) and return (data, error). Never raises."""
     sb = _get_sb()
     if not sb:
         return None, "Supabase tidak tersedia"
@@ -118,7 +141,7 @@ def api_growth_users():
 def api_growth_searches():
     def query(sb):
         cutoff = (datetime.utcnow() - timedelta(days=30)).isoformat()
-        rows = (sb.table("search_logs").select("created_at")
+        rows = (sb.table("search_logs").select("created_at, user_id")
                 .gte("created_at", cutoff).execute()).data or []
         counts: dict = {}
         for row in rows:
@@ -194,29 +217,20 @@ def api_users():
     per_page = 20
 
     def query(sb):
-        # Fetch profiles with tier
         q = sb.table("profiles").select("id, tier, created_at")
         if tier_filter != "all":
             q = q.eq("tier", tier_filter)
-        profiles_res = q.execute()
-        profiles = profiles_res.data or []
+        profiles = q.order("created_at", desc=True).execute().data or []
 
-        # Fetch all search log counts per user
-        sl_res = sb.table("search_logs").select("user_id").execute()
-        sl_data = sl_res.data or []
+        # Search counts per user (registered users only)
+        sl_data = sb.table("search_logs").select("user_id").execute().data or []
         search_counts: dict = {}
         for row in sl_data:
             uid = str(row.get("user_id") or "")
-            search_counts[uid] = search_counts.get(uid, 0) + 1
+            if not _is_guest(uid):
+                search_counts[uid] = search_counts.get(uid, 0) + 1
 
-        # Try to get emails via admin list_users
-        email_map: dict = {}
-        try:
-            users_res = sb.auth.admin.list_users()
-            for u in (users_res or []):
-                email_map[str(u.id)] = u.email or ""
-        except Exception:
-            pass
+        email_map = _get_email_map(sb)
 
         rows = []
         for p in profiles:
@@ -232,7 +246,6 @@ def api_users():
                 "total_searches": search_counts.get(pid, 0),
             })
 
-        rows.sort(key=lambda x: x["created_at"], reverse=True)
         total = len(rows)
         start = (page - 1) * per_page
         return {
@@ -253,11 +266,11 @@ def api_users():
 @admin_required
 def api_user_searches(user_id):
     def query(sb):
-        rows = (sb.table("search_logs").select("keyword, geo, created_at, is_pro_search")
+        return (sb.table("search_logs")
+                .select("keyword, geo, created_at, is_pro_search")
                 .eq("user_id", user_id)
                 .order("created_at", desc=True)
                 .limit(10).execute()).data or []
-        return rows
 
     data, err = _safe_query(query)
     return jsonify(data or [])
@@ -276,21 +289,14 @@ def api_searches():
         q = (sb.table("search_logs")
              .select("id, user_id, keyword, geo, created_at, is_pro_search")
              .order("created_at", desc=True)
-             .limit(100))
+             .limit(200))
         if date_from:
             q = q.gte("created_at", date_from)
         if date_to:
             q = q.lte("created_at", date_to + "T23:59:59")
         rows = q.execute().data or []
 
-        # Get emails
-        email_map: dict = {}
-        try:
-            users_res = sb.auth.admin.list_users()
-            for u in (users_res or []):
-                email_map[str(u.id)] = u.email or ""
-        except Exception:
-            pass
+        email_map = _get_email_map(sb)
 
         result = []
         for row in rows:
@@ -298,13 +304,16 @@ def api_searches():
             if keyword_filter and keyword_filter not in kw:
                 continue
             uid = str(row.get("user_id") or "")
+            is_guest = _is_guest(uid)
+            email = "Guest" if is_guest else email_map.get(uid, uid[:12] + "…")
             result.append({
                 "id": row.get("id"),
-                "email": email_map.get(uid, uid[:8] + "…" if uid else ""),
+                "email": email,
                 "keyword": row.get("keyword", ""),
                 "geo": row.get("geo", ""),
                 "created_at": row.get("created_at", ""),
                 "is_pro_search": row.get("is_pro_search", False),
+                "is_guest": is_guest,
             })
         return result
 
@@ -330,13 +339,7 @@ def api_searches_export():
             q = q.lte("created_at", date_to + "T23:59:59")
         rows = q.execute().data or []
 
-        email_map: dict = {}
-        try:
-            users_res = sb.auth.admin.list_users()
-            for u in (users_res or []):
-                email_map[str(u.id)] = u.email or ""
-        except Exception:
-            pass
+        email_map = _get_email_map(sb)
 
         result = []
         for row in rows:
@@ -344,9 +347,10 @@ def api_searches_export():
             if keyword_filter and keyword_filter not in kw:
                 continue
             uid = str(row.get("user_id") or "")
+            email = "Guest" if _is_guest(uid) else email_map.get(uid, uid)
             result.append({
                 "id": row.get("id"),
-                "email": email_map.get(uid, uid),
+                "email": email,
                 "keyword": row.get("keyword", ""),
                 "geo": row.get("geo", ""),
                 "created_at": row.get("created_at", ""),
@@ -379,14 +383,7 @@ def api_umkm():
                 .order("updated_at", desc=True)
                 .execute()).data or []
 
-        email_map: dict = {}
-        try:
-            users_res = sb.auth.admin.list_users()
-            for u in (users_res or []):
-                email_map[str(u.id)] = u.email or ""
-        except Exception:
-            pass
-
+        email_map = _get_email_map(sb)
         for row in rows:
             uid = str(row.get("user_id") or "")
             row["email"] = email_map.get(uid, "")
@@ -418,33 +415,30 @@ def api_umkm_categories():
 @admin_required
 def api_umkm_map():
     def query(sb):
-        # User distribution by province (from profiles)
-        profile_rows = (sb.table("profiles").select("id").execute()).data or []
-        total_users = len(profile_rows)
-
-        # UMKM by province
-        umkm_rows = (sb.table("umkm_profiles").select("province")
+        # UMKM grouped by province
+        umkm_rows = (sb.table("umkm_profiles")
+                     .select("province, user_id, business_name")
                      .not_.is_("province", "null").execute()).data or []
+
         umkm_by_prov: dict = {}
+        user_by_prov: dict = {}
         for row in umkm_rows:
             prov = (row.get("province") or "").strip()
-            if prov:
-                umkm_by_prov[prov] = umkm_by_prov.get(prov, 0) + 1
+            if not prov:
+                continue
+            umkm_by_prov[prov] = umkm_by_prov.get(prov, 0) + 1
+            # Count unique users per province
+            uid = str(row.get("user_id") or "")
+            if uid:
+                if prov not in user_by_prov:
+                    user_by_prov[prov] = set()
+                user_by_prov[prov].add(uid)
 
-        # User province distribution (approximate — from umkm_profiles since profiles don't have province)
-        user_by_prov: dict = {}
-        all_umkm_full = (sb.table("umkm_profiles").select("province, user_id")
-                         .not_.is_("province", "null").execute()).data or []
-        for row in all_umkm_full:
-            prov = (row.get("province") or "").strip()
-            if prov:
-                user_by_prov[prov] = user_by_prov.get(prov, 0) + 1
-
-        provinces = set(list(umkm_by_prov.keys()) + list(user_by_prov.keys()))
+        provinces = set(umkm_by_prov.keys())
         return [
             {
                 "province": p,
-                "users": user_by_prov.get(p, 0),
+                "users": len(user_by_prov.get(p, set())),
                 "umkm": umkm_by_prov.get(p, 0),
             }
             for p in provinces
@@ -475,9 +469,6 @@ def api_system():
         except Exception:
             return 0
 
-    cache_count = cache_info()
-
-    # Count DB cache entries
     db_cache_count = 0
     db_cache_today = 0
     if sb:
@@ -494,7 +485,7 @@ def api_system():
         "serpapi": bool(os.environ.get("SERPAPI_KEY") or os.environ.get("SERP_API_KEY")),
         "groq": bool(os.environ.get("GROQ_API_KEY")),
         "openrouter": bool(os.environ.get("OPENROUTER_API_KEY")),
-        "l1_cache_entries": cache_count,
+        "l1_cache_entries": cache_info(),
         "db_cache_total": db_cache_count,
         "db_cache_today": db_cache_today,
     })

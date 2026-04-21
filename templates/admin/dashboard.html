@@ -4,573 +4,266 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard — Sentra AI</title>
-
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-
-  <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-  <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
   <style>
     :root {
       --gold: #D4A843;
       --gold-dim: rgba(212,168,67,0.15);
-      --gold-hover: rgba(212,168,67,0.08);
+      --gold-hover: rgba(212,168,67,0.07);
       --bg: #0A0A08;
       --surface: rgba(24,21,16,0.7);
-      --surface-solid: #14120C;
+      --surface-solid: #13110C;
       --border: rgba(212,168,67,0.15);
       --text: #F5F0E0;
       --text-muted: rgba(245,240,224,0.5);
-      --text-dim: rgba(245,240,224,0.35);
-      --sidebar-w: 240px;
-      --red: #ef4444;
-      --green: #22c55e;
-      --blue: #3b82f6;
+      --text-dim: rgba(245,240,224,0.3);
+      --sw: 240px; /* sidebar width */
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      min-height: 100vh;
-      display: flex;
-    }
+    html, body { height: 100%; }
+    body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; display: flex; overflow-x: hidden; }
 
     /* ── SIDEBAR ── */
     #sidebar {
-      width: var(--sidebar-w);
-      min-height: 100vh;
+      width: var(--sw); min-height: 100vh;
       background: var(--surface-solid);
       border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      top: 0; left: 0; bottom: 0;
-      z-index: 50;
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; left: 0; bottom: 0; z-index: 200;
+      transition: transform 0.25s ease;
     }
-    .sidebar-logo {
-      padding: 24px 20px 20px;
-      border-bottom: 1px solid var(--border);
-    }
-    .sidebar-logo .mark {
-      width: 36px; height: 36px;
-      background: linear-gradient(135deg, var(--gold), #c4942e);
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'DM Mono', monospace;
-      font-size: 15px; font-weight: 500;
-      color: #0A0A08;
-      margin-bottom: 12px;
-    }
-    .sidebar-logo h2 {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--gold);
-    }
-    .sidebar-logo p {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
+    #sidebar.hidden-mobile { transform: translateX(-100%); }
 
-    nav { flex: 1; padding: 16px 0; overflow-y: auto; }
-    .nav-section-label {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      padding: 12px 20px 6px;
+    .sidebar-logo { padding: 20px 18px 16px; border-bottom: 1px solid var(--border); }
+    .sidebar-logo .mark {
+      width: 34px; height: 34px; background: linear-gradient(135deg, var(--gold), #b8862a);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      font-family: 'DM Mono', monospace; font-size: 15px; color: #0A0A08; margin-bottom: 10px;
     }
+    .sidebar-logo h2 { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); }
+    .sidebar-logo p { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+
+    nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+    .nav-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); padding: 10px 18px 4px; }
     .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 20px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.15s;
-      border-left: 2px solid transparent;
+      display: flex; align-items: center; gap: 9px;
+      padding: 8px 18px; font-size: 13px; font-weight: 500; color: var(--text-muted);
+      cursor: pointer; transition: all 0.15s; border-left: 2px solid transparent;
     }
     .nav-item:hover { background: var(--gold-hover); color: var(--text); }
-    .nav-item.active {
-      background: rgba(212,168,67,0.1);
-      color: var(--gold);
-      border-left-color: var(--gold);
-    }
-    .nav-item i { width: 16px; text-align: center; font-size: 13px; }
+    .nav-item.active { background: rgba(212,168,67,0.09); color: var(--gold); border-left-color: var(--gold); }
+    .nav-item i { width: 15px; text-align: center; font-size: 12px; flex-shrink: 0; }
 
-    .sidebar-footer {
-      padding: 16px;
-      border-top: 1px solid var(--border);
-    }
+    .sidebar-footer { padding: 14px; border-top: 1px solid var(--border); }
     .logout-btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      width: 100%;
-      padding: 9px 12px;
-      background: transparent;
-      border: 1px solid rgba(239,68,68,0.2);
-      border-radius: 8px;
-      color: #fca5a5;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s;
+      display: flex; align-items: center; gap: 8px; width: 100%;
+      padding: 8px 12px; background: transparent; border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 7px; color: #fca5a5; font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s;
     }
     .logout-btn:hover { background: rgba(239,68,68,0.08); }
 
-    /* ── MAIN ── */
-    #main {
-      margin-left: var(--sidebar-w);
-      flex: 1;
-      min-width: 0;
-    }
+    /* ── OVERLAY (mobile) ── */
+    #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 199; }
+    #overlay.show { display: block; }
 
-    /* Top bar */
+    /* ── MAIN ── */
+    #main { margin-left: var(--sw); flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+    /* Topbar */
     .topbar {
-      position: sticky; top: 0;
-      background: rgba(10,10,8,0.9);
-      backdrop-filter: blur(8px);
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,10,8,0.92); backdrop-filter: blur(8px);
       border-bottom: 1px solid var(--border);
-      padding: 14px 28px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      z-index: 40;
+      padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
     }
-    .topbar h1 { font-size: 16px; font-weight: 700; }
-    .topbar-right { display: flex; align-items: center; gap: 12px; }
-    .admin-badge {
-      font-size: 11px;
-      background: var(--gold-dim);
-      border: 1px solid rgba(212,168,67,0.3);
-      color: var(--gold);
-      padding: 3px 10px;
-      border-radius: 100px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
+    .topbar-left { display: flex; align-items: center; gap: 10px; }
+    #menuToggle {
+      display: none; background: none; border: none; color: var(--text-muted);
+      font-size: 18px; cursor: pointer; padding: 4px 6px;
     }
+    .topbar h1 { font-size: 15px; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .admin-badge { font-size: 10px; background: var(--gold-dim); border: 1px solid rgba(212,168,67,0.3); color: var(--gold); padding: 3px 9px; border-radius: 100px; font-weight: 700; letter-spacing: 0.04em; }
+    #topbarTime { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-muted); }
 
     /* Sections */
-    .section { display: none; padding: 28px; }
+    .section { display: none; padding: 22px 24px; flex: 1; }
     .section.active { display: block; }
 
-    /* Cards */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 28px;
-    }
-    .kpi-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-    }
-    .kpi-card .label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-    .kpi-card .value {
-      font-family: 'DM Mono', monospace;
-      font-size: 28px;
-      font-weight: 500;
-      color: var(--gold);
-      line-height: 1;
-    }
-    .kpi-card .sub {
-      font-size: 12px;
-      color: var(--text-dim);
-      margin-top: 4px;
-    }
-
-    /* Charts grid */
-    .charts-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-    }
-    @media (max-width: 1100px) { .charts-grid { grid-template-columns: 1fr; } }
-    .chart-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-    }
-    .chart-card h3 {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      margin-bottom: 16px;
-    }
-    .chart-wrap { position: relative; height: 220px; }
-
     /* Section header */
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .section-header h2 {
-      font-size: 18px;
-      font-weight: 700;
-    }
+    .sec-hdr { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+    .sec-hdr h2 { font-size: 17px; font-weight: 700; }
+
+    /* KPI cards */
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+    .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 11px; padding: 18px; }
+    .kpi-card .lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 8px; }
+    .kpi-card .val { font-family: 'DM Mono', monospace; font-size: 26px; font-weight: 500; color: var(--gold); line-height: 1; }
+    .kpi-card .sub { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+    /* Charts */
+    .charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 11px; padding: 18px; }
+    .chart-card h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 14px; }
+    .chart-wrap { position: relative; height: 210px; }
 
     /* Tables */
-    .table-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
+    .tbl-card { background: var(--surface); border: 1px solid var(--border); border-radius: 11px; overflow: hidden; }
+    .tbl-filters { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .fi {
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      border-radius: 7px; padding: 7px 11px; color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; outline: none; transition: border-color 0.2s;
     }
-    .table-filters {
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .filter-input {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      padding: 8px 12px;
-      color: var(--text);
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 13px;
-      outline: none;
-      transition: border-color 0.2s;
-      min-width: 180px;
-    }
-    .filter-input:focus { border-color: var(--gold); }
-    .filter-input::placeholder { color: var(--text-dim); }
-    select.filter-input option { background: #1a1610; }
-
-    .table-wrap { overflow-x: auto; }
+    .fi:focus { border-color: var(--gold); }
+    .fi::placeholder { color: var(--text-dim); }
+    select.fi option { background: #1a1610; }
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     table { width: 100%; border-collapse: collapse; }
-    thead th {
-      background: rgba(12,11,8,0.6);
-      padding: 11px 16px;
-      text-align: left;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
-      border-bottom: 1px solid var(--gold-dim);
-      white-space: nowrap;
-    }
-    tbody td {
-      padding: 12px 16px;
-      font-size: 13px;
-      border-bottom: 1px solid rgba(255,255,255,0.03);
-      vertical-align: middle;
-    }
+    thead th { background: rgba(10,9,6,0.5); padding: 10px 14px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); border-bottom: 1px solid var(--gold-dim); white-space: nowrap; }
+    tbody td { padding: 11px 14px; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; }
     tbody tr:hover { background: var(--gold-hover); }
     tbody tr:last-child td { border-bottom: none; }
-    .mono { font-family: 'DM Mono', monospace; font-size: 12px; }
-    .text-muted { color: var(--text-muted); }
-    .text-gold { color: var(--gold); }
+    .mono { font-family: 'DM Mono', monospace; font-size: 11px; }
+    .tm { color: var(--text-muted); }
+    .tg { color: var(--gold); }
 
-    /* Tier badges */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 2px 8px;
-      border-radius: 100px;
-    }
-    .badge-pro { background: rgba(212,168,67,0.2); color: var(--gold); border: 1px solid rgba(212,168,67,0.3); }
-    .badge-free { background: rgba(255,255,255,0.06); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1); }
-    .badge-green { background: rgba(34,197,94,0.1); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
-    .badge-red { background: rgba(239,68,68,0.1); color: #fca5a5; border: 1px solid rgba(239,68,68,0.2); }
+    /* Badges */
+    .badge { display: inline-flex; align-items: center; font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 2px 7px; border-radius: 100px; }
+    .b-pro { background: rgba(212,168,67,0.18); color: var(--gold); border: 1px solid rgba(212,168,67,0.3); }
+    .b-free { background: rgba(255,255,255,0.06); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1); }
+    .b-guest { background: rgba(100,100,100,0.15); color: var(--text-dim); border: 1px solid rgba(255,255,255,0.07); }
 
     /* Pagination */
-    .pagination {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 14px 20px;
-      border-top: 1px solid var(--border);
-      justify-content: space-between;
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-    .page-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--text-muted);
-      font-size: 12px;
-      padding: 5px 10px;
-      cursor: pointer;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      transition: all 0.15s;
-    }
-    .page-btn:hover, .page-btn.active {
-      background: var(--gold-dim);
-      border-color: rgba(212,168,67,0.3);
-      color: var(--gold);
-    }
-    .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .pgn { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-muted); flex-wrap: wrap; gap: 8px; }
+    .pgn-btns { display: flex; gap: 4px; }
+    .pb { background: transparent; border: 1px solid var(--border); border-radius: 5px; color: var(--text-muted); font-size: 11px; padding: 4px 9px; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; }
+    .pb:hover, .pb.active { background: var(--gold-dim); border-color: rgba(212,168,67,0.3); color: var(--gold); }
+    .pb:disabled { opacity: 0.3; cursor: not-allowed; }
 
-    /* Expandable row */
+    /* Expand row */
     .expand-row { display: none; }
     .expand-row.open { display: table-row; }
-    .expand-content {
-      background: rgba(212,168,67,0.04);
-      border-top: 1px solid var(--gold-dim);
-      padding: 14px 20px;
-    }
-    .expand-content table { margin: 0; }
-    .expand-content thead th { background: transparent; font-size: 10px; }
+    .exp-content { background: rgba(212,168,67,0.03); padding: 12px 18px; border-top: 1px solid var(--gold-dim); }
+    .exp-content table { margin: 0; }
+    .exp-content thead th { background: transparent; font-size: 10px; }
 
     /* Buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 7px 14px;
-      border-radius: 7px;
-      cursor: pointer;
-      transition: all 0.15s;
-      border: none;
-    }
-    .btn-gold {
-      background: linear-gradient(135deg, var(--gold), #c4942e);
-      color: #0A0A08;
-    }
+    .btn { display: inline-flex; align-items: center; gap: 5px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 600; padding: 7px 13px; border-radius: 7px; cursor: pointer; transition: all 0.15s; border: none; }
+    .btn-gold { background: linear-gradient(135deg, var(--gold), #b8862a); color: #0A0A08; }
     .btn-gold:hover { opacity: 0.88; }
-    .btn-outline {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-    }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
     .btn-outline:hover { border-color: rgba(212,168,67,0.3); color: var(--text); }
-    .btn-danger {
-      background: rgba(239,68,68,0.1);
-      border: 1px solid rgba(239,68,68,0.25);
-      color: #fca5a5;
-    }
+    .btn-danger { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: #fca5a5; }
     .btn-danger:hover { background: rgba(239,68,68,0.18); }
 
-    /* Map */
-    #admin-map {
-      width: 100%;
-      height: 460px;
-      border-radius: 10px;
-      overflow: hidden;
-      background: #0d0d0d;
-    }
+    /* Map section */
+    #admin-map { width: 100%; height: 500px; border-radius: 10px; background: #0d0d0d; }
+    .map-card { background: var(--surface); border: 1px solid var(--border); border-radius: 11px; overflow: hidden; }
+    .map-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .map-header h3 { font-size: 13px; font-weight: 700; }
+    .map-toggles { display: flex; gap: 6px; }
+    .tog { padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; }
+    .tog.blue { border-color: rgba(59,130,246,0.4); color: #93c5fd; background: rgba(59,130,246,0.08); }
+    .tog.gold { border-color: rgba(212,168,67,0.4); color: var(--gold); background: rgba(212,168,67,0.08); }
+    .tog.off { opacity: 0.4; }
+    .map-body { padding: 16px; position: relative; }
     .map-legend {
-      position: absolute;
-      bottom: 28px; right: 16px;
-      background: rgba(14,12,8,0.9);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px 16px;
-      z-index: 1000;
-      font-size: 12px;
+      position: absolute; bottom: 28px; right: 28px;
+      background: rgba(14,12,8,0.92); border: 1px solid var(--border);
+      border-radius: 9px; padding: 10px 14px; z-index: 1000; font-size: 11px;
     }
-    .map-legend-item {
-      display: flex; align-items: center; gap: 8px;
-      margin-bottom: 6px;
-    }
-    .map-legend-item:last-child { margin-bottom: 0; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .map-legend .leg-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 7px; }
+    .leg-item { display: flex; align-items: center; gap: 7px; margin-bottom: 5px; color: var(--text-muted); }
+    .leg-item:last-child { margin-bottom: 0; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
-    /* System health cards */
-    .health-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-    .health-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 18px 20px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .health-icon {
-      width: 40px; height: 40px;
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px;
-      flex-shrink: 0;
-    }
-    .health-icon.ok { background: rgba(34,197,94,0.1); color: #4ade80; }
-    .health-icon.warn { background: rgba(245,158,11,0.1); color: #fbbf24; }
-    .health-icon.err { background: rgba(239,68,68,0.1); color: #fca5a5; }
-    .health-card .info .name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-    .health-card .info .status { font-size: 12px; color: var(--text-muted); }
+    /* Map tooltip override */
+    .leaflet-tooltip { background: rgba(14,12,8,0.95) !important; border: 1px solid var(--gold-dim) !important; color: var(--text) !important; font-family: 'Plus Jakarta Sans', sans-serif !important; font-size: 12px !important; padding: 8px 12px !important; border-radius: 8px !important; box-shadow: 0 4px 16px rgba(0,0,0,0.5) !important; }
+    .leaflet-tooltip::before { display: none !important; }
+    .tt-prov { font-weight: 700; font-size: 13px; margin-bottom: 4px; color: var(--gold); }
+    .tt-row { display: flex; align-items: center; gap: 6px; margin-top: 3px; }
+    .tt-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
-    /* Loading spinner */
-    .spinner {
-      display: inline-block;
-      width: 18px; height: 18px;
-      border: 2px solid var(--border);
-      border-top-color: var(--gold);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      vertical-align: middle;
-    }
+    /* Sub-nav */
+    .sub-nav { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 20px; overflow-x: auto; }
+    .snb { padding: 8px 14px; font-size: 12px; font-weight: 500; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; background: none; border-left: none; border-right: none; border-top: none; font-family: 'Plus Jakarta Sans', sans-serif; white-space: nowrap; }
+    .snb:hover { color: var(--text); }
+    .snb.active { color: var(--gold); border-bottom-color: var(--gold); }
+    .sub-sec { display: none; }
+    .sub-sec.active { display: block; }
+
+    /* Health */
+    .health-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 18px; }
+    .hcard { background: var(--surface); border: 1px solid var(--border); border-radius: 11px; padding: 16px 18px; display: flex; align-items: center; gap: 12px; }
+    .hicon { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+    .hicon.ok { background: rgba(34,197,94,0.1); color: #4ade80; }
+    .hicon.err { background: rgba(239,68,68,0.1); color: #fca5a5; }
+    .hicon.warn { background: rgba(245,158,11,0.1); color: #fbbf24; }
+    .hcard .hname { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .hcard .hstatus { font-size: 11px; color: var(--text-muted); }
+
+    /* Spinner / loading */
+    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    .loading-row td {
-      text-align: center;
-      padding: 32px;
-      color: var(--text-muted);
-      font-size: 13px;
-    }
-
-    /* Map toggle buttons */
-    .map-toggles {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-    .toggle-btn {
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      border: 1px solid;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      transition: all 0.15s;
-    }
-    .toggle-btn.blue { border-color: rgba(59,130,246,0.4); color: #93c5fd; background: rgba(59,130,246,0.08); }
-    .toggle-btn.gold { border-color: rgba(212,168,67,0.4); color: var(--gold); background: rgba(212,168,67,0.08); }
-    .toggle-btn.inactive { opacity: 0.45; }
-
-    /* Sub-nav for UMKM */
-    .sub-nav {
-      display: flex;
-      gap: 4px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 24px;
-    }
-    .sub-nav-btn {
-      padding: 8px 16px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-muted);
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
-      transition: all 0.15s;
-      background: none;
-      border-left: none; border-right: none; border-top: none;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-    .sub-nav-btn:hover { color: var(--text); }
-    .sub-nav-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
-
-    .sub-section { display: none; }
-    .sub-section.active { display: block; }
-
-    /* Export row */
-    .export-row {
-      padding: 12px 20px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: flex-end;
-    }
+    .loading-row td { text-align: center; padding: 28px; color: var(--text-muted); font-size: 12px; }
 
     /* Toast */
-    #toast {
-      position: fixed;
-      bottom: 24px; right: 24px;
-      background: rgba(20,18,12,0.95);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px 18px;
-      font-size: 13px;
-      max-width: 320px;
-      z-index: 9999;
-      opacity: 0;
-      transform: translateY(8px);
-      transition: all 0.25s;
-      pointer-events: none;
-    }
+    #toast { position: fixed; bottom: 20px; right: 20px; background: rgba(20,18,12,0.96); border: 1px solid var(--border); border-radius: 9px; padding: 11px 16px; font-size: 13px; max-width: 300px; z-index: 9999; opacity: 0; transform: translateY(6px); transition: all 0.22s; pointer-events: none; }
     #toast.show { opacity: 1; transform: translateY(0); }
     #toast.success { border-color: rgba(34,197,94,0.3); color: #4ade80; }
     #toast.error { border-color: rgba(239,68,68,0.3); color: #fca5a5; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      :root { --sw: 240px; }
+      #main { margin-left: 0; }
+      #sidebar { transform: translateX(-100%); }
+      #sidebar.open { transform: translateX(0); }
+      #menuToggle { display: block; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .charts-grid { grid-template-columns: 1fr; }
+      .section { padding: 16px; }
+      .topbar { padding: 10px 16px; }
+    }
+    @media (max-width: 520px) {
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .kpi-card .val { font-size: 22px; }
+      #admin-map { height: 360px; }
+      .map-legend { bottom: 16px; right: 12px; padding: 8px 10px; }
+    }
   </style>
 </head>
 <body>
 
-<!-- ─── SIDEBAR ─────────────────────────────────────────────── -->
+<!-- Overlay mobile -->
+<div id="overlay" onclick="closeSidebar()"></div>
+
+<!-- ── SIDEBAR ── -->
 <aside id="sidebar">
   <div class="sidebar-logo">
     <div class="mark">S</div>
     <h2>Sentra Admin</h2>
     <p>Panel Administrasi</p>
   </div>
-
   <nav>
-    <div class="nav-section-label">Menu Utama</div>
-    <div class="nav-item active" data-section="overview">
-      <i class="fas fa-chart-pie"></i> Overview
-    </div>
-    <div class="nav-item" data-section="growth">
-      <i class="fas fa-chart-line"></i> Grafik Pertumbuhan
-    </div>
-
-    <div class="nav-section-label">Data</div>
-    <div class="nav-item" data-section="users">
-      <i class="fas fa-users"></i> Daftar User
-    </div>
-    <div class="nav-item" data-section="searches">
-      <i class="fas fa-magnifying-glass"></i> Riwayat Pencarian
-    </div>
-    <div class="nav-item" data-section="umkm">
-      <i class="fas fa-store"></i> Data UMKM
-    </div>
-
-    <div class="nav-section-label">Sistem</div>
-    <div class="nav-item" data-section="system">
-      <i class="fas fa-server"></i> Cache & Health
-    </div>
+    <div class="nav-label">Menu Utama</div>
+    <div class="nav-item active" data-section="overview"><i class="fas fa-chart-pie"></i> Overview</div>
+    <div class="nav-item" data-section="growth"><i class="fas fa-chart-line"></i> Grafik Pertumbuhan</div>
+    <div class="nav-label">Data</div>
+    <div class="nav-item" data-section="users"><i class="fas fa-users"></i> Daftar User</div>
+    <div class="nav-item" data-section="searches"><i class="fas fa-magnifying-glass"></i> Riwayat Pencarian</div>
+    <div class="nav-item" data-section="umkm"><i class="fas fa-store"></i> Data UMKM</div>
+    <div class="nav-item" data-section="map"><i class="fas fa-map-location-dot"></i> Peta Sebaran</div>
+    <div class="nav-label">Sistem</div>
+    <div class="nav-item" data-section="system"><i class="fas fa-server"></i> Cache & Health</div>
   </nav>
-
   <div class="sidebar-footer">
     <button class="logout-btn" onclick="window.location.href='/admin/logout'">
       <i class="fas fa-right-from-bracket"></i> Keluar ke Home
@@ -578,267 +271,175 @@
   </div>
 </aside>
 
-<!-- ─── MAIN ─────────────────────────────────────────────────── -->
+<!-- ── MAIN ── -->
 <main id="main">
-  <!-- Top Bar -->
   <header class="topbar">
-    <h1 id="pageTitle">Overview</h1>
+    <div class="topbar-left">
+      <button id="menuToggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <h1 id="pageTitle">Overview</h1>
+    </div>
     <div class="topbar-right">
-      <span id="topbarTime" class="mono" style="font-size:12px; color:var(--text-muted)"></span>
+      <span id="topbarTime"></span>
       <span class="admin-badge">ADMIN</span>
     </div>
   </header>
 
-  <!-- ── SECTION: OVERVIEW ──────────────────────────────────── -->
+  <!-- ── OVERVIEW ── -->
   <section class="section active" id="sec-overview">
-    <div class="section-header">
+    <div class="sec-hdr">
       <h2>Overview</h2>
-      <button class="btn btn-outline" onclick="loadOverview()"><i class="fas fa-rotate"></i> Refresh</button>
+      <button class="btn btn-outline" onclick="_loaded.overview=false;loadOverview()"><i class="fas fa-rotate"></i> Refresh</button>
     </div>
-
-    <div class="kpi-grid" id="kpiGrid">
-      <div class="kpi-card"><div class="label">Total User</div><div class="value" id="kpi-users">—</div><div class="sub">Pengguna terdaftar</div></div>
-      <div class="kpi-card"><div class="label">Pencarian Hari Ini</div><div class="value" id="kpi-today">—</div><div class="sub">Search hari ini</div></div>
-      <div class="kpi-card"><div class="label">Pencarian Bulan Ini</div><div class="value" id="kpi-month">—</div><div class="sub">Search bulan berjalan</div></div>
-      <div class="kpi-card"><div class="label">Total UMKM</div><div class="value" id="kpi-umkm">—</div><div class="sub">Profil usaha terdaftar</div></div>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="lbl">Total User</div><div class="val" id="kpi-users">—</div><div class="sub">Pengguna terdaftar</div></div>
+      <div class="kpi-card"><div class="lbl">Pencarian Hari Ini</div><div class="val" id="kpi-today">—</div><div class="sub">Semua user</div></div>
+      <div class="kpi-card"><div class="lbl">Pencarian Bulan Ini</div><div class="val" id="kpi-month">—</div><div class="sub">Bulan berjalan</div></div>
+      <div class="kpi-card"><div class="lbl">Total UMKM</div><div class="val" id="kpi-umkm">—</div><div class="sub">Profil usaha terdaftar</div></div>
     </div>
-
     <div class="charts-grid">
-      <div class="chart-card">
-        <h3>Pertumbuhan User (30 Hari)</h3>
-        <div class="chart-wrap"><canvas id="chartUserGrowth"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <h3>Pertumbuhan Pencarian (30 Hari)</h3>
-        <div class="chart-wrap"><canvas id="chartSearchGrowth"></canvas></div>
-      </div>
+      <div class="chart-card"><h3>Pertumbuhan User (30 Hari)</h3><div class="chart-wrap"><canvas id="cUG"></canvas></div></div>
+      <div class="chart-card"><h3>Pertumbuhan Pencarian (30 Hari)</h3><div class="chart-wrap"><canvas id="cSG"></canvas></div></div>
     </div>
   </section>
 
-  <!-- ── SECTION: GROWTH ───────────────────────────────────── -->
+  <!-- ── GROWTH ── -->
   <section class="section" id="sec-growth">
-    <div class="section-header">
-      <h2>Grafik Pertumbuhan</h2>
-    </div>
-
-    <div class="charts-grid" style="margin-bottom:20px;">
-      <div class="chart-card">
-        <h3>Pertumbuhan User (30 Hari)</h3>
-        <div class="chart-wrap"><canvas id="chartUserGrowth2"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <h3>Pertumbuhan Pencarian (30 Hari)</h3>
-        <div class="chart-wrap"><canvas id="chartSearchGrowth2"></canvas></div>
-      </div>
+    <div class="sec-hdr"><h2>Grafik Pertumbuhan</h2></div>
+    <div class="charts-grid" style="margin-bottom:16px;">
+      <div class="chart-card"><h3>Pertumbuhan User (30 Hari)</h3><div class="chart-wrap"><canvas id="cUG2"></canvas></div></div>
+      <div class="chart-card"><h3>Pertumbuhan Pencarian (30 Hari)</h3><div class="chart-wrap"><canvas id="cSG2"></canvas></div></div>
     </div>
     <div class="charts-grid">
-      <div class="chart-card">
-        <h3>Top 10 Keyword Terpopuler</h3>
-        <div class="chart-wrap"><canvas id="chartTopKeywords"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <h3>Distribusi Kategori Pencarian</h3>
-        <div class="chart-wrap"><canvas id="chartCategories"></canvas></div>
-      </div>
+      <div class="chart-card"><h3>Top 10 Keyword Terpopuler</h3><div class="chart-wrap"><canvas id="cKW"></canvas></div></div>
+      <div class="chart-card"><h3>Distribusi Kategori Pencarian</h3><div class="chart-wrap"><canvas id="cCAT"></canvas></div></div>
     </div>
   </section>
 
-  <!-- ── SECTION: USERS ────────────────────────────────────── -->
+  <!-- ── USERS ── -->
   <section class="section" id="sec-users">
-    <div class="section-header">
-      <h2>Daftar User</h2>
-    </div>
-
-    <div class="table-card">
-      <div class="table-filters">
-        <input class="filter-input" id="userSearch" type="text" placeholder="Cari email…">
-        <select class="filter-input" id="tierFilter">
+    <div class="sec-hdr"><h2>Daftar User</h2></div>
+    <div class="tbl-card">
+      <div class="tbl-filters">
+        <input class="fi" id="userSearch" type="text" placeholder="Cari email…" style="min-width:160px;">
+        <select class="fi" id="tierFilter">
           <option value="all">Semua Tier</option>
           <option value="free">Free</option>
           <option value="pro">Pro</option>
         </select>
         <button class="btn btn-outline" onclick="loadUsers(1)"><i class="fas fa-filter"></i> Filter</button>
       </div>
-      <div class="table-wrap">
+      <div class="tbl-wrap">
         <table>
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Email</th>
-              <th>Tier</th>
-              <th>Tanggal Daftar</th>
-              <th>Total Pencarian</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="usersBody">
-            <tr class="loading-row"><td colspan="6"><span class="spinner"></span></td></tr>
-          </tbody>
+          <thead><tr><th>No</th><th>Email</th><th>Tier</th><th>Tgl Daftar</th><th>Pencarian</th><th></th></tr></thead>
+          <tbody id="usersBody"><tr class="loading-row"><td colspan="6"><span class="spinner"></span></td></tr></tbody>
         </table>
       </div>
-      <div class="pagination">
-        <span id="userPaginationInfo">—</span>
-        <div id="userPaginationBtns" style="display:flex;gap:6px;"></div>
+      <div class="pgn">
+        <span id="userPgInfo">—</span>
+        <div class="pgn-btns" id="userPgBtns"></div>
       </div>
     </div>
   </section>
 
-  <!-- ── SECTION: SEARCHES ─────────────────────────────────── -->
+  <!-- ── SEARCHES ── -->
   <section class="section" id="sec-searches">
-    <div class="section-header">
-      <h2>Riwayat Pencarian</h2>
-    </div>
-
-    <div class="table-card">
-      <div class="table-filters">
-        <input class="filter-input" id="searchKeyword" type="text" placeholder="Filter keyword…">
-        <input class="filter-input" id="searchDateFrom" type="date" title="Dari tanggal">
-        <input class="filter-input" id="searchDateTo" type="date" title="Sampai tanggal">
+    <div class="sec-hdr"><h2>Riwayat Pencarian</h2></div>
+    <div class="tbl-card">
+      <div class="tbl-filters">
+        <input class="fi" id="srchKw" type="text" placeholder="Filter keyword…" style="min-width:140px;">
+        <input class="fi" id="srchFrom" type="date">
+        <input class="fi" id="srchTo" type="date">
         <button class="btn btn-outline" onclick="loadSearches()"><i class="fas fa-filter"></i> Filter</button>
-        <button class="btn btn-outline" onclick="exportSearches()"><i class="fas fa-download"></i> Export CSV</button>
+        <button class="btn btn-outline" onclick="exportSearches()"><i class="fas fa-download"></i> CSV</button>
       </div>
-      <div class="table-wrap">
+      <div class="tbl-wrap">
         <table>
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Email User</th>
-              <th>Keyword</th>
-              <th>Geo</th>
-              <th>Waktu</th>
-              <th>Tipe</th>
-            </tr>
-          </thead>
-          <tbody id="searchesBody">
-            <tr class="loading-row"><td colspan="6"><span class="spinner"></span></td></tr>
-          </tbody>
+          <thead><tr><th>No</th><th>User</th><th>Keyword</th><th>Geo</th><th>Waktu</th><th>Tipe</th></tr></thead>
+          <tbody id="searchesBody"><tr class="loading-row"><td colspan="6"><span class="spinner"></span></td></tr></tbody>
         </table>
       </div>
     </div>
   </section>
 
-  <!-- ── SECTION: UMKM ─────────────────────────────────────── -->
+  <!-- ── UMKM ── -->
   <section class="section" id="sec-umkm">
-    <div class="section-header">
-      <h2>Data UMKM</h2>
-    </div>
-
+    <div class="sec-hdr"><h2>Data UMKM</h2></div>
     <div class="sub-nav">
-      <button class="sub-nav-btn active" data-subsec="umkm-table">Tabel UMKM</button>
-      <button class="sub-nav-btn" data-subsec="umkm-chart">Distribusi Kategori</button>
-      <button class="sub-nav-btn" data-subsec="umkm-map">Peta Sebaran</button>
+      <button class="snb active" data-ss="ut">Tabel UMKM</button>
+      <button class="snb" data-ss="uc">Distribusi Kategori</button>
     </div>
-
-    <!-- Sub: Table -->
-    <div class="sub-section active" id="sub-umkm-table">
-      <div class="table-card">
-        <div class="table-wrap">
+    <div class="sub-sec active" id="ss-ut">
+      <div class="tbl-card">
+        <div class="tbl-wrap">
           <table>
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>Nama Usaha</th>
-                <th>Kategori</th>
-                <th>Kota</th>
-                <th>Provinsi</th>
-                <th>Omzet/Bulan</th>
-                <th>Email Owner</th>
-                <th>Tgl Update</th>
-              </tr>
-            </thead>
-            <tbody id="umkmBody">
-              <tr class="loading-row"><td colspan="8"><span class="spinner"></span></td></tr>
-            </tbody>
+            <thead><tr><th>No</th><th>Nama Usaha</th><th>Kategori</th><th>Kota</th><th>Provinsi</th><th>Omzet/Bln</th><th>Email</th><th>Update</th></tr></thead>
+            <tbody id="umkmBody"><tr class="loading-row"><td colspan="8"><span class="spinner"></span></td></tr></tbody>
           </table>
         </div>
       </div>
     </div>
-
-    <!-- Sub: Chart -->
-    <div class="sub-section" id="sub-umkm-chart">
-      <div class="chart-card" style="max-width:560px;">
+    <div class="sub-sec" id="ss-uc">
+      <div class="chart-card" style="max-width:520px;">
         <h3>Distribusi Kategori UMKM</h3>
-        <div class="chart-wrap"><canvas id="chartUmkmCategories"></canvas></div>
+        <div class="chart-wrap"><canvas id="cUMKMcat"></canvas></div>
       </div>
     </div>
+  </section>
 
-    <!-- Sub: Map -->
-    <div class="sub-section" id="sub-umkm-map">
-      <div class="map-toggles">
-        <button class="toggle-btn blue" id="toggleUsers" onclick="toggleLayer('users')">
-          <i class="fas fa-circle" style="font-size:9px;"></i> Layer User
-        </button>
-        <button class="toggle-btn gold" id="toggleUmkm" onclick="toggleLayer('umkm')">
-          <i class="fas fa-diamond" style="font-size:9px;"></i> Layer UMKM
-        </button>
+  <!-- ── PETA SEBARAN (section sendiri) ── -->
+  <section class="section" id="sec-map">
+    <div class="sec-hdr"><h2>Peta Sebaran</h2></div>
+    <div class="map-card">
+      <div class="map-header">
+        <h3>Distribusi User & UMKM per Provinsi</h3>
+        <div class="map-toggles">
+          <button class="tog blue" id="togUser" onclick="toggleLayer('user')"><i class="fas fa-circle" style="font-size:8px;"></i> User</button>
+          <button class="tog gold" id="togUmkm" onclick="toggleLayer('umkm')"><i class="fas fa-diamond" style="font-size:8px;"></i> UMKM</button>
+        </div>
       </div>
-      <div style="position:relative;">
+      <div class="map-body">
         <div id="admin-map"></div>
         <div class="map-legend">
-          <div style="font-size:11px;font-weight:700;margin-bottom:8px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;">Legend</div>
-          <div class="map-legend-item"><div class="dot" style="background:#3b82f6;opacity:0.8;"></div><span>User (UMKM-based)</span></div>
-          <div class="map-legend-item"><div class="dot" style="background:#D4A843;opacity:0.8;"></div><span>UMKM Terdaftar</span></div>
+          <div class="leg-title">Keterangan</div>
+          <div class="leg-item"><div class="dot" style="background:#3b82f6;"></div> User (per provinsi)</div>
+          <div class="leg-item"><div class="dot" style="background:#D4A843;"></div> UMKM terdaftar</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── SECTION: SYSTEM ───────────────────────────────────── -->
+  <!-- ── SYSTEM ── -->
   <section class="section" id="sec-system">
-    <div class="section-header">
+    <div class="sec-hdr">
       <h2>Cache & System Health</h2>
-      <button class="btn btn-outline" onclick="loadSystem()"><i class="fas fa-rotate"></i> Refresh</button>
+      <button class="btn btn-outline" onclick="_loaded.system=false;loadSystem()"><i class="fas fa-rotate"></i> Refresh</button>
     </div>
-
     <div class="health-grid" id="healthGrid">
-      <div class="kpi-card"><div class="label">Memuat…</div><div class="value">—</div></div>
+      <div class="kpi-card"><div class="lbl">Memuat…</div><div class="val">—</div></div>
     </div>
-
-    <div class="table-card" style="max-width: 480px;">
-      <div style="padding:20px;">
-        <div style="font-size:13px;font-weight:600;margin-bottom:6px;">Cache Management</div>
-        <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">
-          Hapus seluruh L1 in-memory cache. Data akan di-fetch ulang dari Supabase saat dibutuhkan.
-        </div>
-        <button class="btn btn-danger" onclick="clearCache()">
-          <i class="fas fa-trash-can"></i> Clear All L1 Cache
-        </button>
+    <div class="tbl-card" style="max-width:440px;">
+      <div style="padding:18px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:5px;">Cache Management</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px;">Hapus seluruh L1 in-memory cache. Data akan di-fetch ulang dari Supabase saat dibutuhkan.</div>
+        <button class="btn btn-danger" onclick="clearCache()"><i class="fas fa-trash-can"></i> Clear All L1 Cache</button>
       </div>
     </div>
   </section>
 </main>
 
-<!-- Toast -->
 <div id="toast"></div>
 
 <script>
-// ─── UTILS ──────────────────────────────────────────────────────────────────
+// ── UTILS ───────────────────────────────────────────────────────────────────
+const fmt = n => (n==null||n===undefined) ? '—' : Number(n).toLocaleString('id-ID');
+const fmtD = s => { try { return new Date(s).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}); } catch { return s||'—'; } };
+const fmtDT = s => { try { return new Date(s).toLocaleString('id-ID',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); } catch { return s||'—'; } };
+const trunc = (s, n=32) => s && s.length>n ? s.slice(0,n)+'…' : (s||'—');
 
-function fmt(n) {
-  if (n === null || n === undefined) return '—';
-  return Number(n).toLocaleString('id-ID');
-}
-function fmtDate(s) {
-  if (!s) return '—';
-  try {
-    return new Date(s).toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' });
-  } catch { return s; }
-}
-function fmtDateTime(s) {
-  if (!s) return '—';
-  try {
-    return new Date(s).toLocaleString('id-ID', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
-  } catch { return s; }
-}
-function truncate(s, n=30) {
-  return s && s.length > n ? s.slice(0, n) + '…' : (s || '—');
-}
-function showToast(msg, type = 'success') {
+function showToast(msg, type='success') {
   const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'show ' + type;
-  clearTimeout(el._t);
-  el._t = setTimeout(() => el.className = '', 3000);
+  el.textContent = msg; el.className = 'show ' + type;
+  clearTimeout(el._t); el._t = setTimeout(() => el.className = '', 3000);
 }
 async function apiFetch(url) {
   const r = await fetch(url);
@@ -847,386 +448,225 @@ async function apiFetch(url) {
 }
 
 // Clock
-function updateClock() {
+setInterval(() => {
   document.getElementById('topbarTime').textContent =
-    new Date().toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}, 1000);
+
+// ── SIDEBAR MOBILE ───────────────────────────────────────────────────────────
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('overlay');
+  sb.classList.toggle('open');
+  ov.classList.toggle('show');
 }
-setInterval(updateClock, 1000);
-updateClock();
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
 
-// ─── NAVIGATION ─────────────────────────────────────────────────────────────
-
-const SECTION_TITLES = {
-  overview: 'Overview',
-  growth: 'Grafik Pertumbuhan',
-  users: 'Daftar User',
-  searches: 'Riwayat Pencarian',
-  umkm: 'Data UMKM',
-  system: 'Cache & System Health',
-};
-
-let currentSection = 'overview';
+// ── NAVIGATION ───────────────────────────────────────────────────────────────
+const TITLES = { overview:'Overview', growth:'Grafik Pertumbuhan', users:'Daftar User', searches:'Riwayat Pencarian', umkm:'Data UMKM', map:'Peta Sebaran', system:'Cache & Health' };
+let _loaded = {};
 
 document.querySelectorAll('.nav-item').forEach(item => {
   item.addEventListener('click', () => {
-    const sec = item.dataset.section;
-    switchSection(sec);
+    const s = item.dataset.section;
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.toggle('active', i.dataset.section === s));
+    document.querySelectorAll('.section').forEach(el => el.classList.toggle('active', el.id === 'sec-'+s));
+    document.getElementById('pageTitle').textContent = TITLES[s] || s;
+    onEnter(s);
+    closeSidebar();
   });
 });
 
-function switchSection(sec) {
-  document.querySelectorAll('.nav-item').forEach(i => i.classList.toggle('active', i.dataset.section === sec));
-  document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === 'sec-' + sec));
-  document.getElementById('pageTitle').textContent = SECTION_TITLES[sec] || sec;
-  currentSection = sec;
-  onSectionEnter(sec);
+function onEnter(s) {
+  if (s==='overview' && !_loaded.overview) { loadOverview(); _loaded.overview=true; }
+  if (s==='growth'   && !_loaded.growth)   { loadGrowth();   _loaded.growth=true; }
+  if (s==='users'    && !_loaded.users)    { loadUsers(1);   _loaded.users=true; }
+  if (s==='searches' && !_loaded.searches) { loadSearches(); _loaded.searches=true; }
+  if (s==='umkm'     && !_loaded.umkm)     { loadUmkm();     _loaded.umkm=true; }
+  if (s==='map'      && !_loaded.map)      { loadMap();      _loaded.map=true; }
+  if (s==='system'   && !_loaded.system)   { loadSystem();   _loaded.system=true; }
 }
 
-const _loaded = {};
-function onSectionEnter(sec) {
-  if (sec === 'overview' && !_loaded.overview) { loadOverview(); _loaded.overview = true; }
-  if (sec === 'growth' && !_loaded.growth) { loadGrowth(); _loaded.growth = true; }
-  if (sec === 'users' && !_loaded.users) { loadUsers(1); _loaded.users = true; }
-  if (sec === 'searches' && !_loaded.searches) { loadSearches(); _loaded.searches = true; }
-  if (sec === 'umkm' && !_loaded.umkm) { loadUmkm(); _loaded.umkm = true; }
-  if (sec === 'system' && !_loaded.system) { loadSystem(); _loaded.system = true; }
-}
-
-// Sub-nav (UMKM)
-document.querySelectorAll('.sub-nav-btn').forEach(btn => {
+// Sub-nav UMKM
+document.querySelectorAll('.snb').forEach(btn => {
   btn.addEventListener('click', () => {
-    const target = btn.dataset.subsec;
-    document.querySelectorAll('.sub-nav-btn').forEach(b => b.classList.toggle('active', b.dataset.subsec === target));
-    document.querySelectorAll('.sub-section').forEach(s => s.classList.toggle('active', s.id === 'sub-' + target));
-    if (target === 'umkm-map' && !_loaded.umkmMap) { loadUmkmMap(); _loaded.umkmMap = true; }
-    if (target === 'umkm-chart' && !_loaded.umkmChart) { loadUmkmChart(); _loaded.umkmChart = true; }
+    const t = btn.dataset.ss;
+    document.querySelectorAll('.snb').forEach(b => b.classList.toggle('active', b.dataset.ss===t));
+    document.querySelectorAll('.sub-sec').forEach(s => s.classList.toggle('active', s.id==='ss-'+t));
+    if (t==='uc' && !_loaded.umkmChart) { loadUmkmChart(); _loaded.umkmChart=true; }
   });
 });
 
-// ─── CHART DEFAULTS ─────────────────────────────────────────────────────────
-
-const GOLD = '#D4A843';
-const GOLD_A = 'rgba(212,168,67,0.15)';
-Chart.defaults.color = 'rgba(245,240,224,0.5)';
+// ── CHARTS ───────────────────────────────────────────────────────────────────
+const GOLD = '#D4A843', BLUE = '#3b82f6';
+Chart.defaults.color = 'rgba(245,240,224,0.45)';
 Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
-Chart.defaults.font.size = 11;
+Chart.defaults.font.size = 10;
+const _charts = {};
 
-function lineChartCfg(labels, values, color = GOLD) {
+function lineCfg(labels, values, color=GOLD) {
   return {
     type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        data: values,
-        borderColor: color,
-        backgroundColor: color.startsWith('#') ? GOLD_A : color.replace(')', ',0.12)').replace('rgb', 'rgba'),
-        borderWidth: 2,
-        pointRadius: 3,
-        pointHoverRadius: 5,
-        fill: true,
-        tension: 0.35,
-      }],
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { maxTicksLimit: 8 } },
-        y: { grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true, ticks: { precision: 0 } },
-      },
-    },
+    data: { labels, datasets: [{ data: values, borderColor: color, backgroundColor: color==='#D4A843' ? 'rgba(212,168,67,0.12)' : 'rgba(59,130,246,0.1)', borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, fill: true, tension: 0.35 }] },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{maxTicksLimit:7}}, y:{grid:{color:'rgba(255,255,255,0.04)'},beginAtZero:true,ticks:{precision:0}} } }
   };
 }
-
-const _charts = {};
-function renderChart(id, cfg) {
-  const canvas = document.getElementById(id);
-  if (!canvas) return;
+function mkChart(id, cfg) {
+  const c = document.getElementById(id); if (!c) return;
   if (_charts[id]) _charts[id].destroy();
-  _charts[id] = new Chart(canvas, cfg);
+  _charts[id] = new Chart(c, cfg);
 }
 
-// ─── OVERVIEW ───────────────────────────────────────────────────────────────
-
+// ── OVERVIEW ─────────────────────────────────────────────────────────────────
 async function loadOverview() {
   try {
     const d = await apiFetch('/admin/api/overview');
     document.getElementById('kpi-users').textContent = fmt(d.total_users);
     document.getElementById('kpi-today').textContent = fmt(d.searches_today);
     document.getElementById('kpi-month').textContent = fmt(d.searches_month);
-    document.getElementById('kpi-umkm').textContent = fmt(d.total_umkm);
-  } catch { /* silent */ }
-
-  // Mini charts
+    document.getElementById('kpi-umkm').textContent  = fmt(d.total_umkm);
+  } catch {}
   try {
-    const [ug, sg] = await Promise.all([
-      apiFetch('/admin/api/growth/users'),
-      apiFetch('/admin/api/growth/searches'),
-    ]);
-    const ugLabels = ug.map(r => r.date.slice(5));
-    const ugValues = ug.map(r => r.count);
-    const sgLabels = sg.map(r => r.date.slice(5));
-    const sgValues = sg.map(r => r.count);
-    renderChart('chartUserGrowth', lineChartCfg(ugLabels, ugValues));
-    renderChart('chartSearchGrowth', lineChartCfg(sgLabels, sgValues, '#3b82f6'));
-  } catch { /* silent */ }
+    const [ug, sg] = await Promise.all([apiFetch('/admin/api/growth/users'), apiFetch('/admin/api/growth/searches')]);
+    mkChart('cUG', lineCfg(ug.map(r=>r.date.slice(5)), ug.map(r=>r.count)));
+    mkChart('cSG', lineCfg(sg.map(r=>r.date.slice(5)), sg.map(r=>r.count), BLUE));
+  } catch {}
 }
 
-// ─── GROWTH ─────────────────────────────────────────────────────────────────
-
+// ── GROWTH ───────────────────────────────────────────────────────────────────
 async function loadGrowth() {
   try {
     const [ug, sg, kw, cats] = await Promise.all([
-      apiFetch('/admin/api/growth/users'),
-      apiFetch('/admin/api/growth/searches'),
-      apiFetch('/admin/api/top-keywords'),
-      apiFetch('/admin/api/search-categories'),
+      apiFetch('/admin/api/growth/users'), apiFetch('/admin/api/growth/searches'),
+      apiFetch('/admin/api/top-keywords'), apiFetch('/admin/api/search-categories'),
     ]);
-
-    // User & search line charts
-    renderChart('chartUserGrowth2', lineChartCfg(ug.map(r=>r.date.slice(5)), ug.map(r=>r.count)));
-    renderChart('chartSearchGrowth2', lineChartCfg(sg.map(r=>r.date.slice(5)), sg.map(r=>r.count), '#3b82f6'));
-
-    // Top keywords horizontal bar
-    renderChart('chartTopKeywords', {
-      type: 'bar',
-      data: {
-        labels: kw.map(r => r.keyword),
-        datasets: [{ data: kw.map(r => r.total), backgroundColor: GOLD, borderRadius: 4 }],
-      },
-      options: {
-        indexAxis: 'y',
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { precision: 0 } },
-          y: { grid: { display: false } },
-        },
-      },
-    });
-
-    // Category donut
-    const catColors = ['#D4A843','#3b82f6','#22c55e','#f97316','#a855f7'];
-    renderChart('chartCategories', {
-      type: 'doughnut',
-      data: {
-        labels: cats.map(r => r.category),
-        datasets: [{
-          data: cats.map(r => r.total),
-          backgroundColor: cats.map((_, i) => catColors[i % catColors.length]),
-          borderWidth: 0,
-          hoverOffset: 6,
-        }],
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        cutout: '62%',
-        plugins: {
-          legend: { position: 'right', labels: { boxWidth: 12, padding: 12 } },
-        },
-      },
-    });
+    mkChart('cUG2', lineCfg(ug.map(r=>r.date.slice(5)), ug.map(r=>r.count)));
+    mkChart('cSG2', lineCfg(sg.map(r=>r.date.slice(5)), sg.map(r=>r.count), BLUE));
+    mkChart('cKW', { type:'bar', data:{ labels:kw.map(r=>r.keyword), datasets:[{data:kw.map(r=>r.total),backgroundColor:GOLD,borderRadius:4}] }, options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{precision:0}}, y:{grid:{display:false}} } } });
+    const CC = ['#D4A843','#3b82f6','#22c55e','#f97316','#a855f7'];
+    mkChart('cCAT', { type:'doughnut', data:{ labels:cats.map(r=>r.category), datasets:[{data:cats.map(r=>r.total),backgroundColor:cats.map((_,i)=>CC[i%CC.length]),borderWidth:0,hoverOffset:6}] }, options:{ responsive:true, maintainAspectRatio:false, cutout:'62%', plugins:{legend:{position:'right',labels:{boxWidth:11,padding:10}}} } });
   } catch(e) { console.error(e); }
 }
 
-// ─── USERS ──────────────────────────────────────────────────────────────────
-
-let _userPage = 1;
-const _expandedUsers = new Set();
-
-async function loadUsers(page = 1) {
-  _userPage = page;
+// ── USERS ─────────────────────────────────────────────────────────────────────
+async function loadUsers(page=1) {
   const search = document.getElementById('userSearch').value.trim();
-  const tier = document.getElementById('tierFilter').value;
-  const url = `/admin/api/users?page=${page}&search=${encodeURIComponent(search)}&tier=${tier}`;
-
+  const tier   = document.getElementById('tierFilter').value;
   document.getElementById('usersBody').innerHTML = '<tr class="loading-row"><td colspan="6"><span class="spinner"></span></td></tr>';
-
   try {
-    const d = await apiFetch(url);
-    renderUsersTable(d);
+    const d = await apiFetch(`/admin/api/users?page=${page}&search=${encodeURIComponent(search)}&tier=${tier}`);
+    renderUsers(d);
   } catch(e) {
-    document.getElementById('usersBody').innerHTML = `<tr class="loading-row"><td colspan="6">Gagal memuat data: ${e.message}</td></tr>`;
+    document.getElementById('usersBody').innerHTML = `<tr class="loading-row"><td colspan="6">Gagal: ${e.message}</td></tr>`;
   }
 }
-
-function renderUsersTable(d) {
+function renderUsers(d) {
   const tbody = document.getElementById('usersBody');
-  if (!d.users || d.users.length === 0) {
-    tbody.innerHTML = '<tr class="loading-row"><td colspan="6">Tidak ada data</td></tr>';
-    document.getElementById('userPaginationInfo').textContent = '0 user';
-    document.getElementById('userPaginationBtns').innerHTML = '';
-    return;
-  }
+  if (!d.users?.length) { tbody.innerHTML = '<tr class="loading-row"><td colspan="6">Tidak ada data</td></tr>'; document.getElementById('userPgInfo').textContent='0 user'; document.getElementById('userPgBtns').innerHTML=''; return; }
+  const off = (d.page-1)*d.per_page;
+  tbody.innerHTML = d.users.map((u,i) => {
+    const tb = u.tier==='pro' ? '<span class="badge b-pro">PRO</span>' : '<span class="badge b-free">FREE</span>';
+    return `<tr style="cursor:pointer" onclick="toggleExpand('${u.id}',this)">
+      <td class="tm">${off+i+1}</td>
+      <td>${u.email ? trunc(u.email,36) : '<span class="tm">—</span>'}</td>
+      <td>${tb}</td><td class="tm">${fmtD(u.created_at)}</td>
+      <td class="mono">${fmt(u.total_searches)}</td>
+      <td><span class="tg" style="font-size:11px;"><i class="fas fa-chevron-down"></i></span></td>
+    </tr>
+    <tr class="expand-row" id="exp-${u.id}">
+      <td colspan="6"><div class="exp-content">
+        <div style="font-size:10px;color:var(--text-dim);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:7px;">10 Pencarian Terakhir</div>
+        <div id="expd-${u.id}"><span class="spinner"></span></div>
+      </div></td>
+    </tr>`;
+  }).join('');
 
-  const offset = (d.page - 1) * d.per_page;
-  let html = '';
-  d.users.forEach((u, i) => {
-    const tier = u.tier === 'pro' ? '<span class="badge badge-pro">PRO</span>' : '<span class="badge badge-free">FREE</span>';
-    html += `
-      <tr style="cursor:pointer" onclick="toggleUserExpand('${u.id}', this)">
-        <td class="text-muted">${offset + i + 1}</td>
-        <td>${truncate(u.email, 36) || '<span class="text-muted">—</span>'}</td>
-        <td>${tier}</td>
-        <td class="text-muted">${fmtDate(u.created_at)}</td>
-        <td class="mono">${fmt(u.total_searches)}</td>
-        <td><span class="text-gold" style="font-size:12px;"><i class="fas fa-chevron-down"></i></span></td>
-      </tr>
-      <tr class="expand-row" id="expand-${u.id}">
-        <td colspan="6">
-          <div class="expand-content">
-            <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">10 Pencarian Terakhir</div>
-            <div id="expand-data-${u.id}"><span class="spinner"></span></div>
-          </div>
-        </td>
-      </tr>`;
-  });
-  tbody.innerHTML = html;
-
-  // Pagination
-  document.getElementById('userPaginationInfo').textContent = `${fmt(d.total)} user`;
-  const btns = document.getElementById('userPaginationBtns');
-  let btnHtml = `<button class="page-btn" ${d.page <= 1 ? 'disabled' : ''} onclick="loadUsers(${d.page - 1})"><i class="fas fa-chevron-left"></i></button>`;
-  const start = Math.max(1, d.page - 2);
-  const end = Math.min(d.pages, d.page + 2);
-  for (let p = start; p <= end; p++) {
-    btnHtml += `<button class="page-btn ${p === d.page ? 'active' : ''}" onclick="loadUsers(${p})">${p}</button>`;
-  }
-  btnHtml += `<button class="page-btn" ${d.page >= d.pages ? 'disabled' : ''} onclick="loadUsers(${d.page + 1})"><i class="fas fa-chevron-right"></i></button>`;
-  btns.innerHTML = btnHtml;
+  document.getElementById('userPgInfo').textContent = `${fmt(d.total)} user`;
+  const s = Math.max(1, d.page-2), e = Math.min(d.pages, d.page+2);
+  let h = `<button class="pb" ${d.page<=1?'disabled':''} onclick="loadUsers(${d.page-1})"><i class="fas fa-chevron-left"></i></button>`;
+  for (let p=s;p<=e;p++) h += `<button class="pb ${p===d.page?'active':''}" onclick="loadUsers(${p})">${p}</button>`;
+  h += `<button class="pb" ${d.page>=d.pages?'disabled':''} onclick="loadUsers(${d.page+1})"><i class="fas fa-chevron-right"></i></button>`;
+  document.getElementById('userPgBtns').innerHTML = h;
 }
-
-async function toggleUserExpand(userId, tr) {
-  const expandRow = document.getElementById('expand-' + userId);
-  const dataDiv = document.getElementById('expand-data-' + userId);
-  const isOpen = expandRow.classList.contains('open');
-  expandRow.classList.toggle('open', !isOpen);
-
-  if (!isOpen && !dataDiv.dataset.loaded) {
+async function toggleExpand(uid, tr) {
+  const row = document.getElementById('exp-'+uid);
+  const div = document.getElementById('expd-'+uid);
+  row.classList.toggle('open');
+  if (row.classList.contains('open') && !div.dataset.loaded) {
     try {
-      const data = await apiFetch(`/admin/api/users/${userId}/searches`);
-      if (!data.length) { dataDiv.textContent = 'Belum ada pencarian.'; return; }
-      let html = '<table style="width:100%"><thead><tr><th>Keyword</th><th>Geo</th><th>Tipe</th><th>Waktu</th></tr></thead><tbody>';
-      data.forEach(r => {
-        const tipe = r.is_pro_search ? '<span class="badge badge-pro">PRO</span>' : '<span class="badge badge-free">FREE</span>';
-        html += `<tr><td>${r.keyword||'—'}</td><td class="text-muted">${r.geo||'—'}</td><td>${tipe}</td><td class="text-muted">${fmtDateTime(r.created_at)}</td></tr>`;
-      });
-      html += '</tbody></table>';
-      dataDiv.innerHTML = html;
-      dataDiv.dataset.loaded = '1';
-    } catch { dataDiv.textContent = 'Gagal memuat data.'; }
+      const data = await apiFetch(`/admin/api/users/${uid}/searches`);
+      if (!data.length) { div.textContent='Belum ada pencarian.'; return; }
+      div.innerHTML = `<table style="width:100%"><thead><tr><th>Keyword</th><th>Geo</th><th>Tipe</th><th>Waktu</th></tr></thead><tbody>
+        ${data.map(r=>`<tr><td>${r.keyword||'—'}</td><td class="tm">${r.geo||'—'}</td><td>${r.is_pro_search?'<span class="badge b-pro">PRO</span>':'<span class="badge b-free">FREE</span>'}</td><td class="tm">${fmtDT(r.created_at)}</td></tr>`).join('')}
+      </tbody></table>`;
+      div.dataset.loaded = '1';
+    } catch { div.textContent='Gagal memuat.'; }
   }
 }
+document.getElementById('userSearch').addEventListener('keydown', e => { if(e.key==='Enter') loadUsers(1); });
 
-// Enter key on filter
-document.getElementById('userSearch').addEventListener('keydown', e => { if (e.key === 'Enter') loadUsers(1); });
-
-// ─── SEARCHES ───────────────────────────────────────────────────────────────
-
+// ── SEARCHES ─────────────────────────────────────────────────────────────────
 async function loadSearches() {
-  const keyword = document.getElementById('searchKeyword').value.trim();
-  const from = document.getElementById('searchDateFrom').value;
-  const to = document.getElementById('searchDateTo').value;
-  const params = new URLSearchParams();
-  if (keyword) params.set('keyword', keyword);
-  if (from) params.set('date_from', from);
-  if (to) params.set('date_to', to);
-
+  const kw   = document.getElementById('srchKw').value.trim();
+  const from = document.getElementById('srchFrom').value;
+  const to   = document.getElementById('srchTo').value;
+  const p    = new URLSearchParams();
+  if (kw)   p.set('keyword', kw);
+  if (from) p.set('date_from', from);
+  if (to)   p.set('date_to', to);
   document.getElementById('searchesBody').innerHTML = '<tr class="loading-row"><td colspan="6"><span class="spinner"></span></td></tr>';
-
   try {
-    const data = await apiFetch('/admin/api/searches?' + params);
-    if (!data.length) {
-      document.getElementById('searchesBody').innerHTML = '<tr class="loading-row"><td colspan="6">Tidak ada data</td></tr>';
-      return;
-    }
-    let html = '';
-    data.forEach((r, i) => {
-      const tipe = r.is_pro_search ? '<span class="badge badge-pro">PRO</span>' : '<span class="badge badge-free">FREE</span>';
-      html += `<tr>
-        <td class="text-muted">${i+1}</td>
-        <td>${truncate(r.email, 32) || '<span class="text-muted">—</span>'}</td>
-        <td>${r.keyword || '—'}</td>
-        <td class="text-muted">${r.geo || '—'}</td>
-        <td class="text-muted">${fmtDateTime(r.created_at)}</td>
-        <td>${tipe}</td>
-      </tr>`;
-    });
-    document.getElementById('searchesBody').innerHTML = html;
+    const data = await apiFetch('/admin/api/searches?' + p);
+    if (!data.length) { document.getElementById('searchesBody').innerHTML='<tr class="loading-row"><td colspan="6">Tidak ada data</td></tr>'; return; }
+    document.getElementById('searchesBody').innerHTML = data.map((r,i) => {
+      const isGuest = r.is_guest;
+      const userBadge = isGuest ? '<span class="badge b-guest">GUEST</span>' : '<span class="badge b-free">REG</span>';
+      const tipe = r.is_pro_search ? '<span class="badge b-pro">PRO</span>' : '<span class="badge b-free">FREE</span>';
+      return `<tr><td class="tm">${i+1}</td>
+        <td><div style="display:flex;align-items:center;gap:5px;">${userBadge}<span style="font-size:11px;">${trunc(r.email,28)}</span></div></td>
+        <td>${r.keyword||'—'}</td><td class="tm">${r.geo||'—'}</td>
+        <td class="tm">${fmtDT(r.created_at)}</td><td>${tipe}</td></tr>`;
+    }).join('');
   } catch(e) {
     document.getElementById('searchesBody').innerHTML = `<tr class="loading-row"><td colspan="6">Gagal: ${e.message}</td></tr>`;
   }
 }
-
 function exportSearches() {
-  const keyword = document.getElementById('searchKeyword').value.trim();
-  const from = document.getElementById('searchDateFrom').value;
-  const to = document.getElementById('searchDateTo').value;
-  const params = new URLSearchParams();
-  if (keyword) params.set('keyword', keyword);
-  if (from) params.set('date_from', from);
-  if (to) params.set('date_to', to);
-  window.location.href = '/admin/api/searches/export?' + params;
+  const p = new URLSearchParams();
+  const kw=document.getElementById('srchKw').value.trim(), from=document.getElementById('srchFrom').value, to=document.getElementById('srchTo').value;
+  if(kw)p.set('keyword',kw); if(from)p.set('date_from',from); if(to)p.set('date_to',to);
+  window.location.href = '/admin/api/searches/export?' + p;
 }
+document.getElementById('srchKw').addEventListener('keydown', e => { if(e.key==='Enter') loadSearches(); });
 
-document.getElementById('searchKeyword').addEventListener('keydown', e => { if (e.key === 'Enter') loadSearches(); });
-
-// ─── UMKM TABLE ─────────────────────────────────────────────────────────────
-
+// ── UMKM TABLE ───────────────────────────────────────────────────────────────
 async function loadUmkm() {
   document.getElementById('umkmBody').innerHTML = '<tr class="loading-row"><td colspan="8"><span class="spinner"></span></td></tr>';
   try {
     const data = await apiFetch('/admin/api/umkm');
-    if (!data.length) {
-      document.getElementById('umkmBody').innerHTML = '<tr class="loading-row"><td colspan="8">Tidak ada data UMKM</td></tr>';
-      return;
-    }
-    let html = '';
-    data.forEach((r, i) => {
-      const rev = r.monthly_revenue ? 'Rp ' + Number(r.monthly_revenue).toLocaleString('id-ID') : '—';
-      html += `<tr>
-        <td class="text-muted">${i+1}</td>
-        <td>${r.business_name || '—'}</td>
-        <td>${r.category || '—'}</td>
-        <td class="text-muted">${r.city || '—'}</td>
-        <td class="text-muted">${r.province || '—'}</td>
-        <td class="mono">${rev}</td>
-        <td>${truncate(r.email, 28) || '<span class="text-muted">—</span>'}</td>
-        <td class="text-muted">${fmtDate(r.updated_at)}</td>
-      </tr>`;
-    });
-    document.getElementById('umkmBody').innerHTML = html;
-  } catch(e) {
-    document.getElementById('umkmBody').innerHTML = `<tr class="loading-row"><td colspan="8">Gagal: ${e.message}</td></tr>`;
-  }
+    if (!data.length) { document.getElementById('umkmBody').innerHTML='<tr class="loading-row"><td colspan="8">Tidak ada data UMKM</td></tr>'; return; }
+    document.getElementById('umkmBody').innerHTML = data.map((r,i) => {
+      const rev = r.monthly_revenue ? 'Rp '+Number(r.monthly_revenue).toLocaleString('id-ID') : '—';
+      return `<tr><td class="tm">${i+1}</td><td>${r.business_name||'—'}</td><td class="tm">${r.category||'—'}</td>
+        <td class="tm">${r.city||'—'}</td><td class="tm">${r.province||'—'}</td>
+        <td class="mono">${rev}</td><td style="font-size:11px;">${trunc(r.email||'—',28)}</td>
+        <td class="tm">${fmtD(r.updated_at)}</td></tr>`;
+    }).join('');
+  } catch(e) { document.getElementById('umkmBody').innerHTML=`<tr class="loading-row"><td colspan="8">Gagal: ${e.message}</td></tr>`; }
 }
-
 async function loadUmkmChart() {
   try {
     const data = await apiFetch('/admin/api/umkm/categories');
-    const colors = ['#D4A843','#3b82f6','#22c55e','#f97316','#a855f7','#ec4899','#14b8a6','#f59e0b'];
-    renderChart('chartUmkmCategories', {
-      type: 'doughnut',
-      data: {
-        labels: data.map(r => r.category),
-        datasets: [{
-          data: data.map(r => r.total),
-          backgroundColor: data.map((_, i) => colors[i % colors.length]),
-          borderWidth: 0, hoverOffset: 6,
-        }],
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        cutout: '62%',
-        plugins: { legend: { position: 'right', labels: { boxWidth: 12, padding: 12 } } },
-      },
-    });
-  } catch(e) { console.error(e); }
+    const CC=['#D4A843','#3b82f6','#22c55e','#f97316','#a855f7','#ec4899','#14b8a6','#f59e0b'];
+    mkChart('cUMKMcat', { type:'doughnut', data:{ labels:data.map(r=>r.category), datasets:[{data:data.map(r=>r.total),backgroundColor:data.map((_,i)=>CC[i%CC.length]),borderWidth:0,hoverOffset:6}] }, options:{ responsive:true, maintainAspectRatio:false, cutout:'62%', plugins:{legend:{position:'right',labels:{boxWidth:11,padding:10}}} } });
+  } catch {}
 }
 
-// ─── UMKM MAP ───────────────────────────────────────────────────────────────
-
-const PROVINCE_COORDS = {
+// ── PETA SEBARAN ─────────────────────────────────────────────────────────────
+const PROV_COORDS = {
   "Aceh":[5.55,95.32],"Sumatera Utara":[3.58,98.67],"Sumatera Barat":[-0.95,100.35],
   "Riau":[0.51,101.45],"Kepulauan Riau":[1.08,104.03],"Jambi":[-1.59,103.61],
   "Sumatera Selatan":[-2.99,104.76],"Bengkulu":[-3.79,102.26],"Lampung":[-5.45,105.27],
@@ -1242,127 +682,119 @@ const PROVINCE_COORDS = {
   "Papua Barat":[-0.86,134.06],"Papua Barat Daya":[-0.87,131.25],"Papua":[-2.54,140.72],
 };
 
-let _adminMap = null;
-let _layerUsers = null;
-let _layerUmkm = null;
-let _layerVisible = { users: true, umkm: true };
+let _map = null, _layerU = null, _layerM = null;
+let _visU = true, _visM = true;
 
-async function loadUmkmMap() {
-  if (_adminMap) { _adminMap.invalidateSize(); return; }
-
-  _adminMap = L.map('admin-map', { zoomControl: true }).setView([-2.5, 118], 5);
-
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '© CartoDB',
-    subdomains: 'abcd',
-    maxZoom: 19,
-  }).addTo(_adminMap);
+async function loadMap() {
+  // Init map once
+  if (!_map) {
+    _map = L.map('admin-map', { zoomControl: true }).setView([-2.5, 118], 5);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '© CartoDB', subdomains: 'abcd', maxZoom: 19,
+    }).addTo(_map);
+  } else {
+    _map.invalidateSize();
+    return; // already loaded
+  }
 
   try {
     const data = await apiFetch('/admin/api/umkm/map');
-    _layerUsers = L.layerGroup();
-    _layerUmkm = L.layerGroup();
+    if (!data.length) return;
 
-    const maxUsers = Math.max(...data.map(r => r.users), 1);
-    const maxUmkm = Math.max(...data.map(r => r.umkm), 1);
+    const maxU = Math.max(...data.map(r=>r.users), 1);
+    const maxM = Math.max(...data.map(r=>r.umkm),  1);
+
+    _layerU = L.layerGroup();
+    _layerM = L.layerGroup();
 
     data.forEach(r => {
-      const coords = PROVINCE_COORDS[r.province];
+      const coords = PROV_COORDS[r.province];
       if (!coords) return;
 
+      const ttHtml = `<div class="tt-prov">${r.province}</div>
+        <div class="tt-row"><div class="tt-dot" style="background:#3b82f6;"></div> User: <b>${r.users}</b></div>
+        <div class="tt-row"><div class="tt-dot" style="background:#D4A843;"></div> UMKM: <b>${r.umkm}</b></div>`;
+
       if (r.users > 0) {
-        const radius = 20000 + (r.users / maxUsers) * 80000;
+        const radius = Math.max(7, Math.min(24, 7 + (r.users/maxU)*17));
         L.circleMarker(coords, {
-          radius: Math.max(6, Math.min(22, 6 + (r.users / maxUsers) * 16)),
-          color: '#3b82f6', fillColor: '#3b82f6', fillOpacity: 0.55, weight: 1.5,
-        }).bindTooltip(`<b>${r.province}</b><br>User: ${r.users}<br>UMKM: ${r.umkm}`, { direction: 'top' })
-          .addTo(_layerUsers);
+          radius, color: '#3b82f6', fillColor: '#3b82f6', fillOpacity: 0.55, weight: 1.5,
+        })
+        .bindTooltip(ttHtml, { permanent: false, direction: 'top', opacity: 1 })
+        .addTo(_layerU);
       }
 
       if (r.umkm > 0) {
-        L.circleMarker([coords[0] + 0.15, coords[1] + 0.15], {
-          radius: Math.max(6, Math.min(22, 6 + (r.umkm / maxUmkm) * 16)),
-          color: '#D4A843', fillColor: '#D4A843', fillOpacity: 0.6, weight: 1.5,
-        }).bindTooltip(`<b>${r.province}</b><br>UMKM: ${r.umkm}<br>User: ${r.users}`, { direction: 'top' })
-          .addTo(_layerUmkm);
+        // Slight offset so markers don't fully overlap
+        const offset = [coords[0] + 0.12, coords[1] + 0.12];
+        const radius = Math.max(7, Math.min(24, 7 + (r.umkm/maxM)*17));
+        L.circleMarker(offset, {
+          radius, color: '#D4A843', fillColor: '#D4A843', fillOpacity: 0.6, weight: 1.5,
+        })
+        .bindTooltip(ttHtml, { permanent: false, direction: 'top', opacity: 1 })
+        .addTo(_layerM);
       }
     });
 
-    _layerUsers.addTo(_adminMap);
-    _layerUmkm.addTo(_adminMap);
-  } catch(e) { console.error('Map load error:', e); }
+    _layerU.addTo(_map);
+    _layerM.addTo(_map);
+  } catch(e) { console.error('Map error:', e); }
 }
 
 function toggleLayer(which) {
-  _layerVisible[which] = !_layerVisible[which];
-  const layer = which === 'users' ? _layerUsers : _layerUmkm;
-  const btn = document.getElementById('toggle' + which.charAt(0).toUpperCase() + which.slice(1));
-  if (!layer || !_adminMap) return;
-  if (_layerVisible[which]) {
-    layer.addTo(_adminMap);
-    btn.classList.remove('inactive');
+  if (which === 'user') {
+    _visU = !_visU;
+    const btn = document.getElementById('togUser');
+    if (_layerU && _map) { _visU ? _layerU.addTo(_map) : _map.removeLayer(_layerU); }
+    btn.classList.toggle('off', !_visU);
   } else {
-    _adminMap.removeLayer(layer);
-    btn.classList.add('inactive');
+    _visM = !_visM;
+    const btn = document.getElementById('togUmkm');
+    if (_layerM && _map) { _visM ? _layerM.addTo(_map) : _map.removeLayer(_layerM); }
+    btn.classList.toggle('off', !_visM);
   }
 }
 
-// ─── SYSTEM HEALTH ──────────────────────────────────────────────────────────
+// Invalidate map size when section becomes visible
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    if (item.dataset.section === 'map' && _map) {
+      setTimeout(() => _map.invalidateSize(), 100);
+    }
+  });
+});
 
+// ── SYSTEM HEALTH ─────────────────────────────────────────────────────────────
 async function loadSystem() {
   try {
     const d = await apiFetch('/admin/api/system');
-
     const items = [
-      { name: 'Supabase', key: 'supabase', icon: 'fa-database' },
-      { name: 'SERPAPI', key: 'serpapi', icon: 'fa-magnifying-glass' },
-      { name: 'Groq API', key: 'groq', icon: 'fa-brain' },
-      { name: 'OpenRouter', key: 'openrouter', icon: 'fa-robot' },
+      {name:'Supabase', key:'supabase', icon:'fa-database'},
+      {name:'SERPAPI',  key:'serpapi',  icon:'fa-magnifying-glass'},
+      {name:'Groq API', key:'groq',     icon:'fa-brain'},
+      {name:'OpenRouter',key:'openrouter',icon:'fa-robot'},
     ];
-
-    let html = '';
-    items.forEach(item => {
-      const ok = d[item.key];
-      const cls = ok ? 'ok' : 'err';
-      const label = ok ? 'Terhubung / Tersedia' : 'Tidak tersedia';
-      html += `<div class="health-card">
-        <div class="health-icon ${cls}"><i class="fas ${item.icon}"></i></div>
-        <div class="info"><div class="name">${item.name}</div><div class="status">${label}</div></div>
-      </div>`;
-    });
-
-    // Cache cards
-    html += `<div class="kpi-card">
-      <div class="label">L1 Cache (Memory)</div>
-      <div class="value">${fmt(d.l1_cache_entries)}</div>
-      <div class="sub">Entries aktif</div>
-    </div>`;
-    html += `<div class="kpi-card">
-      <div class="label">DB Cache Total</div>
-      <div class="value">${fmt(d.db_cache_total)}</div>
-      <div class="sub">${fmt(d.db_cache_today)} dibuat hari ini</div>
-    </div>`;
-
-    document.getElementById('healthGrid').innerHTML = html;
-  } catch(e) {
-    document.getElementById('healthGrid').innerHTML = `<div style="color:var(--text-muted);font-size:13px;">Gagal memuat: ${e.message}</div>`;
-  }
+    let h = items.map(it => {
+      const ok = d[it.key];
+      return `<div class="hcard"><div class="hicon ${ok?'ok':'err'}"><i class="fas ${it.icon}"></i></div><div><div class="hname">${it.name}</div><div class="hstatus">${ok?'Terhubung':'Tidak tersedia'}</div></div></div>`;
+    }).join('');
+    h += `<div class="kpi-card"><div class="lbl">L1 Cache (Memory)</div><div class="val">${fmt(d.l1_cache_entries)}</div><div class="sub">Entries aktif</div></div>`;
+    h += `<div class="kpi-card"><div class="lbl">DB Cache Total</div><div class="val">${fmt(d.db_cache_total)}</div><div class="sub">${fmt(d.db_cache_today)} dibuat hari ini</div></div>`;
+    document.getElementById('healthGrid').innerHTML = h;
+  } catch(e) { document.getElementById('healthGrid').innerHTML=`<div style="color:var(--text-muted);font-size:12px;">Gagal: ${e.message}</div>`; }
 }
 
 async function clearCache() {
   if (!confirm('Hapus semua L1 in-memory cache?')) return;
   try {
-    const d = await fetch('/admin/api/clear-cache', { method: 'POST' }).then(r => r.json());
-    showToast(`Cache dibersihkan (${d.cleared} entries).`, 'success');
-    _loaded.system = false;
-    loadSystem();
-  } catch {
-    showToast('Gagal clear cache.', 'error');
-  }
+    const d = await fetch('/admin/api/clear-cache',{method:'POST'}).then(r=>r.json());
+    showToast(`Cache dibersihkan (${d.cleared} entries).`,'success');
+    _loaded.system = false; loadSystem();
+  } catch { showToast('Gagal clear cache.','error'); }
 }
 
-// ─── INIT ───────────────────────────────────────────────────────────────────
-onSectionEnter('overview');
+// ── INIT ──────────────────────────────────────────────────────────────────────
+onEnter('overview');
 </script>
 </body>
 </html>
