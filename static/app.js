@@ -540,7 +540,7 @@ function _buildAuthFormHTML(view) {
           <span class="auth-field-label">Email</span>
           <div class="auth-input-shell">
             <i class="fa-regular fa-envelope auth-input-icon"></i>
-            <input id="auth-email" type="email" placeholder="nama@email.com" class="auth-input auth-input-modern" autocomplete="email" value="${remembered.email || ''}" />
+            <input id="auth-email" type="text" placeholder="nama@email.com" class="auth-input auth-input-modern" autocomplete="email" value="${remembered.email || ''}" />
           </div>
           <div class="auth-field-meta">
             <span class="auth-helper">Kami kirim link reset ke email ini.</span>
@@ -590,7 +590,7 @@ function _buildAuthFormHTML(view) {
         <span class="auth-field-label">Email</span>
         <div class="auth-input-shell">
           <i class="fa-regular fa-envelope auth-input-icon"></i>
-          <input id="auth-email" type="email" placeholder="nama@email.com" class="auth-input auth-input-modern" autocomplete="email" value="${remembered.enabled ? remembered.email : ''}" />
+          <input id="auth-email" type="text" placeholder="nama@email.com" class="auth-input auth-input-modern" autocomplete="email" value="${remembered.enabled ? remembered.email : ''}" />
         </div>
         <div id="auth-email-status" class="auth-status-text" style="font-size:10px;margin-top:-4px;"></div>
       </label>
