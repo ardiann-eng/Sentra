@@ -567,6 +567,20 @@
         <div style="color:var(--text-muted);font-size:12px;">Memuat…</div>
       </div>
     </div>
+
+    <!-- User K-Means -->
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;color:#a78bfa;margin:20px 0 12px;">
+      <i class="fas fa-users-viewfinder" style="margin-right:5px;"></i>K-Means Segmentasi Aktivitas User (90 Hari Terakhir)
+    </div>
+    <div class="kpi-grid" id="mlUserClusterCards" style="margin-bottom:16px;">
+      <div class="kpi-card"><div class="lbl">Memuat…</div><div class="val">—</div></div>
+    </div>
+    <div class="chart-card">
+      <h3>Clustering User Berdasarkan Frekuensi & Hari Aktif
+        <span style="float:right;font-size:9px;font-weight:400;color:var(--text-dim);">Ukuran lingkaran = Rasio Pro Search</span>
+      </h3>
+      <div class="chart-wrap" style="height:300px;"><canvas id="cUserCluster"></canvas></div>
+    </div>
   </section>
 
   <!-- ── SYSTEM ── -->
@@ -1264,7 +1278,74 @@ async function loadMlAnalytics() {
         </div>`;
       }).join('');
     }
+
+    // ─ USER K-MEANS
+    await loadUserClusters();
+
   } catch(e) { console.error('ML Analytics error:', e); }
+}
+
+async function loadUserClusters() {
+  const USER_CLUSTER_CFG = [
+    { color: '#fbbf24', desc: 'Aktif setiap hari, sering melakukan pencarian' },
+    { color: '#60a5fa', desc: 'Sesekali menggunakan Sentra, belum rutin' },
+    { color: '#fca5a5', desc: 'Baru coba atau jarang balik lagi' },
+  ];
+  try {
+    const uc = await apiFetch('/admin/api/ml/user-clusters');
+    const cardsEl = document.getElementById('mlUserClusterCards');
+
+    if (!uc.clusters?.length) {
+      cardsEl.innerHTML = `<div style="color:var(--text-muted);font-size:12px;padding:12px;">${uc.error||'Belum cukup data user.'}</div>`;
+      return;
+    }
+
+    // KPI Cards
+    cardsEl.innerHTML = uc.clusters.map((cl, idx) => `
+      <div class="kpi-card">
+        <div class="lbl">Klaster ${cl.name}</div>
+        <div class="val" style="color:${cl.profile_color}">${cl.count}</div>
+        <div class="sub" style="color:${cl.profile_color};margin-bottom:6px;">${cl.profile}</div>
+        <div style="font-size:10px;color:var(--text-dim);line-height:1.6;">
+          Rata-rata ${cl.avg_searches} pencarian<br>
+          Aktif ${cl.avg_days} hari · ${cl.avg_pro_pct}% Pro Search
+        </div>
+      </div>`).join('');
+
+    // Bubble Chart
+    mkChart('cUserCluster', {
+      type: 'bubble',
+      data: {
+        datasets: uc.clusters.map(cl => ({
+          label: `Klaster ${cl.name} — ${cl.profile}`,
+          data: cl.members.map(m => ({
+            x: m.x, y: m.y, r: m.r,
+            _email: m.email, _total: m.total_searches,
+            _days: m.active_days, _pro: m.pro_ratio
+          })),
+          backgroundColor: cl.color,
+          borderColor: cl.color.replace('0.75','1'),
+          borderWidth: 1,
+        }))
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position:'top', labels:{boxWidth:11,padding:12} },
+          tooltip: { callbacks: { label: ctx => {
+            const d = ctx.raw;
+            return ` ${d._email} | ${d._total}x cari | ${d._days} hari aktif | ${d._pro}% Pro`;
+          }}}
+        },
+        scales: {
+          x: { title:{display:true,text:'Frekuensi Pencarian (normalized)',color:'rgba(255,255,255,0.35)',font:{size:9}},
+               grid:{color:'rgba(255,255,255,0.04)'}, ticks:{callback:v=>(v*100).toFixed(0)+'%'} },
+          y: { title:{display:true,text:'Hari Aktif (normalized)',color:'rgba(255,255,255,0.35)',font:{size:9}},
+               grid:{color:'rgba(255,255,255,0.04)'}, ticks:{callback:v=>(v*100).toFixed(0)+'%'} },
+        }
+      }
+    });
+  } catch(e) { console.error('User cluster error:', e); }
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────

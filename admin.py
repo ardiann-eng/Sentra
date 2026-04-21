@@ -905,6 +905,111 @@ def api_ml_search_intents():
     return jsonify(data)
 
 
+
+@admin_bp.route("/api/ml/user-clusters")
+@admin_required
+def api_ml_user_clusters():
+    """K-Means (k=3) user segmentation based on search behavior (last 90 days)."""
+    def query(sb):
+        cutoff = (datetime.utcnow() - timedelta(days=90)).isoformat()
+        rows = (sb.table("search_logs")
+                .select("user_id, is_pro_search, created_at")
+                .gte("created_at", cutoff)
+                .not_.is_("user_id", "null")
+                .execute()).data or []
+
+        # Aggregate per user
+        user_stats: dict = {}
+        for row in rows:
+            uid = str(row.get("user_id") or "").strip()
+            if not uid or uid.startswith("guest_") or len(uid) < 20:
+                continue
+            d = (row.get("created_at") or "")[:10]
+            if uid not in user_stats:
+                user_stats[uid] = {"total": 0, "pro": 0, "days": set()}
+            user_stats[uid]["total"] += 1
+            if row.get("is_pro_search"):
+                user_stats[uid]["pro"] += 1
+            if d:
+                user_stats[uid]["days"].add(d)
+
+        if len(user_stats) < 3:
+            return {"clusters": [], "total": len(user_stats),
+                    "error": "Data user belum cukup (minimal 3 user dengan riwayat pencarian)"}
+
+        # Build vectors [total_searches, active_days, pro_ratio]
+        uids    = list(user_stats.keys())
+        totals  = [user_stats[u]["total"]      for u in uids]
+        days    = [len(user_stats[u]["days"])  for u in uids]
+        pro_r   = [round(user_stats[u]["pro"] / max(user_stats[u]["total"], 1) * 100, 1) for u in uids]
+
+        tot_n  = _normalize(totals)
+        day_n  = _normalize(days)
+        pror_n = _normalize(pro_r)
+
+        points = [[tot_n[i], day_n[i], pror_n[i]] for i in range(len(uids))]
+        k = min(3, len(uids))
+        labels, _ = _kmeans(points, k=k)
+
+        # Rank clusters: highest total searches = Cluster A (Power Users)
+        cluster_avgs = []
+        for ci in range(k):
+            idxs = [i for i, l in enumerate(labels) if l == ci]
+            avg_t = sum(totals[i] for i in idxs) / len(idxs) if idxs else 0
+            cluster_avgs.append((ci, avg_t))
+        order = [ci for ci, _ in sorted(cluster_avgs, key=lambda x: -x[1])]
+        rank  = {ci: pos for pos, ci in enumerate(order)}
+
+        NAMES    = ["A", "B", "C"]
+        COLORS   = ["rgba(212,168,67,0.75)", "rgba(59,130,246,0.75)", "rgba(248,113,113,0.75)"]
+        PROFILES = ["Power Users", "Casual Users", "Dormant Users"]
+        P_COLORS = ["#fbbf24", "#60a5fa", "#fca5a5"]
+        DESCS    = [
+            "Aktif setiap hari, sering melakukan pencarian",
+            "Sesekali menggunakan Sentra, belum rutin",
+            "Baru coba atau jarang balik lagi",
+        ]
+
+        clusters = [{"name": NAMES[pos], "color": COLORS[pos],
+                     "profile": PROFILES[pos], "profile_color": P_COLORS[pos],
+                     "desc": DESCS[pos], "members": []} for pos in range(k)]
+
+        # Get email map for display
+        try:
+            email_map = _get_email_map(sb)
+        except Exception:
+            email_map = {}
+
+        for i, uid in enumerate(uids):
+            pos   = rank[labels[i]]
+            r_sz  = max(5, min(18, int(tot_n[i] * 13) + 5))
+            email = email_map.get(uid, uid[:8] + "…")
+            clusters[pos]["members"].append({
+                "label"         : email.split("@")[0][:18],
+                "email"         : email,
+                "total_searches": totals[i],
+                "active_days"   : int(days[i]),
+                "pro_ratio"     : pro_r[i],
+                "x"             : round(tot_n[i], 4),
+                "y"             : round(day_n[i], 4),
+                "r"             : r_sz,
+            })
+
+        for cl in clusters:
+            m = cl["members"]
+            cl["count"]        = len(m)
+            cl["avg_searches"] = round(sum(x["total_searches"] for x in m) / len(m), 1) if m else 0
+            cl["avg_days"]     = round(sum(x["active_days"]    for x in m) / len(m), 1) if m else 0
+            cl["avg_pro_pct"]  = round(sum(x["pro_ratio"]      for x in m) / len(m), 1) if m else 0
+
+        return {"clusters": clusters, "total": len(uids), "k": k, "period_days": 90}
+
+    data, err = _safe_query(query)
+    if err:
+        return jsonify({"error": err}), 500
+    return jsonify(data)
+
+
 # ─── API: SYSTEM HEALTH ─────────────────────────────────────────────────────
 
 @admin_bp.route("/api/system")
