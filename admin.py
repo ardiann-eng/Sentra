@@ -40,19 +40,37 @@ def _get_sb():
 
 
 def _get_email_map(sb) -> dict:
-    """Fetch user email map {user_id: email} via admin API."""
+    """Fetch user email map {user_id: email} via admin API (paginated)."""
     email_map: dict = {}
     try:
-        res = sb.auth.admin.list_users()
-        # supabase-py v2: res is AdminListUsersResponse with .users list
-        users = getattr(res, "users", None) or (res if isinstance(res, list) else [])
-        for u in users:
-            uid = str(getattr(u, "id", "") or "")
-            email = getattr(u, "email", "") or ""
-            if uid:
-                email_map[uid] = email
+        page = 1
+        per_page = 1000  # Max allowed by Supabase
+        while True:
+            res = sb.auth.admin.list_users(page=page, per_page=per_page)
+            users = getattr(res, "users", None) or (res if isinstance(res, list) else [])
+            if not users:
+                break
+            for u in users:
+                uid = str(getattr(u, "id", "") or "")
+                email = getattr(u, "email", "") or ""
+                if uid:
+                    email_map[uid] = email
+            # If fewer users than per_page were returned, we've hit the last page
+            if len(users) < per_page:
+                break
+            page += 1
     except Exception:
-        pass
+        # Fallback: try without pagination params (older supabase-py versions)
+        try:
+            res = sb.auth.admin.list_users()
+            users = getattr(res, "users", None) or (res if isinstance(res, list) else [])
+            for u in users:
+                uid = str(getattr(u, "id", "") or "")
+                email = getattr(u, "email", "") or ""
+                if uid:
+                    email_map[uid] = email
+        except Exception:
+            pass
     return email_map
 
 
