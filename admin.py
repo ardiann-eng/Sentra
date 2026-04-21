@@ -102,7 +102,7 @@ def api_overview():
         searches_today = sum(1 for r in sl_all if (r.get("created_at") or "")[:10] == today)
         searches_month = sum(1 for r in sl_all if (r.get("created_at") or "")[:7] == today[:7])
 
-        total_umkm = len(sb.table("umkm_profiles").select("id").execute().data or [])
+        total_umkm = len(sb.table("umkm_profiles").select("user_id").execute().data or [])
 
         return {
             "total_users": total_users,
@@ -402,7 +402,7 @@ def api_searches_export():
 def api_umkm():
     def query(sb):
         rows = (sb.table("umkm_profiles")
-                .select("id, user_id, business_name, category, city, province, monthly_revenue, updated_at")
+                .select("user_id, business_name, category, city, province, avg_monthly_revenue, updated_at")
                 .order("updated_at", desc=True)
                 .execute()).data or []
 

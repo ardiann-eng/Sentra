@@ -649,7 +649,7 @@ async function loadUmkm() {
     const data = await apiFetch('/admin/api/umkm');
     if (!data.length) { document.getElementById('umkmBody').innerHTML='<tr class="loading-row"><td colspan="8">Tidak ada data UMKM</td></tr>'; return; }
     document.getElementById('umkmBody').innerHTML = data.map((r,i) => {
-      const rev = r.monthly_revenue ? 'Rp '+Number(r.monthly_revenue).toLocaleString('id-ID') : '—';
+      const rev = r.avg_monthly_revenue ? 'Rp '+Number(r.avg_monthly_revenue).toLocaleString('id-ID') : '—';
       return `<tr><td class="tm">${i+1}</td><td>${r.business_name||'—'}</td><td class="tm">${r.category||'—'}</td>
         <td class="tm">${r.city||'—'}</td><td class="tm">${r.province||'—'}</td>
         <td class="mono">${rev}</td><td style="font-size:11px;">${trunc(r.email||'—',28)}</td>
