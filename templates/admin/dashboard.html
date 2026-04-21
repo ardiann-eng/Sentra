@@ -373,6 +373,8 @@
     <div class="nav-item" data-section="searches"><i class="fas fa-magnifying-glass"></i> Riwayat Pencarian</div>
     <div class="nav-item" data-section="umkm"><i class="fas fa-store"></i> Data UMKM</div>
     <div class="nav-item" data-section="map"><i class="fas fa-map-location-dot"></i> Peta Sebaran</div>
+    <div class="nav-label">Analitik Lanjutan</div>
+    <div class="nav-item" data-section="ml"><i class="fas fa-robot"></i> ML Analytics</div>
     <div class="nav-label">Sistem</div>
     <div class="nav-item" data-section="system"><i class="fas fa-server"></i> Cache & Health</div>
   </nav>
@@ -518,6 +520,55 @@
     </div>
   </section>
 
+  <!-- ── ML ANALYTICS ── -->
+  <section class="section" id="sec-ml">
+    <div class="sec-hdr">
+      <div>
+        <h2>ML Analytics</h2>
+        <span style="font-size:10px;color:var(--text-dim);background:rgba(212,168,67,0.08);border:1px solid rgba(212,168,67,0.2);padding:2px 9px;border-radius:20px;margin-top:4px;display:inline-block;">K-Means Clustering · NLP Intent Classifier</span>
+      </div>
+      <button class="btn btn-outline" onclick="_loaded.ml=false;loadMlAnalytics()"><i class="fas fa-rotate"></i> Refresh</button>
+    </div>
+
+    <!-- K-Means -->
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;color:var(--gold);margin-bottom:12px;">
+      <i class="fas fa-circle-nodes" style="margin-right:5px;"></i>K-Means Clustering UMKM — Unsupervised Machine Learning
+    </div>
+    <div class="kpi-grid" id="mlClusterCards" style="margin-bottom:16px;">
+      <div class="kpi-card"><div class="lbl">Memuat…</div><div class="val">—</div></div>
+    </div>
+    <div class="chart-card" style="margin-bottom:20px;">
+      <h3>Distribusi Klaster UMKM (Omzet vs Margin)
+        <span style="float:right;font-size:9px;font-weight:400;color:var(--text-dim);">Ukuran lingkaran = Pelanggan Aktif</span>
+      </h3>
+      <div class="chart-wrap" style="height:300px;"><canvas id="cCluster"></canvas></div>
+    </div>
+
+    <!-- NLP Intents -->
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;color:#3b82f6;margin-bottom:12px;">
+      <i class="fas fa-brain" style="margin-right:5px;"></i>NLP Intent Classification — Analisis Tujuan Pencarian (30 Hari)
+    </div>
+    <div class="charts-grid" style="margin-bottom:16px;">
+      <div class="chart-card">
+        <h3>Distribusi Intent Pencarian</h3>
+        <div class="chart-wrap"><canvas id="cIntents"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Top Keyword per Intent</h3>
+        <div id="intentTopKw" style="font-size:12px;padding:2px 0;"><span style="color:var(--text-muted);">Memuat…</span></div>
+      </div>
+    </div>
+    <div class="tbl-card">
+      <div style="padding:14px 18px;border-bottom:1px solid var(--border);">
+        <div style="font-size:13px;font-weight:700;">Ringkasan Klasifikasi Intent</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Klasifikasi tujuan pencarian user menggunakan Rule-Based NLP Classifier</div>
+      </div>
+      <div id="intentSummary" style="padding:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+        <div style="color:var(--text-muted);font-size:12px;">Memuat…</div>
+      </div>
+    </div>
+  </section>
+
   <!-- ── SYSTEM ── -->
   <section class="section" id="sec-system">
     <div class="sec-hdr">
@@ -622,7 +673,7 @@ function closeSidebar() {
 }
 
 // ── NAVIGATION ───────────────────────────────────────────────────────────────
-const TITLES = { overview:'Overview', growth:'Grafik Pertumbuhan', ai:'AI Insights', users:'Daftar User', searches:'Riwayat Pencarian', umkm:'Data UMKM', map:'Peta Sebaran', system:'Cache & Health' };
+const TITLES = { overview:'Overview', growth:'Grafik Pertumbuhan', ai:'AI Insights', users:'Daftar User', searches:'Riwayat Pencarian', umkm:'Data UMKM', map:'Peta Sebaran', ml:'ML Analytics', system:'Cache & Health' };
 let _loaded = {};
 
 document.querySelectorAll('.nav-item').forEach(item => {
@@ -644,6 +695,7 @@ function onEnter(s) {
   if (s==='searches' && !_loaded.searches) { loadSearches();    _loaded.searches=true; }
   if (s==='umkm'     && !_loaded.umkm)     { loadUmkm(); loadUmkmChart(); _loaded.umkm=true; }
   if (s==='map'      && !_loaded.map)      { loadMap();         _loaded.map=true; }
+  if (s==='ml'       && !_loaded.ml)       { loadMlAnalytics(); _loaded.ml=true; }
   if (s==='system'   && !_loaded.system)   { loadSystem();      _loaded.system=true; }
 }
 
@@ -1109,6 +1161,110 @@ async function loadAiInsights() {
       ).join('');
     }
   } catch(e) { console.error('AI Insights error:', e); }
+}
+
+// ── ML ANALYTICS ─────────────────────────────────────────────────────────────
+async function loadMlAnalytics() {
+  const INTENT_CFG = {
+    'Informational':  { color: GOLD,      desc: 'User mencari informasi atau pengetahuan dasar bisnis' },
+    'Analytical':     { color: BLUE,      desc: 'User menganalisis kinerja, margin, atau strategi bisnis' },
+    'Problem Solving':{ color: '#f97316', desc: 'User mencari solusi atas masalah atau kendala bisnis' },
+  };
+  try {
+    const [cls, intents] = await Promise.all([
+      apiFetch('/admin/api/ml/umkm-clusters'),
+      apiFetch('/admin/api/ml/search-intents'),
+    ]);
+
+    // ─ K-MEANS cluster cards & chart
+    const cardsEl = document.getElementById('mlClusterCards');
+    if (cls.clusters?.length) {
+      cardsEl.innerHTML = cls.clusters.map(cl => `
+        <div class="kpi-card">
+          <div class="lbl">Klaster ${cl.name}</div>
+          <div class="val" style="color:${cl.profile_color}">${cl.count}</div>
+          <div class="sub" style="color:${cl.profile_color};margin-bottom:6px;">${cl.profile}</div>
+          <div style="font-size:10px;color:var(--text-dim);line-height:1.6;">
+            Omzet̄ Rp${fmt(Math.round(cl.avg_revenue))}<br>
+            Margin ${cl.avg_margin}% · ${fmt(Math.round(cl.avg_customers))} pelanggan
+          </div>
+        </div>`).join('');
+
+      mkChart('cCluster', {
+        type: 'bubble',
+        data: {
+          datasets: cls.clusters.map(cl => ({
+            label: `Klaster ${cl.name} — ${cl.profile}`,
+            data: cl.members.map(m => ({x:m.x, y:m.y, r:m.r, _lbl:m.label, _rev:m.avg_monthly_revenue, _mar:m.margin_pct})),
+            backgroundColor: cl.color,
+            borderColor: cl.color.replace('0.7','1'),
+            borderWidth: 1,
+          }))
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { position:'top', labels:{boxWidth:11,padding:12} },
+            tooltip: { callbacks: { label: ctx => {
+              const d = ctx.raw;
+              return ` ${d._lbl} | Omzet: Rp${fmt(Math.round(d._rev))} | Margin: ${d._mar}%`;
+            }}}
+          },
+          scales: {
+            x: { title:{display:true,text:'Omzet (normalized)',color:'rgba(255,255,255,0.35)',font:{size:9}},
+                 grid:{color:'rgba(255,255,255,0.04)'}, ticks:{callback:v=>(v*100).toFixed(0)+'%'} },
+            y: { title:{display:true,text:'Margin % (normalized)',color:'rgba(255,255,255,0.35)',font:{size:9}},
+                 grid:{color:'rgba(255,255,255,0.04)'}, ticks:{callback:v=>(v*100).toFixed(0)+'%'} },
+          }
+        }
+      });
+    } else {
+      cardsEl.innerHTML = `<div style="color:var(--text-muted);font-size:12px;padding:12px;">${cls.error||'Belum cukup data UMKM.'}</div>`;
+    }
+
+    // ─ NLP INTENT donut + top keywords + summary
+    if (intents.intents?.length) {
+      mkChart('cIntents', {
+        type: 'doughnut',
+        data: {
+          labels: intents.intents.map(i=>`${i.intent} (${i.pct}%)`),
+          datasets: [{
+            data: intents.intents.map(i=>i.count),
+            backgroundColor: intents.intents.map(i=>(INTENT_CFG[i.intent]||{}).color||GOLD),
+            borderWidth:0, hoverOffset:8
+          }]
+        },
+        options: { responsive:true, maintainAspectRatio:false, cutout:'60%',
+          plugins:{legend:{position:'right',labels:{boxWidth:11,padding:12}}} }
+      });
+
+      document.getElementById('intentTopKw').innerHTML = intents.intents.map(intent => {
+        const cfg = INTENT_CFG[intent.intent]||{color:GOLD};
+        const top = (intents.top_by_intent[intent.intent]||[]).slice(0,5);
+        return `<div style="margin-bottom:14px;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:${cfg.color};flex-shrink:0;"></div>
+            <span style="font-size:11px;font-weight:700;">${intent.intent}</span>
+            <span style="font-size:10px;color:var(--text-muted);">${intent.count} keyword</span>
+          </div>
+          ${top.length ? top.map(k=>`<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:11px;color:var(--text-muted);">${k.keyword}</span>
+            <span style="font-size:10px;font-weight:700;color:${cfg.color};">${k.count}x</span>
+          </div>`).join('') : '<div style="font-size:11px;color:var(--text-dim);">Belum ada data</div>'}
+        </div>`;
+      }).join('');
+
+      document.getElementById('intentSummary').innerHTML = intents.intents.map(intent => {
+        const cfg = INTENT_CFG[intent.intent]||{color:GOLD,desc:''};
+        return `<div style="border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:14px;">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:${cfg.color};margin-bottom:4px;">${intent.intent}</div>
+          <div style="font-size:22px;font-weight:800;margin-bottom:2px;">${intent.count}</div>
+          <div style="font-size:11px;color:var(--text-muted);">${intent.pct}% dari pencarian</div>
+          <div style="font-size:10px;color:var(--text-dim);margin-top:6px;line-height:1.5;">${cfg.desc}</div>
+        </div>`;
+      }).join('');
+    }
+  } catch(e) { console.error('ML Analytics error:', e); }
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────

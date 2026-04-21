@@ -1,4 +1,6 @@
 import os
+import math
+import random
 import time
 import csv
 import io
@@ -111,6 +113,90 @@ def _get_auth_full_map(sb) -> dict:
 
 def _is_guest(user_id: str) -> bool:
     return not user_id or user_id.startswith("guest_") or len(user_id) < 20
+
+
+# ─── ML HELPERS ───────────────────────────────────────────────────────────
+
+def _normalize(values: list) -> list:
+    """Min-max normalization to [0, 1]."""
+    if not values:
+        return []
+    mn, mx = min(values), max(values)
+    rng = mx - mn or 1
+    return [(v - mn) / rng for v in values]
+
+
+def _euclidean(a: list, b: list) -> float:
+    return math.sqrt(sum((x - y) ** 2 for x, y in zip(a, b)))
+
+
+def _kmeans(points: list, k: int = 3, max_iter: int = 100, seed: int = 42) -> tuple:
+    """K-Means++ clustering. Returns (labels, centroids)."""
+    random.seed(seed)
+    n = len(points)
+    if n < k:
+        return list(range(n)), points[:]
+
+    # K-Means++ initialisation
+    centroids = [points[random.randint(0, n - 1)]]
+    for _ in range(k - 1):
+        dists = [min(_euclidean(p, c) ** 2 for c in centroids) for p in points]
+        total = sum(dists) or 1
+        r, cum = random.random() * total, 0
+        for i, d in enumerate(dists):
+            cum += d
+            if cum >= r:
+                centroids.append(points[i])
+                break
+        else:
+            centroids.append(points[-1])
+
+    labels = [0] * n
+    for _ in range(max_iter):
+        new_labels = [min(range(k), key=lambda ci: _euclidean(p, centroids[ci])) for p in points]
+        if new_labels == labels:
+            break
+        labels = new_labels
+        dim = len(points[0])
+        for ci in range(k):
+            members = [points[i] for i, l in enumerate(labels) if l == ci]
+            if members:
+                centroids[ci] = [sum(m[d] for m in members) / len(members) for d in range(dim)]
+    return labels, centroids
+
+
+# NLP Rule-Based Intent Classifier
+_INTENT_RULES: dict = {
+    "Informational": [
+        "apa", "pengertian", "adalah", "definisi", "artinya", "maksud",
+        "mengenal", "tentang", "penjelasan", "cara", "tips", "langkah",
+        "panduan", "tutorial", "bagaimana", "info", "jenis", "macam",
+        "contoh", "daftar", "ceritakan", "jelaskan",
+    ],
+    "Analytical": [
+        "analisis", "analisa", "margin", "laba", "profit", "untung",
+        "strategi", "perbandingan", "bandingkan", "hitung", "kalkulasi",
+        "estimasi", "proyeksi", "target", "optimasi", "efisiensi",
+        "kinerja", "evaluasi", "rekomendasi", "prediksi", "tren",
+        "statistik", "omzet", "revenue", "pendapatan", "biaya",
+        "investasi", "modal", "roi", "break even",
+    ],
+    "Problem Solving": [
+        "masalah", "gagal", "rugi", "sulit", "tidak bisa", "kenapa",
+        "mengapa", "bangkrut", "sepi", "turun", "jelek", "buruk",
+        "kurang", "lambat", "macet", "hutang", "pinjam", "tertipu",
+        "komplain", "keluhan", "susah", "drop", "menurun", "mengatasi",
+        "solusi untuk", "cara mengatasi",
+    ],
+}
+
+
+def _classify_intent(keyword: str) -> str:
+    kw = keyword.lower()
+    scores = {intent: sum(1 for w in words if w in kw)
+              for intent, words in _INTENT_RULES.items()}
+    best = max(scores, key=scores.get)
+    return best if scores[best] > 0 else "Informational"
 
 
 def _safe_query(fn):
@@ -693,6 +779,125 @@ def api_empty_searches():
             "total_unique_keywords": len(stats),
             "searched_once_pct": round(len(one_timers) / len(stats) * 100, 1) if stats else 0,
         }
+
+    data, err = _safe_query(query)
+    if err:
+        return jsonify({"error": err}), 500
+    return jsonify(data)
+
+
+# ─── ML ANALYTICS ENDPOINTS ──────────────────────────────────────────────────
+
+@admin_bp.route("/api/ml/umkm-clusters")
+@admin_required
+def api_ml_umkm_clusters():
+    """K-Means (k=3) clustering on UMKM profiles via pure-Python implementation."""
+    def query(sb):
+        rows = (sb.table("umkm_profiles")
+                .select("user_id, business_name, category, avg_monthly_revenue, margin_pct, active_customers, city, province")
+                .execute()).data or []
+
+        # Keep only rows with at least revenue data
+        rows = [r for r in rows if r.get("avg_monthly_revenue") is not None]
+
+        if len(rows) < 3:
+            return {"clusters": [], "total": len(rows),
+                    "error": "Data UMKM belum cukup (minimal 3 profil dengan data omzet)"}
+
+        revenues  = [float(r.get("avg_monthly_revenue") or 0) for r in rows]
+        margins   = [float(r.get("margin_pct") or 0)          for r in rows]
+        customers = [float(r.get("active_customers") or 0)    for r in rows]
+
+        rev_n  = _normalize(revenues)
+        mar_n  = _normalize(margins)
+        cust_n = _normalize(customers)
+
+        points = [[rev_n[i], mar_n[i], cust_n[i]] for i in range(len(rows))]
+        k = min(3, len(rows))
+        labels, centroids = _kmeans(points, k=k)
+
+        # Determine cluster order by avg revenue (label nicely: A=highest)
+        cluster_avgs = []
+        for ci in range(k):
+            idxs = [i for i, l in enumerate(labels) if l == ci]
+            avg_rev = sum(revenues[i] for i in idxs) / len(idxs) if idxs else 0
+            cluster_avgs.append((ci, avg_rev))
+        order = [ci for ci, _ in sorted(cluster_avgs, key=lambda x: -x[1])]
+        rank = {ci: pos for pos, ci in enumerate(order)}  # original ci -> rank 0/1/2
+
+        NAMES   = ["A", "B", "C"]
+        COLORS  = ["rgba(212,168,67,0.7)", "rgba(59,130,246,0.7)", "rgba(34,197,94,0.7)"]
+        PROFILES = ["High Performer", "Berkembang", "Perlu Perhatian"]
+        P_COLORS = ["#4ade80", "#fbbf24", "#fca5a5"]
+
+        clusters = [{"name": NAMES[pos], "color": COLORS[pos],
+                     "profile": PROFILES[pos], "profile_color": P_COLORS[pos],
+                     "members": []} for pos in range(k)]
+
+        for i, row in enumerate(rows):
+            pos = rank[labels[i]]
+            r_size = max(5, min(18, int(cust_n[i] * 13) + 5))
+            clusters[pos]["members"].append({
+                "label": (row.get("business_name") or row.get("category") or "")[:22],
+                "category": row.get("category", ""),
+                "city": row.get("city", ""),
+                "avg_monthly_revenue": revenues[i],
+                "margin_pct": margins[i],
+                "active_customers": int(customers[i]),
+                "x": round(rev_n[i], 4),
+                "y": round(mar_n[i], 4),
+                "r": r_size,
+            })
+
+        for cl in clusters:
+            m = cl["members"]
+            cl["count"] = len(m)
+            cl["avg_revenue"] = round(sum(x["avg_monthly_revenue"] for x in m) / len(m), 0) if m else 0
+            cl["avg_margin"]  = round(sum(x["margin_pct"]          for x in m) / len(m), 1) if m else 0
+            cl["avg_customers"] = round(sum(x["active_customers"]  for x in m) / len(m), 0) if m else 0
+
+        return {"clusters": clusters, "total": len(rows), "k": k}
+
+    data, err = _safe_query(query)
+    if err:
+        return jsonify({"error": err}), 500
+    return jsonify(data)
+
+
+@admin_bp.route("/api/ml/search-intents")
+@admin_required
+def api_ml_search_intents():
+    """Rule-based NLP intent classification on search_logs (last 30 days)."""
+    def query(sb):
+        cutoff = (datetime.utcnow() - timedelta(days=30)).isoformat()
+        rows = (sb.table("search_logs")
+                .select("keyword, is_pro_search, created_at")
+                .gte("created_at", cutoff)
+                .not_.is_("keyword", "null")
+                .execute()).data or []
+
+        counts   = {i: 0 for i in _INTENT_RULES}
+        kw_seen  = {i: {} for i in _INTENT_RULES}
+
+        for row in rows:
+            kw = (row.get("keyword") or "").strip()
+            if not kw:
+                continue
+            intent = _classify_intent(kw)
+            counts[intent] += 1
+            kw_seen[intent][kw] = kw_seen[intent].get(kw, 0) + 1
+
+        total = sum(counts.values()) or 1
+        intents = sorted(
+            [{"intent": k, "count": v, "pct": round(v / total * 100, 1)} for k, v in counts.items()],
+            key=lambda x: -x["count"]
+        )
+        top_by_intent = {
+            intent: [{"keyword": kw, "count": c}
+                     for kw, c in sorted(kw_seen[intent].items(), key=lambda x: -x[1])[:6]]
+            for intent in _INTENT_RULES
+        }
+        return {"intents": intents, "top_by_intent": top_by_intent, "total_classified": total}
 
     data, err = _safe_query(query)
     if err:
