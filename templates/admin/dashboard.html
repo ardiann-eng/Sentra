@@ -525,14 +525,15 @@
     <div class="sec-hdr">
       <div>
         <h2>ML Analytics</h2>
-        <span style="font-size:10px;color:var(--text-dim);background:rgba(212,168,67,0.08);border:1px solid rgba(212,168,67,0.2);padding:2px 9px;border-radius:20px;margin-top:4px;display:inline-block;">K-Means Clustering · NLP Intent Classifier</span>
+        <span style="font-size:10px;color:var(--text-dim);background:rgba(212,168,67,0.08);border:1px solid rgba(212,168,67,0.2);padding:2px 9px;border-radius:20px;margin-top:4px;display:inline-block;">K-Means Clustering · NLP Intent</span>
       </div>
       <button class="btn btn-outline" onclick="_loaded.ml=false;loadMlAnalytics()"><i class="fas fa-rotate"></i> Refresh</button>
     </div>
 
-    <!-- K-Means -->
-    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;color:var(--gold);margin-bottom:12px;">
-      <i class="fas fa-circle-nodes" style="margin-right:5px;"></i>K-Means Clustering UMKM — Unsupervised Machine Learning
+    <!-- 1. K-Means UMKM -->
+    <div style="padding-bottom:10px; margin-bottom:16px; border-bottom:1px solid rgba(255,255,255,0.05);">
+      <h3 style="color:var(--gold); font-size:16px; margin:0 0 4px;"><i class="fas fa-circle-nodes" style="margin-right:8px;"></i>1. K-Means Clustering UMKM</h3>
+      <div style="font-size:12px; color:var(--text-muted);">Segmentasi Profil Finansial (Unsupervised Machine Learning)</div>
     </div>
     <div class="kpi-grid" id="mlClusterCards" style="margin-bottom:16px;">
       <div class="kpi-card"><div class="lbl">Memuat…</div><div class="val">—</div></div>
@@ -544,9 +545,25 @@
       <div class="chart-wrap" style="height:300px;"><canvas id="cCluster"></canvas></div>
     </div>
 
-    <!-- NLP Intents -->
-    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;color:#3b82f6;margin-bottom:12px;">
-      <i class="fas fa-brain" style="margin-right:5px;"></i>NLP Intent Classification — Analisis Tujuan Pencarian (30 Hari)
+    <!-- 2. K-Means User -->
+    <div style="padding-bottom:10px; margin:30px 0 16px; border-bottom:1px solid rgba(255,255,255,0.05);">
+      <h3 style="color:#a78bfa; font-size:16px; margin:0 0 4px;"><i class="fas fa-users-viewfinder" style="margin-right:8px;"></i>2. K-Means Segmentasi Aktivitas User</h3>
+      <div style="font-size:12px; color:var(--text-muted);">Pengelompokan user berdasarkan tingkat retensi dan habit pencarian AI (90 Hari Terakhir)</div>
+    </div>
+    <div class="kpi-grid" id="mlUserClusterCards" style="margin-bottom:16px;">
+      <div class="kpi-card"><div class="lbl">Memuat…</div><div class="val">—</div></div>
+    </div>
+    <div class="chart-card" style="margin-bottom:20px;">
+      <h3>Clustering User Berdasarkan Frekuensi & Hari Aktif
+        <span style="float:right;font-size:9px;font-weight:400;color:var(--text-dim);">Ukuran lingkaran = Rasio Pro Search</span>
+      </h3>
+      <div class="chart-wrap" style="height:300px;"><canvas id="cUserCluster"></canvas></div>
+    </div>
+
+    <!-- 3. NLP Intents -->
+    <div style="padding-bottom:10px; margin:30px 0 16px; border-bottom:1px solid rgba(255,255,255,0.05);">
+      <h3 style="color:#3b82f6; font-size:16px; margin:0 0 4px;"><i class="fas fa-brain" style="margin-right:8px;"></i>3. NLP Intent Classification</h3>
+      <div style="font-size:12px; color:var(--text-muted);">Klasifikasi Text-Mining terhadap log pencarian sentra (30 Hari Terakhir)</div>
     </div>
     <div class="charts-grid" style="margin-bottom:16px;">
       <div class="chart-card">
@@ -561,25 +578,10 @@
     <div class="tbl-card">
       <div style="padding:14px 18px;border-bottom:1px solid var(--border);">
         <div style="font-size:13px;font-weight:700;">Ringkasan Klasifikasi Intent</div>
-        <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Klasifikasi tujuan pencarian user menggunakan Rule-Based NLP Classifier</div>
       </div>
       <div id="intentSummary" style="padding:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
         <div style="color:var(--text-muted);font-size:12px;">Memuat…</div>
       </div>
-    </div>
-
-    <!-- User K-Means -->
-    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;color:#a78bfa;margin:20px 0 12px;">
-      <i class="fas fa-users-viewfinder" style="margin-right:5px;"></i>K-Means Segmentasi Aktivitas User (90 Hari Terakhir)
-    </div>
-    <div class="kpi-grid" id="mlUserClusterCards" style="margin-bottom:16px;">
-      <div class="kpi-card"><div class="lbl">Memuat…</div><div class="val">—</div></div>
-    </div>
-    <div class="chart-card">
-      <h3>Clustering User Berdasarkan Frekuensi & Hari Aktif
-        <span style="float:right;font-size:9px;font-weight:400;color:var(--text-dim);">Ukuran lingkaran = Rasio Pro Search</span>
-      </h3>
-      <div class="chart-wrap" style="height:300px;"><canvas id="cUserCluster"></canvas></div>
     </div>
   </section>
 
