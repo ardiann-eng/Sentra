@@ -95,14 +95,15 @@ def api_overview():
     month_start = date.today().replace(day=1).isoformat()
 
     def query(sb):
-        total_users = (sb.table("profiles").select("id", count="exact")
-                       .execute()).count or 0
-        searches_today = (sb.table("search_logs").select("id", count="exact")
-                          .gte("created_at", today).execute()).count or 0
-        searches_month = (sb.table("search_logs").select("id", count="exact")
-                          .gte("created_at", month_start).execute()).count or 0
-        total_umkm = (sb.table("umkm_profiles").select("id", count="exact")
-                      .execute()).count or 0
+        # Use len(data) — count property unreliable with some supabase-py versions
+        total_users = len(sb.table("profiles").select("id").execute().data or [])
+
+        sl_all = sb.table("search_logs").select("id, created_at").execute().data or []
+        searches_today = sum(1 for r in sl_all if (r.get("created_at") or "")[:10] == today)
+        searches_month = sum(1 for r in sl_all if (r.get("created_at") or "")[:7] == today[:7])
+
+        total_umkm = len(sb.table("umkm_profiles").select("id").execute().data or [])
+
         return {
             "total_users": total_users,
             "searches_today": searches_today,
@@ -115,6 +116,23 @@ def api_overview():
         return jsonify({"total_users": 0, "searches_today": 0,
                         "searches_month": 0, "total_umkm": 0, "error": err})
     return jsonify(data)
+
+
+@admin_bp.route("/api/debug")
+@admin_required
+def api_debug():
+    """Cek koneksi dan raw data dari Supabase."""
+    sb = _get_sb()
+    if not sb:
+        return jsonify({"error": "No Supabase client"})
+    out = {}
+    for tbl in ["profiles", "search_logs", "umkm_profiles"]:
+        try:
+            res = sb.table(tbl).select("id").limit(5).execute()
+            out[tbl] = {"count_sample": len(res.data or []), "count_attr": res.count, "error": None}
+        except Exception as e:
+            out[tbl] = {"error": str(e)}
+    return jsonify(out)
 
 
 # ─── API: GROWTH ────────────────────────────────────────────────────────────
