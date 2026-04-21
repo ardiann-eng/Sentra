@@ -128,8 +128,13 @@ def api_debug():
     out = {}
     for tbl in ["profiles", "search_logs", "umkm_profiles"]:
         try:
-            res = sb.table(tbl).select("id").limit(5).execute()
-            out[tbl] = {"count_sample": len(res.data or []), "count_attr": res.count, "error": None}
+            res = sb.table(tbl).select("*").limit(2).execute()
+            sample = res.data or []
+            out[tbl] = {
+                "count_sample": len(sample),
+                "columns": list(sample[0].keys()) if sample else [],
+                "error": None
+            }
         except Exception as e:
             out[tbl] = {"error": str(e)}
     return jsonify(out)
