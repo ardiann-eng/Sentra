@@ -74,6 +74,41 @@ def _get_email_map(sb) -> dict:
     return email_map
 
 
+def _get_auth_full_map(sb) -> dict:
+    """Returns {user_id: {'email': str, 'banned': bool}} via paginated admin API."""
+    user_map: dict = {}
+    try:
+        page, per_page = 1, 1000
+        while True:
+            res = sb.auth.admin.list_users(page=page, per_page=per_page)
+            users = getattr(res, "users", None) or (res if isinstance(res, list) else [])
+            if not users:
+                break
+            for u in users:
+                uid = str(getattr(u, "id", "") or "")
+                if not uid:
+                    continue
+                email = getattr(u, "email", "") or ""
+                banned_until = str(getattr(u, "banned_until", "") or "")
+                is_banned = bool(banned_until and banned_until not in ("", "none", "null", "1970-01-01T00:00:00Z"))
+                user_map[uid] = {"email": email, "banned": is_banned}
+            if len(users) < per_page:
+                break
+            page += 1
+    except Exception:
+        try:
+            res = sb.auth.admin.list_users()
+            users = getattr(res, "users", None) or (res if isinstance(res, list) else [])
+            for u in users:
+                uid = str(getattr(u, "id", "") or "")
+                if uid:
+                    email = getattr(u, "email", "") or ""
+                    user_map[uid] = {"email": email, "banned": False}
+        except Exception:
+            pass
+    return user_map
+
+
 def _is_guest(user_id: str) -> bool:
     return not user_id or user_id.startswith("guest_") or len(user_id) < 20
 
@@ -271,12 +306,14 @@ def api_users():
             if not _is_guest(uid):
                 search_counts[uid] = search_counts.get(uid, 0) + 1
 
-        email_map = _get_email_map(sb)
+        auth_map = _get_auth_full_map(sb)
 
         rows = []
         for p in profiles:
             pid = str(p["id"])
-            email = email_map.get(pid, "")
+            auth_info = auth_map.get(pid, {"email": "", "banned": False})
+            email = auth_info["email"]
+            is_banned = auth_info["banned"]
             if search and search not in email.lower():
                 continue
             rows.append({
@@ -285,6 +322,7 @@ def api_users():
                 "tier": p.get("tier", "free"),
                 "created_at": p.get("created_at", ""),
                 "total_searches": search_counts.get(pid, 0),
+                "is_banned": is_banned,
             })
 
         total = len(rows)
@@ -315,6 +353,62 @@ def api_user_searches(user_id):
 
     data, err = _safe_query(query)
     return jsonify(data or [])
+
+
+# ─── USER ACTIONS ─────────────────────────────────────────────────
+
+@admin_bp.route("/api/users/<user_id>/tier", methods=["PATCH"])
+@admin_required
+def api_update_tier(user_id):
+    data = request.get_json(silent=True) or {}
+    new_tier = data.get("tier", "free")
+    if new_tier not in ("free", "pro"):
+        return jsonify({"error": "Invalid tier"}), 400
+
+    def query(sb):
+        sb.table("profiles").update({"tier": new_tier}).eq("id", user_id).execute()
+        return {"ok": True, "tier": new_tier}
+
+    result, err = _safe_query(query)
+    if err:
+        return jsonify({"error": err}), 500
+    return jsonify(result)
+
+
+@admin_bp.route("/api/users/<user_id>/ban", methods=["POST"])
+@admin_required
+def api_ban_user(user_id):
+    data = request.get_json(silent=True) or {}
+    action = data.get("action", "ban")  # "ban" or "unban"
+    sb = _get_sb()
+    if not sb:
+        return jsonify({"error": "Supabase tidak tersedia"}), 500
+    try:
+        if action == "ban":
+            sb.auth.admin.update_user_by_id(user_id, {"ban_duration": "876600h"})
+        else:
+            sb.auth.admin.update_user_by_id(user_id, {"ban_duration": "none"})
+        return jsonify({"ok": True, "action": action})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@admin_bp.route("/api/users/<user_id>", methods=["DELETE"])
+@admin_required
+def api_delete_user(user_id):
+    sb = _get_sb()
+    if not sb:
+        return jsonify({"error": "Supabase tidak tersedia"}), 500
+    try:
+        for tbl, col in [("search_logs", "user_id"), ("umkm_profiles", "user_id"), ("profiles", "id")]:
+            try:
+                sb.table(tbl).delete().eq(col, user_id).execute()
+            except Exception:
+                pass
+        sb.auth.admin.delete_user(user_id)
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 # ─── API: SEARCH LOGS ───────────────────────────────────────────────────────
@@ -487,6 +581,108 @@ def api_umkm_map():
 
     data, err = _safe_query(query)
     return jsonify(data or [])
+
+
+# ─── AI INSIGHTS ────────────────────────────────────────────────────
+
+_TOKENS_FREE = 800    # avg tokens per free search
+_TOKENS_PRO  = 4000   # avg tokens per pro search (includes AI analysis)
+_COST_PER_1M = 0.60   # USD blended estimate (Groq free + OpenRouter)
+
+
+@admin_bp.route("/api/ai/usage")
+@admin_required
+def api_ai_usage():
+    """Daily estimated token & cost usage for last 30 days."""
+    def query(sb):
+        cutoff = (datetime.utcnow() - timedelta(days=30)).isoformat()
+        rows = (sb.table("search_logs")
+                .select("created_at, is_pro_search")
+                .gte("created_at", cutoff)
+                .execute()).data or []
+
+        daily: dict = {}
+        for row in rows:
+            d = (row.get("created_at") or "")[:10]
+            if not d:
+                continue
+            if d not in daily:
+                daily[d] = {"date": d, "free": 0, "pro": 0, "tokens": 0}
+            is_pro = bool(row.get("is_pro_search"))
+            tokens = _TOKENS_PRO if is_pro else _TOKENS_FREE
+            daily[d]["pro" if is_pro else "free"] += 1
+            daily[d]["tokens"] += tokens
+
+        result = sorted(daily.values(), key=lambda x: x["date"])
+        for r in result:
+            r["cost_usd"] = round(r["tokens"] * _COST_PER_1M / 1_000_000, 5)
+            r["total"] = r["free"] + r["pro"]
+
+        total_tokens  = sum(r["tokens"] for r in result)
+        total_cost    = round(sum(r["cost_usd"] for r in result), 4)
+        total_searches = sum(r["total"] for r in result)
+        pro_searches  = sum(r["pro"] for r in result)
+
+        return {
+            "daily": result,
+            "total_tokens": total_tokens,
+            "total_cost_usd": total_cost,
+            "total_searches": total_searches,
+            "pro_searches": pro_searches,
+        }
+
+    data, err = _safe_query(query)
+    if err:
+        return jsonify({"error": err}), 500
+    return jsonify(data)
+
+
+@admin_bp.route("/api/ai/empty-searches")
+@admin_required
+def api_empty_searches():
+    """Keywords searched only once in last 30 days (potential poor-result indicators)."""
+    def query(sb):
+        cutoff = (datetime.utcnow() - timedelta(days=30)).isoformat()
+        rows = (sb.table("search_logs")
+                .select("keyword, user_id, is_pro_search, created_at")
+                .gte("created_at", cutoff)
+                .not_.is_("keyword", "null")
+                .execute()).data or []
+
+        stats: dict = {}
+        for row in rows:
+            kw = (row.get("keyword") or "").strip().lower()
+            if not kw or len(kw) < 2:
+                continue
+            uid = str(row.get("user_id") or "")
+            if kw not in stats:
+                stats[kw] = {"keyword": kw, "count": 0, "users": set(), "is_pro": 0, "last_seen": ""}
+            stats[kw]["count"] += 1
+            stats[kw]["users"].add(uid)
+            if row.get("is_pro_search"):
+                stats[kw]["is_pro"] += 1
+            d = (row.get("created_at") or "")[:10]
+            if d > stats[kw]["last_seen"]:
+                stats[kw]["last_seen"] = d
+
+        one_timers = [
+            {"keyword": kw, "count": s["count"], "unique_users": len(s["users"]),
+             "is_pro": s["is_pro"], "last_seen": s["last_seen"]}
+            for kw, s in stats.items() if s["count"] == 1
+        ]
+        one_timers.sort(key=lambda x: x["last_seen"], reverse=True)
+
+        return {
+            "one_timers": one_timers[:50],
+            "one_timer_count": len(one_timers),
+            "total_unique_keywords": len(stats),
+            "searched_once_pct": round(len(one_timers) / len(stats) * 100, 1) if stats else 0,
+        }
+
+    data, err = _safe_query(query)
+    if err:
+        return jsonify({"error": err}), 500
+    return jsonify(data)
 
 
 # ─── API: SYSTEM HEALTH ─────────────────────────────────────────────────────

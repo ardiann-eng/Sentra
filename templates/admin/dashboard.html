@@ -254,6 +254,30 @@
     .chart-card { min-width: 0; overflow: hidden; }
     canvas { max-width: 100%; }
 
+    /* ── ACTION BUTTONS (user table) ── */
+    .act-btns { display: flex; gap: 4px; flex-wrap: wrap; }
+    .act-btn { background: transparent; border: 1px solid; border-radius: 5px; padding: 4px 7px; font-size: 10px; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; transition: all 0.15s; display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
+    .act-promote { border-color: rgba(212,168,67,0.3); color: var(--gold); }
+    .act-promote:hover { background: var(--gold-dim); }
+    .act-demote  { border-color: rgba(212,168,67,0.3); color: var(--gold); background: var(--gold-dim); }
+    .act-demote:hover { background: rgba(212,168,67,0.25); }
+    .act-ban   { border-color: rgba(245,158,11,0.3); color: #fbbf24; }
+    .act-ban:hover { background: rgba(245,158,11,0.1); }
+    .act-unban { border-color: rgba(34,197,94,0.3); color: #4ade80; }
+    .act-unban:hover { background: rgba(34,197,94,0.08); }
+    .act-delete { border-color: rgba(239,68,68,0.2); color: #fca5a5; }
+    .act-delete:hover { background: rgba(239,68,68,0.1); }
+    .b-banned { background: rgba(239,68,68,0.12); color: #fca5a5; border: 1px solid rgba(239,68,68,0.25); }
+
+    /* ── CONFIRM MODAL ── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.72); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; backdrop-filter: blur(2px); }
+    .modal-overlay.show { opacity: 1; pointer-events: all; }
+    .modal-box { background: #14120D; border: 1px solid rgba(212,168,67,0.2); border-radius: 16px; padding: 28px 26px 22px; max-width: 380px; width: calc(100% - 32px); transform: translateY(6px); transition: transform 0.2s; box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+    .modal-overlay.show .modal-box { transform: translateY(0); }
+    .modal-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+    .modal-msg { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; }
+    .modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
       :root { --sw: 240px; }
@@ -343,6 +367,7 @@
     <div class="nav-label">Menu Utama</div>
     <div class="nav-item active" data-section="overview"><i class="fas fa-chart-pie"></i> Overview</div>
     <div class="nav-item" data-section="growth"><i class="fas fa-chart-line"></i> Grafik Pertumbuhan</div>
+    <div class="nav-item" data-section="ai"><i class="fas fa-brain"></i> AI Insights</div>
     <div class="nav-label">Data</div>
     <div class="nav-item" data-section="users"><i class="fas fa-users"></i> Daftar User</div>
     <div class="nav-item" data-section="searches"><i class="fas fa-magnifying-glass"></i> Riwayat Pencarian</div>
@@ -417,8 +442,8 @@
       </div>
       <div class="tbl-wrap">
         <table>
-          <thead><tr><th>No</th><th>Email</th><th>Tier</th><th>Tgl Daftar</th><th>Pencarian</th><th></th></tr></thead>
-          <tbody id="usersBody"><tr class="loading-row"><td colspan="6"><span class="spinner"></span></td></tr></tbody>
+          <thead><tr><th>No</th><th>Email</th><th>Tier</th><th>Status</th><th>Tgl Daftar</th><th>Pencarian</th><th>Aksi</th></tr></thead>
+          <tbody id="usersBody"><tr class="loading-row"><td colspan="7"><span class="spinner"></span></td></tr></tbody>
         </table>
       </div>
       <div class="pgn">
@@ -506,7 +531,53 @@
       </div>
     </div>
   </section>
+
+  <!-- ── AI INSIGHTS ── -->
+  <section class="section" id="sec-ai">
+    <div class="sec-hdr">
+      <h2>AI Insights</h2>
+      <button class="btn btn-outline" onclick="_loaded.ai=false;loadAiInsights()"><i class="fas fa-rotate"></i> Refresh</button>
+    </div>
+    <div class="kpi-grid" style="margin-bottom:20px;">
+      <div class="kpi-card"><div class="lbl">Est. Token (30h)</div><div class="val" id="kpi-tokens">—</div><div class="sub">Token diproses</div></div>
+      <div class="kpi-card"><div class="lbl">Est. Biaya (30h)</div><div class="val" id="kpi-cost" style="font-size:18px;">—</div><div class="sub">USD (Groq + OpenRouter)</div></div>
+      <div class="kpi-card"><div class="lbl">Pro Search Ratio</div><div class="val" id="kpi-pro-pct">—</div><div class="sub">dari total pencarian</div></div>
+      <div class="kpi-card"><div class="lbl">Keyword 1x Cari</div><div class="val" id="kpi-empty">—</div><div class="sub">Potensi hasil kosong</div></div>
+    </div>
+    <div class="charts-grid" style="margin-bottom:20px;">
+      <div class="chart-card"><h3>Estimasi Token Harian</h3><div class="chart-wrap"><canvas id="cTokens"></canvas></div></div>
+      <div class="chart-card"><h3>Free vs Pro Search Harian</h3><div class="chart-wrap"><canvas id="cSearchType"></canvas></div></div>
+    </div>
+    <div class="tbl-card">
+      <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+        <div>
+          <div style="font-size:13px;font-weight:700;">Keyword Dicari Hanya 1x</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Potensi keyword yang AI sulit berikan hasil relevan (30 hari terakhir)</div>
+        </div>
+        <span id="emptyPct" class="badge b-free" style="font-size:11px;">—</span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>No</th><th>Keyword</th><th>Terakhir Dicari</th><th>Tipe Pencarian</th></tr></thead>
+          <tbody id="emptySearchBody"><tr class="loading-row"><td colspan="4"><span class="spinner"></span></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
 </main>
+
+<!-- ── CONFIRM MODAL ── -->
+<div id="confirmModal" class="modal-overlay" onclick="closeConfirm(event)">
+  <div class="modal-box">
+    <div class="modal-title" id="modalTitle">Konfirmasi</div>
+    <div class="modal-msg" id="modalMsg">Apakah Anda yakin?</div>
+    <div class="modal-btns">
+      <button class="btn btn-outline" onclick="closeConfirm()">Batal</button>
+      <button class="btn" id="modalConfirmBtn" onclick="doConfirm()">Ya, Lanjutkan</button>
+    </div>
+  </div>
+</div>
 
 <div id="toast"></div>
 
@@ -547,7 +618,7 @@ function closeSidebar() {
 }
 
 // ── NAVIGATION ───────────────────────────────────────────────────────────────
-const TITLES = { overview:'Overview', growth:'Grafik Pertumbuhan', users:'Daftar User', searches:'Riwayat Pencarian', umkm:'Data UMKM', map:'Peta Sebaran', system:'Cache & Health' };
+const TITLES = { overview:'Overview', growth:'Grafik Pertumbuhan', ai:'AI Insights', users:'Daftar User', searches:'Riwayat Pencarian', umkm:'Data UMKM', map:'Peta Sebaran', system:'Cache & Health' };
 let _loaded = {};
 
 document.querySelectorAll('.nav-item').forEach(item => {
@@ -562,13 +633,14 @@ document.querySelectorAll('.nav-item').forEach(item => {
 });
 
 function onEnter(s) {
-  if (s==='overview' && !_loaded.overview) { loadOverview(); _loaded.overview=true; }
-  if (s==='growth'   && !_loaded.growth)   { loadGrowth();   _loaded.growth=true; }
-  if (s==='users'    && !_loaded.users)    { loadUsers(1);   _loaded.users=true; }
-  if (s==='searches' && !_loaded.searches) { loadSearches(); _loaded.searches=true; }
+  if (s==='overview' && !_loaded.overview) { loadOverview();    _loaded.overview=true; }
+  if (s==='growth'   && !_loaded.growth)   { loadGrowth();      _loaded.growth=true; }
+  if (s==='ai'       && !_loaded.ai)       { loadAiInsights();  _loaded.ai=true; }
+  if (s==='users'    && !_loaded.users)    { loadUsers(1);      _loaded.users=true; }
+  if (s==='searches' && !_loaded.searches) { loadSearches();    _loaded.searches=true; }
   if (s==='umkm'     && !_loaded.umkm)     { loadUmkm(); loadUmkmChart(); _loaded.umkm=true; }
-  if (s==='map'      && !_loaded.map)      { loadMap();      _loaded.map=true; }
-  if (s==='system'   && !_loaded.system)   { loadSystem();   _loaded.system=true; }
+  if (s==='map'      && !_loaded.map)      { loadMap();         _loaded.map=true; }
+  if (s==='system'   && !_loaded.system)   { loadSystem();      _loaded.system=true; }
 }
 
 // ── CHARTS ───────────────────────────────────────────────────────────────────
@@ -623,32 +695,45 @@ async function loadGrowth() {
 }
 
 // ── USERS ─────────────────────────────────────────────────────────────────────
+let _currentUserPage = 1;
 async function loadUsers(page=1) {
+  _currentUserPage = page;
   const search = document.getElementById('userSearch').value.trim();
   const tier   = document.getElementById('tierFilter').value;
-  document.getElementById('usersBody').innerHTML = '<tr class="loading-row"><td colspan="6"><span class="spinner"></span></td></tr>';
+  document.getElementById('usersBody').innerHTML = '<tr class="loading-row"><td colspan="7"><span class="spinner"></span></td></tr>';
   try {
     const d = await apiFetch(`/admin/api/users?page=${page}&search=${encodeURIComponent(search)}&tier=${tier}`);
     renderUsers(d);
   } catch(e) {
-    document.getElementById('usersBody').innerHTML = `<tr class="loading-row"><td colspan="6">Gagal: ${e.message}</td></tr>`;
+    document.getElementById('usersBody').innerHTML = `<tr class="loading-row"><td colspan="7">Gagal: ${e.message}</td></tr>`;
   }
 }
 function renderUsers(d) {
   const tbody = document.getElementById('usersBody');
-  if (!d.users?.length) { tbody.innerHTML = '<tr class="loading-row"><td colspan="6">Tidak ada data</td></tr>'; document.getElementById('userPgInfo').textContent='0 user'; document.getElementById('userPgBtns').innerHTML=''; return; }
+  if (!d.users?.length) { tbody.innerHTML = '<tr class="loading-row"><td colspan="7">Tidak ada data</td></tr>'; document.getElementById('userPgInfo').textContent='0 user'; document.getElementById('userPgBtns').innerHTML=''; return; }
   const off = (d.page-1)*d.per_page;
   tbody.innerHTML = d.users.map((u,i) => {
-    const tb = u.tier==='pro' ? '<span class="badge b-pro">PRO</span>' : '<span class="badge b-free">FREE</span>';
+    const tb  = u.tier==='pro' ? '<span class="badge b-pro">PRO</span>' : '<span class="badge b-free">FREE</span>';
+    const ban = u.is_banned ? '<span class="badge b-banned">SUSPENDED</span>' : '<span style="color:var(--text-dim);font-size:11px;">Aktif</span>';
+    const esc = s => (s||'').replace(/'/g,"'");
+    const tierBtn  = u.tier==='pro'
+      ? `<button class="act-btn act-demote" onclick="event.stopPropagation();updateTier('${u.id}','pro')"><i class="fas fa-arrow-down"></i> Demote</button>`
+      : `<button class="act-btn act-promote" onclick="event.stopPropagation();updateTier('${u.id}','free')"><i class="fas fa-arrow-up"></i> Pro</button>`;
+    const banBtn   = u.is_banned
+      ? `<button class="act-btn act-unban" onclick="event.stopPropagation();banUser('${u.id}',true,'${esc(u.email)}')"><i class="fas fa-rotate-left"></i></button>`
+      : `<button class="act-btn act-ban" onclick="event.stopPropagation();banUser('${u.id}',false,'${esc(u.email)}')"><i class="fas fa-ban"></i></button>`;
+    const delBtn   = `<button class="act-btn act-delete" onclick="event.stopPropagation();deleteUser('${u.id}','${esc(u.email)}')"><i class="fas fa-trash"></i></button>`;
     return `<tr style="cursor:pointer" onclick="toggleExpand('${u.id}',this)">
       <td class="tm">${off+i+1}</td>
-      <td>${u.email ? trunc(u.email,36) : '<span class="tm">—</span>'}</td>
-      <td>${tb}</td><td class="tm">${fmtD(u.created_at)}</td>
+      <td>${u.email ? trunc(u.email,34) : '<span class="tm">—</span>'}</td>
+      <td>${tb}</td>
+      <td>${ban}</td>
+      <td class="tm">${fmtD(u.created_at)}</td>
       <td class="mono">${fmt(u.total_searches)}</td>
-      <td><span class="tg" style="font-size:11px;"><i class="fas fa-chevron-down"></i></span></td>
+      <td onclick="event.stopPropagation()"><div class="act-btns">${tierBtn}${banBtn}${delBtn}</div></td>
     </tr>
     <tr class="expand-row" id="exp-${u.id}">
-      <td colspan="6"><div class="exp-content">
+      <td colspan="7"><div class="exp-content">
         <div style="font-size:10px;color:var(--text-dim);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:7px;">10 Pencarian Terakhir</div>
         <div id="expd-${u.id}"><span class="spinner"></span></div>
       </div></td>
@@ -661,6 +746,81 @@ function renderUsers(d) {
   for (let p=s;p<=e;p++) h += `<button class="pb ${p===d.page?'active':''}" onclick="loadUsers(${p})">${p}</button>`;
   h += `<button class="pb" ${d.page>=d.pages?'disabled':''} onclick="loadUsers(${d.page+1})"><i class="fas fa-chevron-right"></i></button>`;
   document.getElementById('userPgBtns').innerHTML = h;
+}
+
+// ── CONFIRM MODAL ─────────────────────────────────────────────────────────────
+let _confirmCb = null;
+function showConfirm(title, msg, btnLabel, btnClass, cb) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalMsg').textContent = msg;
+  const btn = document.getElementById('modalConfirmBtn');
+  btn.textContent = btnLabel; btn.className = 'btn ' + btnClass;
+  _confirmCb = cb;
+  document.getElementById('confirmModal').classList.add('show');
+}
+function closeConfirm(e) {
+  if (e && e.target !== document.getElementById('confirmModal')) return;
+  document.getElementById('confirmModal').classList.remove('show');
+  _confirmCb = null;
+}
+async function doConfirm() {
+  document.getElementById('confirmModal').classList.remove('show');
+  if (_confirmCb) { await _confirmCb(); _confirmCb = null; }
+}
+
+// ── USER ACTIONS ──────────────────────────────────────────────────────────────
+async function updateTier(userId, currentTier) {
+  const newTier = currentTier === 'pro' ? 'free' : 'pro';
+  showConfirm(
+    'Ubah Tier User',
+    `Ubah tier dari ${currentTier.toUpperCase()} ke ${newTier.toUpperCase()}?`,
+    `Jadikan ${newTier.toUpperCase()}`,
+    newTier === 'pro' ? 'btn-gold' : 'btn-outline',
+    async () => {
+      try {
+        const r = await fetch(`/admin/api/users/${userId}/tier`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({tier:newTier}) });
+        const d = await r.json();
+        if (d.error) throw new Error(d.error);
+        showToast(`Tier diubah ke ${newTier.toUpperCase()}`, 'success');
+        _loaded.users=false; loadUsers(_currentUserPage);
+      } catch(e) { showToast('Gagal: '+e.message, 'error'); }
+    }
+  );
+}
+async function banUser(userId, isBanned, email) {
+  const action = isBanned ? 'unban' : 'ban';
+  showConfirm(
+    isBanned ? 'Pulihkan Akses User' : 'Suspend User',
+    `${isBanned?'Aktifkan':'Suspend'} akun ${email}?`,
+    isBanned ? 'Ya, Aktifkan' : 'Ya, Suspend',
+    isBanned ? 'btn-outline' : 'btn-danger',
+    async () => {
+      try {
+        const r = await fetch(`/admin/api/users/${userId}/ban`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action}) });
+        const d = await r.json();
+        if (d.error) throw new Error(d.error);
+        showToast(`User berhasil di-${action}`, 'success');
+        _loaded.users=false; loadUsers(_currentUserPage);
+      } catch(e) { showToast('Gagal: '+e.message, 'error'); }
+    }
+  );
+}
+async function deleteUser(userId, email) {
+  showConfirm(
+    'Hapus User Permanen',
+    `Hapus akun "${email}" beserta semua datanya (pencarian, UMKM) secara permanen? Tindakan ini tidak bisa dibatalkan!`,
+    'Hapus Permanen',
+    'btn-danger',
+    async () => {
+      try {
+        const r = await fetch(`/admin/api/users/${userId}`, {method:'DELETE'});
+        const d = await r.json();
+        if (d.error) throw new Error(d.error);
+        showToast('User berhasil dihapus', 'success');
+        _loaded.users=false; loadUsers(_currentUserPage);
+      } catch(e) { showToast('Gagal: '+e.message, 'error'); }
+    }
+  );
 }
 async function toggleExpand(uid, tr) {
   const row = document.getElementById('exp-'+uid);
@@ -862,6 +1022,67 @@ async function clearCache() {
     showToast(`Cache dibersihkan (${d.cleared} entries).`,'success');
     _loaded.system = false; loadSystem();
   } catch { showToast('Gagal clear cache.','error'); }
+}
+
+// ── AI INSIGHTS ───────────────────────────────────────────────────────────────
+async function loadAiInsights() {
+  try {
+    const [usage, empty] = await Promise.all([
+      apiFetch('/admin/api/ai/usage'),
+      apiFetch('/admin/api/ai/empty-searches')
+    ]);
+
+    // KPI Cards
+    document.getElementById('kpi-tokens').textContent = usage.total_tokens >= 1000000
+      ? (usage.total_tokens/1000000).toFixed(2)+'M'
+      : usage.total_tokens >= 1000 ? (usage.total_tokens/1000).toFixed(1)+'K' : String(usage.total_tokens||0);
+    document.getElementById('kpi-cost').textContent   = '$'+(usage.total_cost_usd||0).toFixed(4);
+    document.getElementById('kpi-pro-pct').textContent = usage.total_searches > 0
+      ? Math.round((usage.pro_searches||0)/usage.total_searches*100)+'%' : '0%';
+    document.getElementById('kpi-empty').textContent  = fmt(empty.one_timer_count);
+
+    const pct = empty.searched_once_pct || 0;
+    document.getElementById('emptyPct').textContent = pct+'% dari keyword unik';
+
+    // Token usage chart
+    mkChart('cTokens', {
+      type: 'line',
+      data: { labels: usage.daily.map(r=>r.date.slice(5)), datasets: [{
+        label:'Token', data: usage.daily.map(r=>r.tokens),
+        borderColor: GOLD, backgroundColor:'rgba(212,168,67,0.1)',
+        borderWidth:2, fill:true, tension:0.35, pointRadius:3
+      }]},
+      options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+        scales:{ x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{maxTicksLimit:7}},
+          y:{grid:{color:'rgba(255,255,255,0.04)'},beginAtZero:true, ticks:{precision:0, callback:v=>v>=1000?(v/1000).toFixed(0)+'K':v}} }}
+    });
+
+    // Free vs Pro stacked bar
+    mkChart('cSearchType', {
+      type: 'bar',
+      data: { labels: usage.daily.map(r=>r.date.slice(5)),
+        datasets:[
+          {label:'Free', data:usage.daily.map(r=>r.free), backgroundColor:'rgba(255,255,255,0.15)', borderRadius:3, stack:'s'},
+          {label:'Pro',  data:usage.daily.map(r=>r.pro),  backgroundColor:GOLD, borderRadius:3, stack:'s'}
+        ]},
+      options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{boxWidth:10,padding:8}}},
+        scales:{ x:{stacked:true, grid:{color:'rgba(255,255,255,0.04)'},ticks:{maxTicksLimit:7}},
+          y:{stacked:true, grid:{color:'rgba(255,255,255,0.04)'},beginAtZero:true,ticks:{precision:0}} }}
+    });
+
+    // Empty searches table
+    const tbody = document.getElementById('emptySearchBody');
+    if (!empty.one_timers?.length) {
+      tbody.innerHTML = '<tr class="loading-row"><td colspan="4">Tidak ada keyword 1x cari dalam 30 hari</td></tr>';
+    } else {
+      tbody.innerHTML = empty.one_timers.map((r,i)=>`
+        <tr><td class="tm">${i+1}</td>
+        <td>${r.keyword}</td>
+        <td class="tm">${fmtD(r.last_seen)}</td>
+        <td>${r.is_pro?'<span class="badge b-pro">PRO</span>':'<span class="badge b-free">FREE</span>'}</td></tr>`
+      ).join('');
+    }
+  } catch(e) { console.error('AI Insights error:', e); }
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
