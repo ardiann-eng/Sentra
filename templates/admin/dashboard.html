@@ -402,7 +402,10 @@
   <section class="section active" id="sec-overview">
     <div class="sec-hdr">
       <h2>Overview</h2>
-      <button class="btn btn-outline" onclick="_loaded.overview=false;loadOverview()"><i class="fas fa-rotate"></i> Refresh</button>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-gold" onclick="exportAllData()"><i class="fas fa-file-export"></i> Export Semua Data</button>
+        <button class="btn btn-outline" onclick="_loaded.overview=false;loadOverview()"><i class="fas fa-rotate"></i> Refresh</button>
+      </div>
     </div>
     <div class="kpi-grid">
       <div class="kpi-card"><div class="lbl">Total User</div><div class="val" id="kpi-users">—</div><div class="sub">Pengguna terdaftar</div></div>
@@ -668,6 +671,9 @@ async function apiFetch(url) {
   const r = await fetch(url);
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   return r.json();
+}
+function exportAllData() {
+  window.location.href = '/admin/api/export/all';
 }
 
 // Clock

@@ -4,6 +4,8 @@ import random
 import time
 import csv
 import io
+import pandas as pd
+import zipfile
 from datetime import datetime, date, timedelta
 from functools import wraps
 from flask import (
@@ -606,6 +608,63 @@ def api_searches_export():
     resp.headers["Content-Type"] = "text/csv"
     resp.headers["Content-Disposition"] = "attachment; filename=search_logs.csv"
     return resp
+
+
+@admin_bp.route("/api/export/all")
+@admin_required
+def api_export_all():
+    """Export all core data (Users, Searches, UMKM) as a ZIP of CSVs."""
+    sb = _get_sb()
+    if not sb:
+        return jsonify({"error": "Supabase tidak tersedia"}), 500
+
+    try:
+        # 1. Fetch Users + Auth
+        profiles = sb.table("profiles").select("*").order("created_at", desc=True).execute().data or []
+        auth_map = _get_auth_full_map(sb)
+        for p in profiles:
+            pid = str(p.get("id"))
+            auth = auth_map.get(pid, {})
+            p["email"] = auth.get("email", "")
+            p["is_banned"] = auth.get("banned", False)
+
+        # 2. Fetch Searches + Email
+        searches = sb.table("search_logs").select("*").order("created_at", desc=True).limit(10000).execute().data or []
+        email_map = _get_email_map(sb)
+        for s in searches:
+            uid = str(s.get("user_id") or "")
+            s["user_email"] = "Guest" if _is_guest(uid) else email_map.get(uid, uid)
+
+        # 3. Fetch UMKM + Email
+        umkm = sb.table("umkm_profiles").select("*").order("updated_at", desc=True).execute().data or []
+        for u in umkm:
+            uid = str(u.get("user_id") or "")
+            u["email"] = email_map.get(uid, "")
+
+        # Create ZIP in memory
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zf:
+            # Users
+            if profiles:
+                u_df = pd.DataFrame(profiles)
+                zf.writestr("users.csv", u_df.to_csv(index=False))
+            # Searches
+            if searches:
+                s_df = pd.DataFrame(searches)
+                zf.writestr("search_logs.csv", s_df.to_csv(index=False))
+            # UMKM
+            if umkm:
+                m_df = pd.DataFrame(umkm)
+                zf.writestr("umkm_profiles.csv", m_df.to_csv(index=False))
+
+        zip_buffer.seek(0)
+        resp = make_response(zip_buffer.read())
+        resp.headers["Content-Type"] = "application/zip"
+        resp.headers["Content-Disposition"] = "attachment; filename=sentra_export_full.zip"
+        return resp
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 # ─── API: UMKM ──────────────────────────────────────────────────────────────
